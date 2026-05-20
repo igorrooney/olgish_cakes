@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PHONE_UTILS } from "@/lib/constants";
 
+interface MockOrderItem {
+  productName?: string;
+  totalPrice?: number;
+  unitPrice?: number;
+  quantity?: number;
+  productType?: string;
+  designType?: string;
+  specialInstructions?: string;
+}
+
 // Test email route - for development only
 export async function POST(request: NextRequest) {
   try {
@@ -52,7 +62,7 @@ export async function POST(request: NextRequest) {
           let baseMessage = 'Great news! Your order is on its way to you.';
 
           if (deliveryMethod === 'postal' || deliveryMethod === 'postal-delivery') {
-            baseMessage = 'Great news! Your order has been dispatched via Royal Mail and is on its way to you. You should receive it within the next few days.';
+            baseMessage = 'Great news! Your order has been dispatched via Evri and is on its way to you. You should receive it within the next few days.';
           } else if (deliveryMethod === 'local-delivery') {
             baseMessage = 'Great news! Your order is out for local delivery and will be with you soon.';
           } else if (deliveryMethod === 'collection' || deliveryMethod === 'market-pickup') {
@@ -162,7 +172,7 @@ export async function POST(request: NextRequest) {
                         Your Order
                       </h3>
 
-                      ${mockOrder.items.map((item: any) => `
+                      ${mockOrder.items.map((item: MockOrderItem) => `
                         <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
                           <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
                           <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>
@@ -178,18 +188,18 @@ export async function POST(request: NextRequest) {
                       <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
                         <h3 style="margin: 0 0 12px 0; color: #1976d2; font-size: 16px; font-weight: 600;">📦 Tracking Information</h3>
                         ${mockOrder.delivery.deliveryMethod === 'postal-delivery' || mockOrder.delivery.deliveryMethod === 'postal' ? `
-                          <p style="margin: 0 0 8px 0; color: #1976d2; font-size: 14px;"><strong>Courier:</strong> Royal Mail</p>
+                          <p style="margin: 0 0 8px 0; color: #1976d2; font-size: 14px;"><strong>Courier:</strong> Evri</p>
                           <p style="margin: 0 0 8px 0; color: #1976d2; font-size: 14px;">
                             <strong>Tracking Number:</strong>
-                            <a href="https://www.royalmail.com/track-your-item#/tracking-results/${mockOrder.delivery.trackingNumber}"
+                            <a href="https://www.evri.com/track/parcel/${encodeURIComponent(mockOrder.delivery.trackingNumber)}/details"
                                style="color: #1976d2; text-decoration: underline; font-weight: 600;">
                               ${mockOrder.delivery.trackingNumber}
                             </a>
                           </p>
                           <p style="margin: 0; color: #1976d2; font-size: 14px;">
-                            <a href="https://www.royalmail.com/track-your-item#/tracking-results/${mockOrder.delivery.trackingNumber}"
+                            <a href="https://www.evri.com/track/parcel/${encodeURIComponent(mockOrder.delivery.trackingNumber)}/details"
                                style="color: #1976d2; text-decoration: none; font-weight: 500;">
-                              Track your package on Royal Mail website →
+                              Track your package on Evri website →
                             </a>
                           </p>
                         ` : `

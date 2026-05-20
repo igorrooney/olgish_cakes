@@ -1,518 +1,436 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
-  Alert,
-  CircularProgress,
-  Stack,
-} from "@mui/material";
-import {
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon,
-  Refresh as RefreshIcon,
-  Download as DownloadIcon,
-} from "@mui/icons-material";
+import { useEffect, useMemo, useState } from 'react'
 
 interface EarningsData {
-  currentMonth: number;
-  lastMonth: number;
-  totalRevenue: number;
-  totalOrders: number;
-  averageOrderValue: number;
-  currentMonthOrdersCount: number;
-  lastMonthOrdersCount: number;
-  historicalMonthlyData: MonthlyData[];
+  currentMonth: number
+  lastMonth: number
+  totalRevenue: number
+  totalOrders: number
+  averageOrderValue: number
+  currentMonthOrdersCount: number
+  lastMonthOrdersCount: number
+  historicalMonthlyData: MonthlyData[]
 }
 
 interface MonthlyData {
-  month: string;
-  year: number;
-  earnings: number;
-  ordersCount: number;
-  averageOrderValue: number;
+  month: string
+  year: number
+  earnings: number
+  ordersCount: number
+  averageOrderValue: number
 }
 
-export function EarningsDashboard() {
-  const [earnings, setEarnings] = useState<EarningsData>({
-    currentMonth: 0,
-    lastMonth: 0,
-    totalRevenue: 0,
-    totalOrders: 0,
-    averageOrderValue: 0,
-    currentMonthOrdersCount: 0,
-    lastMonthOrdersCount: 0,
-    historicalMonthlyData: [],
-  });
+interface MonthOption {
+  value: string
+  label: string
+}
 
-  const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
-  const [selectedMonth, setSelectedMonth] = useState<string>("all");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+interface SelectedMonthData {
+  earnings: number
+  ordersCount: number
+  averageOrderValue: number
+  monthName: string
+}
 
-  useEffect(() => {
-    fetchEarnings();
-  }, []);
+const initialEarnings: EarningsData = {
+  currentMonth: 0,
+  lastMonth: 0,
+  totalRevenue: 0,
+  totalOrders: 0,
+  averageOrderValue: 0,
+  currentMonthOrdersCount: 0,
+  lastMonthOrdersCount: 0,
+  historicalMonthlyData: []
+}
 
-  const fetchEarnings = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/admin/earnings');
-      const data = await response.json();
+const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP'
+  }).format(amount)
 
-      if (response.ok) {
-        setEarnings(data);
-        setMonthlyData(data.historicalMonthlyData || []);
-      } else {
-        setError(data.error || 'Failed to fetch earnings data');
-      }
-    } catch (error) {
-      console.error('Error fetching earnings:', error);
-      setError('Failed to fetch earnings data');
-    } finally {
-      setLoading(false);
+function generateMonthOptions(): MonthOption[] {
+  const options: MonthOption[] = [
+    { value: 'all', label: 'All months' },
+    { value: 'current', label: 'Current month' },
+    { value: 'last', label: 'Last month' }
+  ]
+
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear()
+  const currentMonth = currentDate.getMonth()
+
+  for (let monthIndex = currentMonth; monthIndex >= 0; monthIndex -= 1) {
+    const date = new Date(currentYear, monthIndex)
+    options.push({
+      value: `${currentYear}-${String(monthIndex + 1).padStart(2, '0')}`,
+      label: date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+    })
+  }
+
+  if (currentMonth < 11) {
+    for (let monthIndex = 11; monthIndex >= currentMonth + 1; monthIndex -= 1) {
+      const date = new Date(currentYear - 1, monthIndex)
+      options.push({
+        value: `${currentYear - 1}-${String(monthIndex + 1).padStart(2, '0')}`,
+        label: date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+      })
     }
-  };
+  }
 
-  const getSelectedMonthData = () => {
-    if (selectedMonth === "all") {
-      return {
-        earnings: earnings.totalRevenue,
-        ordersCount: earnings.totalOrders,
-        averageOrderValue: earnings.averageOrderValue,
-        monthName: "All Months"
-      };
-    } else if (selectedMonth === "current") {
-      return {
-        earnings: earnings.currentMonth,
-        ordersCount: earnings.currentMonthOrdersCount,
-        averageOrderValue: earnings.currentMonthOrdersCount > 0
-          ? earnings.currentMonth / earnings.currentMonthOrdersCount
-          : 0,
-        monthName: "Current Month"
-      };
-    } else if (selectedMonth === "last") {
-      return {
-        earnings: earnings.lastMonth,
-        ordersCount: earnings.lastMonthOrdersCount,
-        averageOrderValue: earnings.lastMonthOrdersCount > 0
-          ? earnings.lastMonth / earnings.lastMonthOrdersCount
-          : 0,
-        monthName: "Last Month"
-      };
-    } else {
-      // Handle specific month selection (format: YYYY-MM)
-      const [year, month] = selectedMonth.split('-');
-      const monthName = new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  return options
+}
 
-      // Check if it's current month
-      if (selectedMonth === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`) {
-        return {
-          earnings: earnings.currentMonth,
-          ordersCount: earnings.currentMonthOrdersCount,
-          averageOrderValue: earnings.currentMonthOrdersCount > 0
-            ? earnings.currentMonth / earnings.currentMonthOrdersCount
-            : 0,
-          monthName
-        };
-      }
+function getMonthName(value: string): string {
+  const [year, month] = value.split('-')
+  return new Date(Number(year), Number(month) - 1).toLocaleDateString('en-GB', {
+    month: 'long',
+    year: 'numeric'
+  })
+}
 
-      // Check if it's last month
-      const lastMonth = new Date();
-      lastMonth.setMonth(lastMonth.getMonth() - 1);
-      const lastMonthValue = `${lastMonth.getFullYear()}-${String(lastMonth.getMonth() + 1).padStart(2, '0')}`;
-      if (selectedMonth === lastMonthValue) {
-        return {
-          earnings: earnings.lastMonth,
-          ordersCount: earnings.lastMonthOrdersCount,
-          averageOrderValue: earnings.lastMonthOrdersCount > 0
-            ? earnings.lastMonth / earnings.lastMonthOrdersCount
-            : 0,
-          monthName
-        };
-      }
+function getSelectedMonthData(
+  selectedMonth: string,
+  earnings: EarningsData,
+  monthlyData: MonthlyData[]
+): SelectedMonthData {
+  if (selectedMonth === 'all') {
+    return {
+      earnings: earnings.totalRevenue,
+      ordersCount: earnings.totalOrders,
+      averageOrderValue: earnings.averageOrderValue,
+      monthName: 'All months'
+    }
+  }
 
-      // Check historical data
-      const monthData = monthlyData.find(m => `${m.year}-${m.month}` === selectedMonth);
-      return monthData ? {
+  if (selectedMonth === 'current') {
+    return {
+      earnings: earnings.currentMonth,
+      ordersCount: earnings.currentMonthOrdersCount,
+      averageOrderValue: earnings.currentMonthOrdersCount > 0
+        ? earnings.currentMonth / earnings.currentMonthOrdersCount
+        : 0,
+      monthName: 'Current month'
+    }
+  }
+
+  if (selectedMonth === 'last') {
+    return {
+      earnings: earnings.lastMonth,
+      ordersCount: earnings.lastMonthOrdersCount,
+      averageOrderValue: earnings.lastMonthOrdersCount > 0
+        ? earnings.lastMonth / earnings.lastMonthOrdersCount
+        : 0,
+      monthName: 'Last month'
+    }
+  }
+
+  const monthName = getMonthName(selectedMonth)
+  const currentDate = new Date()
+  const currentMonthValue = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`
+  const lastMonthDate = new Date()
+  lastMonthDate.setMonth(lastMonthDate.getMonth() - 1)
+  const lastMonthValue = `${lastMonthDate.getFullYear()}-${String(lastMonthDate.getMonth() + 1).padStart(2, '0')}`
+
+  if (selectedMonth === currentMonthValue) {
+    return {
+      earnings: earnings.currentMonth,
+      ordersCount: earnings.currentMonthOrdersCount,
+      averageOrderValue: earnings.currentMonthOrdersCount > 0
+        ? earnings.currentMonth / earnings.currentMonthOrdersCount
+        : 0,
+      monthName
+    }
+  }
+
+  if (selectedMonth === lastMonthValue) {
+    return {
+      earnings: earnings.lastMonth,
+      ordersCount: earnings.lastMonthOrdersCount,
+      averageOrderValue: earnings.lastMonthOrdersCount > 0
+        ? earnings.lastMonth / earnings.lastMonthOrdersCount
+        : 0,
+      monthName
+    }
+  }
+
+  const monthData = monthlyData.find((item) => `${item.year}-${item.month}` === selectedMonth)
+
+  return monthData
+    ? {
         earnings: monthData.earnings,
         ordersCount: monthData.ordersCount,
         averageOrderValue: monthData.averageOrderValue,
         monthName
-      } : {
+      }
+    : {
         earnings: 0,
         ordersCount: 0,
         averageOrderValue: 0,
         monthName
-      };
-    }
-  };
+      }
+}
 
-  const getGrowthPercentage = () => {
-    if (earnings.lastMonth === 0) return earnings.currentMonth > 0 ? 100 : 0;
-    return ((earnings.currentMonth - earnings.lastMonth) / earnings.lastMonth) * 100;
-  };
+function getGrowthPercentage(earnings: EarningsData): number {
+  if (earnings.lastMonth === 0) {
+    return earnings.currentMonth > 0 ? 100 : 0
+  }
 
-  const formatCurrency = (amount: number) => `£${amount.toFixed(2)}`;
+  return ((earnings.currentMonth - earnings.lastMonth) / earnings.lastMonth) * 100
+}
 
-  const generateMonthOptions = () => {
-    const options = [
-      { value: "all", label: "All Months" },
-      { value: "current", label: "Current Month" },
-      { value: "last", label: "Last Month" },
-    ];
+export function EarningsDashboard() {
+  const [earnings, setEarnings] = useState<EarningsData>(initialEarnings)
+  const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([])
+  const [selectedMonth, setSelectedMonth] = useState('all')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-    // Generate month options for the current year and previous year (same as orders page)
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
+  const monthOptions = useMemo(() => generateMonthOptions(), [])
+  const selectedData = useMemo(() => {
+    return getSelectedMonthData(selectedMonth, earnings, monthlyData)
+  }, [earnings, monthlyData, selectedMonth])
+  const growthPercentage = useMemo(() => getGrowthPercentage(earnings), [earnings])
+  const trendClass = growthPercentage >= 0 ? 'text-success' : 'text-error'
 
-    // Add current year months
-    for (let i = currentMonth; i >= 0; i--) {
-      const date = new Date(currentYear, i);
-      const value = `${currentYear}-${String(i + 1).padStart(2, '0')}`;
-      const label = date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-      options.push({ value, label });
-    }
+  const fetchEarnings = async (signal?: AbortSignal) => {
+    try {
+      setLoading(true)
+      setError('')
 
-    // Add previous year months if we're not in January
-    if (currentMonth < 11) {
-      for (let i = 11; i >= currentMonth + 1; i--) {
-        const date = new Date(currentYear - 1, i);
-        const value = `${currentYear - 1}-${String(i + 1).padStart(2, '0')}`;
-        const label = date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-        options.push({ value, label });
+      const response = await fetch('/api/admin/earnings', {
+        credentials: 'include',
+        signal
+      })
+      const data = await response.json() as Partial<EarningsData> & { error?: string }
+
+      if (!response.ok) {
+        setError(data.error || 'Failed to fetch earnings data')
+        return
+      }
+
+      const nextEarnings: EarningsData = {
+        ...initialEarnings,
+        ...data,
+        historicalMonthlyData: data.historicalMonthlyData || []
+      }
+
+      setEarnings(nextEarnings)
+      setMonthlyData(nextEarnings.historicalMonthlyData)
+    } catch (fetchError) {
+      if (fetchError instanceof DOMException && fetchError.name === 'AbortError') {
+        return
+      }
+
+      console.error('Error fetching earnings:', fetchError)
+      setError('Failed to fetch earnings data')
+    } finally {
+      if (!signal?.aborted) {
+        setLoading(false)
       }
     }
+  }
 
-    return options;
-  };
+  useEffect(() => {
+    const controller = new AbortController()
 
-  const selectedData = getSelectedMonthData();
-  const growthPercentage = getGrowthPercentage();
+    void fetchEarnings(controller.signal)
+
+    return () => {
+      controller.abort()
+    }
+  }, [])
+
+  const exportCsv = () => {
+    const csvData: Array<Array<string | number>> = [
+      ['Month', 'Orders', 'Total Earnings', 'Average Order Value'],
+      [
+        'Current month',
+        earnings.currentMonthOrdersCount,
+        earnings.currentMonth,
+        earnings.currentMonthOrdersCount > 0 ? earnings.currentMonth / earnings.currentMonthOrdersCount : 0
+      ],
+      [
+        'Last month',
+        earnings.lastMonthOrdersCount,
+        earnings.lastMonth,
+        earnings.lastMonthOrdersCount > 0 ? earnings.lastMonth / earnings.lastMonthOrdersCount : 0
+      ],
+      ...monthlyData.map((month) => [
+        `${month.month} ${month.year}`,
+        month.ordersCount,
+        month.earnings,
+        month.averageOrderValue
+      ])
+    ]
+
+    const csvContent = csvData.map((row) => row.join(',')).join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = `olgish-cakes-earnings-${new Date().toISOString().split('T')[0]}.csv`
+    anchor.click()
+    window.URL.revokeObjectURL(url)
+  }
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <CircularProgress />
-      </Box>
-    );
+      <div className='grid min-h-72 place-items-center rounded-md border border-base-300 bg-base-100'>
+        <span className='loading loading-spinner text-primary' aria-label='Loading earnings' />
+      </div>
+    )
   }
 
   return (
-    <Box>
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError("")}>
-          {error}
-        </Alert>
-      )}
+    <div className='flex flex-col gap-6'>
+      <header className='flex flex-col gap-3 md:flex-row md:items-end md:justify-between'>
+        <div>
+          <p className='text-sm font-medium uppercase tracking-wide text-base-content/60'>Finance</p>
+          <h1 className='mt-1 text-3xl font-semibold text-base-content'>Earnings</h1>
+          <p className='mt-2 max-w-2xl text-sm text-base-content/70'>
+            Revenue, average order value and monthly order performance.
+          </p>
+        </div>
+        <div className='flex flex-col gap-2 sm:flex-row'>
+          <button
+            type='button'
+            className='btn btn-outline btn-sm'
+            onClick={() => {
+              void fetchEarnings()
+            }}
+          >
+            Refresh
+          </button>
+          <button type='button' className='btn btn-primary btn-sm' onClick={exportCsv}>
+            Export CSV
+          </button>
+        </div>
+      </header>
 
-      {/* Month Filter */}
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={6} md={4}>
-              <FormControl fullWidth>
-                <InputLabel>Select Month</InputLabel>
-                <Select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  label="Select Month"
+      {error ? (
+        <div className='alert alert-error' role='alert'>
+          <span>{error}</span>
+        </div>
+      ) : null}
+
+      <section className='rounded-md border border-base-300 bg-base-100 p-4 shadow-sm' aria-label='Earnings filters'>
+        <label className='form-control max-w-sm'>
+          <span className='label'>
+            <span className='label-text font-medium'>Month</span>
+          </span>
+          <select
+            className='select select-bordered'
+            value={selectedMonth}
+            onChange={(event) => setSelectedMonth(event.target.value)}
+          >
+            {monthOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </section>
+
+      <section className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4' aria-label='Selected month performance'>
+        <div className='stat rounded-md border border-base-300 bg-base-100 shadow-sm'>
+          <div className='stat-title'>{selectedData.monthName} earnings</div>
+          <div className='stat-value text-2xl text-success'>{formatCurrency(selectedData.earnings)}</div>
+        </div>
+        <div className='stat rounded-md border border-base-300 bg-base-100 shadow-sm'>
+          <div className='stat-title'>Orders</div>
+          <div className='stat-value text-2xl'>{selectedData.ordersCount}</div>
+        </div>
+        <div className='stat rounded-md border border-base-300 bg-base-100 shadow-sm'>
+          <div className='stat-title'>Average order value</div>
+          <div className='stat-value text-2xl'>{formatCurrency(selectedData.averageOrderValue)}</div>
+        </div>
+        <div className='stat rounded-md border border-base-300 bg-base-100 shadow-sm'>
+          <div className='stat-title'>Growth vs last month</div>
+          <div className={`stat-value text-2xl ${trendClass}`}>
+            {growthPercentage >= 0 ? '+' : '-'}{Math.abs(growthPercentage).toFixed(1)}%
+          </div>
+        </div>
+      </section>
+
+      <section className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4' aria-label='Overall earnings statistics'>
+        <div className='stat rounded-md border border-base-300 bg-base-100 shadow-sm'>
+          <div className='stat-title'>Total orders</div>
+          <div className='stat-value text-2xl'>{earnings.totalOrders}</div>
+        </div>
+        <div className='stat rounded-md border border-base-300 bg-base-100 shadow-sm'>
+          <div className='stat-title'>Current month</div>
+          <div className='stat-value text-2xl'>{formatCurrency(earnings.currentMonth)}</div>
+        </div>
+        <div className='stat rounded-md border border-base-300 bg-base-100 shadow-sm'>
+          <div className='stat-title'>Last month</div>
+          <div className='stat-value text-2xl'>{formatCurrency(earnings.lastMonth)}</div>
+        </div>
+        <div className='stat rounded-md border border-base-300 bg-base-100 shadow-sm'>
+          <div className='stat-title'>All-time AOV</div>
+          <div className='stat-value text-2xl'>{formatCurrency(earnings.averageOrderValue)}</div>
+        </div>
+      </section>
+
+      <section className='rounded-md border border-base-300 bg-base-100 shadow-sm'>
+        <div className='border-b border-base-300 p-4'>
+          <h2 className='text-lg font-semibold'>Monthly breakdown</h2>
+          <p className='mt-1 text-sm text-base-content/60'>Current, previous and historical monthly revenue.</p>
+        </div>
+        <div className='overflow-x-auto'>
+          <table className='table table-zebra'>
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th className='text-right'>Orders</th>
+                <th className='text-right'>Total earnings</th>
+                <th className='text-right'>Average order value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className={selectedMonth === 'current' ? 'bg-primary/10' : undefined}>
+                <td>
+                  <span className='font-medium'>Current month</span>
+                  <span className='badge badge-success badge-sm ml-2'>Current</span>
+                </td>
+                <td className='text-right'>{earnings.currentMonthOrdersCount}</td>
+                <td className='text-right'>{formatCurrency(earnings.currentMonth)}</td>
+                <td className='text-right'>
+                  {formatCurrency(earnings.currentMonthOrdersCount > 0
+                    ? earnings.currentMonth / earnings.currentMonthOrdersCount
+                    : 0)}
+                </td>
+              </tr>
+              <tr className={selectedMonth === 'last' ? 'bg-primary/10' : undefined}>
+                <td>
+                  <span className='font-medium'>Last month</span>
+                  <span className='badge badge-info badge-sm ml-2'>Previous</span>
+                </td>
+                <td className='text-right'>{earnings.lastMonthOrdersCount}</td>
+                <td className='text-right'>{formatCurrency(earnings.lastMonth)}</td>
+                <td className='text-right'>
+                  {formatCurrency(earnings.lastMonthOrdersCount > 0
+                    ? earnings.lastMonth / earnings.lastMonthOrdersCount
+                    : 0)}
+                </td>
+              </tr>
+              {monthlyData.map((month) => (
+                <tr
+                  key={`${month.year}-${month.month}`}
+                  className={selectedMonth === `${month.year}-${month.month}` ? 'bg-primary/10' : undefined}
                 >
-                  {generateMonthOptions().map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <Button
-                variant="outlined"
-                startIcon={<RefreshIcon />}
-                onClick={() => {
-                  fetchEarnings();
-                }}
-                fullWidth
-              >
-                Refresh
-              </Button>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
-
-      {/* Selected Month Stats */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12}>
-          <Typography variant="h5" gutterBottom>
-            {selectedData.monthName} Performance
-          </Typography>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Total Earnings
-              </Typography>
-              <Typography variant="h4" color="success.main">
-                {formatCurrency(selectedData.earnings)}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Orders Count
-              </Typography>
-              <Typography variant="h4" color="primary">
-                {selectedData.ordersCount}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Average Order Value
-              </Typography>
-              <Typography variant="h4" color="info.main">
-                {formatCurrency(selectedData.averageOrderValue)}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Growth vs Last Month
-              </Typography>
-              <Box display="flex" alignItems="center">
-                {growthPercentage >= 0 ? (
-                  <TrendingUpIcon color="success" sx={{ mr: 1 }} />
-                ) : (
-                  <TrendingDownIcon color="error" sx={{ mr: 1 }} />
-                )}
-                <Typography
-                  variant="h4"
-                  color={growthPercentage >= 0 ? "success.main" : "error.main"}
-                >
-                  {Math.abs(growthPercentage).toFixed(1)}%
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      {/* Overall Statistics */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12}>
-          <Typography variant="h5" gutterBottom>
-            Overall Statistics
-          </Typography>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Total Orders (All Time)
-              </Typography>
-              <Typography variant="h4">
-                {earnings.totalOrders}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Current Month Earnings
-              </Typography>
-              <Typography variant="h4" color="success.main">
-                {formatCurrency(earnings.currentMonth)}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Last Month Earnings
-              </Typography>
-              <Typography variant="h4" color="info.main">
-                {formatCurrency(earnings.lastMonth)}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Average Order Value (All Time)
-              </Typography>
-              <Typography variant="h4" color="primary">
-                {formatCurrency(earnings.averageOrderValue)}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      {/* Monthly Breakdown Table */}
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Monthly Breakdown
-          </Typography>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Month</TableCell>
-                  <TableCell align="right">Orders</TableCell>
-                  <TableCell align="right">Total Earnings</TableCell>
-                  <TableCell align="right">Average Order Value</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {/* Current Month */}
-                <TableRow selected={selectedMonth === "current"}>
-                  <TableCell>
-                    <Box display="flex" alignItems="center">
-                      <Typography variant="body2">
-                        Current Month
-                      </Typography>
-                      <Chip
-                        label="Current"
-                        size="small"
-                        color="success"
-                        sx={{ ml: 1 }}
-                      />
-                    </Box>
-                  </TableCell>
-                  <TableCell align="right">{earnings.currentMonthOrdersCount}</TableCell>
-                  <TableCell align="right">{formatCurrency(earnings.currentMonth)}</TableCell>
-                  <TableCell align="right">
-                    {formatCurrency(earnings.currentMonthOrdersCount > 0
-                      ? earnings.currentMonth / earnings.currentMonthOrdersCount
-                      : 0)}
-                  </TableCell>
-                </TableRow>
-
-                {/* Last Month */}
-                <TableRow selected={selectedMonth === "last"}>
-                  <TableCell>
-                    <Box display="flex" alignItems="center">
-                      <Typography variant="body2">
-                        Last Month
-                      </Typography>
-                      <Chip
-                        label="Previous"
-                        size="small"
-                        color="info"
-                        sx={{ ml: 1 }}
-                      />
-                    </Box>
-                  </TableCell>
-                  <TableCell align="right">{earnings.lastMonthOrdersCount}</TableCell>
-                  <TableCell align="right">{formatCurrency(earnings.lastMonth)}</TableCell>
-                  <TableCell align="right">
-                    {formatCurrency(earnings.lastMonthOrdersCount > 0
-                      ? earnings.lastMonth / earnings.lastMonthOrdersCount
-                      : 0)}
-                  </TableCell>
-                </TableRow>
-
-                {/* Historical Months */}
-                {monthlyData.map((month) => (
-                  <TableRow
-                    key={`${month.year}-${month.month}`}
-                    selected={selectedMonth === `${month.year}-${month.month}`}
-                  >
-                    <TableCell>
-                      <Typography variant="body2">
-                        {month.month} {month.year}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">{month.ordersCount}</TableCell>
-                    <TableCell align="right">{formatCurrency(month.earnings)}</TableCell>
-                    <TableCell align="right">{formatCurrency(month.averageOrderValue)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
-
-      {/* Export Options */}
-      <Card sx={{ mt: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Export Data
-          </Typography>
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="outlined"
-              startIcon={<DownloadIcon />}
-              onClick={() => {
-                // Create CSV export
-                const csvData = [
-                  ['Month', 'Orders', 'Total Earnings', 'Average Order Value'],
-                  ['Current Month', earnings.currentMonthOrdersCount, earnings.currentMonth, earnings.currentMonthOrdersCount > 0 ? earnings.currentMonth / earnings.currentMonthOrdersCount : 0],
-                  ['Last Month', earnings.lastMonthOrdersCount, earnings.lastMonth, earnings.lastMonthOrdersCount > 0 ? earnings.lastMonth / earnings.lastMonthOrdersCount : 0],
-                  ...monthlyData.map(month => [month.month + ' ' + month.year, month.ordersCount, month.earnings, month.averageOrderValue])
-                ];
-
-                const csvContent = csvData.map(row => row.join(',')).join('\n');
-                const blob = new Blob([csvContent], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `olgish-cakes-earnings-${new Date().toISOString().split('T')[0]}.csv`;
-                a.click();
-                window.URL.revokeObjectURL(url);
-              }}
-            >
-              Export to CSV
-            </Button>
-          </Stack>
-        </CardContent>
-      </Card>
-    </Box>
-  );
+                  <td className='font-medium'>{month.month} {month.year}</td>
+                  <td className='text-right'>{month.ordersCount}</td>
+                  <td className='text-right'>{formatCurrency(month.earnings)}</td>
+                  <td className='text-right'>{formatCurrency(month.averageOrderValue)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  )
 }

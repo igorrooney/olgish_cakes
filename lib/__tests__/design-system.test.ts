@@ -74,7 +74,7 @@ describe('design-system', () => {
 
     describe('background', () => {
       it('should have light honey default', () => {
-        expect(colors.background.default).toBe('#FFF8E7')
+        expect(colors.background.default).toBe('#FFFBEB')
       })
 
       it('should have white paper', () => {
@@ -162,18 +162,22 @@ describe('design-system', () => {
         expect(colors.border.dark).toBe('#757575')
       })
     })
+
+    describe('navigation', () => {
+      it('should have menu color', () => {
+        expect(colors.navigation.main).toBe('#6467CE')
+      })
+    })
   })
 
   describe('typography', () => {
     describe('fontFamily', () => {
       it('should have primary font family', () => {
-        expect(typography.fontFamily.primary).toBeDefined()
-        expect(typeof typography.fontFamily.primary).toBe('string')
+        expect(typography.fontFamily.primary).toBe('var(--font-inter), system-ui, sans-serif')
       })
 
       it('should have display font family', () => {
-        expect(typography.fontFamily.display).toBeDefined()
-        expect(typeof typography.fontFamily.display).toBe('string')
+        expect(typography.fontFamily.display).toBe('var(--font-oldenburg), Georgia, serif')
       })
 
       it('should have monospace font family', () => {

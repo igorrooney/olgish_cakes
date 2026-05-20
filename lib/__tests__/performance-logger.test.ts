@@ -12,6 +12,13 @@ import {
   checkPerformanceThresholds
 } from '../performance-logger'
 
+type PerfLoggerInternal = typeof perfLogger & {
+  isProduction: boolean
+  getSummary: () => ReturnType<typeof perfLogger.getSummary>
+}
+
+const perfLoggerInternal = perfLogger as unknown as PerfLoggerInternal
+
 describe('performance-logger', () => {
   let performanceTime = 1  // Start with 1, not 0, to avoid falsy check issues
   let mockPerformanceNow: jest.SpyInstance
@@ -52,7 +59,7 @@ describe('performance-logger', () => {
     })
 
     it('should warn in development for missing timer', () => {
-      (perfLogger as any).isProduction = false
+      perfLoggerInternal.isProduction = false
       
       endTimer('missing-timer')
 
@@ -62,7 +69,7 @@ describe('performance-logger', () => {
     })
 
     it('should not warn in production for missing timer', () => {
-      (perfLogger as any).isProduction = true
+      perfLoggerInternal.isProduction = true
       
       endTimer('missing-timer')
 
@@ -91,7 +98,7 @@ describe('performance-logger', () => {
     })
 
     it('should log immediately in development by default', () => {
-      (perfLogger as any).isProduction = false
+      perfLoggerInternal.isProduction = false
       
       startTimer('test-metric')
       performanceTime += 100
@@ -101,7 +108,7 @@ describe('performance-logger', () => {
     })
 
     it('should not log immediately in production', () => {
-      (perfLogger as any).isProduction = true
+      perfLoggerInternal.isProduction = true
       
       startTimer('test-metric')
       performanceTime += 100
@@ -111,7 +118,7 @@ describe('performance-logger', () => {
     })
 
     it('should respect logImmediately parameter', () => {
-      (perfLogger as any).isProduction = false
+      perfLoggerInternal.isProduction = false
       
       startTimer('test-metric')
       performanceTime += 100
@@ -245,7 +252,7 @@ describe('performance-logger', () => {
       performanceTime += 200
       endTimer('test2')
 
-      const summary = (perfLogger as any).getSummary()
+      const summary = perfLoggerInternal.getSummary()
 
       expect(summary.total).toBeGreaterThan(0)
       expect(summary.average).toBeGreaterThan(0)
@@ -254,7 +261,7 @@ describe('performance-logger', () => {
     })
 
     it('should return zeros for no metrics', () => {
-      const summary = (perfLogger as any).getSummary()
+      const summary = perfLoggerInternal.getSummary()
 
       expect(summary.total).toBe(0)
       expect(summary.average).toBe(0)
@@ -272,7 +279,7 @@ describe('performance-logger', () => {
       performanceTime += 200
       endTimer('test2')
 
-      const summary = (perfLogger as any).getSummary()
+      const summary = perfLoggerInternal.getSummary()
 
       expect(summary.average).toBeCloseTo(summary.total / 2, 0)
     })
@@ -280,7 +287,7 @@ describe('performance-logger', () => {
 
   describe('logPerformanceSummary', () => {
     it('should log summary in development', () => {
-      (perfLogger as any).isProduction = false
+      perfLoggerInternal.isProduction = false
       
       startTimer('test')
       performanceTime += 100
@@ -292,7 +299,7 @@ describe('performance-logger', () => {
     })
 
     it('should not log in production', () => {
-      (perfLogger as any).isProduction = true
+      perfLoggerInternal.isProduction = true
       
       startTimer('test')
       performanceTime += 100
@@ -304,7 +311,7 @@ describe('performance-logger', () => {
     })
 
     it('should display metrics count', () => {
-      (perfLogger as any).isProduction = false
+      perfLoggerInternal.isProduction = false
       
       startTimer('test1')
       performanceTime += 100
@@ -345,7 +352,7 @@ describe('performance-logger', () => {
 
   describe('checkPerformanceThresholds', () => {
     it('should return true when all metrics within threshold', () => {
-      (perfLogger as any).isProduction = false
+      perfLoggerInternal.isProduction = false
       
       startTimer('test-metric')
       performanceTime += 50
@@ -357,7 +364,7 @@ describe('performance-logger', () => {
     })
 
     it('should return false when metric exceeds threshold', () => {
-      (perfLogger as any).isProduction = false
+      perfLoggerInternal.isProduction = false
       
       startTimer('test-metric')
       performanceTime += 150
@@ -369,7 +376,7 @@ describe('performance-logger', () => {
     })
 
     it('should warn when threshold exceeded', () => {
-      (perfLogger as any).isProduction = false
+      perfLoggerInternal.isProduction = false
       
       startTimer('test-metric')
       performanceTime += 150
@@ -381,7 +388,7 @@ describe('performance-logger', () => {
     })
 
     it('should return true in production without checking', () => {
-      (perfLogger as any).isProduction = true
+      perfLoggerInternal.isProduction = true
       
       startTimer('test-metric')
       performanceTime += 150
@@ -393,7 +400,7 @@ describe('performance-logger', () => {
     })
 
     it('should ignore metrics without thresholds', () => {
-      (perfLogger as any).isProduction = false
+      perfLoggerInternal.isProduction = false
       
       startTimer('test1')
       performanceTime += 150
@@ -409,7 +416,7 @@ describe('performance-logger', () => {
     })
 
     it('should check all metrics with thresholds', () => {
-      (perfLogger as any).isProduction = false
+      perfLoggerInternal.isProduction = false
       
       startTimer('test1')
       performanceTime += 150
@@ -560,4 +567,3 @@ describe('performance-logger', () => {
     })
   })
 })
-

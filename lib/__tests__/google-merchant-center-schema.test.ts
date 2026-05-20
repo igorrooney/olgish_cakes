@@ -14,7 +14,7 @@ jest.mock('@/app/utils/seo', () => ({
 
 // Mock sanity/lib/image
 jest.mock('@/sanity/lib/image', () => ({
-  urlFor: jest.fn((image: any) => ({
+  urlFor: jest.fn((image: UnknownRecord) => ({
     width: () => ({
       height: () => ({
         url: () => 'https://cdn.sanity.io/images/test.jpg'
@@ -36,7 +36,8 @@ describe('google-merchant-center-schema', () => {
       availability: 'InStock',
       brand: 'Olgish Cakes',
       category: 'Food & Drink > Bakery > Cakes',
-      condition: 'NewCondition'
+      condition: 'NewCondition',
+      reviewStats: { count: 13, averageRating: 5 }
     }
 
     it('should generate valid product schema', () => {
@@ -167,6 +168,10 @@ describe('google-merchant-center-schema', () => {
 
       expect(schema.offers.hasMerchantReturnPolicy).toBeDefined()
       expect(schema.offers.hasMerchantReturnPolicy['@type']).toBe('MerchantReturnPolicy')
+      expect(schema.offers.hasMerchantReturnPolicy.returnPolicyCategory).toBe('https://schema.org/MerchantReturnNotPermitted')
+      expect(schema.offers.hasMerchantReturnPolicy).not.toHaveProperty('merchantReturnDays')
+      expect(schema.offers.hasMerchantReturnPolicy).not.toHaveProperty('returnFees')
+      expect(schema.offers.hasMerchantReturnPolicy).not.toHaveProperty('returnMethod')
     })
 
     it('should include payment methods', () => {
@@ -198,7 +203,7 @@ describe('google-merchant-center-schema', () => {
       const schema = generateMerchantCenterProductSchema(dataWithLabels)
 
       expect(schema.additionalProperty).toBeInstanceOf(Array)
-      const customLabels = schema.additionalProperty.filter((prop: any) =>
+      const customLabels = schema.additionalProperty.filter((prop: UnknownRecord) =>
         prop.name.startsWith('Custom Label')
       )
       expect(customLabels.length).toBeGreaterThan(4) // 4 defaults + 2 custom
@@ -207,7 +212,7 @@ describe('google-merchant-center-schema', () => {
     it('should have default custom labels', () => {
       const schema = generateMerchantCenterProductSchema(productData)
 
-      const labels = schema.additionalProperty.map((prop: any) => prop.value)
+      const labels = schema.additionalProperty.map((prop: UnknownRecord) => prop.value)
       expect(labels).toContain('Ukrainian')
       expect(labels).toContain('Traditional')
       expect(labels).toContain('Handmade')
@@ -368,7 +373,7 @@ describe('google-merchant-center-schema', () => {
     it('should include custom labels', () => {
       const schema = generateCakeMerchantCenterSchema(mockCake)
 
-      const labels = schema.additionalProperty.map((prop: any) => prop.value)
+      const labels = schema.additionalProperty.map((prop: UnknownRecord) => prop.value)
       expect(labels).toContain('Ukrainian')
       expect(labels).toContain('Traditional')
     })
@@ -483,7 +488,7 @@ describe('google-merchant-center-schema', () => {
     it('should include hamper-specific custom labels', () => {
       const schema = generateHamperMerchantCenterSchema(mockHamper)
 
-      const labels = schema.additionalProperty.map((prop: any) => prop.value)
+      const labels = schema.additionalProperty.map((prop: UnknownRecord) => prop.value)
       expect(labels).toContain('Gift Hamper')
     })
 
@@ -759,4 +764,3 @@ describe('google-merchant-center-schema', () => {
     })
   })
 })
-

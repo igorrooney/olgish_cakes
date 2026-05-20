@@ -67,7 +67,9 @@ describe('GSC Compliance Fixes', () => {
           '@type': 'OfferShippingDetails'
         },
         hasMerchantReturnPolicy: {
-          '@type': 'MerchantReturnPolicy'
+          '@type': 'MerchantReturnPolicy',
+          applicableCountry: 'GB',
+          returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
         }
       }
       
@@ -77,6 +79,10 @@ describe('GSC Compliance Fixes', () => {
       expect(offer.image).toContain('https://')
       expect(offer.shippingDetails).toBeDefined()
       expect(offer.hasMerchantReturnPolicy).toBeDefined()
+      expect(offer.hasMerchantReturnPolicy.returnPolicyCategory).toBe('https://schema.org/MerchantReturnNotPermitted')
+      expect(offer.hasMerchantReturnPolicy).not.toHaveProperty('merchantReturnDays')
+      expect(offer.hasMerchantReturnPolicy).not.toHaveProperty('returnFees')
+      expect(offer.hasMerchantReturnPolicy).not.toHaveProperty('returnMethod')
     })
   })
 
@@ -208,7 +214,9 @@ describe('GSC Compliance Fixes', () => {
             '@type': 'OfferShippingDetails'
           },
           hasMerchantReturnPolicy: {
-            '@type': 'MerchantReturnPolicy'
+            '@type': 'MerchantReturnPolicy',
+            applicableCountry: 'GB',
+            returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
           }
         },
         aggregateRating: {
@@ -231,6 +239,10 @@ describe('GSC Compliance Fixes', () => {
       expect(validProductStructure.offers.image).toBeDefined()
       expect(validProductStructure.offers.shippingDetails).toBeDefined()
       expect(validProductStructure.offers.hasMerchantReturnPolicy).toBeDefined()
+      expect(validProductStructure.offers.hasMerchantReturnPolicy.returnPolicyCategory).toBe('https://schema.org/MerchantReturnNotPermitted')
+      expect(validProductStructure.offers.hasMerchantReturnPolicy).not.toHaveProperty('merchantReturnDays')
+      expect(validProductStructure.offers.hasMerchantReturnPolicy).not.toHaveProperty('returnFees')
+      expect(validProductStructure.offers.hasMerchantReturnPolicy).not.toHaveProperty('returnMethod')
       expect(validProductStructure.aggregateRating).toBeDefined()
       expect(validProductStructure.review).toBeDefined()
     })
@@ -284,11 +296,8 @@ describe('GSC Compliance Fixes', () => {
   describe('Merchant Listings - Price Format Fix', () => {
     it('should have numeric prices in offers (not strings)', () => {
       // This test verifies the fix for "Invalid floating point number in property 'price' (in 'offers')"
-      // The fix was applied to:
-      // - app/traditional-ukrainian-cakes/page.tsx
-      // - app/page.tsx
-      // - app/order/OrderPageStructuredData.tsx
-      // - app/components/MarketSchedule.tsx
+      // The fix was applied to active structured data outputs across the site,
+      // including homepage, ordering, and market schedule schemas.
 
       const validOffer = {
         '@type': 'Offer',
@@ -336,8 +345,8 @@ describe('GSC Compliance Fixes', () => {
       })
     })
 
-    it('should have correct price format in traditional-ukrainian-cakes page', () => {
-      // Mock the structured data from traditional-ukrainian-cakes page
+    it('should have correct price format in legacy Ukrainian cakes structured data', () => {
+      // Mock representative Ukrainian cakes structured data
       const structuredData = {
         '@type': 'ItemList',
         itemListElement: [

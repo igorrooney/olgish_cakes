@@ -8,6 +8,7 @@ export interface MarketSchedule {
   endTime: string;
   description?: string;
   specialOffers?: string[];
+  website?: string;
   contactInfo?: {
     phone?: string;
     email?: string;

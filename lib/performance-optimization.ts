@@ -1,4 +1,5 @@
 // Performance optimization utilities for Core Web Vitals
+import type { MetricType } from 'web-vitals'
 
 export interface ImageOptimizationOptions {
   priority?: boolean;
@@ -76,38 +77,6 @@ export const imageOptimization = {
   }
 };
 
-export const fontOptimization = {
-  // Preload critical fonts
-  preloadFonts: (fontUrls: string[]) => {
-    if (typeof window === 'undefined') return;
-    
-    fontUrls.forEach((url) => {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'font';
-      link.type = 'font/woff2';
-      link.crossOrigin = 'anonymous';
-      link.href = url;
-      document.head.appendChild(link);
-    });
-  },
-
-  // Optimize font display
-  optimizeFontDisplay: () => {
-    if (typeof window === 'undefined') return;
-    
-    // Add font-display: swap to all font faces
-    const style = document.createElement('style');
-    style.textContent = `
-      @font-face {
-        font-family: 'Alice';
-        font-display: swap;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-};
-
 export const resourceOptimization = {
   // Preload critical resources
   preloadCriticalResources: () => {
@@ -116,7 +85,7 @@ export const resourceOptimization = {
     const criticalResources: Array<{ href: string; as: string; type?: string; crossOrigin?: string }> = [
       { href: '/images/olgish-cakes-logo-bakery-brand.png', as: 'image' },
       { href: '/android-chrome-192x192.png', as: 'image' }
-      // Font loading is handled automatically by Next.js next/font/google
+      // Font loading is handled automatically by Next.js next/font/local
     ];
     
     criticalResources.forEach((resource) => {
@@ -144,7 +113,7 @@ export const resourceOptimization = {
 
 export const performanceMonitoring = {
   // Monitor Core Web Vitals
-  monitorWebVitals: (callback: (metric: any) => void) => {
+  monitorWebVitals: (callback: (metric: MetricType) => void) => {
     if (typeof window === 'undefined') return;
     
     import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }) => {
@@ -204,13 +173,11 @@ export const initializePerformanceOptimizations = () => {
     document.addEventListener('DOMContentLoaded', () => {
       imageOptimization.setupLazyLoading();
       resourceOptimization.preloadCriticalResources();
-      fontOptimization.optimizeFontDisplay();
       resourceOptimization.deferNonCriticalResources();
     });
   } else {
     imageOptimization.setupLazyLoading();
     resourceOptimization.preloadCriticalResources();
-    fontOptimization.optimizeFontDisplay();
     resourceOptimization.deferNonCriticalResources();
   }
 };

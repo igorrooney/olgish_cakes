@@ -310,20 +310,20 @@ describe('content-optimization', () => {
       expect(cakesHub?.purpose).toBe('Main category hub')
     })
 
-    it('should have /about as hub page', () => {
+    it('should have /blog as authority hub page', () => {
       const result = generateInternalLinkingStrategy()
-      const aboutHub = result.hubPages.find(p => p.page === '/about')
+      const blogHub = result.hubPages.find(p => p.page === '/blog')
 
-      expect(aboutHub).toBeDefined()
-      expect(aboutHub?.purpose).toBe('Authority building')
+      expect(blogHub).toBeDefined()
+      expect(blogHub?.purpose).toBe('Authority building')
     })
 
-    it('should have /testimonials as hub page', () => {
+    it('should have the homepage as the social proof hub page', () => {
       const result = generateInternalLinkingStrategy()
-      const testimonialsHub = result.hubPages.find(p => p.page === '/testimonials')
+      const homepageHub = result.hubPages.find(p => p.page === '/')
 
-      expect(testimonialsHub).toBeDefined()
-      expect(testimonialsHub?.purpose).toBe('Social proof hub')
+      expect(homepageHub).toBeDefined()
+      expect(homepageHub?.purpose).toBe('Social proof hub')
     })
 
     it('should have hub pages with linkTo arrays', () => {

@@ -1,0 +1,32 @@
+[Olgish Cakes]
+Order status update
+
+Dear Igor Ieromenko,
+
+Great news! Your order has been confirmed and we've started working on it. We'll keep you updated on progress.
+
+Order Summary
+Order Number    26051220022842
+Product Personalised Congratulations Cake Card
+Date needed     26/05/2026
+Total Amount    £8.95
+
+Order items
+
+  1.  1. Personalised Congratulations Cake Card (Qty: 1) - £8.95
+
+     *   Type: gift-hamper
+     *   Product ID: personalised-congratulations-cake-card
+     *   Design type: standard
+     *   Customer message / requirements: test message
+
+
+Order Preferences
+Design type     standard
+Customer message        test message
+
+
+Questions about your order? We're here to help.
+
+hello@olgishcakes.co.uk<mailto:hello@olgishcakes.co.uk>
++44 7867 218194<tel:+447867218194>

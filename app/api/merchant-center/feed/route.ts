@@ -4,7 +4,7 @@ import { urlFor } from "@/sanity/lib/image";
 import { Cake, CakeImage } from "@/types/cake";
 import { GiftHamper, GiftHamperImage } from "@/types/giftHamper";
 import { unstable_cache } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 interface RichTextChild {
   text: string;
@@ -47,20 +47,19 @@ const generateProductFeed = unstable_cache(
   },
   ['merchant-center-feed'],
   {
-    tags: ['cakes', 'gift-hampers', 'merchant-center-feed'],
-    revalidate: 3600, // Cache for 1 hour
+    tags: ['cakes', 'cakes-by-post', 'merchant-center-feed']
   }
 );
 
 // Google Merchant Center Product Feed XML Generator
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const xmlContent = await generateProductFeed();
 
     return new NextResponse(xmlContent, {
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Cache-Control': 'public, max-age=0, s-maxage=0',
       },
     });
 
@@ -101,15 +100,7 @@ function generateCakeItem(cake: Cake, baseUrl: string): string {
     : `${baseUrl}/images/placeholder-cake.jpg`;
 
   const price = cake.pricing?.standard || cake.pricing?.individual || 25;
-  const availability = cake.structuredData?.availability === 'InStock' 
-    ? 'in stock' 
-    : cake.structuredData?.availability === 'OutOfStock' 
-      ? 'out of stock' 
-      : cake.structuredData?.availability === 'PreOrder' 
-        ? 'preorder' 
-        : cake.structuredData?.availability === 'Discontinued' 
-          ? 'discontinued' 
-          : 'in stock';
+  const availability = 'in stock'
 
   // Handle description properly (could be array or string)
   let description = Array.isArray(cake.shortDescription)
@@ -182,7 +173,7 @@ function generateCakeItem(cake: Cake, baseUrl: string): string {
 }
 
 function generateHamperItem(hamper: GiftHamper, baseUrl: string): string {
-  const productUrl = `${baseUrl}/gift-hampers/${hamper.slug?.current || hamper._id}`;
+  const productUrl = `${baseUrl}/cakes-by-post/${hamper.slug?.current || hamper._id}`;
   const mainImage: GiftHamperImage | undefined = hamper.images?.find((img: GiftHamperImage) => img.isMain && img.asset?._ref) ||
                    hamper.images?.find((img: GiftHamperImage) => img.asset?._ref) ||
                    hamper.images?.[0];

@@ -1,0 +1,352 @@
+/**
+ * @jest-environment jsdom
+ */
+import React from 'react'
+import { render, screen } from '@testing-library/react'
+import { CakesProductCard } from '../CakesProductCard'
+import { TabletCake } from '../types'
+
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({
+    alt,
+    fill,
+    loader: _loader,
+    priority,
+    unoptimized: _unoptimized,
+    ...props
+  }: React.ComponentProps<'img'> & { fill?: boolean, loader?: unknown, priority?: boolean, unoptimized?: boolean }) => (
+    <img alt={alt || ''} {...props} />
+  )
+}))
+
+jest.mock('next/link', () => ({
+  __esModule: true,
+  default: ({
+    children,
+    href,
+    prefetch: _prefetch,
+    ...props
+  }: React.PropsWithChildren<{ href: string, prefetch?: boolean } & React.AnchorHTMLAttributes<HTMLAnchorElement>>) => (
+    <a href={href} {...props}>{children}</a>
+  )
+}))
+
+const baseCake: TabletCake = {
+  id: 'cake-1',
+  slug: 'christmas-honey-cake',
+  href: '/cakes/christmas-honey-cake',
+  navigationTarget: 'product',
+  name: 'Christmas Honey Cake',
+  description: 'Layered honey sponge with sour cream and festive decoration.',
+  price: 27,
+  imageUrl: '/images/placeholder-cake.jpg',
+  imageAlt: 'Christmas honey cake decorated with festive details',
+  isByPost: false,
+  isCustom: true,
+  isPopular: true,
+  collectionIds: ['collection-1'],
+  productType: 'cake'
+}
+
+interface RenderCardOptions {
+  isLcpCandidate?: boolean
+}
+
+function renderCard(cakeOverrides: Partial<TabletCake> = {}, options: RenderCardOptions = {}) {
+  const cake = { ...baseCake, ...cakeOverrides }
+  const { isLcpCandidate = false } = options
+
+  return render(
+    <CakesProductCard
+      cake={cake}
+      isLcpCandidate={isLcpCandidate}
+    />
+  )
+}
+
+function renderMobileCard(
+  cakeOverrides: Partial<TabletCake> = {},
+  mobileViewMode: 'grid' | 'single' = 'grid',
+  options: RenderCardOptions = {}
+) {
+  const cake = { ...baseCake, ...cakeOverrides }
+  const { isLcpCandidate = false } = options
+
+  return render(
+    <CakesProductCard
+      cake={cake}
+      variant='mobile'
+      mobileViewMode={mobileViewMode}
+      isLcpCandidate={isLcpCandidate}
+    />
+  )
+}
+
+describe('CakesProductCard', () => {
+  it('renders cake name, description and image alt text', () => {
+    renderCard()
+
+    expect(screen.getByText('Christmas Honey Cake')).toBeInTheDocument()
+    expect(screen.getByText('Layered honey sponge with sour cream and festive decoration.')).toBeInTheDocument()
+    expect(screen.getByAltText('Christmas honey cake decorated with festive details')).toBeInTheDocument()
+  })
+
+  it('renders regular cake price with the from prefix', () => {
+    renderCard()
+
+    expect(screen.getByText(/from.*27/i)).toBeInTheDocument()
+  })
+
+  it('formats custom cake decimal price with two decimal places', () => {
+    renderCard({ price: 27.5 })
+    expect(screen.getByText(/from.*27\.50/i)).toBeInTheDocument()
+  })
+  it('keeps integer custom cake price without trailing decimals', () => {
+    renderCard({ price: 27 })
+    expect(screen.getByText(/from.*27/i)).toBeInTheDocument()
+    expect(screen.queryByText(/from.*27\.00/i)).not.toBeInTheDocument()
+  })
+
+  it('renders by-post cake price as fixed amount without from prefix', () => {
+    renderCard({ productType: 'giftHamper', isByPost: true, isCustom: false })
+    const price = screen.getByText(/27/)
+
+    expect(price).toBeInTheDocument()
+    expect(price).not.toHaveTextContent(/from/i)
+  })
+
+  it('keeps lazy loading for non-LCP images by default', () => {
+    renderCard()
+
+    expect(screen.getByAltText('Christmas honey cake decorated with festive details')).toHaveAttribute('loading', 'lazy')
+    expect(screen.getByAltText('Christmas honey cake decorated with festive details')).toHaveAttribute('fetchpriority', 'low')
+  })
+
+  it('uses eager loading for LCP candidate image', () => {
+    renderCard({}, { isLcpCandidate: true })
+
+    expect(screen.getByAltText('Christmas honey cake decorated with festive details')).toHaveAttribute('loading', 'eager')
+    expect(screen.getByAltText('Christmas honey cake decorated with festive details')).toHaveAttribute('fetchpriority', 'high')
+  })
+
+  it('renders the card as a single clickable link', () => {
+    renderCard()
+
+    expect(screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })).toBeInTheDocument()
+  })
+
+  it('links CTA to the cake details page', () => {
+    renderCard()
+
+    expect(screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })).toHaveAttribute(
+      'href',
+      '/cakes/christmas-honey-cake'
+    )
+  })
+
+  it('prefers the explicit linkHref when one is provided', () => {
+    render(
+      <CakesProductCard
+        cake={baseCake}
+        linkHref='/cakes/christmas-honey-cake?from=%2Fcakes-by-post%3Fpage%3D2'
+      />
+    )
+
+    expect(screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })).toHaveAttribute(
+      'href',
+      '/cakes/christmas-honey-cake?from=%2Fcakes-by-post%3Fpage%3D2'
+    )
+  })
+
+  it('sets CTA accessible name using the cake name', () => {
+    renderCard({ name: 'Kyiv Cake' })
+
+    expect(screen.getByRole('link', { name: /View details for Kyiv Cake/i })).toBeInTheDocument()
+  })
+
+  it('announces landing CTA cards as explore links and replaces pricing copy', () => {
+    renderCard({
+      navigationTarget: 'landing',
+      name: 'Birthday cakes in Leeds'
+    })
+
+    expect(screen.getByRole('link', { name: /Explore Birthday cakes in Leeds/i })).toBeInTheDocument()
+    expect(screen.getByText('Explore')).toBeInTheDocument()
+    expect(screen.queryByText(/from/i)).not.toBeInTheDocument()
+  })
+
+  it('keeps card layout classes for equal-height rows and bottom-aligned price', () => {
+    const { container } = renderCard()
+    const article = container.querySelector('article')
+    const cardLink = screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })
+    const price = screen.getByText(/from.*27/i)
+    const image = screen.getByAltText('Christmas honey cake decorated with festive details')
+    const imageWrapper = image.parentElement
+
+    expect(article).not.toBeNull()
+    expect(article).toHaveClass('flex', 'h-full', 'flex-col')
+    expect(article).toHaveClass('border', 'border-primary-50', 'bg-primary-50')
+    expect(cardLink).toHaveClass('block', 'h-full')
+    expect(price).toHaveClass('mt-auto')
+    expect(imageWrapper).not.toBeNull()
+    expect(imageWrapper).toHaveClass('aspect-square', 'rounded-[8px]')
+    expect(imageWrapper).not.toHaveClass('aspect-[4/3]')
+  })
+
+  it('renders desktop image without per-card hydration overlay state', () => {
+    renderCard()
+
+    const image = screen.getByAltText('Christmas honey cake decorated with festive details')
+
+    expect(screen.queryByTestId('cake-card-image-loading-overlay')).not.toBeInTheDocument()
+    expect(image).toHaveClass('object-cover')
+    expect(image).not.toHaveClass('opacity-0')
+  })
+
+  it('renders mobile variant without description and with a chip price on image', () => {
+    const { container } = renderMobileCard()
+    const article = container.querySelector('article')
+    const mobilePriceChip = screen.getByTestId('mobile-price-chip')
+    const mobileHeading = screen.getByRole('heading', { level: 2, name: 'Christmas Honey Cake' })
+
+    expect(screen.queryByText('Layered honey sponge with sour cream and festive decoration.')).not.toBeInTheDocument()
+    expect(mobilePriceChip).toHaveTextContent(/from.*27/i)
+    expect(mobilePriceChip).toHaveClass(
+      'h-6',
+      'inline-flex',
+      'items-center',
+      'justify-center',
+      'rounded-[8px]',
+      'px-3',
+      'py-0',
+      'bg-primary-50',
+      '[font-family:var(--font-more-sugar),cursive,fantasy]',
+      '[font-weight:var(--t-font-weight-semibold)]',
+      'not-italic',
+      'text-[16px]',
+      '[leading-trim:none]',
+      '[line-height:var(--d-lineHeight-14)]',
+      'tracking-[0]',
+      'text-center',
+      'align-middle',
+      'text-primary-500',
+      'shadow-sm'
+    )
+    expect(mobilePriceChip).not.toHaveClass('rounded-[18px]', 'px-4', 'py-1', 'text-[20px]', 'leading-7')
+    expect(mobileHeading).toHaveClass(
+      '[font-family:var(--t-font-family-theme-primary)]',
+      '[font-weight:var(--t-font-weight-semibold)]',
+      '[font-style:normal]',
+      'text-[12px]',
+      '[leading-trim:none]',
+      '[line-height:var(--t-font-lineHeight-leading-7)]',
+      '[letter-spacing:0]',
+      'align-middle',
+      'text-(--color-filter-sort-mobile-text)'
+    )
+    expect(mobileHeading).not.toHaveClass('text-[19px]', 'leading-[28px]', 'text-base-content')
+    expect(article).not.toBeNull()
+    expect(article).not.toHaveClass('bg-primary-50')
+    expect(article).not.toHaveClass('border')
+  })
+
+  it('uses responsive square image with token radius in mobile grid mode', () => {
+    renderMobileCard()
+
+    const image = screen.getByAltText('Christmas honey cake decorated with festive details')
+    const imageWrapper = image.parentElement
+    const mobileLink = screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })
+
+    expect(image).toHaveAttribute('sizes', '(min-width: 952px) 452px, calc((100vw - 3rem) / 2)')
+    expect(imageWrapper).not.toBeNull()
+    expect(imageWrapper).toHaveClass('aspect-square', 'rounded-btn')
+    expect(imageWrapper).not.toHaveClass('aspect-[4/3]')
+    expect(imageWrapper).not.toHaveClass('max-w-[163px]')
+    expect(mobileLink).toHaveClass('block', 'h-full', 'w-full')
+    expect(mobileLink).not.toHaveClass('max-w-[163px]')
+    expect(mobileLink).not.toHaveClass('mx-auto')
+  })
+
+  it('uses square image in mobile single-column mode', () => {
+    renderMobileCard({}, 'single')
+
+    const image = screen.getByAltText('Christmas honey cake decorated with festive details')
+    const imageWrapper = image.parentElement
+    const mobileLink = screen.getByRole('link', { name: /View details for Christmas Honey Cake/i })
+    const mobilePriceChip = screen.getByTestId('mobile-price-chip')
+    const mobileHeading = screen.getByRole('heading', { level: 2, name: 'Christmas Honey Cake' })
+
+    expect(image).toHaveAttribute(
+      'sizes',
+      '(min-width: 1512px) 379px, (min-width: 1280px) 301px, (min-width: 1024px) 336px, calc(100vw - 2rem)'
+    )
+    expect(imageWrapper).not.toBeNull()
+    expect(imageWrapper).toHaveClass('aspect-square', 'rounded-[10px]')
+    expect(imageWrapper).not.toHaveClass('aspect-[4/3]')
+    expect(imageWrapper).not.toHaveClass('max-w-[163px]')
+    expect(imageWrapper).not.toHaveClass('rounded-btn')
+    expect(mobileLink).toHaveClass('block', 'h-full')
+    expect(mobileLink).not.toHaveClass('w-full')
+    expect(mobileLink).not.toHaveClass('max-w-[163px]')
+    expect(mobileLink).not.toHaveClass('mx-auto')
+    expect(mobilePriceChip).toHaveClass(
+      'h-6',
+      'inline-flex',
+      'items-center',
+      'justify-center',
+      'rounded-[8px]',
+      'px-3',
+      'py-0',
+      'bg-primary-50',
+      '[font-family:var(--font-more-sugar),cursive,fantasy]',
+      '[font-weight:var(--t-font-weight-semibold)]',
+      'not-italic',
+      'text-[16px]',
+      '[leading-trim:none]',
+      '[line-height:var(--d-lineHeight-14)]',
+      'tracking-[0]',
+      'text-center',
+      'align-middle',
+      'text-primary-500',
+      'shadow-sm'
+    )
+    expect(mobilePriceChip).not.toHaveClass('rounded-[18px]', 'px-4', 'py-1', 'text-[20px]', 'leading-7')
+    expect(mobileHeading).toHaveClass(
+      '[font-family:var(--t-font-family-theme-primary)]',
+      '[font-weight:var(--t-font-weight-semibold)]',
+      '[font-style:normal]',
+      'text-[12px]',
+      '[leading-trim:none]',
+      '[line-height:var(--t-font-lineHeight-leading-7)]',
+      '[letter-spacing:0]',
+      'align-middle',
+      'text-(--color-filter-sort-mobile-text)'
+    )
+    expect(mobileHeading).not.toHaveClass('text-[19px]', 'leading-[28px]', 'text-base-content')
+  })
+
+  it('renders mobile image without per-card hydration overlay state', () => {
+    renderMobileCard()
+
+    const image = screen.getByAltText('Christmas honey cake decorated with festive details')
+
+    expect(screen.queryByTestId('cake-card-image-loading-overlay')).not.toBeInTheDocument()
+    expect(image).toHaveClass('object-cover')
+    expect(image).not.toHaveClass('opacity-0')
+  })
+
+  it('formats mobile by-post cake price chip with two decimal places and no from prefix', () => {
+    renderMobileCard({ productType: 'giftHamper', isByPost: true, isCustom: false, price: 27.5 })
+    expect(screen.getByTestId('mobile-price-chip')).toHaveTextContent(/27\.50/)
+    expect(screen.getByTestId('mobile-price-chip')).not.toHaveTextContent(/from/i)
+  })
+
+  it('renders mobile by-post cake price chip without from prefix', () => {
+    renderMobileCard({ productType: 'giftHamper', isByPost: true, isCustom: false })
+
+    expect(screen.getByTestId('mobile-price-chip')).toHaveTextContent(/27/)
+    expect(screen.getByTestId('mobile-price-chip')).not.toHaveTextContent(/from/i)
+  })
+})
+

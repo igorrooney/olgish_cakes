@@ -17,10 +17,12 @@ declare global {
         event_category?: string;
         event_label?: string;
         value?: number;
-        [key: string]: any;
+        [key: string]: unknown;
       }
     ) => void;
     dataLayer: unknown[];
+    __olgishAnalyticsConsent?: boolean;
+    __olgishConsentAwareGtagInstalled?: boolean;
   }
 }
 

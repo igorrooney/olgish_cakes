@@ -1,3 +1,5 @@
+import type { DeliveryPolicy } from './deliveryPolicy'
+
 export interface GiftHamperImage {
   _type?: string;
   asset?: {
@@ -23,7 +25,6 @@ export interface GiftHamperSEO {
   metaTitle?: string;
   metaDescription?: string;
   keywords?: string[];
-  canonicalUrl?: string;
   faq?: GiftHamperFAQItem[];
 }
 
@@ -52,6 +53,28 @@ export interface RichTextBlock {
   [key: string]: unknown;
 }
 
+export type GiftHamperDeliveryDescriptionSource = 'global' | 'custom'
+export type GiftHamperDeliveryPolicySource = 'global' | 'custom'
+
+export interface GiftHamperDeliverySectionOverride {
+  descriptionSource?: GiftHamperDeliveryDescriptionSource
+  policySource?: GiftHamperDeliveryPolicySource
+  customDescription?: RichTextBlock[]
+  customPolicy?: Partial<DeliveryPolicy>
+}
+
+export interface GiftHampersDeliverySectionContent {
+  name?: string
+  description?: RichTextBlock[]
+  policy?: Partial<DeliveryPolicy>
+}
+
+export interface GiftHamperIngredientReference {
+  _id: string
+  cakeName?: string
+  ingredients: RichTextBlock[]
+}
+
 export interface GiftHamper {
   _id: string;
   _createdAt: string;
@@ -60,11 +83,19 @@ export interface GiftHamper {
   seo?: GiftHamperSEO;
   description?: RichTextBlock[];
   shortDescription?: RichTextBlock[];
+  deliverySection?: GiftHamperDeliverySectionOverride;
+  giftHampersDeliverySection?: GiftHampersDeliverySectionContent;
   price: number;
   images?: GiftHamperImage[]; // includes one with isMain = true
   designs?: GiftHamperDesigns; // deprecated; not used for hampers
+  collections?: Array<{
+    _id: string;
+    name: string;
+    isFeatured?: boolean;
+  }>;
   category?: string;
   ingredients?: string[];
   allergens?: string[];
+  ingredientReference?: GiftHamperIngredientReference
   order?: number;
 }

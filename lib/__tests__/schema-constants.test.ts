@@ -111,6 +111,14 @@ describe('schema-constants', () => {
       expect(BUSINESS_INFO.addressRegion).toBe('West Yorkshire')
     })
 
+    it('should have street address', () => {
+      expect(BUSINESS_INFO.streetAddress).toBe('15 Allerton Grange Avenue')
+    })
+
+    it('should have postal code', () => {
+      expect(BUSINESS_INFO.postalCode).toBe('LS17 6PR')
+    })
+
     it('should have address country', () => {
       expect(BUSINESS_INFO.addressCountry).toBe('GB')
     })
@@ -164,31 +172,18 @@ describe('schema-constants', () => {
   })
 
   describe('RETURN_POLICY', () => {
-    it('should have return days', () => {
-      expect(RETURN_POLICY.returnDays).toBe(14)
-    })
-
-    it('should have return fees schema URL', () => {
-      expect(RETURN_POLICY.returnFees).toBe('https://schema.org/FreeReturn')
-    })
-
-    it('should have return policy category', () => {
-      expect(RETURN_POLICY.returnPolicyCategory).toBe('https://schema.org/MerchantReturnFiniteReturnWindow')
-    })
-
-    it('should have return method', () => {
-      expect(RETURN_POLICY.returnMethod).toBe('https://schema.org/ReturnByMail')
+    it('should not permit standard returns', () => {
+      expect(RETURN_POLICY.returnPolicyCategory).toBe('https://schema.org/MerchantReturnNotPermitted')
     })
 
     it('should use valid schema.org URLs', () => {
-      expect(RETURN_POLICY.returnFees).toMatch(/^https:\/\/schema\.org\//)
       expect(RETURN_POLICY.returnPolicyCategory).toMatch(/^https:\/\/schema\.org\//)
-      expect(RETURN_POLICY.returnMethod).toMatch(/^https:\/\/schema\.org\//)
     })
 
-    it('should have reasonable return period', () => {
-      expect(RETURN_POLICY.returnDays).toBeGreaterThan(0)
-      expect(RETURN_POLICY.returnDays).toBeLessThanOrEqual(365)
+    it('should not claim return days, fees, or mail returns', () => {
+      expect(RETURN_POLICY).not.toHaveProperty('returnDays')
+      expect(RETURN_POLICY).not.toHaveProperty('returnFees')
+      expect(RETURN_POLICY).not.toHaveProperty('returnMethod')
     })
   })
 
@@ -273,9 +268,7 @@ describe('schema-constants', () => {
 
   describe('Schema.org Compliance', () => {
     it('should use schema.org URLs for return policy', () => {
-      expect(RETURN_POLICY.returnFees).toContain('schema.org')
       expect(RETURN_POLICY.returnPolicyCategory).toContain('schema.org')
-      expect(RETURN_POLICY.returnMethod).toContain('schema.org')
     })
 
     it('should use standard country codes', () => {
@@ -304,4 +297,3 @@ describe('schema-constants', () => {
     })
   })
 })
-

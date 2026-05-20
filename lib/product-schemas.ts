@@ -19,6 +19,8 @@ import { batchValidateProductSchemas } from "./schema-validation";
 import { DEFAULT_REVIEWS } from "./structured-data-defaults";
 import { formatStructuredDataPrice } from "./utils/price-formatting";
 
+type RichTextBlocks = Parameters<typeof blocksToText>[0];
+
 export interface TestimonialStats {
   count: number;
   averageRating: number;
@@ -34,7 +36,7 @@ export interface Cake {
   mainImage?: {
     asset?: { url: string };
   };
-  description?: any;
+  description?: RichTextBlocks;
 }
 
 /**
@@ -88,7 +90,7 @@ export function generateProductSchema(cake: Cake, index: number, testimonialStat
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    "@id": `${BUSINESS_INFO.url}/order#${cakeSlug}`,
+    "@id": `${BUSINESS_INFO.url}/get-custom-quote#${cakeSlug}`,
     name: cakeName,
     description: cakeDescription,
     sku,
@@ -137,12 +139,12 @@ export function generateProductSchema(cake: Cake, index: number, testimonialStat
     },
     offers: {
       "@type": "Offer",
-      "@id": `${BUSINESS_INFO.url}/order#${cakeSlug}-offer`,
+      "@id": `${BUSINESS_INFO.url}/get-custom-quote#${cakeSlug}-offer`,
       price: formatStructuredDataPrice(cakePrice, FALLBACK_PRICE),
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
       priceValidUntil: getPriceValidUntil(DEFAULT_PRICE_VALID_DAYS),
-      url: `${BUSINESS_INFO.url}/order`,
+      url: `${BUSINESS_INFO.url}/get-custom-quote`,
       seller: {
         "@type": "Organization",
         name: BUSINESS_INFO.name,
@@ -188,10 +190,7 @@ export function generateProductSchema(cake: Cake, index: number, testimonialStat
       hasMerchantReturnPolicy: {
         "@type": "MerchantReturnPolicy",
         applicableCountry: BUSINESS_INFO.addressCountry,
-        returnFees: RETURN_POLICY.returnFees,
         returnPolicyCategory: RETURN_POLICY.returnPolicyCategory,
-        merchantReturnDays: RETURN_POLICY.returnDays,
-        returnMethod: RETURN_POLICY.returnMethod,
       },
     },
     aggregateRating: {

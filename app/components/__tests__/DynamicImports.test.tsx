@@ -5,9 +5,7 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import {
   DynamicContactForm,
-  DynamicQuoteForm,
   DynamicCakeImageGallery,
-  DynamicTestimonialsList,
   DynamicCookieConsent,
   DynamicDevTools,
   DynamicComponentWrapper
@@ -15,8 +13,8 @@ import {
 
 // Mock next/dynamic
 jest.mock('next/dynamic', () => {
-  return (loader: any, options?: any) => {
-    const Component = (props: any) => {
+  return (loader: () => Promise<unknown>, options?: { loading?: React.ComponentType<MockProps> }) => {
+    const Component = (props: MockProps) => {
       if (options?.loading && typeof options.loading === 'function') {
         return React.createElement(options.loading, props)
       }
@@ -28,11 +26,11 @@ jest.mock('next/dynamic', () => {
 })
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, display, justifyContent, alignItems, p, ...props }: any) => (
+jest.mock('@/lib/daisy-ui', () => ({
+  Box: ({ children, display, justifyContent, alignItems, p, ...props }: MockProps) => (
     <div data-testid="box" {...props}>{children}</div>
   ),
-  CircularProgress: ({ size, ...props }: any) => (
+  CircularProgress: ({ size, ...props }: MockProps) => (
     <div data-testid="circular-progress" data-size={size} {...props}>Loading...</div>
   )
 }))
@@ -54,16 +52,6 @@ describe('DynamicImports', () => {
     })
   })
 
-  describe('DynamicQuoteForm', () => {
-    it('should be defined', () => {
-      expect(DynamicQuoteForm).toBeDefined()
-    })
-
-    it('should be a React component', () => {
-      expect(typeof DynamicQuoteForm).toBe('function')
-    })
-  })
-
   describe('DynamicCakeImageGallery', () => {
     it('should be defined', () => {
       expect(DynamicCakeImageGallery).toBeDefined()
@@ -71,16 +59,6 @@ describe('DynamicImports', () => {
 
     it('should be a React component', () => {
       expect(typeof DynamicCakeImageGallery).toBe('function')
-    })
-  })
-
-  describe('DynamicTestimonialsList', () => {
-    it('should be defined', () => {
-      expect(DynamicTestimonialsList).toBeDefined()
-    })
-
-    it('should be a React component', () => {
-      expect(typeof DynamicTestimonialsList).toBe('function')
     })
   })
 
@@ -136,13 +114,10 @@ describe('DynamicImports', () => {
   describe('Exports', () => {
     it('should export all dynamic components', () => {
       expect(DynamicContactForm).toBeDefined()
-      expect(DynamicQuoteForm).toBeDefined()
       expect(DynamicCakeImageGallery).toBeDefined()
-      expect(DynamicTestimonialsList).toBeDefined()
       expect(DynamicCookieConsent).toBeDefined()
       expect(DynamicDevTools).toBeDefined()
       expect(DynamicComponentWrapper).toBeDefined()
     })
   })
 })
-

@@ -1,12 +1,17 @@
 import type { MarketSchedule, MarketScheduleStructuredData } from "@/app/types/marketSchedule";
+import { getLondonDateKey, getMarketDateKey } from "./londonDate";
+import { buildAggregateRating, type ReviewStats } from "./review-stats";
 
 /**
  * Generate JSON-LD structured data for a market event
  */
-export function generateEventStructuredData(event: MarketSchedule): MarketScheduleStructuredData {
-  const eventDate = new Date(event.date);
+export function generateEventStructuredData(
+  event: MarketSchedule,
+  reviewStats?: ReviewStats
+): MarketScheduleStructuredData {
   const startDateTime = new Date(`${event.date}T${event.startTime}:00`).toISOString();
   const endDateTime = new Date(`${event.date}T${event.endTime}:00`).toISOString();
+  const aggregateRating = buildAggregateRating(reviewStats);
 
   // Create a safe slug for the event URL from the title
   const eventSlug = event.title
@@ -54,13 +59,7 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     isAccessibleForFree: true,
     url: eventId,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
-    },
+    ...(aggregateRating ? { aggregateRating } : {}),
   };
 
   // Add Google Maps URL as location URL
@@ -107,7 +106,8 @@ export function generateEventStructuredData(event: MarketSchedule): MarketSchedu
 /**
  * Generate JSON-LD structured data for multiple events (ItemList)
  */
-export function generateEventsListStructuredData(events: MarketSchedule[]) {
+export function generateEventsListStructuredData(events: MarketSchedule[], reviewStats?: ReviewStats) {
+  const today = getLondonDateKey(new Date());
   const upcomingEvents = events.filter(event => {
     // Check if event has required fields
     if (!event.title || !event.date || !event.location || !event.startTime || !event.endTime) {
@@ -115,10 +115,8 @@ export function generateEventsListStructuredData(events: MarketSchedule[]) {
       return false;
     }
 
-    const eventDate = new Date(event.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return eventDate >= today && event.active;
+    const eventDate = getMarketDateKey(event.date);
+    return eventDate !== null && eventDate >= today && event.active;
   });
 
   if (upcomingEvents.length === 0) {
@@ -137,7 +135,7 @@ export function generateEventsListStructuredData(events: MarketSchedule[]) {
     itemListElement: upcomingEvents.map((event, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      item: generateEventStructuredData(event),
+      item: generateEventStructuredData(event, reviewStats),
     })),
     mainEntity: {
       "@type": "Organization",
@@ -167,16 +165,15 @@ export function generateEventsListStructuredData(events: MarketSchedule[]) {
  * Generate additional SEO metadata for events
  */
 export function generateEventSEOMetadata(events: MarketSchedule[]) {
+  const today = getLondonDateKey(new Date());
   const upcomingEvents = events.filter(event => {
     // Check if event has required fields
     if (!event.title || !event.date || !event.location) {
       return false;
     }
 
-    const eventDate = new Date(event.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return eventDate >= today && event.active;
+    const eventDate = getMarketDateKey(event.date);
+    return eventDate !== null && eventDate >= today && event.active;
   });
 
   if (upcomingEvents.length === 0) {

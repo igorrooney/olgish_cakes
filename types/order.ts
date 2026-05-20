@@ -27,6 +27,7 @@ export interface OrderCustomer {
 export interface OrderDelivery {
     dateNeeded?: string;
     deliveryMethod: string;
+    recipientName?: string;
     deliveryAddress?: string;
     trackingNumber?: string;
     deliveryNotes?: string;
@@ -85,6 +86,7 @@ export interface OrderNote {
 
 export interface OrderMetadata {
     giftNote?: string;
+    deliveryCourier?: string;
     [key: string]: unknown;
 }
 
@@ -110,7 +112,10 @@ export interface Order {
 export interface OrderUpdate {
     status?: string;
     trackingNumber?: string;
+    deliveryCourier?: string;
     deliveryMethod?: string;
+    deliveryRecipientName?: string;
+    deliveryAddress?: string;
     dateNeeded?: string | null;
     paymentStatus?: string;
     paymentMethod?: string;
@@ -128,6 +133,7 @@ export interface OrderUpdate {
     selectedCakeName?: string;
     selectedCakeSize?: string;
     selectedDesignType?: string;
+    items?: OrderItem[];
     subtotal?: number;
     deliveryFee?: number;
     discount?: number;

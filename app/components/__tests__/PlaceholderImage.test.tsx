@@ -8,7 +8,7 @@ import PlaceholderImage from '../PlaceholderImage'
 // Mock Next.js Image
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: ({ alt, src, fill, style, sizes, placeholder, blurDataURL, ...props }: any) => (
+  default: ({ alt, src, fill, style, sizes, placeholder, blurDataURL, ...props }: MockProps) => (
     <img
       alt={alt}
       src={src}
@@ -21,8 +21,8 @@ jest.mock('next/image', () => ({
 }))
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
-  Box: ({ children, className, sx, role, ...props }: any) => (
+jest.mock('@/lib/daisy-ui', () => ({
+  Box: ({ children, className, sx, role, ...props }: MockProps) => (
     <div
       data-testid="box"
       className={className}
@@ -33,7 +33,7 @@ jest.mock('@/lib/mui-optimization', () => ({
       {children}
     </div>
   ),
-  Typography: ({ children, variant, className, sx, ...props }: any) => (
+  Typography: ({ children, variant, className, sx, ...props }: MockProps) => (
     <div
       data-testid="typography"
       data-variant={variant}

@@ -11,7 +11,7 @@ const FILES_TO_FIX = [
   "app/components/CookieConsent.tsx",
   "app/components/DevTools.tsx",
   "app/components/Header.tsx",
-  "app/components/Footer.tsx",
+  "app/components/SiteFooter.tsx",
   "app/components/TestimonialsList.tsx",
   "app/components/TrustpilotReviews.tsx",
   "app/cakes/[slug]/OrderModal.tsx",

@@ -5,6 +5,8 @@
 import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
+import { AutomaticFieldHelpField } from "./sanity/components/FieldHelpField";
+import { DocumentPublishValidationLayout } from "./sanity/components/DocumentPublishValidationLayout";
 
 // NOTE: For hosted Studio builds, avoid reading process.env at runtime in the browser.
 // Hardcode the Sanity project configuration here to ensure the hosted Studio works
@@ -15,10 +17,13 @@ const apiVersion = "2025-03-31";
 import { schema } from "./sanity/schema";
 import { structure } from "./sanity/structure";
 
+const singletonTypes = new Set(['cakesFeaturedOffer', 'cakesDeliverySection', 'giftHampersDeliverySection', 'collectionsDisplayOrder', 'productsDisplayOrder'])
+
 export default defineConfig({
   basePath: "/studio",
   projectId,
   dataset,
+  apiVersion,
   // Add and edit the content schema in the './sanity/schema' folder
   schema,
   plugins: [
@@ -27,4 +32,28 @@ export default defineConfig({
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool({ defaultApiVersion: apiVersion }),
   ],
+  form: {
+    components: {
+      field: AutomaticFieldHelpField,
+    },
+  },
+  document: {
+    components: {
+      unstable_layout: DocumentPublishValidationLayout,
+    },
+    newDocumentOptions: (previousOptions, context) => {
+      if (context.creationContext.type !== 'global') {
+        return previousOptions
+      }
+
+      return previousOptions.filter((option) => !singletonTypes.has(option.templateId))
+    },
+    actions: (previousActions, context) => {
+      if (!singletonTypes.has(context.schemaType)) {
+        return previousActions
+      }
+
+      return previousActions.filter((action) => action.action !== 'duplicate')
+    }
+  }
 });

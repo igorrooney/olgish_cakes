@@ -1,26 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { generateCakeMerchantCenterSchema } from "@/lib/google-merchant-center-schema";
+import {
+  generateCakeMerchantCenterSchema,
+  type MerchantCakeInput,
+} from "@/lib/google-merchant-center-schema";
+import { useReviewStats } from "./ReviewStatsProvider";
+import { buildAggregateRating } from "@/app/utils/review-stats";
 
 interface CakeStructuredDataProps {
-  cake: {
-    name: string;
-    slug: {
-      current: string;
-    };
-    description?: any[];
-    shortDescription?: any[];
-    pricing: {
-      standard: number;
-      individual: number;
-    };
-    mainImage?: {
-      asset?: {
-        url?: string;
-      };
-      alt?: string;
-    };
+  cake: MerchantCakeInput & {
     ingredients?: string[];
     allergens?: string[];
     category?: string;
@@ -38,15 +27,24 @@ interface CakeStructuredDataProps {
 }
 
 export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
+  const reviewStats = useReviewStats();
+
   useEffect(() => {
     if (!cake.structuredData?.enableProductSchema) return;
 
     // Use enhanced Google Merchant Center schema
-    const structuredData = generateCakeMerchantCenterSchema(cake);
+    const structuredData: ReturnType<typeof generateCakeMerchantCenterSchema> & {
+      keywords?: string;
+    } = generateCakeMerchantCenterSchema(cake);
+    const aggregateRating = buildAggregateRating(reviewStats);
+
+    if (aggregateRating) {
+      structuredData.aggregateRating = aggregateRating;
+    }
 
     // Add keywords if available
     if (cake.seo?.keywords && cake.seo.keywords.length > 0) {
-      (structuredData as any).keywords = cake.seo.keywords.join(", ");
+      structuredData.keywords = cake.seo.keywords.join(", ");
     }
 
     // Create script element
@@ -71,7 +69,7 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
         scriptToRemove.remove();
       }
     };
-  }, [cake]);
+  }, [cake, reviewStats]);
 
   return null;
 }

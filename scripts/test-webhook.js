@@ -1,105 +1,104 @@
 #!/usr/bin/env node
 
 /**
- * Test Webhook Script
- *
- * This script tests the webhook functionality by simulating
- * content updates and checking if revalidation works.
- *
- * Usage: node scripts/test-webhook.js
+ * Tests the /api/revalidate endpoint with the same auth headers Sanity uses.
  */
 
-import { createClient } from "@sanity/client";
+import { createClient } from '@sanity/client'
+import dotenv from 'dotenv'
 
-// Create Sanity client
-const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
-  apiVersion: process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2024-01-01",
-  useCdn: false,
-});
+dotenv.config({ path: '.env' })
+dotenv.config({ path: '.env.local', override: true })
 
-async function testWebhook() {
-  try {
-    console.log("🧪 Testing webhook functionality...");
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
+const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-03-31'
+const revalidateSecret = process.env.REVALIDATE_SECRET
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://olgishcakes.co.uk').replace(/\/$/, '')
+const webhookUrl = `${siteUrl}/api/revalidate`
+const vercelProtectionBypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 
-    // Get your production URL
-    const productionUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://olgishcakes.co.uk";
-    const webhookUrl = `${productionUrl}/api/revalidate`;
-
-    console.log("🌐 Testing webhook URL:", webhookUrl);
-
-    // Test 1: GET request to check if endpoint is active
-    console.log("\n📡 Test 1: Checking webhook endpoint...");
-    const getResponse = await fetch(webhookUrl, { method: "GET" });
-
-    if (getResponse.ok) {
-      const getData = await getResponse.json();
-      console.log("✅ Webhook endpoint is active:", getData.message);
-    } else {
-      console.log("❌ Webhook endpoint not accessible");
-      return;
-    }
-
-    // Test 2: Simulate cake update
-    console.log("\n📡 Test 2: Simulating cake update...");
-    const cakeUpdatePayload = {
-      _type: "cake",
-      _id: "test-cake-id",
-      slug: { current: "honey-cake-medovik" },
-    };
-
-    const postResponse = await fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cakeUpdatePayload),
-    });
-
-    if (postResponse.ok) {
-      const postData = await postResponse.json();
-      console.log("✅ Cake update simulation successful:", postData.message);
-      console.log("🔄 Revalidated:", postData.revalidated);
-    } else {
-      console.log("❌ Cake update simulation failed");
-      const error = await postResponse.text();
-      console.log("Error:", error);
-    }
-
-    // Test 3: Simulate testimonial update
-    console.log("\n📡 Test 3: Simulating testimonial update...");
-    const testimonialPayload = {
-      _type: "testimonial",
-      _id: "test-testimonial-id",
-    };
-
-    const testimonialResponse = await fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(testimonialPayload),
-    });
-
-    if (testimonialResponse.ok) {
-      const testimonialData = await testimonialResponse.json();
-      console.log("✅ Testimonial update simulation successful:", testimonialData.message);
-    } else {
-      console.log("❌ Testimonial update simulation failed");
-    }
-
-    // Test 4: Check if we can fetch fresh data
-    console.log("\n📡 Test 4: Checking data freshness...");
-    const cakes = await client.fetch('*[_type == "cake"] | order(_createdAt desc)[0...3]');
-    console.log("✅ Fetched", cakes.length, "recent cakes from Sanity");
-
-    console.log("\n🎉 Webhook testing completed!");
-    console.log("\n📋 Next steps:");
-    console.log("1. Deploy your app to production");
-    console.log("2. Run: pnpm run setup-webhook");
-    console.log("3. Or manually create webhook in Sanity Studio");
-    console.log("4. Test by publishing content in Sanity Studio");
-  } catch (error) {
-    console.error("❌ Test failed:", error);
+function requireEnvValue(name, value) {
+  if (!value) {
+    throw new Error(`Missing environment variable: ${name}`)
   }
 }
 
-// Run the test
-testWebhook();
+function createWebhookHeaders() {
+  const headers = {
+    authorization: `Bearer ${revalidateSecret}`,
+    'content-type': 'application/json'
+  }
+
+  if (vercelProtectionBypass) {
+    headers['x-vercel-protection-bypass'] = vercelProtectionBypass
+  }
+
+  return headers
+}
+
+async function readResponseBody(response) {
+  const text = await response.text()
+
+  try {
+    return JSON.parse(text)
+  } catch {
+    return text
+  }
+}
+
+async function assertOkResponse(label, response) {
+  const body = await readResponseBody(response)
+
+  if (!response.ok) {
+    throw new Error(`${label} failed: ${response.status} ${JSON.stringify(body)}`)
+  }
+
+  console.log(`${label} ok:`)
+  console.log(JSON.stringify(body, null, 2))
+}
+
+async function testWebhook() {
+  requireEnvValue('NEXT_PUBLIC_SANITY_PROJECT_ID', projectId)
+  requireEnvValue('REVALIDATE_SECRET', revalidateSecret)
+
+  console.log(`Testing webhook endpoint: ${webhookUrl}`)
+
+  const headers = createWebhookHeaders()
+  const getResponse = await fetch(webhookUrl, {
+    method: 'GET',
+    headers
+  })
+  await assertOkResponse('GET /api/revalidate', getResponse)
+
+  const cakePayload = {
+    _type: 'cake',
+    _id: 'fd7b4fde-cf52-4bdd-a06e-65138956fda9',
+    slug: {
+      current: 'red-velvet-cake'
+    }
+  }
+
+  const postResponse = await fetch(webhookUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(cakePayload)
+  })
+  await assertOkResponse('POST cake revalidation', postResponse)
+
+  const client = createClient({
+    projectId,
+    dataset,
+    apiVersion,
+    useCdn: false
+  })
+  const recentCakes = await client.fetch('*[_type == "cake"] | order(_createdAt desc)[0...3]{name, "slug": slug.current}')
+
+  console.log('Recent published cakes from Sanity:')
+  console.log(JSON.stringify(recentCakes, null, 2))
+}
+
+testWebhook().catch((error) => {
+  console.error('Webhook test failed:', error)
+  process.exit(1)
+})

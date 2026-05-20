@@ -1,270 +1,224 @@
 /**
  * @jest-environment jsdom
  */
-import { render, screen } from '@testing-library/react'
-import { Product, WithContext } from 'schema-dts'
-import { validateProductHasRequiredFields } from '../../../lib/schema-validation'
+import type { ReactNode } from 'react'
+import { render, screen, within } from '@testing-library/react'
 import ContactPage, { metadata } from '../page'
+import styles from '../contactPage.module.css'
 
-// Mock components
-jest.mock('../../components/ContactForm', () => ({
-  ContactForm: () => <div data-testid="contact-form">Contact Form</div>
+jest.mock('../DeferredContactPageForm', () => ({
+  DeferredContactPageForm: () => <div data-testid='contact-page-form'>Contact page form</div>,
 }))
 
-jest.mock('../../components/Breadcrumbs', () => ({
-  Breadcrumbs: () => <nav data-testid="breadcrumbs">Breadcrumbs</nav>
+jest.mock('../ContactFormScrollLink', () => ({
+  ContactFormScrollLink: ({
+    children,
+    className = '',
+  }: {
+    children: ReactNode
+    className?: string
+  }) => (
+    <a href='#contact-form-card' className={className}>
+      {children}
+    </a>
+  ),
 }))
 
-// Mock Next.js Link
-jest.mock('next/link', () => ({
-  __esModule: true,
-  default: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>
-}))
-
-// Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
-  Container: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Typography: ({ children, component, ...props }: any) => {
-    const Component = component || 'div'
-    return <Component {...props}>{children}</Component>
-  },
-  Box: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Stack: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Link: ({ children, href, ...props }: any) => <a href={href} {...props}>{children}</a>,
-  Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Paper: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-  Divider: () => <hr />,
-  PhoneIcon: () => <span>📞</span>,
-  EmailIcon: () => <span>📧</span>,
-  InstagramIcon: () => <span>📷</span>,
-  FacebookIcon: () => <span>📘</span>,
-  WhatsAppIcon: () => <span>💬</span>
-}))
-
-// Mock SEO utilities
-jest.mock('../../utils/seo', () => ({
-  generateProductSchema: jest.fn((product: any) => ({
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    '@id': `${product.url}#product`,
-    name: product.name,
-    description: product.description,
-    image: product.image,
-    url: product.url,
-    brand: {
-      '@type': 'Brand',
-      name: 'Olgish Cakes'
-    },
-    category: product.category,
-    offers: {
-      '@type': 'Offer',
-      price: product.price,
-      priceCurrency: product.currency || 'GBP',
-      availability: 'https://schema.org/InStock'
-    },
-    aggregateRating: product.aggregateRating ? {
-      '@type': 'AggregateRating',
-      ratingValue: product.aggregateRating.ratingValue.toString(),
-      reviewCount: product.aggregateRating.reviewCount.toString(),
-      bestRating: '5',
-      worstRating: '1'
-    } : undefined,
-    review: [
-      {
-        '@type': 'Review',
-        itemReviewed: { '@id': `${product.url}#product` },
-        reviewRating: { '@type': 'Rating', ratingValue: '5' },
-        author: { '@type': 'Person', name: 'Sarah M.' },
-        reviewBody: `Excellent ${product.name}!`,
-        datePublished: '2025-09-30'
-      }
-    ]
-  }))
-}))
-
-jest.mock('@/lib/structured-data-defaults', () => ({
-  DEFAULT_AGGREGATE_RATING: {
-    '@type': 'AggregateRating',
-    ratingValue: '5.0',
-    reviewCount: '2',
-    bestRating: '5',
-    worstRating: '1'
-  }
-}))
+function parseJsonLdScripts(container: HTMLElement) {
+  return Array.from(container.querySelectorAll('script[type="application/ld+json"]')).map(
+    script => JSON.parse(script.textContent || '{}') as Record<string, unknown>
+  )
+}
 
 describe('ContactPage', () => {
-  describe('Metadata', () => {
-    it('should have title', () => {
-      expect(metadata.title).toContain('Contact')
-      expect(metadata.title).toContain('Olgish Cakes')
-    })
-
-    it('should have description', () => {
-      expect(metadata.description).toBeDefined()
-      expect(metadata.description).toContain('touch')
-    })
-
-    it('should have OpenGraph data', () => {
-      expect(metadata.openGraph).toBeDefined()
-      expect(metadata.openGraph?.title).toBeDefined()
-      expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/contact')
-    })
-
-    it('should have Twitter card data', () => {
-      expect(metadata.twitter).toBeDefined()
-      expect(metadata.twitter?.card).toBe('summary_large_image')
-    })
-
-    it('should have canonical URL', () => {
-      expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/contact')
-    })
-
-    it('should have keywords', () => {
-      expect(metadata.keywords).toBeDefined()
-    })
+  it('exposes cleaned metadata for the refreshed contact page', () => {
+    expect(metadata.title).toBe('Contact Olga in Leeds | Cake Quotes, Delivery and Workshop Help')
+    expect(metadata.description).toBe(
+      'Get in touch with Olga in Leeds about cakes, delivery, postal bakes or workshops. Share what you need, where it is going and any date you already have in mind.'
+    )
+    expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/contact')
+    expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/contact')
+    expect(metadata.twitter?.card).toBe('summary_large_image')
+    expect(metadata.keywords).toBeUndefined()
   })
 
-  describe('Rendering', () => {
-    it('should render without crashing', () => {
-      expect(() => render(<ContactPage />)).not.toThrow()
-    })
+  it('renders the simplified contact page and route-scoped form section', () => {
+    const { container } = render(<ContactPage />)
+    const heroContainer = screen.getByTestId('contact-hero-container')
+    const heroLayout = screen.getByTestId('contact-hero-layout')
+    const formLayout = screen.getByTestId('contact-form-layout')
+    const desktopContactCard = screen.getByTestId('desktop-direct-contact-card')
+    const mobileContactCard = screen.getByTestId('mobile-direct-contact-card')
+    const formSection = container.querySelector('#contact-form-section')
+    const formCard = container.querySelector('#contact-form-card')
 
-    it('should render ContactForm', () => {
-      render(<ContactPage />)
-
-      expect(screen.getByTestId('contact-form')).toBeInTheDocument()
-    })
-
-    it('should render Breadcrumbs', () => {
-      render(<ContactPage />)
-
-      expect(screen.getByTestId('breadcrumbs')).toBeInTheDocument()
-    })
-  })
-
-  describe('Product Structured Data - Google Search Console Compliance', () => {
-    it('should have Product schemas for Custom Wedding Cakes and Ukrainian Honey Cake', () => {
-      const { container } = render(<ContactPage />)
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      
-      const productSchemas: WithContext<Product>[] = []
-      
-      scripts.forEach((script) => {
-        if (script.textContent) {
-          try {
-            const data = JSON.parse(script.textContent)
-            if (data['@type'] === 'Product') {
-              productSchemas.push(data)
-            }
-          } catch (e) {
-            // Ignore non-JSON scripts
-          }
-        }
+    expect(container.querySelector('main')).toBeNull()
+    expect(container.querySelector('.homepage-container')).toBeNull()
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Need a cake, delivery help or workshop details?',
       })
-
-      expect(productSchemas.length).toBeGreaterThanOrEqual(2)
-      
-      const customWeddingCakes = productSchemas.find(s => s.name === 'Custom Wedding Cakes')
-      const ukrainianHoneyCake = productSchemas.find(s => s.name === 'Ukrainian Honey Cake')
-      
-      expect(customWeddingCakes).toBeDefined()
-      expect(ukrainianHoneyCake).toBeDefined()
-    })
-
-    it('should have Custom Wedding Cakes Product schema with required fields', () => {
-      const { container } = render(<ContactPage />)
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      
-      let customWeddingCakesSchema: WithContext<Product> | null = null
-      
-      scripts.forEach((script) => {
-        if (script.textContent) {
-          try {
-            const data = JSON.parse(script.textContent)
-            if (data['@type'] === 'Product' && data.name === 'Custom Wedding Cakes') {
-              customWeddingCakesSchema = data
-            }
-          } catch (e) {
-            // Ignore non-JSON scripts
-          }
-        }
-      })
-
-      expect(customWeddingCakesSchema).toBeDefined()
-      if (customWeddingCakesSchema) {
-        const validation = validateProductHasRequiredFields(customWeddingCakesSchema)
-        expect(validation.isValid).toBe(true)
-        expect(validation.errors).toHaveLength(0)
-        
-        // Verify it has at least one required field
-        const hasOffers = customWeddingCakesSchema.offers !== undefined && customWeddingCakesSchema.offers !== null
-        const hasReview = customWeddingCakesSchema.review !== undefined && customWeddingCakesSchema.review !== null
-        const hasAggregateRating = customWeddingCakesSchema.aggregateRating !== undefined && customWeddingCakesSchema.aggregateRating !== null
-        
-        expect(hasOffers || hasReview || hasAggregateRating).toBe(true)
-        
-        // Verify specific fields
-        expect(hasOffers).toBe(true)
-        expect(hasReview).toBe(true)
-        expect(hasAggregateRating).toBe(true)
-      }
-    })
-
-    it('should have Ukrainian Honey Cake Product schema with required fields', () => {
-      const { container } = render(<ContactPage />)
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-      
-      let ukrainianHoneyCakeSchema: WithContext<Product> | null = null
-      
-      scripts.forEach((script) => {
-        if (script.textContent) {
-          try {
-            const data = JSON.parse(script.textContent)
-            if (data['@type'] === 'Product' && data.name === 'Ukrainian Honey Cake') {
-              ukrainianHoneyCakeSchema = data
-            }
-          } catch (e) {
-            // Ignore non-JSON scripts
-          }
-        }
-      })
-
-      expect(ukrainianHoneyCakeSchema).toBeDefined()
-      if (ukrainianHoneyCakeSchema) {
-        const validation = validateProductHasRequiredFields(ukrainianHoneyCakeSchema)
-        expect(validation.isValid).toBe(true)
-        expect(validation.errors).toHaveLength(0)
-        
-        // Verify it has at least one required field
-        const hasOffers = ukrainianHoneyCakeSchema.offers !== undefined && ukrainianHoneyCakeSchema.offers !== null
-        const hasReview = ukrainianHoneyCakeSchema.review !== undefined && ukrainianHoneyCakeSchema.review !== null
-        const hasAggregateRating = ukrainianHoneyCakeSchema.aggregateRating !== undefined && ukrainianHoneyCakeSchema.aggregateRating !== null
-        
-        expect(hasOffers || hasReview || hasAggregateRating).toBe(true)
-        
-        // Verify specific fields
-        expect(hasOffers).toBe(true)
-        expect(hasReview).toBe(true)
-        expect(hasAggregateRating).toBe(true)
-      }
-    })
-
-    it('should reject Product schemas without offers, review, or aggregateRating', () => {
-      const invalidSchema: WithContext<Product> = {
-        '@context': 'https://schema.org',
-        '@type': 'Product',
-        name: 'Test Product',
-        description: 'Test description',
-        image: 'https://example.com/image.jpg'
-        // Missing offers, review, and aggregateRating
-      }
-
-      const validation = validateProductHasRequiredFields(invalidSchema)
-      expect(validation.isValid).toBe(false)
-      expect(validation.errors).toContain(
-        'Product schema must have at least one of: offers, review, or aggregateRating (Google Search Console requirement)'
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
+    expect(
+      screen.getByText(
+        /tell me what you are planning, where it needs to go and when you need it\./i
       )
-    })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /if you are asking for a cake price, the quote form is still the quickest way to start\./i
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /get a cake quote/i })).toHaveAttribute(
+      'href',
+      '/get-custom-quote'
+    )
+    expect(screen.getByRole('link', { name: /ask a question/i })).toHaveAttribute(
+      'href',
+      '#contact-form-card'
+    )
+    expect(screen.getByRole('link', { name: /ask a question/i })).toHaveClass('btn-primary')
+    expect(within(desktopContactCard).getByRole('link', { name: /message on whatsapp/i, hidden: true })).toHaveAttribute(
+      'href',
+      'https://wa.me/447867218194'
+    )
+    expect(within(desktopContactCard).getByRole('link', { name: /hello@olgishcakes\.co\.uk/i, hidden: true })).toHaveAttribute(
+      'href',
+      'mailto:hello@olgishcakes.co.uk'
+    )
+    expect(within(desktopContactCard).getByRole('link', { name: /\+44 786 721 8194/i, hidden: true })).toHaveAttribute(
+      'href',
+      'tel:+44 786 721 8194'
+    )
+    expect(
+      within(desktopContactCard).getByRole('heading', {
+        level: 2,
+        name: 'Want to check something first?',
+        hidden: true,
+      })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText(/for something more specific, go straight to/i)
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(/if you already know you want/i)
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText(/already know you need/i)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: /cakes by post/i })
+    ).toHaveAttribute('href', '/cakes-by-post')
+    expect(
+      screen.getAllByRole('link', { name: /^workshops$/i })
+    ).toHaveLength(1)
+    expect(
+      within(desktopContactCard).getByText(
+        /if you want to check delivery, collection, timing or whether a workshop idea is workable, send me a message or give me a ring first and i'll tell you straight\./i
+      )
+    ).toBeInTheDocument()
+    expect(
+      within(mobileContactCard).getByText(
+        /message or call if you want to check delivery, collection or timing before you fill in the form\./i
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Send me a message',
+      })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', {
+        level: 3,
+        name: 'What helps me answer quickly?',
+      })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText(/can this travel to york, or would leeds collection be safer\?/i)
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText((content) =>
+        /example: hi olga, i am in chapel allerton/i.test(content) &&
+        /harrogate next friday/i.test(content) &&
+        /local delivery possible, or is collection easier\?/i.test(content)
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/if there is a date in the diary, add it\. if not, say what is flexible\./i)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/tell me whether this is for collection, local delivery or post\./i)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /a few basics are enough\. i can tell you quickly what makes sense next\./i
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /a short note is fine\. these details usually save a follow-up message before i can answer properly\./i
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: /need a cake price instead\?/i })
+    ).toHaveAttribute(
+      'href',
+      '/get-custom-quote'
+    )
+    expect(heroContainer).toHaveClass(styles.contactPageContainer)
+    expect(formLayout).toHaveClass(styles.contactPageContainer, styles.formLayout)
+    expect(heroLayout).toHaveClass(styles.heroLayout)
+    expect(formLayout).toHaveClass('tablet:gap-8')
+    expect(desktopContactCard).toHaveClass(styles.desktopDirectContactCard)
+    expect(mobileContactCard).toHaveClass(styles.compactDirectContactPanel)
+    expect(mobileContactCard.parentElement?.parentElement).toHaveClass(styles.mobileDirectContactSection)
+    expect(heroLayout.className).toContain(styles.heroLayout)
+    expect(formSection).not.toBeNull()
+    expect(formCard).not.toBeNull()
+    expect(
+      heroContainer.compareDocumentPosition(formSection as Element) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      mobileContactCard.compareDocumentPosition(formSection as Element) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(screen.getByTestId('contact-page-form')).toBeInTheDocument()
+    expect(container.querySelectorAll('#contact-form-section')).toHaveLength(1)
+    expect(container.querySelectorAll('#contact-form-card')).toHaveLength(1)
+    expect(screen.queryByTestId('contact-routing-container')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('contact-routing-links')).not.toBeInTheDocument()
+    expect(screen.queryByText(/choose the best starting point/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/starting in the right place usually means a faster answer/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/i have kept the main routes below/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/use the contact form below/i)).not.toBeInTheDocument()
+    expect(screen.queryByTestId('breadcrumbs')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText(/send the main details and i'll come back to you with a clear answer\./i)
+    ).not.toBeInTheDocument()
+  })
+
+  it('renders only the contact-specific structured data blocks', () => {
+    const { container } = render(<ContactPage />)
+    const blocks = parseJsonLdScripts(container)
+    const breadcrumbBlock = blocks.find(block => block['@type'] === 'BreadcrumbList')
+    const contactPageBlock = blocks.find(block => block['@type'] === 'ContactPage')
+    const bakeryBlock = blocks.find(block => block['@type'] === 'Bakery')
+
+    expect(blocks).toHaveLength(3)
+    expect(contactPageBlock).toBeDefined()
+    expect(bakeryBlock).toBeDefined()
+    expect(breadcrumbBlock).toBeDefined()
+    expect(blocks.find(block => block['@type'] === 'Product')).toBeUndefined()
+    expect(contactPageBlock?.name).toBe(
+      'Contact Olga about cake quotes, delivery, workshops or general questions'
+    )
+    expect(bakeryBlock?.telephone).toBe('+44 786 721 8194')
+    expect((breadcrumbBlock?.itemListElement as Array<Record<string, unknown>>)[1]?.name).toBe(
+      'Contact'
+    )
   })
 })
-

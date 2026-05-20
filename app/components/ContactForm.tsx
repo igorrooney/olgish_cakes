@@ -15,26 +15,25 @@ import {
   AlertTitle,
   Box,
   CircularProgress,
-  IconButton,
-  Paper,
   Stack,
-} from "@/lib/mui-optimization";
-import { AdapterDayjs, DatePicker, LocalizationProvider } from "@/lib/mui-optimization";
+} from "@/lib/daisy-ui";
+import { AdapterDayjs, DatePicker, LocalizationProvider } from "@/lib/daisy-ui";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { csrfTokenLoadErrorMessage, fetchCsrfToken } from "@/app/services/csrfToken";
 
 // Configure dayjs for British locale
 dayjs.locale("en-gb");
 
-const { colors, typography, spacing, borderRadius, shadows } = designTokens;
+const { colors, typography, spacing, borderRadius } = designTokens;
 
 const MotionBox = motion.create(Box);
 
-interface FormData {
+export interface ContactFormData {
   name: string;
   address?: string;
   city?: string;
@@ -50,7 +49,7 @@ interface FormData {
 }
 
 interface ContactFormProps {
-  onSubmit?: (formData: FormData) => Promise<void>;
+  onSubmit?: (formData: ContactFormData) => Promise<void>;
   isSubmitting?: boolean;
   submitStatus?: "success" | "error" | null;
   hideCakeInterest?: boolean;
@@ -93,7 +92,7 @@ export function ContactForm({
   showNote = false,
   suppressStructuredData = false,
 }: ContactFormProps = {}) {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     address: "",
     city: "",
@@ -110,8 +109,10 @@ export function ContactForm({
   const [internalSubmitStatus, setInternalSubmitStatus] = useState<"success" | "error" | null>(
     null
   );
+  const [internalErrorMessage, setInternalErrorMessage] = useState("There was an error sending your message. Please try again.");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const submitAbortControllerRef = useRef<AbortController | null>(null);
 
   const isSubmitting = externalIsSubmitting ?? internalIsSubmitting;
   const submitStatus = externalSubmitStatus ?? internalSubmitStatus;
@@ -235,11 +236,13 @@ export function ContactForm({
     const { name, value } = event.target;
     setFormData(prevData => ({ ...prevData, [name]: value }));
     setInternalSubmitStatus(null);
+    setInternalErrorMessage("There was an error sending your message. Please try again.");
   }
 
   function handleDateChange(newValue: Dayjs | null) {
     setFormData(prevData => ({ ...prevData, dateNeeded: newValue }));
     setInternalSubmitStatus(null);
+    setInternalErrorMessage("There was an error sending your message. Please try again.");
   }
 
   function formatPostcode(value: string) {
@@ -266,7 +269,7 @@ export function ContactForm({
     }
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
 
     if (onSubmit) {
@@ -276,8 +279,17 @@ export function ContactForm({
 
     setInternalIsSubmitting(true);
     setInternalSubmitStatus(null);
+    setInternalErrorMessage("There was an error sending your message. Please try again.");
+
+    if (submitAbortControllerRef.current) {
+      submitAbortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    submitAbortControllerRef.current = controller;
 
     try {
+      const csrfToken = await fetchCsrfToken(controller.signal);
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
       if (formData.address) {
@@ -307,11 +319,14 @@ export function ContactForm({
       if (formData.designImage) {
         formDataToSend.append("designImage", formData.designImage);
       }
+      formDataToSend.append("csrfToken", csrfToken);
       formDataToSend.append("isOrderForm", isOrderForm.toString());
 
       const response = await fetch("/api/contact", {
         method: "POST",
         body: formDataToSend,
+        credentials: "same-origin",
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -332,12 +347,37 @@ export function ContactForm({
       });
       setPreviewUrl(null);
     } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+
       console.error("Form submission error:", error);
+      if (
+        error instanceof Error &&
+        (
+          error.message === csrfTokenLoadErrorMessage ||
+          error.message === "Failed to fetch CSRF token" ||
+          error.message === "Missing CSRF token"
+        )
+      ) {
+        setInternalErrorMessage(csrfTokenLoadErrorMessage);
+      }
       setInternalSubmitStatus("error");
     } finally {
       setInternalIsSubmitting(false);
+      if (submitAbortControllerRef.current === controller) {
+        submitAbortControllerRef.current = null;
+      }
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (submitAbortControllerRef.current) {
+        submitAbortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
@@ -771,7 +811,7 @@ export function ContactForm({
                   <BodyText>
                     {submitStatus === "success"
                       ? "Thank you for your message. We'll get back to you soon!"
-                      : "There was an error sending your message. Please try again."}
+                      : internalErrorMessage}
                   </BodyText>
                 </Alert>
               </MotionBox>

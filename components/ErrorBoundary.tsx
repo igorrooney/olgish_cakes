@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Box, Typography, Button, Alert } from '@mui/material';
+import { Box, Typography, Button, Alert } from '@/lib/daisy-ui';
 
 interface ErrorBoundaryState {
   hasError: boolean;

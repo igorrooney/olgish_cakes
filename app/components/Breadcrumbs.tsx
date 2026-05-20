@@ -1,7 +1,6 @@
 "use client";
 
-import { Breadcrumbs as MuiBreadcrumbs, Link as MuiLink, Typography } from "@/lib/mui-optimization";
-import Link from "next/link";
+import { Breadcrumbs as MuiBreadcrumbs, Link as MuiLink, Typography } from "@/lib/daisy-ui";
 import { usePathname } from "next/navigation";
 import { designTokens } from "@/lib/design-system";
 import { useMemo } from "react";
@@ -26,7 +25,8 @@ export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
     "cakes": "Cakes",
     "birthday-cakes": "Birthday Cakes",
     "wedding-cakes": "Wedding Cakes",
-    "gift-hampers": "Gift Hampers",
+    "gift-hampers": "Cakes by post",
+    "cakes-by-post": "Cakes by post",
     "delivery-areas": "Delivery Areas",
     "cake-delivery-leeds": "Cake Delivery Leeds",
     "cakes-leeds": "Cakes Leeds",

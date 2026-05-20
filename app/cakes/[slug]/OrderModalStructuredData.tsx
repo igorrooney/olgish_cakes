@@ -1,7 +1,11 @@
-import { getPriceValidUntil } from "@/app/utils/seo";
+"use client";
+
+import { getMerchantReturnPolicy, getPriceValidUntil } from "@/app/utils/seo";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
-import { Cake } from "@/types/cake";
+import { blocksToText, Cake } from "@/types/cake";
+import { useReviewStats } from "@/app/components/ReviewStatsProvider";
+import { buildAggregateRating } from "@/app/utils/review-stats";
 
 interface OrderModalStructuredDataProps {
   cake: Cake;
@@ -14,6 +18,9 @@ export function OrderModalStructuredData({
   designType,
   currentPrice,
 }: OrderModalStructuredDataProps) {
+  const reviewStats = useReviewStats();
+  const aggregateRating = buildAggregateRating(reviewStats);
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -22,9 +29,7 @@ export function OrderModalStructuredData({
       ? typeof cake.shortDescription === "string"
         ? cake.shortDescription
         : Array.isArray(cake.shortDescription)
-          ? cake.shortDescription
-              .map((block: any) => block.children?.map((child: any) => child.text).join("") || "")
-              .join(" ")
+          ? blocksToText(cake.shortDescription)
           : ""
       : `Professional ${cake.name} cake with ${designType === "standard" ? "standard" : "custom"} design`,
     brand: {
@@ -80,14 +85,7 @@ export function OrderModalStructuredData({
         },
         appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
       },
-      hasMerchantReturnPolicy: {
-        "@type": "MerchantReturnPolicy",
-        applicableCountry: "GB",
-        returnFees: "https://schema.org/FreeReturn",
-        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-        merchantReturnDays: 14,
-        returnMethod: "https://schema.org/ReturnByMail",
-      },
+      hasMerchantReturnPolicy: getMerchantReturnPolicy(),
     },
     category: cake.category,
     additionalProperty: [
@@ -111,14 +109,14 @@ export function OrderModalStructuredData({
       // Get the best available image
       const mainImage = cake.mainImage?.asset?._ref
         ? cake.mainImage
-        : cake.designs?.standard?.find((img: any) => img.isMain && img.asset?._ref) ||
-          cake.designs?.standard?.find((img: any) => img.asset?._ref) ||
+        : cake.designs?.standard?.find((img) => img.isMain && img.asset?._ref) ||
+          cake.designs?.standard?.find((img) => img.asset?._ref) ||
           cake.designs?.standard?.[0] ||
-          cake.designs?.individual?.find((img: any) => img.isMain && img.asset?._ref) ||
-          cake.designs?.individual?.find((img: any) => img.asset?._ref) ||
+          cake.designs?.individual?.find((img) => img.isMain && img.asset?._ref) ||
+          cake.designs?.individual?.find((img) => img.asset?._ref) ||
           cake.designs?.individual?.[0] ||
           // Fallback to images array (for legacy data like Honey Cake)
-          cake.images?.find((img: any) => img.asset?._ref) ||
+          cake.images?.find((img) => img.asset?._ref) ||
           cake.images?.[0];
 
       return mainImage?.asset?._ref
@@ -126,13 +124,7 @@ export function OrderModalStructuredData({
         : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
     })(),
     url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
-    },
+    ...(aggregateRating ? { aggregateRating } : {}),
     review: [
       {
         "@type": "Review",
@@ -189,14 +181,7 @@ export function OrderModalStructuredData({
             name: "Standard Cake Design",
             description: "Our signature cake designs with premium ingredients",
           },
-          hasMerchantReturnPolicy: {
-            "@type": "MerchantReturnPolicy",
-            applicableCountry: "GB",
-            returnFees: "https://schema.org/FreeReturn",
-            returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-            merchantReturnDays: 14,
-            returnMethod: "https://schema.org/ReturnByMail",
-          },
+          hasMerchantReturnPolicy: getMerchantReturnPolicy(),
         },
         {
           "@type": "Offer",
@@ -205,14 +190,7 @@ export function OrderModalStructuredData({
             name: "Individual Cake Design",
             description: "Custom cake design with personal consultation and unlimited revisions",
           },
-          hasMerchantReturnPolicy: {
-            "@type": "MerchantReturnPolicy",
-            applicableCountry: "GB",
-            returnFees: "https://schema.org/FreeReturn",
-            returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-            merchantReturnDays: 14,
-            returnMethod: "https://schema.org/ReturnByMail",
-          },
+          hasMerchantReturnPolicy: getMerchantReturnPolicy(),
         },
       ],
     },

@@ -1,10 +1,10 @@
 "use client";
 
 import { memo, useMemo } from "react";
-import { Box, Typography, Grid, Card, CardContent, Rating, Chip, Skeleton } from "@mui/material";
+import { Box, Typography, Grid, Card, Rating, Chip } from "@/lib/daisy-ui";
 import { colors } from "@/lib/design-system";
 import type { Testimonial } from "@/app/types/testimonial";
-import { InstagramIcon, FacebookIcon, GoogleIcon } from "@/lib/mui-optimization";
+import { InstagramIcon, FacebookIcon, GoogleIcon, VerifiedIcon } from "@/lib/daisy-ui";
 import { TestimonialSkeleton } from "@/lib/skeleton-components";
 import dynamic from "next/dynamic";
 
@@ -18,6 +18,7 @@ const sourceIcons = {
   instagram: <InstagramIcon />,
   facebook: <FacebookIcon />,
   google: <GoogleIcon />,
+  trustpilot: <VerifiedIcon />,
 } as const;
 
 interface OrderTestimonialsProps {
@@ -108,7 +109,7 @@ export const OrderTestimonials = memo(function OrderTestimonials({
         </Typography>
 
         <Grid container spacing={4}>
-          {displayTestimonials.map((testimonial, index) => (
+          {displayTestimonials.map((testimonial) => (
             <Grid item xs={12} md={4} key={testimonial._id}>
               <Card sx={{ height: "100%", p: 3 }}>
                 <Box

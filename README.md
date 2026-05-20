@@ -41,7 +41,14 @@ A professional website for Olgish Cakes, featuring authentic Ukrainian cakes mad
    RESEND_API_KEY=your_resend_api_key
    NEXTAUTH_URL=http://localhost:3000
    CONTACT_EMAIL_TO=hello@olgishcakes.co.uk
+   
+   # CSRF Protection (Required for form submissions)
+   CSRF_SECRET=replace_with_openssl_rand_hex_32_output
    ```
+   
+   **Note:** For development, you can use the template values from `env.development.template`.
+   For production, use `env.production.template` and ensure `CSRF_SECRET` is set to a secure random value generated with `openssl rand -hex 32`.
+   Build-only CI can omit runtime-only secrets such as `CSRF_SECRET`, but any environment that serves requests must provide them.
    
    See [Email Setup Guide](docs/EMAIL_SETUP_GUIDE.md) for detailed email configuration.
 4. Run the development server:
@@ -56,7 +63,7 @@ A professional website for Olgish Cakes, featuring authentic Ukrainian cakes mad
 ### Unit Testing
 Run automated tests with coverage:
 ```bash
-# Run all tests
+# Run all tests (multi-project: web + api)
 pnpm test
 
 # Run tests in watch mode
@@ -64,8 +71,16 @@ pnpm test:watch
 
 # Run tests with coverage report
 pnpm run test:coverage
-```
 
+# Run only browser/jsdom tests
+pnpm run test:web
+
+# Run only API/node tests
+pnpm run test:api
+
+# Run a specific test file by path (works for both projects)
+pnpm run test:file -- app/api/contact/__tests__/route.test.ts
+```
 ### Schema Validation
 Validate all structured data before deployment:
 ```bash
@@ -193,3 +208,20 @@ To restore a backup:
 - **[Validation Guide](docs/SCHEMA_VALIDATION_GUIDE.md)** - How to validate schemas
 - **[Email Setup Guide](docs/EMAIL_SETUP_GUIDE.md)** - Configure email notifications for orders and contact forms
 - **[Improvements Summary](IMPROVEMENTS_SUMMARY.md)** - Recent enhancements
+
+
+## Email Testing Workflow (Internal)
+
+- `lib/email/templates/*` is the single source of truth for email rendering in both production routes and `/admin/email-test`.
+- `/admin/email-test` previews and real sends use the same template registry output 1:1.
+- Use `EMAIL_TRANSPORT_MODE=capture` in local development to avoid consuming real Resend quota.
+- Real-send is blocked unless:
+  - `EMAIL_REAL_SEND_ENABLED=true`
+  - recipient is listed in `EMAIL_TEST_RECIPIENT_ALLOWLIST`
+  - you are authenticated in `/admin` (valid `admin_auth_token` cookie).
+- Scenario presets are available per template; optional `scenarioId` can be passed to `/api/dev/email-preview` and `/api/dev/email-test-send`.
+- In CI, keep email transport in `capture` or `disabled`.
+
+
+
+

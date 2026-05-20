@@ -63,6 +63,8 @@ class InternalLinkingOptimizer {
         '/cake-tasting-sessions': ['/wedding-cakes', '/custom-cake-design']
       }
     };
+    this.reportDir = path.join(__dirname, '../reports/generated');
+    fs.mkdirSync(this.reportDir, { recursive: true });
   }
 
   // Generate anchor text variations for natural linking
@@ -427,7 +429,7 @@ class InternalLinkingOptimizer {
   // Save comprehensive report
   saveReport() {
     const report = this.generateReport();
-    const reportPath = path.join(__dirname, '../internal-linking-report.json');
+    const reportPath = path.join(this.reportDir, 'internal-linking-report.json');
     
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
     console.log(`🔗 Internal linking report saved to: ${reportPath}`);

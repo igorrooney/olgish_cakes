@@ -22,6 +22,9 @@ import {
   RecipeStructuredData
 } from '../StructuredData'
 
+type StructuredDataProps = React.ComponentProps<typeof StructuredData>
+type StructuredDataType = StructuredDataProps['type']
+
 // Mock all SEO utils
 jest.mock('@/app/utils/seo', () => ({
   generateOrganizationSchema: jest.fn(() => ({ '@type': 'Organization', name: 'Olgish Cakes' })),
@@ -119,7 +122,7 @@ describe('StructuredData', () => {
     allTypes.forEach(type => {
       it(`should handle ${type} type`, () => {
         const data = type === 'aggregateRating' ? { rating: 5, reviewCount: 10 } : {}
-        render(<StructuredData type={type as any} data={data} />)
+        render(<StructuredData type={type as StructuredDataType} data={data} />)
 
         const script = document.head.querySelector('script')
         expect(script).toBeTruthy()
@@ -127,7 +130,7 @@ describe('StructuredData', () => {
     })
 
     it('should return early for invalid type', () => {
-      render(<StructuredData type={'invalid' as any} data={{}} />)
+      render(<StructuredData type={'invalid' as unknown as StructuredDataType} data={{}} />)
 
       const scripts = document.head.querySelectorAll('script')
       expect(scripts.length).toBe(0)
@@ -241,4 +244,3 @@ describe('StructuredData', () => {
     })
   })
 })
-

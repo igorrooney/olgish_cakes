@@ -1,4 +1,4 @@
-import { createClient, SanityClient } from "next-sanity";
+import { createClient } from "next-sanity";
 import { client as baseClient } from "./client";
 import { ReactNode, ReactElement } from "react";
 

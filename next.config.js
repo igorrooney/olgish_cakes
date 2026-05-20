@@ -14,12 +14,19 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "**.cdninstagram.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
-    dangerouslyAllowSVG: true,
     formats: ["image/avif", "image/webp"],
+    qualities: [45, 50, 54, 55, 56, 64, 75, 76, 78, 80, 82],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    deviceSizes: [384, 480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    dangerouslyAllowLocalIP: process.env.NEXT_IMAGE_ALLOW_LOCAL_IP === "true",
     // Enhanced performance settings
     // Disable optimization in development to bypass private IP check
     unoptimized: process.env.NODE_ENV === "development",
@@ -33,22 +40,19 @@ const nextConfig = {
   turbopack: {},
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ["@mui/material", "@mui/icons-material", "framer-motion"],
+    optimizePackageImports: ["framer-motion"],
     // Enable new performance optimizations
     optimizeServerReact: true,
     // Enable modern JavaScript features
     esmExternals: true,
+    // Inline CSS wins for first-load mobile LCP in Lighthouse despite duplicated RSC bytes.
+    inlineCss: true,
     // Performance optimizations
     webVitalsAttribution: ["CLS", "LCP", "FCP", "FID", "TTFB"],
   },
-  // Modularize imports for better tree-shaking and HMR support
-  modularizeImports: {
-    "@mui/icons-material": {
-      transform: "@mui/icons-material/{{member}}",
-    },
-  },
   // Server external packages (moved from experimental in Next.js 16)
-  serverExternalPackages: ["@sanity/client"],
+  // Removed @sanity/client to avoid version mismatch warnings in Studio
+  serverExternalPackages: [],
   // Enhanced performance settings
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
@@ -63,13 +67,13 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              // unsafe-eval required for Sanity Studio, unsafe-inline for Google Analytics
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io https://*.googletagmanager.com https://*.google-analytics.com https://vercel.live",
+              // unsafe-eval is development-only; production scripts must come from trusted origins.
+              `script-src 'self' ${process.env.NODE_ENV === "development" ? "'unsafe-eval' " : ""}'unsafe-inline' https://cdn.sanity.io https://*.googletagmanager.com https://*.google-analytics.com https://vercel.live https://va.vercel-scripts.com https://*.clarity.ms`,
               // unsafe-inline required for Google Fonts and Sanity Studio styles
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://vercel.live",
               "img-src 'self' data: blob: https: http:",
-              "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io https://*.google-analytics.com https://*.googletagmanager.com https://vercel.live wss://vercel.live",
+              "font-src 'self' data: https://fonts.gstatic.com https://vercel.live",
+              "connect-src 'self' https://cdn.sanity.io https://*.sanity.io wss://*.sanity.io wss://*.api.sanity.io https://*.google-analytics.com https://*.googletagmanager.com https://vercel.live wss://vercel.live wss://ws-us3.pusher.com https://va.vercel-scripts.com https://*.clarity.ms https://c.bing.com",
               "frame-src 'self' https://www.youtube.com https://player.vimeo.com https://*.googletagmanager.com https://vercel.live",
               "object-src 'none'",
               "base-uri 'self'",
@@ -123,11 +127,11 @@ const nextConfig = {
         ],
       },
       {
-        source: "/_next/static/(.*)",
+        source: "/sw.js",
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
+            value: "no-cache, no-store, must-revalidate",
           },
         ],
       },
@@ -141,6 +145,19 @@ const nextConfig = {
           {
             key: "Access-Control-Allow-Origin",
             value: "*",
+          },
+        ],
+      },
+      {
+        source: "/runtime/klaro/v0.7/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
           },
         ],
       },
@@ -171,26 +188,138 @@ const nextConfig = {
           },
         ],
       },
-      // API routes caching - reduced for better data freshness
+      // Catalog API payloads remain cacheable but should never be indexed
       {
-        source: "/api/(.*)",
+        source: "/api/catalog/(.*)",
         headers: [
-          {
-            key: "Cache-Control",
-            value: "no-cache, no-store, must-revalidate",
-          },
-          {
-            key: "Pragma",
-            value: "no-cache",
-          },
-          {
-            key: "Expires",
-            value: "0",
-          },
-          {
-            key: "X-Robots-Tag",
-            value: "noindex, nofollow",
-          },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      // Non-cacheable API routes
+      {
+        source: "/api/admin/(.*)",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/orders/(.*)",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/revalidate",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/merchant-center/revalidate",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/merchant-center/test",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/merchant-center/validate",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/backup-(.*)",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/contact",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/quote",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/custom-cake-enquiry",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/test-sanity-write",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/test-email",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/csrf-token",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/api/search",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
         ],
       },
       // Static assets caching
@@ -205,75 +334,19 @@ const nextConfig = {
       },
     ];
   },
-  // Enhanced webpack configuration
   webpack: (config, { dev, isServer }) => {
-    // Optimize bundle size
     if (!dev && !isServer) {
-      config.optimization.splitChunks = {
-        chunks: "all",
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: "vendors",
-            chunks: "all",
-            priority: 10,
-            reuseExistingChunk: true,
-          },
-          mui: {
-            test: /[\\/]node_modules[\\/]@mui[\\/]/,
-            name: "mui",
-            chunks: "all",
-            priority: 20,
-            reuseExistingChunk: true,
-          },
-          sanity: {
-            test: /[\\/]node_modules[\\/]@sanity[\\/]/,
-            name: "sanity",
-            chunks: "all",
-            priority: 15,
-            reuseExistingChunk: true,
-          },
-          icons: {
-            test: /[\\/]node_modules[\\/]@mui[\\/]icons-material[\\/]/,
-            name: "mui-icons",
-            chunks: "all",
-            priority: 25,
-            reuseExistingChunk: true,
-          },
-          common: {
-            name: "common",
-            minChunks: 2,
-            chunks: "all",
-            priority: 5,
-            reuseExistingChunk: true,
-          },
-          // Separate emotion cache
-          emotion: {
-            test: /[\\/]node_modules[\\/]@emotion[\\/]/,
-            name: "emotion",
-            chunks: "all",
-            priority: 15,
-            reuseExistingChunk: true,
-          },
-        },
-      };
-
-      // Enable tree shaking
       config.optimization.usedExports = true;
       config.optimization.sideEffects = false;
 
-      // Enhanced performance optimizations
       config.optimization.mergeDuplicateChunks = true;
       config.optimization.removeAvailableModules = true;
       config.optimization.removeEmptyChunks = true;
       config.optimization.providedExports = true;
 
-      // Optimize module resolution
       config.resolve.symlinks = false;
       config.resolve.cacheWithContext = false;
     }
-
-    // Rely on Next.js built-in Image Optimization instead of custom loaders
 
     // Optimize CSS
     if (!dev) {
@@ -284,6 +357,13 @@ const nextConfig = {
   },
   // Enhanced redirects for SEO
   async redirects() {
+    const createRedirects = (sources, destination) =>
+      sources.map((source) => ({
+        source,
+        destination,
+        permanent: true,
+      }));
+
     return [
       {
         source: "/home",
@@ -307,9 +387,157 @@ const nextConfig = {
       },
       {
         source: "/order/amp",
-        destination: "/order",
+        destination: "/get-custom-quote",
         permanent: true,
       },
+      {
+        source: "/gift-hampers/:slug",
+        destination: "/cakes-by-post/:slug",
+        permanent: true,
+      },
+      {
+        source: "/honey-cake",
+        destination: "/cakes/honey-cake",
+        permanent: true,
+      },
+      {
+        source: "/honey-cake-near-me",
+        destination: "/blog/medovik-honey-cake-near-me-guide",
+        permanent: true,
+      },
+      {
+        source: "/ukrainian-cake",
+        destination: "/blog/ukrainian-cakes-guide",
+        permanent: true,
+      },
+      {
+        source: "/cake-delivery-leeds",
+        destination: "/blog/cake-delivery-leeds-guide",
+        permanent: true,
+      },
+      {
+        source: "/nut-free-cakes-leeds",
+        destination: "/blog/nut-free-cakes-leeds-guide",
+        permanent: true,
+      },
+      {
+        source: "/cake-preservation",
+        destination: "/blog/cake-storage-and-preservation-guide",
+        permanent: true,
+      },
+      {
+        source: "/cake-size-guide",
+        destination: "/blog/cake-size-and-portions-guide",
+        permanent: true,
+      },
+      {
+        source: "/custom-cake-enquiry",
+        destination: "/get-custom-quote",
+        permanent: true,
+      },
+      {
+        source: "/learn/articles",
+        destination: "/blog",
+        permanent: true,
+      },
+      ...createRedirects(
+        [
+          "/market-schedule",
+          "/reviews-awards",
+          "/about",
+          "/accessibility",
+          "/customer-stories"
+        ],
+        "/"
+      ),
+      ...createRedirects(["/allergen-information"], "/allergens"),
+      ...createRedirects(["/faq"], "/faqs"),
+      ...createRedirects(["/custom-cake-design"], "/custom-cakes"),
+      ...createRedirects(["/delivery-areas", "/return-policy"], "/delivery"),
+      ...createRedirects(
+        [
+          "/buy-cake",
+          "/cake-gallery",
+          "/cake-in-leeds",
+          "/cake-photography",
+          "/cakes-bradford",
+          "/cakes-halifax",
+          "/cakes-huddersfield",
+          "/cakes-ilkley",
+          "/cakes-leeds",
+          "/cakes-otley",
+          "/cakes-pudsey",
+          "/cakes-skipton",
+          "/cakes-wakefield",
+          "/cakes-york",
+          "/gift-cards",
+          "/seasonal-cakes",
+          "/cake-delivery",
+          "/cake-tasting-sessions",
+          "/charity-events",
+          "/christmas-cakes-leeds",
+          "/dairy-free-cakes-leeds",
+          "/easter-cakes-leeds",
+          "/egg-free-cakes-leeds",
+          "/father-day-cakes-leeds",
+          "/gluten-friendly-ukrainian-cakes",
+          "/gluten-friendly-wedding-cakes-leeds",
+          "/graduation-cakes-leeds",
+            "/halloween-cakes-leeds",
+            "/mother-day-cakes-leeds",
+            "/retirement-cakes-leeds",
+            "/celebration-cakes",
+            "/search",
+            "/valentines-cakes-leeds",
+            "/vegan-cakes-leeds",
+            "/vegan-wedding-cakes-leeds",
+          "/wakefield-wedding-cakes",
+          "/wedding-cake-gallery",
+        ],
+        "/cakes"
+      ),
+      ...createRedirects(["/order", "/order/leeds", "/cake-pricing"], "/get-custom-quote"),
+      {
+        source: "/gift-hampers/:slug",
+        destination: "/cakes-by-post/:slug",
+        permanent: true,
+      },
+      ...createRedirects(
+        ["/gift-hampers", "/cake-by-post-service", "/cake-postal-delivery"],
+        "/cakes-by-post"
+      ),
+      ...createRedirects(
+        [
+          "/best-cakes-for-birthdays",
+          "/best-cakes-for-weddings",
+          "/best-cakes-leeds",
+          "/birthday-cake-gallery",
+          "/cake-care-storage",
+          "/cake-decorating-services",
+          "/cake-flavor-guide",
+          "/cake-flavors",
+          "/cake-shipping",
+          "/cake-sizes-guide",
+          "/honey-cake-history",
+          "/honey-cake-vs-kyiv-cake",
+          "/how-to-make-honey-cake",
+          "/how-to-order",
+          "/leeds-bakery",
+          "/testimonials",
+          "/ukrainian-bakery-leeds",
+          "/ukrainian-baking-classes",
+          "/ukrainian-baking-traditions",
+          "/ukrainian-cake-recipes",
+          "/ukrainian-cake-vs-british-cake",
+          "/ukrainian-celebrations",
+          "/ukrainian-christmas-traditions",
+          "/ukrainian-community-leeds",
+          "/ukrainian-culture-baking",
+          "/ukrainian-wedding-traditions",
+          "/ultimate-ukrainian-cake-guide",
+        ],
+        "/blog"
+      ),
     ];
   },
   // Note: rely on Next.js app/sitemap.ts for /sitemap.xml
@@ -322,3 +550,4 @@ const nextConfig = {
 };
 
 export default nextConfig;
+

@@ -1,0 +1,34 @@
+[Olgish Cakes]
+Order out for delivery
+
+Dear Igor Ieromenko,
+
+Great news! Your order has been dispatched via Royal Mail. You can use the tracking number below to follow delivery.
+
+Order Summary
+Order Number    26051220022842
+Product Personalised Congratulations Cake Card
+Quantity        1
+Date needed     26/05/2026
+Total Amount    £8.95
+Payment status  Paid
+
+Delivery Details
+Delivery method By post
+Delivery address        15 Allerton Grange Avenue, Leeds, LS17 6PR
+Tracking number 1234567
+
+Customer Notes
+Notes   test message
+
+Gift Details
+Gift note       test gift note
+
+Next step
+Your order has been posted. You can use the tracking number above to follow delivery.
+
+
+Questions about your order? We're here to help.
+
+hello@olgishcakes.co.uk<mailto:hello@olgishcakes.co.uk>
++44 7867 218194<tel:+447867218194>

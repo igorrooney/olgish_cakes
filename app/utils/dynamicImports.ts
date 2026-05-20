@@ -20,12 +20,6 @@ export const dynamicImports = {
   //   ssr: false,
   // }),
 
-  // Blog components
-  // BlogClient: dynamic(() => import("@/app/blog/BlogClient"), {
-  //   loading: () => <div className="animate-pulse bg-gray-200 h-64 rounded" />,
-  //   ssr: false,
-  // }),
-
   // Admin components
   // AdminGuard: dynamic(() => import("@/app/components/AdminGuard"), {
   //   loading: () => <div className="animate-pulse bg-gray-200 h-32 rounded" />,
@@ -53,8 +47,7 @@ export const dynamicImports = {
 export function preloadComponents() {
   if (typeof window !== "undefined") {
     // Preload components that are likely to be needed
-    // import("@/app/components/Header");
-    // import("@/app/components/Footer");
+    // import("@/app/components/homepage/SiteHeader");
     // import("@/app/components/CakeCard");
   }
 }

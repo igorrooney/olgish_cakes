@@ -140,8 +140,6 @@ function auditSEO() {
     { path: "app/robots.ts", name: "robots.ts" },
     { path: "app/sitemap.ts", name: "sitemap.ts" },
     { path: "app/layout.tsx", name: "layout.tsx" },
-    { path: "public/robots.txt", name: "robots.txt" },
-    { path: "public/sitemap.xml", name: "sitemap.xml" },
     { path: "public/manifest.json", name: "manifest.json" },
     { path: "public/favicon.ico", name: "favicon.ico" },
   ];

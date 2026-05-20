@@ -1,6 +1,47 @@
-import { client, getClient, USE_REAL_TIME_DATA } from "@/sanity/lib/client";
+import { getClient } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 import { Cake } from "@/types/cake";
+import { CakesFeaturedOffer } from "@/types/cakeFeaturedOffer";
+import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
+import { CAKE_BY_SLUG_QUERY, CAKES_FEATURED_OFFER_QUERY } from "@/lib/queries/cakes";
+import { PRODUCTS_DISPLAY_ORDER_QUERY } from "@/lib/queries/productsDisplayOrder";
+import { getSanityCdnImageUrl } from "@/lib/utils/image-url";
+
+interface FeaturedOfferImageQueryResult {
+  alt?: string
+  asset?: {
+    url?: string
+  }
+}
+
+interface CakesFeaturedOfferQueryResult {
+  isActive?: boolean
+  eyebrow?: string
+  title?: string
+  description?: string
+  ctaLabel?: string
+  overrideImage?: FeaturedOfferImageQueryResult
+  featuredCake?: {
+    name?: string
+    slug?: {
+      current?: string
+    }
+    mainImage?: FeaturedOfferImageQueryResult
+  }
+}
+
+interface ProductReference {
+  _ref: string
+}
+
+interface ProductsDisplayOrder {
+  cakesOrder?: ProductReference[]
+}
+
+interface CakesQueryResult {
+  cakes?: Cake[]
+  displayOrder?: ProductsDisplayOrder | null
+}
 
 // Helper function to validate Sanity environment variables at runtime
 function validateSanityConfig() {
@@ -18,81 +59,207 @@ function validateSanityConfig() {
   }
 }
 
-// Cache configuration based on real-time setting
-const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = USE_REAL_TIME_DATA
-  ? 0
-  : process.env.NODE_ENV === "development"
-    ? 10 * 1000 // Reduced to 10 seconds for development
-    : 60 * 1000; // Reduced to 1 minute for production
+// Revalidation settings for backwards compatibility (no time-based revalidation)
+const REVALIDATE_TIME = 0
 
-// Revalidation settings - more aggressive for better data freshness
-const REVALIDATE_TIME = USE_REAL_TIME_DATA ? 0 : process.env.NODE_ENV === "development" ? 0 : 60;
-
-function getCachedData<T>(key: string): T | null {
-  if (USE_REAL_TIME_DATA) {
-    return null; // No caching for real-time data
+function mapCakesFeaturedOffer(data: CakesFeaturedOfferQueryResult | null): CakesFeaturedOffer | null {
+  if (data?.isActive === false) {
+    return null
   }
 
-  const cached = cache.get(key);
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    return cached.data as T;
+  const cakeSlug = data?.featuredCake?.slug?.current
+
+  if (!cakeSlug) {
+    return null
   }
-  return null;
+
+  const rawImageUrl = data.overrideImage?.asset?.url
+    || data.featuredCake?.mainImage?.asset?.url
+    || '/images/placeholder-cake.jpg'
+  const imageUrl = getSanityCdnImageUrl(rawImageUrl, {
+    width: 560,
+    height: 560,
+    fit: 'crop',
+    quality: 78
+  }) ?? rawImageUrl
+
+  const imageAlt = data.overrideImage?.alt
+    || data.featuredCake?.mainImage?.alt
+    || `${data.featuredCake?.name || 'Featured cake'} by Olgish Cakes`
+
+  return {
+    eyebrow: data.eyebrow?.trim() || 'Featured',
+    title: data.title?.trim() || 'FREE Honey Cake Offer',
+    description: data.description?.trim() || 'For a limited time enjoy some honey cake on us.\nNo strings attached.',
+    ctaLabel: data.ctaLabel?.trim() || 'Get free honey cake',
+    cakeSlug,
+    imageUrl,
+    imageAlt
+  }
 }
 
-function setCachedData<T>(key: string, data: T): void {
-  if (!USE_REAL_TIME_DATA) {
-    cache.set(key, { data, timestamp: Date.now() });
+function normalizeDocumentId(documentId: string) {
+  return documentId.startsWith('drafts.')
+    ? documentId.slice('drafts.'.length)
+    : documentId
+}
+
+function createManualOrderMap(references: ProductReference[] | undefined): Map<string, number> {
+  const manualOrderMap = new Map<string, number>()
+
+  if (!references) {
+    return manualOrderMap
+  }
+
+  references.forEach((reference, index) => {
+    if (!reference?._ref) {
+      return
+    }
+
+    const normalizedId = normalizeDocumentId(reference._ref)
+
+    if (!manualOrderMap.has(normalizedId)) {
+      manualOrderMap.set(normalizedId, index)
+    }
+  })
+
+  return manualOrderMap
+}
+
+function getLegacyOrderValue(cake: Cake) {
+  return typeof cake.order === 'number'
+    ? cake.order
+    : Number.MAX_SAFE_INTEGER
+}
+
+function compareCakesByFallbackOrder(firstCake: Cake, secondCake: Cake) {
+  const firstLegacyOrder = getLegacyOrderValue(firstCake)
+  const secondLegacyOrder = getLegacyOrderValue(secondCake)
+
+  if (firstLegacyOrder !== secondLegacyOrder) {
+    return firstLegacyOrder - secondLegacyOrder
+  }
+
+  const firstCreatedAt = Date.parse(firstCake._createdAt)
+  const secondCreatedAt = Date.parse(secondCake._createdAt)
+  const hasValidCreatedAt = Number.isFinite(firstCreatedAt) && Number.isFinite(secondCreatedAt)
+
+  if (hasValidCreatedAt && firstCreatedAt !== secondCreatedAt) {
+    return secondCreatedAt - firstCreatedAt
+  }
+
+  return firstCake.name.localeCompare(secondCake.name)
+}
+
+function sortCakesByDisplayOrder(cakes: Cake[], references: ProductReference[] | undefined) {
+  const manualOrderMap = createManualOrderMap(references)
+
+  return [...cakes].sort((firstCake, secondCake) => {
+    const firstManualRank = manualOrderMap.get(normalizeDocumentId(firstCake._id))
+    const secondManualRank = manualOrderMap.get(normalizeDocumentId(secondCake._id))
+    const firstHasManualRank = firstManualRank !== undefined
+    const secondHasManualRank = secondManualRank !== undefined
+
+    if (manualOrderMap.size > 0 && firstHasManualRank !== secondHasManualRank) {
+      return firstHasManualRank ? 1 : -1
+    }
+
+    if (
+      firstManualRank !== undefined &&
+      secondManualRank !== undefined &&
+      firstManualRank !== secondManualRank
+    ) {
+      return firstManualRank - secondManualRank
+    }
+
+    return compareCakesByFallbackOrder(firstCake, secondCake)
+  })
+}
+
+function extractCakesAndOrder(
+  data: CakesQueryResult | Cake[] | null
+) {
+  if (Array.isArray(data)) {
+    return {
+      cakes: data,
+      references: undefined
+    }
+  }
+
+  return {
+    cakes: data?.cakes ?? [],
+    references: data?.displayOrder?.cakesOrder
   }
 }
 
 export async function getAllCakes(preview = false): Promise<Cake[]> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
-  
-  const cacheKey = `all-cakes-${preview ? "preview" : "published"}`;
-  const cached = getCachedData<Cake[]>(cacheKey);
-  if (cached && !preview) return cached;
 
-  const query = `*[_type == "cake"] | order(order asc, _createdAt desc) {
-    _id,
-    _createdAt,
-    name,
-    slug,
-    description,
-    shortDescription,
-    size,
-    pricing,
-    order,
-    mainImage {
-      _type,
-      asset
-    },
-    images {
-      _type,
-      asset
-    },
-    designs {
-      standard[] {
+  const query = `{
+    "cakes": *[_type == "cake"] | order(order asc, _createdAt desc) {
+      _id,
+      _createdAt,
+      name,
+      slug,
+      description,
+      shortDescription,
+      bestsellerCustomerStory,
+      bestsellerStoryDetails,
+      bestsellerShortDescription,
+      size,
+      pricing,
+      newDesignPricingByServings,
+      order,
+      isBestseller,
+      mainImage {
         _type,
-        asset,
-        isMain
-      }
+        asset
+      },
+      images {
+        _type,
+        asset
+      },
+      designs {
+        standard[] {
+          _type,
+          asset,
+          isMain
+        }
+      },
+      "category": coalesce(category, collections[0]->name, "Traditional"),
+      collections[]->{
+        _id,
+        name,
+        isFeatured
+      },
+      ingredients,
+      allergens
     },
-    category,
-    ingredients,
-    allergens
+    "displayOrder": ${PRODUCTS_DISPLAY_ORDER_QUERY}
   }`;
 
   try {
-    const sanityClient = getClient(preview);
-    const data = await sanityClient.fetch(query);
+    if (preview) {
+      // For preview, use direct fetch without caching
+      const sanityClient = getClient(preview);
+      const data = await sanityClient.fetch<CakesQueryResult | Cake[]>(query);
+      const {
+        cakes,
+        references
+      } = extractCakesAndOrder(data)
 
-    if (!preview) {
-      setCachedData(cacheKey, data);
+      return sortCakesByDisplayOrder(cakes, references)
     }
-    return data;
+
+    const config = getCacheConfig('cakes')
+    const data = await cachedSanityFetch<CakesQueryResult | Cake[]>(query, {}, config)
+    const {
+      cakes,
+      references
+    } = extractCakesAndOrder(data)
+
+    return sortCakesByDisplayOrder(cakes, references)
   } catch (error) {
     console.error("Error fetching all cakes:", error);
     return [];
@@ -102,10 +269,6 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
 export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
-  
-  const cacheKey = `featured-cakes-${preview ? "preview" : "published"}`;
-  const cached = getCachedData<Cake[]>(cacheKey);
-  if (cached && !preview) return cached;
 
   const query = groq`*[_type == "cake" && isFeatured == true] | order(order asc, _createdAt desc) {
     _id,
@@ -113,7 +276,12 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
     description,
     shortDescription,
     pricing,
-    category,
+    "category": coalesce(category, collections[0]->name, "Traditional"),
+    collections[]->{
+      _id,
+      name,
+      isFeatured
+    },
     slug,
     order,
     mainImage {
@@ -127,117 +295,94 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
         },
         isMain
       }
-    }
+    },
   }`;
 
   try {
-    const sanityClient = getClient(preview);
-    const data = await sanityClient.fetch(query);
-
-    if (!preview) {
-      setCachedData(cacheKey, data);
+    if (preview) {
+      // For preview, use direct fetch without caching
+      const sanityClient = getClient(preview);
+      return await sanityClient.fetch(query);
     }
-    return data;
+
+    const config = getCacheConfig('cakes')
+    const data = await cachedSanityFetch<Cake[]>(query, {}, config)
+    return data
   } catch (error) {
     console.error("Error fetching featured cakes:", error);
     return [];
   }
 }
 
+export async function getCakesFeaturedOffer(preview = false): Promise<CakesFeaturedOffer | null> {
+  validateSanityConfig();
+
+  try {
+    if (preview) {
+      const sanityClient = getClient(preview);
+      const data = await sanityClient.fetch<CakesFeaturedOfferQueryResult | null>(CAKES_FEATURED_OFFER_QUERY);
+      return mapCakesFeaturedOffer(data)
+    }
+
+    const config = getCacheConfig('cakesFeaturedOffer')
+    const data = await cachedSanityFetch<CakesFeaturedOfferQueryResult | null>(
+      CAKES_FEATURED_OFFER_QUERY,
+      {},
+      config
+    )
+
+    return mapCakesFeaturedOffer(data)
+  } catch (error) {
+    console.error("Error fetching cakes featured offer:", error);
+    return null
+  }
+}
+
 export async function getCakeBySlug(slug: string, preview = false): Promise<Cake | null> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
-  
-  const cacheKey = `cake-${slug}-${preview ? "preview" : "published"}`;
-  const cached = getCachedData<Cake>(cacheKey);
-  if (cached && !preview) return cached;
-
-  const query = `*[_type == "cake" && slug.current == $slug][0] {
-    _id,
-    _createdAt,
-    name,
-    slug,
-    description,
-    shortDescription,
-    size,
-    pricing,
-    order,
-    mainImage {
-      _type,
-      asset
-    },
-    images {
-      _type,
-      asset
-    },
-    designs {
-      standard[] {
-        _type,
-        asset,
-        isMain,
-        alt
-      },
-      individual[] {
-        _type,
-        asset,
-        isMain,
-        alt
-      }
-    },
-    category,
-    ingredients,
-    allergens
-  }`;
+  const query = CAKE_BY_SLUG_QUERY;
 
   try {
-    const sanityClient = getClient(preview);
-    const data = await sanityClient.fetch(query, { slug });
-
-    if (data && !preview) {
-      setCachedData(cacheKey, data);
+    if (preview) {
+      // For preview, use direct fetch without caching
+      const sanityClient = getClient(preview);
+      return await sanityClient.fetch(query, { slug });
     }
-    return data;
+
+    const config = getCacheConfig('individualPages')
+    const data = await cachedSanityFetch<Cake | null>(query, { slug }, config)
+    return data
   } catch (error) {
     console.error("Error fetching cake by slug:", error);
     return null;
   }
 }
 
-// Revalidation helper
+// Revalidation helper for backwards compatibility
 export function getRevalidateTime(): number {
   return REVALIDATE_TIME;
 }
 
-// Clear cache function
+// Cache invalidation - now handled by Next.js cache tags
+// These functions are kept for backwards compatibility but don't do anything
+// Cache invalidation should be done via revalidateTag() in API routes
 export function clearCache(): void {
-  cache.clear();
+  // No-op: cache is now managed by Next.js
 }
 
-// Cache invalidation
-export async function invalidateCache(pattern?: string): Promise<void> {
-  if (pattern) {
-    // Clear specific cache entries
-    for (const key of cache.keys()) {
-      if (key.includes(pattern)) {
-        cache.delete(key);
-      }
-    }
-  } else {
-    // Clear all cache
-    cache.clear();
-  }
+export async function invalidateCache(_pattern?: string): Promise<void> {
+  // No-op: cache is now managed by Next.js via tags
+  // Use revalidateTag() from 'next/cache' in API routes instead
 }
 
-// Development cache busting - add timestamp to force fresh data
 export function getCacheBustingKey(baseKey: string): string {
-  if (process.env.NODE_ENV === "development") {
-    return `${baseKey}-${Date.now()}`;
-  }
+  // No-op: cache keys are managed automatically
   return baseKey;
 }
 
-// Force refresh data (bypass cache)
 export async function forceRefreshCakes(): Promise<Cake[]> {
-  cache.clear();
+  // Note: This will still use cache until revalidation period expires
+  // For immediate refresh, use revalidateTag('cakes') from an API route
   return getAllCakes();
 }

@@ -1,0 +1,29 @@
+@config "../../tailwind.config.cjs";
+@layer theme, base, components, utilities;
+@import "tailwindcss/utilities.css" layer(utilities) source(none);
+
+@theme {
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+}
+
+@plugin "daisyui" {
+  themes: olgish-cakes --default;
+  root: ":root";
+  include: alert, badge, button, card, divider, drawer, input, link, loading, menu, select, table, textarea;
+  logs: false;
+}
+@source ".";
+@source "../../components/AdminAuthGuard.tsx";
+@source not "./**/__tests__";
+@source not "./**/__tests__/**";
+
+body:has([data-admin-root]) .public-root-consent,
+body:has([data-admin-root]) .public-root-deferred-features,
+body:has([data-admin-root]) .public-root-header,
+body:has([data-admin-root]) .public-root-footer {
+  display: none;
+}

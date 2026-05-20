@@ -1,6 +1,17 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "framework": "nextjs",
+  "crons": [
+    {
+      "path": "/api/cron/revalidate-articles",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/instagram-token-reminder",
+      "schedule": "0 8 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

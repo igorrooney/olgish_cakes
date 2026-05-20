@@ -8,7 +8,7 @@ import AnimatedWrapper from '../AnimatedWrapper'
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>
+    div: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>
   }
 }))
 

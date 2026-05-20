@@ -5,17 +5,19 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { RichTextRenderer } from '../RichTextRenderer'
 
+type RichTextValue = React.ComponentProps<typeof RichTextRenderer>['value']
+
 // Mock PortableText
 jest.mock('@portabletext/react', () => ({
-  PortableText: ({ value, components }: any) => {
+  PortableText: ({ value, components }: MockProps) => {
     if (!value || value.length === 0) return null
     
     return (
       <div data-testid="portable-text">
-        {value.map((block: any, index: number) => {
+        {value.map((block: UnknownRecord, index: number) => {
           if (block._type === 'block') {
             const Component = components.block[block.style] || components.block.normal
-            return <Component key={index}>{block.children?.map((child: any) => child.text).join('')}</Component>
+            return <Component key={index}>{block.children?.map((child: UnknownRecord) => child.text).join('')}</Component>
           }
           return null
         })}
@@ -25,16 +27,16 @@ jest.mock('@portabletext/react', () => ({
 }))
 
 // Mock MUI
-jest.mock('@/lib/mui-optimization', () => ({
-  Typography: ({ children, variant, component, sx, ...props }: any) => {
+jest.mock('@/lib/daisy-ui', () => ({
+  Typography: ({ children, variant, component, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="typography" data-variant={variant} {...props}>{children}</Component>
   },
-  Box: ({ children, component, sx, ...props }: any) => {
+  Box: ({ children, component, sx, ...props }: MockProps) => {
     const Component = component || 'div'
     return <Component data-testid="box" {...props}>{children}</Component>
   },
-  Link: ({ children, href, target, rel, sx, ...props }: any) => (
+  Link: ({ children, href, target, rel, sx, ...props }: MockProps) => (
     <a data-testid="link" href={href} target={target} rel={rel} {...props}>{children}</a>
   )
 }))
@@ -167,13 +169,13 @@ describe('RichTextRenderer', () => {
     })
 
     it('should handle null value', () => {
-      const { container } = render(<RichTextRenderer value={null as any} />)
+      const { container } = render(<RichTextRenderer value={null as unknown as RichTextValue} />)
 
       expect(container.innerHTML).toBeFalsy()
     })
 
     it('should handle undefined value', () => {
-      const { container } = render(<RichTextRenderer value={undefined as any} />)
+      const { container } = render(<RichTextRenderer value={undefined as unknown as RichTextValue} />)
 
       expect(container.innerHTML).toBeFalsy()
     })
@@ -205,4 +207,3 @@ describe('RichTextRenderer', () => {
     })
   })
 })
-

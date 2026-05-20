@@ -2,14 +2,17 @@
 
 import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
 import { designTokens } from "@/lib/design-system";
-import { Box, CardContent, Typography } from "@/lib/mui-optimization";
+import { Box, CardContent, Typography } from "@/lib/daisy-ui";
 import { OutlineButton, PriceDisplay, ProductCard } from "@/lib/ui-components";
+import { getSanityCdnImageUrl } from "@/lib/utils/image-url";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
 import { Cake, blocksToText } from "@/types/cake";
 import Image from "next/image";
 import Link from "next/link";
 import { memo, useCallback, useMemo, useState } from "react";
+import { useReviewStats } from "./ReviewStatsProvider";
+import { formatRatingValue, formatReviewCount } from "@/app/utils/review-stats";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -21,6 +24,20 @@ interface CakeCardProps {
 const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardProps): React.JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const price = cake.pricing?.standard || 0;
+  const reviewStats = useReviewStats();
+  const ratingValue = formatRatingValue(reviewStats.averageRating);
+  const reviewCount = formatReviewCount(reviewStats.count);
+  const aggregateRating = useMemo(() => {
+    return reviewStats.count > 0
+      ? {
+          "@type": "AggregateRating",
+          ratingValue,
+          reviewCount,
+          bestRating: "5",
+          worstRating: "1",
+        }
+      : null;
+  }, [ratingValue, reviewCount, reviewStats.count]);
 
   // Memoize expensive computations
   const mainImage = useMemo(() => {
@@ -43,7 +60,18 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
   }, [cake.name, cake.category]);
 
   const imageUrl = useMemo(() => {
-    return mainImage?.asset?._ref ? urlFor(mainImage).width(800).height(800).url() : placeholderUrl;
+    if (!mainImage?.asset?._ref) {
+      return placeholderUrl;
+    }
+
+    const rawImageUrl = urlFor(mainImage).url();
+
+    return getSanityCdnImageUrl(rawImageUrl, {
+      width: 560,
+      height: 560,
+      fit: 'crop',
+      quality: 78,
+    }) ?? rawImageUrl;
   }, [mainImage, placeholderUrl]);
 
   // Generate SEO-optimized alt text with location context and target keywords
@@ -129,19 +157,8 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
           name: "Ingredients",
           value: cake.ingredients?.join(", ") || "Traditional Ukrainian ingredients",
         },
-        {
-          "@type": "PropertyValue",
-          name: "Allergens",
-          value: cake.allergens?.join(", ") || "Contains gluten, dairy, eggs",
-        },
       ],
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "5.0",
-        reviewCount: "127",
-        bestRating: "5",
-        worstRating: "1",
-      },
+      ...(aggregateRating ? { aggregateRating } : {}),
       review: [
         {
           "@type": "Review",
@@ -179,7 +196,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         },
       },
     }),
-    [cake, price, imageUrl, imageAltText]
+    [aggregateRating, cake, price, imageUrl, imageAltText]
   );
 
   // Memoize event handlers
@@ -218,12 +235,14 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
       />
 
       {/* AggregateRating microdata for Product list cards */}
-      <Box itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating" sx={{ display: "none" }}>
-        <meta itemProp="ratingValue" content="5" />
-        <meta itemProp="reviewCount" content="127" />
-        <meta itemProp="bestRating" content="5" />
-        <meta itemProp="worstRating" content="1" />
-      </Box>
+      {aggregateRating && (
+        <Box itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating" sx={{ display: "none" }}>
+          <meta itemProp="ratingValue" content={ratingValue} />
+          <meta itemProp="reviewCount" content={reviewCount} />
+          <meta itemProp="bestRating" content="5" />
+          <meta itemProp="worstRating" content="1" />
+        </Box>
+      )}
 
       {/* Image Container with Overlay */}
       <Link
@@ -259,7 +278,7 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
               transform: isHovered ? "scale(1.05)" : "scale(1)",
               filter: isHovered ? "brightness(0.95)" : "brightness(1)",
             }}
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            sizes="(max-width: 640px) calc(100vw - 2rem), (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
             priority={variant === "featured"}
             placeholder="blur"
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="

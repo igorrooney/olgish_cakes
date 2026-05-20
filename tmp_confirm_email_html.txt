@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmed #26051220022842 - Olgish Cakes</title>
+</head>
+<body bgcolor="#FFF5E6" style="margin: 0; padding: 0; background-color: #FFF5E6; font-family: Inter, Arial, Helvetica, sans-serif;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#FFF5E6" style="background-color: #FFF5E6; border-collapse: collapse;">
+<tbody>
+<tr>
+<td align="center" style="padding: 28px 14px;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" bgcolor="#FFFBEB" style="width: 100%; max-width: 600px; background-color: #FFFBEB; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;">
+<tbody>
+<tr>
+<td align="center" bgcolor="#2E3192" style="background-color: #2E3192; padding: 24px 24px 22px 24px; text-align: center;">
+<img src="cid:olgish-cakes-email-logo" alt="Olgish Cakes" width="112" height="112" style="display: block; width: 112px; height: 112px; margin: 0 auto 16px auto; border: 0; outline: none; text-decoration: none;">
+<h1 style="margin: 0; color: #ffffff; font-family: 'More Sugar', 'Trebuchet MS', Arial, Helvetica, sans-serif; font-size: 25px; font-weight: 700; line-height: 32px; letter-spacing: 0;">
+Order status update</h1>
+</td>
+</tr>
+<tr>
+<td bgcolor="#FFFBEB" style="background-color: #FFFBEB; padding: 30px 28px;">
+<p style="margin: 0 0 16px 0; color: #1F2937; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 16px; line-height: 26px;">
+Dear <strong>Igor Ieromenko</strong>,</p>
+<p style="margin: 0 0 24px 0; color: #1F2937; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 16px; line-height: 27px;">
+Great news! Your order has been confirmed and we've started working on it. We'll keep you updated on progress.</p>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#ffffff" style="background-color: #ffffff; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;">
+<tbody>
+<tr>
+<td style="padding: 22px 24px;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+<tbody>
+<tr>
+<td style="padding: 0 0 14px 0; color: #2E3192; font-family: 'More Sugar', 'Trebuchet MS', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 700; line-height: 22px; text-transform: uppercase;">
+Order Summary</td>
+</tr>
+</tbody>
+</table>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+<tbody>
+<tr>
+<td width="34%" valign="top" style="padding: 8px 16px 8px 0; color: #6467CE; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 700; line-height: 21px; vertical-align: top;">
+Order Number</td>
+<td valign="top" style="padding: 8px 0; color: #1F2937; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 15px; line-height: 23px; vertical-align: top; overflow-wrap: break-word; word-break: break-word;">
+26051220022842</td>
+</tr>
+<tr>
+<td width="34%" valign="top" style="padding: 8px 16px 8px 0; color: #6467CE; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 700; line-height: 21px; vertical-align: top;">
+Product</td>
+<td valign="top" style="padding: 8px 0; color: #1F2937; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 15px; line-height: 23px; vertical-align: top; overflow-wrap: break-word; word-break: break-word;">
+Personalised Congratulations Cake Card</td>
+</tr>
+<tr>
+<td width="34%" valign="top" style="padding: 8px 16px 8px 0; color: #6467CE; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 700; line-height: 21px; vertical-align: top;">
+Date needed</td>
+<td valign="top" style="padding: 8px 0; color: #1F2937; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 15px; line-height: 23px; vertical-align: top; overflow-wrap: break-word; word-break: break-word;">
+26/05/2026</td>
+</tr>
+<tr>
+<td width="34%" valign="top" style="padding: 8px 16px 8px 0; color: #6467CE; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 700; line-height: 21px; vertical-align: top;">
+Total Amount</td>
+<td valign="top" style="padding: 8px 0; color: #1F2937; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 15px; line-height: 23px; vertical-align: top; overflow-wrap: break-word; word-break: break-word;">
+£8.95</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+<tbody>
+<tr>
+<td height="14" style="height: 14px; font-size: 14px; line-height: 14px;">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#ffffff" style="background-color: #ffffff; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;">
+<tbody>
+<tr>
+<td style="padding: 22px 24px;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+<tbody>
+<tr>
+<td style="padding: 0 0 14px 0; color: #2E3192; font-family: 'More Sugar', 'Trebuchet MS', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 700; line-height: 22px; text-transform: uppercase;">
+Order items</td>
+</tr>
+</tbody>
+</table>
+<ol style="margin: 0; padding-left: 18px;">
+<li style="margin: 0 0 12px 0;">
+<p style="margin: 0; color: #1F2937; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 15px; line-height: 23px;">
+1. Personalised Congratulations Cake Card (Qty: 1) - £8.95</p>
+<ul style="margin: 8px 0 0 18px; padding: 0; color: #4B5563; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; line-height: 21px;">
+<li>Type: gift-hamper</li><li>Product ID: personalised-congratulations-cake-card</li><li>Design type: standard</li><li>Customer message / requirements: test message</li></ul>
+</li></ol>
+</td>
+</tr>
+</tbody>
+</table>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+<tbody>
+<tr>
+<td height="14" style="height: 14px; font-size: 14px; line-height: 14px;">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#ffffff" style="background-color: #ffffff; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;">
+<tbody>
+<tr>
+<td style="padding: 22px 24px;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+<tbody>
+<tr>
+<td style="padding: 0 0 14px 0; color: #2E3192; font-family: 'More Sugar', 'Trebuchet MS', Arial, Helvetica, sans-serif; font-size: 16px; font-weight: 700; line-height: 22px; text-transform: uppercase;">
+Order Preferences</td>
+</tr>
+</tbody>
+</table>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+<tbody>
+<tr>
+<td width="34%" valign="top" style="padding: 8px 16px 8px 0; color: #6467CE; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 700; line-height: 21px; vertical-align: top;">
+Design type</td>
+<td valign="top" style="padding: 8px 0; color: #1F2937; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 15px; line-height: 23px; vertical-align: top; overflow-wrap: break-word; word-break: break-word;">
+standard</td>
+</tr>
+<tr>
+<td width="34%" valign="top" style="padding: 8px 16px 8px 0; color: #6467CE; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; font-weight: 700; line-height: 21px; vertical-align: top;">
+Customer message</td>
+<td valign="top" style="padding: 8px 0; color: #1F2937; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 15px; line-height: 23px; vertical-align: top; overflow-wrap: break-word; word-break: break-word;">
+test message</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+<tbody>
+<tr>
+<td height="14" style="height: 14px; font-size: 14px; line-height: 14px;">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-top: 1px solid #D8D9F3;">
+<tbody>
+<tr>
+<td align="center" style="padding: 20px 0 0 0; text-align: center;">
+<p style="margin: 0 0 10px 0; color: #1F2937; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; line-height: 22px;">
+Questions about your order? We're here to help.</p>
+<p style="margin: 0; font-family: Inter, Arial, Helvetica, sans-serif; font-size: 14px; line-height: 24px;">
+<a href="mailto:hello@olgishcakes.co.uk" style="color: #2E3192; text-decoration: none; font-weight: 700;">hello@olgishcakes.co.uk</a><br>
+<a href="tel:+447867218194" style="color: #2E3192; text-decoration: none; font-weight: 700;">+44 7867 218194</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

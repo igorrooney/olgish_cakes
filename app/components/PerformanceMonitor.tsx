@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 interface PerformanceMetrics {
   menuOpenTime: number;
@@ -8,6 +8,16 @@ interface PerformanceMetrics {
   submenuToggleTime: number;
   navigationTime: number;
 }
+
+type Gtag = (
+  command: "event",
+  eventName: string,
+  params?: Record<string, unknown>
+) => void;
+
+type WindowWithGtag = Window & {
+  gtag?: Gtag;
+};
 
 export function usePerformanceMonitor() {
   const metricsRef = useRef<PerformanceMetrics>({
@@ -29,8 +39,9 @@ export function usePerformanceMonitor() {
       }
 
       // Send to analytics if available
-      if (typeof window !== "undefined" && (window as any).gtag) {
-        (window as any).gtag("event", "timing_complete", {
+      const gtag = typeof window !== "undefined" ? (window as WindowWithGtag).gtag : undefined;
+      if (gtag) {
+        gtag("event", "timing_complete", {
           name: metric,
           value: Math.round(metricsRef.current[metric]),
           event_category: "Mobile Menu Performance",

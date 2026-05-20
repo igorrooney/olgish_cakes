@@ -5,16 +5,21 @@
 **/node_modules/
 /.pnp
 .pnp.js
+/.pnpm-store/
+package-lock.json
 
 # testing
 /coverage
+**/coverage/
 /.jest-cache
+/test-results
 
 # next.js
 /.next/
 **/.next/
 /out/
 **/out/
+/.swc/
 
 # reports
 /reports/
@@ -32,6 +37,7 @@ lighthouse-*.html
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
@@ -47,6 +53,8 @@ yarn-error.log*
 .codex-*
 .next-start-*.out.log
 .next-start-*.err.log
+.next-dev-*.log
+.next-dev-*.err.log
 
 # Local agent/browser artifacts
 .agents/
@@ -86,7 +94,19 @@ next-env.d.ts
 *.tar.gz
 *.zip
 backup-*.json
+.tmp-script-run/
 .cursor/mcp.json
 
 # Supabase local CLI state
 supabase/.temp/
+/tmp/
+.tmp-lighthouse-profile/
+.tmp-lighthouse-blog-mobile/
+.tmp-lighthouse-blog-mobile-2/
+/output/
+.codex-*.log
+.codex-lighthouse-*.pid
+.codex-lighthouse-*-run-dir.txt
+/logs/
+.agents/*
+/supabase/.temp/

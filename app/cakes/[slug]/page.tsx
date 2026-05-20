@@ -1,106 +1,220 @@
-import { Breadcrumbs } from "@/app/components/Breadcrumbs";
-import { getClient } from "@/sanity/lib/client";
-import { Cake, blocksToText } from "@/types/cake";
-import { Container } from "@mui/material";
-import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { CakePageClient } from "./CakePageClient";
+import { getAllCakes, getCakeBySlug } from '@/app/utils/fetchCakes'
+import { Cake, blocksToText } from '@/types/cake'
+import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { CakePageClient, type CakePageClientData } from './CakePageClient'
 // Removed client-only CakeStructuredData; I'll render JSON-LD on the server for SEO
-import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
-import { ensureAbsoluteImageUrl } from "@/lib/utils/image-url";
-import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
-import { urlFor } from "@/sanity/lib/image";
+import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from '@/app/utils/seo'
+import { ensureAbsoluteImageUrl, getSanityCdnImageUrl } from '@/lib/utils/image-url'
+import { resolveCakeBasePrice } from '@/lib/utils/cake-base-price'
+import { normalizeCmsTitle } from '@/lib/metadata'
+import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
+import { urlFor } from '@/sanity/lib/image'
+import { resolveCakeDeliveryContent, type ResolvedCakeDeliveryContent } from './delivery-content'
+import { buildCatalogBackHref } from '../catalogNavigation'
+import type { CatalogProductDetailImage } from '../components/CatalogProductDetailLayout'
 
-// Enable revalidation for this page with optimization
-export const revalidate = 60; // 1 minute for better data freshness
+type UrlForImage = Parameters<typeof urlFor>[0]
+type CakeGalleryImageInput = {
+  asset?: {
+    _ref?: string
+  }
+  alt?: string
+}
 
 // Generate static params for all cakes at build time
 export async function generateStaticParams() {
-  const query = `*[_type == "cake" && defined(slug.current)] {
-    "slug": slug.current
-  }`;
-
   try {
-    const sanityClient = getClient(false); // Use production client
-    const cakes = await sanityClient.fetch(query);
+    const cakes = await getAllCakes(false);
 
-    return cakes.map((cake: { slug: string }) => ({
-      slug: cake.slug,
-    }));
+    return cakes
+      .filter((cake: Cake) => cake.slug?.current)
+      .map((cake: Cake) => ({
+        slug: cake.slug.current,
+      }));
   } catch (error) {
     console.error("Error generating static params for cakes:", error);
     return [];
   }
 }
 
-async function getCake(slug: string, preview = false): Promise<Cake | null> {
-  const query = `*[_type == "cake" && slug.current == $slug][0] {
-    _id,
-    _createdAt,
-    name,
-    slug,
-    description,
-    shortDescription,
-    size,
-    pricing,
-    designs,
-    category,
-    ingredients,
-    allergens,
-    mainImage,
-    images,
-    seo,
-    structuredData
-  }`;
-
-  const sanityClient = getClient(preview);
-  return sanityClient.fetch(query, { slug });
-}
-
 interface PageProps {
   params: Promise<{
-    slug: string;
-  }>;
+    slug: string
+  }>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
+}
+
+function normalizeMetaDescription(value: string | undefined) {
+  if (!value) {
+    return ''
+  }
+
+  return value.replace(/\s+/g, ' ').trim()
+}
+
+function safeJsonLd(value: unknown) {
+  return JSON.stringify(value).replace(/</g, '\\u003c')
+}
+
+function getCakePrimaryImage(cake: Cake): UrlForImage | null {
+  const primaryImage = cake.mainImage?.asset?._ref
+    ? cake.mainImage
+    : cake.designs?.standard?.find((img) => img.isMain && img.asset?._ref) ||
+      cake.designs?.standard?.find((img) => img.asset?._ref) ||
+      cake.designs?.standard?.[0] ||
+      cake.designs?.individual?.find((img) => img.isMain && img.asset?._ref) ||
+      cake.designs?.individual?.find((img) => img.asset?._ref) ||
+      cake.designs?.individual?.[0] ||
+      cake.images?.find((img) => img.asset?._ref) ||
+      cake.images?.[0]
+
+  return primaryImage?.asset?._ref ? primaryImage as UrlForImage : null
+}
+
+function hasImageAssetReference(value: unknown): value is { asset: { _ref: string }, alt?: string } {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  const maybeImage = value as { asset?: { _ref?: unknown } }
+
+  return typeof maybeImage.asset?._ref === 'string' && maybeImage.asset._ref.length > 0
+}
+
+function getCakeGalleryImageUrl(image: CakeGalleryImageInput) {
+  const rawImageUrl = urlFor(image as UrlForImage).width(960).height(960).url()
+
+  return getSanityCdnImageUrl(rawImageUrl, {
+    width: 960,
+    height: 960,
+    fit: 'crop',
+    quality: 80
+  }) ?? rawImageUrl
+}
+
+function mapCakeImagesToGallery(cake: Cake): CatalogProductDetailImage[] {
+  const mappedImages: CatalogProductDetailImage[] = []
+  const imageUrls = new Set<string>()
+  const fallbackAlt = `${cake.name} by Olgish Cakes`
+
+  function addImage(image: CakeGalleryImageInput | undefined) {
+    if (!image || !hasImageAssetReference(image)) {
+      return
+    }
+
+    const imageUrl = getCakeGalleryImageUrl(image)
+
+    if (imageUrl.length === 0 || imageUrls.has(imageUrl)) {
+      return
+    }
+
+    imageUrls.add(imageUrl)
+    mappedImages.push({
+      src: imageUrl,
+      alt: typeof image.alt === 'string' && image.alt.trim().length > 0
+        ? image.alt.trim()
+        : fallbackAlt
+    })
+  }
+
+  addImage(cake.mainImage)
+  cake.designs?.standard?.forEach((image) => addImage(image))
+  cake.designs?.individual?.forEach((image) => addImage(image))
+  cake.images?.forEach((image) => addImage(image))
+
+  return mappedImages
+}
+
+function mapCakeFillingOptions(cake: Cake): NonNullable<CakePageClientData['fillingOptions']> {
+  const seenFillingIds = new Set<string>()
+
+  return cake.fillingTypes?.flatMap((fillingType) => {
+    const fillingId = typeof fillingType._id === 'string' ? fillingType._id.trim() : ''
+    const fillingName = typeof fillingType.name === 'string' ? fillingType.name.trim() : ''
+
+    if (fillingId.length === 0 || fillingName.length === 0 || seenFillingIds.has(fillingId)) {
+      return []
+    }
+
+    seenFillingIds.add(fillingId)
+
+    const fillingImage = hasImageAssetReference(fillingType.image)
+      ? {
+          src: getCakeGalleryImageUrl(fillingType.image),
+          alt: typeof fillingType.image.alt === 'string' && fillingType.image.alt.trim().length > 0
+            ? fillingType.image.alt.trim()
+            : `${fillingName} filling for ${cake.name}`
+        }
+      : null
+
+    return [{
+      id: fillingId,
+      name: fillingName,
+      image: fillingImage
+    }]
+  }) ?? []
+}
+
+function getCakePageClientData(
+  cake: Cake,
+  deliveryContent: ResolvedCakeDeliveryContent
+): CakePageClientData {
+  return {
+    name: cake.name,
+    slug: cake.slug,
+    description: cake.description,
+    shortDescription: cake.shortDescription,
+    deliveryContent,
+    pricing: cake.pricing,
+    newDesignPricingByServings: cake.newDesignPricingByServings,
+    fillingOptions: mapCakeFillingOptions(cake),
+    defaultFillingTypeId: cake.defaultFillingType?._id,
+    galleryImages: mapCakeImagesToGallery(cake),
+    ingredients: cake.ingredients,
+    allergens: cake.allergens,
+    ingredientReference: cake.ingredientReference
+  }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const cake = await getCake(slug);
+  const cake = await getCakeBySlug(slug);
 
   if (!cake) {
     return {
-      title: "Cake Not Found | Olgish Cakes",
+      title: 'Cake not found',
       description: "The requested cake could not be found.",
     };
   }
+  const cakeBasePrice = resolveCakeBasePrice({
+    newDesignPricingByServings: cake.newDesignPricingByServings,
+    pricing: cake.pricing
+  })
 
   // Special optimization for honey cake "buy honey cake online" keyword
   const isHoneyCake = slug === 'honey-cake-medovik' || cake.name.toLowerCase().includes('honey cake') || cake.name.toLowerCase().includes('medovik');
-  
+  const normalizedShortDescription = cake.shortDescription
+    ? normalizeMetaDescription(blocksToText(cake.shortDescription))
+    : ''
+
   // Use SEO fields if available, otherwise generate from content
   const metaTitle = isHoneyCake
     ? (cake.seo?.metaTitle || `Buy Honey Cake Online | Authentic Ukrainian Medovik`)
     : (cake.seo?.metaTitle || `${cake.name} | Olgish Cakes`);
-    
+  const normalizedMetaTitle = normalizeCmsTitle(metaTitle) || cake.name
+
   const metaDescription = isHoneyCake
-    ? (cake.seo?.metaDescription || `Buy authentic honey cake (Medovik) online. Traditional Ukrainian recipe, handmade in Leeds. Order online for same-day delivery across UK. From £40.`)
-    : (cake.seo?.metaDescription ||
-      (cake.shortDescription
-        ? blocksToText(cake.shortDescription).substring(0, 160)
-        : `traditional Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with real recipes. Free UK delivery.`));
+    ? (normalizeMetaDescription(cake.seo?.metaDescription) || `Buy authentic honey cake (Medovik) online. Traditional Ukrainian recipe, handmade in Leeds. Order online for same-day delivery across UK. From £40.`)
+    : (normalizeMetaDescription(cake.seo?.metaDescription) ||
+      normalizedShortDescription ||
+      `traditional Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with real recipes. Free UK delivery.`);
 
-  const keywords = isHoneyCake
-    ? `buy honey cake online, order honey cake, honey cake delivery, buy medovik online, ukrainian honey cake online, order medovik, honey cake uk, buy honey cake uk, medovik delivery, online honey cake, ${cake.name}, Ukrainian honey cake, Medovik, Leeds cake, traditional Ukrainian cake, fresh cake delivery, UK cake delivery`
-    : (cake.seo?.keywords?.join(", ") ||
-      `${cake.name}, ${cake.category} cake, Ukrainian honey cake, Medovik, Leeds cake, custom cake, ${cake.category} cake Leeds, Ukrainian bakery Leeds, traditional Ukrainian cake, fresh cake delivery, birthday cake, wedding cake, celebration cake, Yorkshire cake, UK cake delivery`);
-
-  const canonicalUrl =
-    cake.seo?.canonicalUrl || `https://olgishcakes.co.uk/cakes/${cake.slug.current}`;
+  const canonicalUrl = `https://olgishcakes.co.uk/cakes/${cake.slug.current}`;
 
   return {
-    title: metaTitle,
+    title: normalizedMetaTitle,
     description: metaDescription,
-    keywords,
     authors: [{ name: "Olgish Cakes" }],
     creator: "Olgish Cakes",
     publisher: "Olgish Cakes",
@@ -114,7 +228,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: metaTitle,
+      title: normalizedMetaTitle,
       description: metaDescription,
       type: "website",
       url: canonicalUrl,
@@ -134,11 +248,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: "summary_large_image",
-      title: metaTitle,
+      title: normalizedMetaTitle,
       description: metaDescription,
       images: [
         cake.mainImage?.asset?.url ||
-          `https://olgishcakes.co.uk/images/cakes/${cake.slug.current}.jpg`,
+        `https://olgishcakes.co.uk/images/cakes/${cake.slug.current}.jpg`,
       ],
       creator: "@olgish_cakes",
       site: "@olgish_cakes",
@@ -158,48 +272,63 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       google: "your-google-verification-code",
     },
     other: {
-      price: (cake.pricing?.standard ?? cake.pricing?.individual ?? 0).toString(),
+      price: cakeBasePrice.toString(),
       priceCurrency: "GBP",
       availability: "https://schema.org/InStock",
       brand: "Olgish Cakes",
       category: cake.category,
-      "og:price:amount": (cake.pricing?.standard ?? cake.pricing?.individual ?? 0).toString(),
+      "og:price:amount": cakeBasePrice.toString(),
       "og:price:currency": "GBP",
     },
   };
 }
 
-export default async function CakePage({ params }: PageProps) {
+export default async function CakePage({ params, searchParams }: PageProps) {
   const { slug } = await params;
-  const cake = await getCake(slug);
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
+
+  const cake = await getCakeBySlug(slug)
+  const backHref = buildCatalogBackHref({
+    fallbackHref: '/cakes',
+    fromParam: resolvedSearchParams?.from
+  })
 
   if (!cake) {
     notFound();
   }
+  const cakeBasePrice = resolveCakeBasePrice({
+    newDesignPricingByServings: cake.newDesignPricingByServings,
+    pricing: cake.pricing
+  })
+
+  const resolvedDeliveryContent = resolveCakeDeliveryContent(cake)
+  const shouldEmitShippingDetails = resolvedDeliveryContent.shouldEmitShippingDetails
+  const shippingDetailsForStructuredData = shouldEmitShippingDetails
+    ? getOfferShippingDetails(
+      resolvedDeliveryContent.policy,
+      resolvedDeliveryContent.shippingDetailsVisibleClaims
+    )
+    : undefined
+  const shouldLogShippingDetailsOmission = process.env.NODE_ENV !== 'production'
+
+  if (!shouldEmitShippingDetails && shouldLogShippingDetailsOmission) {
+    console.warn(
+      `[seo][${cake.slug.current}] Omitted Offer.shippingDetails due to delivery policy mismatch: ${resolvedDeliveryContent.shippingDetailsOmissionReason || 'unknown reason'}`
+    )
+  }
 
   // Ensure image is always present and absolute for Product JSON-LD
+  const primaryImage = getCakePrimaryImage(cake)
   const productImageUrl = (() => {
-    // Get the best available image
-    const mainImage = cake.mainImage?.asset?._ref
-      ? cake.mainImage
-      : cake.designs?.standard?.find((img) => img.isMain && img.asset?._ref) ||
-        cake.designs?.standard?.find((img) => img.asset?._ref) ||
-        cake.designs?.standard?.[0] ||
-        cake.designs?.individual?.find((img) => img.isMain && img.asset?._ref) ||
-        cake.designs?.individual?.find((img) => img.asset?._ref) ||
-        cake.designs?.individual?.[0] ||
-        // Fallback to images array (for legacy data like Honey Cake)
-        cake.images?.find((img) => img.asset?._ref) ||
-        cake.images?.[0];
-
-    if (mainImage?.asset?._ref) {
-      const imageUrl = urlFor(mainImage).width(800).height(800).url()
+    if (primaryImage) {
+      const imageUrl = urlFor(primaryImage).width(800).height(800).url()
       // Ensure URL is absolute (Sanity should return absolute, but double-check)
       return ensureAbsoluteImageUrl(imageUrl)
     }
-    
+
     return "https://olgishcakes.co.uk/images/placeholder-cake.jpg"
   })()
+  const cakePageClientData = getCakePageClientData(cake, resolvedDeliveryContent)
 
   return (
     <>
@@ -207,7 +336,7 @@ export default async function CakePage({ params }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "Product",
             "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}#product`,
@@ -240,7 +369,7 @@ export default async function CakePage({ params }: PageProps) {
             offers: {
               "@type": "Offer",
               "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}#offer`,
-              price: formatStructuredDataPrice(cake.pricing?.standard ?? cake.pricing?.individual ?? 0, 0),
+              price: formatStructuredDataPrice(cakeBasePrice, 0),
               priceCurrency: "GBP",
               availability: "https://schema.org/InStock",
               condition: "https://schema.org/NewCondition",
@@ -252,11 +381,11 @@ export default async function CakePage({ params }: PageProps) {
                 name: "Olgish Cakes",
                 url: "https://olgishcakes.co.uk"
               },
-              shippingDetails: getOfferShippingDetails(),
+              ...(shippingDetailsForStructuredData ? { shippingDetails: shippingDetailsForStructuredData } : {}),
               hasMerchantReturnPolicy: getMerchantReturnPolicy(),
               eligibleTransactionVolume: {
                 "@type": "PriceSpecification",
-                price: formatStructuredDataPrice(cake.pricing?.standard ?? cake.pricing?.individual ?? 0, 0),
+                price: formatStructuredDataPrice(cakeBasePrice, 0),
                 priceCurrency: "GBP",
                 valueAddedTaxIncluded: true,
               },
@@ -266,29 +395,6 @@ export default async function CakePage({ params }: PageProps) {
                 "https://schema.org/PaymentByBankTransfer",
               ],
             },
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: "4.9",
-              reviewCount: "120",
-              bestRating: "5",
-              worstRating: "1",
-            },
-            review: [
-              {
-                "@type": "Review",
-                reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
-                author: { "@type": "Person", name: "Sarah Johnson" },
-                reviewBody: `Absolutely delicious ${cake.name}! Beautifully presented and tasted incredible. Highly recommend.`,
-                datePublished: "2025-09-30",
-              },
-              {
-                "@type": "Review",
-                reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5", worstRating: "1" },
-                author: { "@type": "Person", name: "Michael Davies" },
-                reviewBody: `Professional service and the ${cake.name} exceeded expectations. Will order again!`,
-                datePublished: "2025-08-15",
-              },
-            ],
           }),
         }}
       />
@@ -297,7 +403,7 @@ export default async function CakePage({ params }: PageProps) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: safeJsonLd({
             "@context": "https://schema.org",
             "@type": "Organization",
             name: "Olgish Cakes",
@@ -336,7 +442,7 @@ export default async function CakePage({ params }: PageProps) {
                     category: "Ukrainian Honey Cake",
                     offers: {
                       "@type": "Offer",
-                      price: cake.pricing?.standard ?? cake.pricing?.individual ?? 0,
+                      price: formatStructuredDataPrice(cakeBasePrice, 0),
                       priceCurrency: "GBP",
                       availability: "https://schema.org/InStock",
                       priceValidUntil: getPriceValidUntil(30),
@@ -346,13 +452,8 @@ export default async function CakePage({ params }: PageProps) {
                         name: "Olgish Cakes",
                         url: "https://olgishcakes.co.uk",
                       },
-                      shippingDetails: getOfferShippingDetails(),
+                      ...(shippingDetailsForStructuredData ? { shippingDetails: shippingDetailsForStructuredData } : {}),
                       hasMerchantReturnPolicy: getMerchantReturnPolicy(),
-                    },
-                    aggregateRating: {
-                      "@type": "AggregateRating",
-                      ratingValue: "5",
-                      reviewCount: "120",
                     },
                   },
                 },
@@ -362,111 +463,20 @@ export default async function CakePage({ params }: PageProps) {
         }}
       />
 
-      {/* Breadcrumb Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "Home",
-                item: "https://olgishcakes.co.uk",
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "All Cakes",
-                item: "https://olgishcakes.co.uk/cakes",
-              },
-              {
-                "@type": "ListItem",
-                position: 3,
-                name: cake.name,
-                item: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-              },
-            ],
-          }),
-        }}
-      />
-
-      {/* FAQ Schema for better search visibility */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: [
-              {
-                "@type": "Question",
-                name: `How long does it take to make a ${cake.name}?`,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: `My ${cake.name} is freshly baked to order and typically takes 2-3 working days to prepare. For custom designs, please allow 3-7 working days.`,
-                },
-              },
-              {
-                "@type": "Question",
-                name: `Can I customize the ${cake.name} design?`,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: `Yes! I offer both standard and custom designs for my ${cake.name}. Custom designs allow for personalization while keeping the real Ukrainian taste.`,
-                },
-              },
-              {
-                "@type": "Question",
-                name: `Is delivery available for the ${cake.name}?`,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: "Yes, I offer free UK delivery on all my cakes. I deliver to Leeds, York, Bradford, Halifax, Huddersfield, and surrounding areas.",
-                },
-              },
-              {
-                "@type": "Question",
-                name: `What are the ingredients in the ${cake.name}?`,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: `The ${cake.name} contains: ${cake.ingredients.join(", ")}.${cake.allergens && cake.allergens.length > 0 ? ` Allergens: ${cake.allergens.join(", ")}.` : ""}`,
-                },
-              },
-              {
-                "@type": "Question",
-                name: `How should I store the ${cake.name}?`,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: `Store your ${cake.name} in an airtight container in the refrigerator for up to 5 days. For longer storage, wrap tightly and freeze for up to 3 months.`,
-                },
-              },
-            ],
-          }),
-        }}
-      />
-
       {/* Skip to content link for accessibility */}
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
 
-      {/* Breadcrumbs */}
-      <Container maxWidth="lg" sx={{ py: 2 }}>
-        <nav aria-label="Breadcrumb navigation">
-          <Breadcrumbs
-            items={[
-              { label: "Home", href: "/" },
-              { label: "All Cakes", href: "/cakes" },
-              { label: cake.name, href: `/cakes/${cake.slug.current}` },
-            ]}
-          />
-        </nav>
-      </Container>
-
       <main id="main-content" tabIndex={-1}>
-        <CakePageClient cake={cake} />
+        <CakePageClient
+          cake={cakePageClientData}
+          backHref={backHref}
+        />
       </main>
     </>
   );
 }
+
+
+

@@ -18,6 +18,7 @@ import {
   generateHowToSchema,
   generateRecipeSchema,
 } from "@/app/utils/seo";
+import { useReviewStats } from "./ReviewStatsProvider";
 
 interface StructuredDataProps {
   type:
@@ -36,59 +37,76 @@ interface StructuredDataProps {
     | "article"
     | "howTo"
     | "recipe";
-  data: any;
+  data: unknown;
   id?: string;
 }
 
+type WebPageData = Parameters<typeof generateWebPageSchema>[0];
+type BreadcrumbData = Parameters<typeof generateBreadcrumbData>[0];
+type ProductData = Parameters<typeof generateProductSchema>[0];
+type FAQData = Parameters<typeof generateFAQSchema>[0];
+type ReviewData = Parameters<typeof generateReviewSchema>[0];
+type ImageObjectData = Parameters<typeof generateImageObjectSchema>[0];
+type ServiceData = Parameters<typeof generateServiceSchema>[0];
+type EventData = Parameters<typeof generateEventSchema>[0];
+type ArticleData = Parameters<typeof generateArticleSchema>[0];
+type HowToData = Parameters<typeof generateHowToSchema>[0];
+type RecipeData = Parameters<typeof generateRecipeSchema>[0];
+
 export function StructuredData({ type, data, id }: StructuredDataProps) {
+  const reviewStats = useReviewStats()
+
   useEffect(() => {
-    let structuredData: any;
+    let structuredData: unknown;
 
     switch (type) {
       case "organization":
-        structuredData = generateOrganizationSchema();
+        structuredData = generateOrganizationSchema(reviewStats);
         break;
       case "localBusiness":
-        structuredData = generateLocalBusinessSchema();
+        structuredData = generateLocalBusinessSchema(reviewStats);
         break;
       case "website":
         structuredData = generateWebSiteSchema();
         break;
       case "webpage":
-        structuredData = generateWebPageSchema(data);
+        structuredData = generateWebPageSchema(data as WebPageData);
         break;
       case "breadcrumb":
-        structuredData = generateBreadcrumbData(data);
+        structuredData = generateBreadcrumbData(data as BreadcrumbData);
         break;
       case "product":
-        structuredData = generateProductSchema(data);
+        structuredData = generateProductSchema(data as ProductData);
         break;
       case "faq":
-        structuredData = generateFAQSchema(data);
+        structuredData = generateFAQSchema(data as FAQData);
         break;
       case "aggregateRating":
-        structuredData = generateAggregateRatingSchema(data.rating, data.reviewCount);
+        structuredData = generateAggregateRatingSchema(
+          (data as { rating: number }).rating,
+          (data as { reviewCount: number }).reviewCount
+        );
         break;
       case "review":
-        structuredData = generateReviewSchema(data);
+        structuredData = generateReviewSchema(data as ReviewData);
         break;
       case "imageObject":
-        structuredData = generateImageObjectSchema(data);
+        structuredData = generateImageObjectSchema(data as ImageObjectData);
         break;
       case "service":
-        structuredData = generateServiceSchema(data);
+        structuredData = generateServiceSchema(data as ServiceData);
         break;
       case "event":
-        structuredData = generateEventSchema(data);
+        structuredData = generateEventSchema(data as EventData);
         break;
       case "article":
-        structuredData = generateArticleSchema(data);
+        structuredData = generateArticleSchema(data as ArticleData);
         break;
       case "howTo":
-        structuredData = generateHowToSchema(data);
+        structuredData = generateHowToSchema(data as HowToData);
         break;
       case "recipe":
-        structuredData = generateRecipeSchema(data);
+        structuredData = generateRecipeSchema(data as RecipeData);
         break;
       default:
         return;
@@ -116,7 +134,7 @@ export function StructuredData({ type, data, id }: StructuredDataProps) {
         scriptToRemove.remove();
       }
     };
-  }, [type, data, id]);
+  }, [type, data, id, reviewStats]);
 
   return null;
 }
@@ -145,7 +163,7 @@ export function WebPageStructuredData({
   description: string;
   url: string;
   breadcrumb?: Array<{ name: string; url: string }>;
-  mainEntity?: any;
+  mainEntity?: Record<string, unknown>;
 }) {
   return (
     <StructuredData type="webpage" data={{ name, description, url, breadcrumb, mainEntity }} />
@@ -160,7 +178,7 @@ export function BreadcrumbStructuredData({
   return <StructuredData type="breadcrumb" data={items} />;
 }
 
-export function ProductStructuredData({ product }: { product: any }) {
+export function ProductStructuredData({ product }: { product: ProductData }) {
   return <StructuredData type="product" data={product} />;
 }
 
@@ -182,30 +200,30 @@ export function AggregateRatingStructuredData({
   return <StructuredData type="aggregateRating" data={{ rating, reviewCount }} />;
 }
 
-export function ReviewStructuredData({ review }: { review: any }) {
+export function ReviewStructuredData({ review }: { review: ReviewData }) {
   return <StructuredData type="review" data={review} />;
 }
 
-export function ImageObjectStructuredData({ image }: { image: any }) {
+export function ImageObjectStructuredData({ image }: { image: ImageObjectData }) {
   return <StructuredData type="imageObject" data={image} />;
 }
 
-export function ServiceStructuredData({ service }: { service: any }) {
+export function ServiceStructuredData({ service }: { service: ServiceData }) {
   return <StructuredData type="service" data={service} />;
 }
 
-export function EventStructuredData({ event }: { event: any }) {
+export function EventStructuredData({ event }: { event: EventData }) {
   return <StructuredData type="event" data={event} />;
 }
 
-export function ArticleStructuredData({ article }: { article: any }) {
+export function ArticleStructuredData({ article }: { article: ArticleData }) {
   return <StructuredData type="article" data={article} />;
 }
 
-export function HowToStructuredData({ howTo }: { howTo: any }) {
+export function HowToStructuredData({ howTo }: { howTo: HowToData }) {
   return <StructuredData type="howTo" data={howTo} />;
 }
 
-export function RecipeStructuredData({ recipe }: { recipe: any }) {
+export function RecipeStructuredData({ recipe }: { recipe: RecipeData }) {
   return <StructuredData type="recipe" data={recipe} />;
 }

@@ -1,0 +1,173 @@
+import { render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
+import React from 'react'
+import { footerDividerStyle, SiteFooter } from '../SiteFooter'
+
+interface LinkProps {
+  children: ReactNode
+  href: string
+  [key: string]: unknown
+}
+
+interface ImageProps {
+  alt?: string
+  src?: string | { src?: string }
+  [key: string]: unknown
+}
+
+const originalGtmId = process.env.NEXT_PUBLIC_GTM_ID
+
+jest.mock('next/link', () => ({
+  __esModule: true,
+  default: ({ href, children, prefetch, ...props }: LinkProps & { prefetch?: boolean | null }) => (
+    <a href={href} {...props}>{children}</a>
+  )
+}))
+
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ alt, src, fill, ...props }: ImageProps & { fill?: boolean }) => {
+    const resolvedSrc = typeof src === 'string' ? src : src?.src || ''
+    return <img alt={alt} src={resolvedSrc} {...props} />
+  }
+}))
+
+describe('SiteFooter', () => {
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_GTM_ID = 'GTM-TEST123'
+  })
+
+  afterAll(() => {
+    if (typeof originalGtmId === 'string') {
+      process.env.NEXT_PUBLIC_GTM_ID = originalGtmId
+      return
+    }
+
+    delete process.env.NEXT_PUBLIC_GTM_ID
+  })
+
+  it('renders the divider art as a decorative mobile-visible container', () => {
+    render(<SiteFooter />)
+
+    const divider = document.querySelector('.footer-divider-art')
+
+    expect(divider).not.toBeNull()
+    expect(divider).toHaveAttribute('aria-hidden', 'true')
+    expect(divider).toHaveClass('block')
+    expect(divider).not.toHaveClass('hidden')
+    expect(divider?.getAttribute('style')).toEqual(expect.stringContaining('background-position: center'))
+    expect(divider?.getAttribute('style')).toEqual(expect.stringContaining('background-repeat: no-repeat'))
+    expect(divider?.getAttribute('style')).toEqual(expect.stringContaining('background-size: contain'))
+    expect(footerDividerStyle.aspectRatio).toBe('1024 / 107')
+    expect(footerDividerStyle.backgroundImage).toContain('image-set(')
+    expect(footerDividerStyle.backgroundImage).toContain('/design/mobile-home/footer-image.avif')
+  })
+
+  it('renders navigation links', () => {
+    render(<SiteFooter />)
+
+    expect(screen.getByRole('link', { name: 'Cakes by post' })).toHaveAttribute('href', '/cakes-by-post')
+    expect(screen.getByRole('link', { name: 'Custom cakes' })).toHaveAttribute('href', '/custom-cakes')
+    expect(screen.getByRole('link', { name: 'Articles' })).toHaveAttribute('href', '/blog')
+    expect(screen.queryByRole('link', { name: 'Learn hub' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Sitemap' })).toHaveAttribute('href', '/sitemap.xml')
+    expect(screen.queryByRole('link', { name: 'Farmers Markets' })).not.toBeInTheDocument()
+  })
+
+  it('renders contact links', () => {
+    render(<SiteFooter />)
+
+    expect(screen.getByRole('link', { name: '+44 786 721 8194' })).toHaveAttribute('href', 'tel:+447867218194')
+    expect(screen.getByRole('link', { name: 'hello@olgishcakes.co.uk' })).toHaveAttribute('href', 'mailto:hello@olgishcakes.co.uk')
+    expect(screen.getByText('Allerton Grange')).toBeInTheDocument()
+    expect(screen.getByText('Leeds, LS17')).toBeInTheDocument()
+  })
+
+  it('renders social links with safe external attributes', () => {
+    render(<SiteFooter />)
+
+    const facebookLink = screen.getByLabelText('Facebook')
+    const youtubeLink = screen.getByLabelText('YouTube')
+    const instagramLink = screen.getByLabelText('Instagram')
+
+    expect(facebookLink).toHaveAttribute('target', '_blank')
+    expect(facebookLink).toHaveAttribute('rel', expect.stringContaining('noreferrer'))
+    expect(facebookLink).toHaveAttribute('rel', expect.stringContaining('noopener'))
+    expect(facebookLink).toHaveAttribute('rel', expect.stringContaining('nofollow'))
+    expect(youtubeLink).toHaveAttribute('target', '_blank')
+    expect(youtubeLink).toHaveAttribute('rel', expect.stringContaining('noreferrer'))
+    expect(youtubeLink).toHaveAttribute('rel', expect.stringContaining('noopener'))
+    expect(youtubeLink).toHaveAttribute('rel', expect.stringContaining('nofollow'))
+    expect(youtubeLink).toHaveAttribute(
+      'href',
+      'https://www.youtube.com/channel/UCxv3i6tL5v5KZNjT1z1Rx1Q?cbrd=1'
+    )
+    expect(instagramLink).toHaveAttribute('target', '_blank')
+    expect(instagramLink).toHaveAttribute('rel', 'noreferrer noopener')
+  })
+
+  it('renders the copyright notice', () => {
+    render(<SiteFooter />)
+
+    const year = new Intl.DateTimeFormat('en-GB', {
+      year: 'numeric',
+      timeZone: 'UTC'
+    }).format(new Date())
+    expect(screen.getByText(`© ${year} Olgish Cakes. All rights reserved.`)).toBeInTheDocument()
+    expect(screen.queryByText(/Â©/i)).not.toBeInTheDocument()
+  })
+
+  it('recomputes the copyright year on each render', () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2026-12-31T23:00:00.000Z'))
+
+    const { rerender } = render(<SiteFooter />)
+
+    expect(screen.getByText('© 2026 Olgish Cakes. All rights reserved.')).toBeInTheDocument()
+
+    jest.setSystemTime(new Date('2027-01-01T00:00:00.000Z'))
+    rerender(<SiteFooter />)
+
+    expect(screen.getByText('© 2027 Olgish Cakes. All rights reserved.')).toBeInTheDocument()
+    expect(screen.queryByText('© 2026 Olgish Cakes. All rights reserved.')).not.toBeInTheDocument()
+
+    jest.useRealTimers()
+  })
+
+  it('renders design and development credits with external links', () => {
+    render(<SiteFooter />)
+
+    const designLink = screen.getByRole('link', { name: 'Jamie Stanley' })
+    const developmentLink = screen.getByRole('link', { name: 'Igor Ieromenko' })
+
+    expect(designLink).toHaveAttribute('href', 'https://jamie-stanley.netlify.app/')
+    expect(designLink).toHaveAttribute('target', '_blank')
+    expect(designLink).toHaveAttribute('rel', 'noreferrer noopener')
+    expect(developmentLink).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/in/igor-ieromenko-b57b1ba4/'
+    )
+    expect(developmentLink).toHaveAttribute('target', '_blank')
+    expect(developmentLink).toHaveAttribute('rel', 'noreferrer noopener')
+  })
+
+  it('renders manage cookies button when GTM is enabled', () => {
+    render(<SiteFooter />)
+
+    expect(screen.getByRole('button', { name: 'Manage cookies' })).toBeInTheDocument()
+  })
+
+  it('does not render manage cookies button when GTM is disabled', () => {
+    delete process.env.NEXT_PUBLIC_GTM_ID
+
+    render(<SiteFooter />)
+
+    expect(screen.queryByRole('button', { name: 'Manage cookies' })).not.toBeInTheDocument()
+  })
+
+  it('renders a single contentinfo landmark', () => {
+    render(<SiteFooter />)
+
+    expect(screen.getAllByRole('contentinfo')).toHaveLength(1)
+  })
+})

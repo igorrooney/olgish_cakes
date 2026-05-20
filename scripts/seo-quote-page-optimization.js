@@ -176,7 +176,7 @@ const seoAnalysis = {
 
   // Content Marketing Strategy
   contentStrategy: {
-    blogPosts: [
+    articleIdeas: [
       "How to Choose the Perfect Wedding Cake",
       "Ukrainian Cake Traditions Explained",
       "Honey Cake vs Kyiv Cake: What's the Difference?",

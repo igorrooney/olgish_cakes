@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { execSync } from 'child_process';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.warn('🔄 Starting daily backup (documents only)...');
 
@@ -34,6 +34,6 @@ export async function GET(request: NextRequest) {
 }
 
 // Also handle POST requests (some cron services use POST)
-export async function POST(request: NextRequest) {
-  return GET(request);
+export async function POST() {
+  return GET();
 }

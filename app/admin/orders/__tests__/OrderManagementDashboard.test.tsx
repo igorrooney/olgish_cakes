@@ -10,6 +10,8 @@
  */
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import React from 'react'
+import type { ConfigType } from 'dayjs'
+import type { Order } from '@/types/order'
 import { OrderManagementDashboard } from '../OrderManagementDashboard'
 
 // Increase timeout for complex async tests
@@ -25,11 +27,11 @@ jest.mock('next/navigation', () => ({
 }))
 
 // Mock MUI components - more comprehensive mocking
-jest.mock('@mui/material', () => {
-  const actual = jest.requireActual('@mui/material')
+jest.mock('@/lib/daisy-ui', () => {
+  const actual = jest.requireActual('@/lib/daisy-ui')
   return {
     ...actual,
-    Dialog: ({ children, open, onClose, ...props }: any) => {
+    Dialog: ({ children, open, onClose, ...props }: MockProps) => {
       // Always render dialog element AND children in DOM
       // This allows React to properly track state changes
       // We'll check for open state via data attributes
@@ -57,15 +59,15 @@ jest.mock('@mui/material', () => {
         </div>
       )
     },
-    DialogTitle: ({ children, ...props }: any) => <h2 data-testid="dialog-title" {...props}>{children}</h2>,
-    DialogContent: ({ children, ...props }: any) => <div data-testid="dialog-content" {...props}>{children}</div>,
-    DialogActions: ({ children, ...props }: any) => <div data-testid="dialog-actions" {...props}>{children}</div>,
-    Snackbar: ({ children, open, ...props }: any) =>
+    DialogTitle: ({ children, ...props }: MockProps) => <h2 data-testid="dialog-title" {...props}>{children}</h2>,
+    DialogContent: ({ children, ...props }: MockProps) => <div data-testid="dialog-content" {...props}>{children}</div>,
+    DialogActions: ({ children, ...props }: MockProps) => <div data-testid="dialog-actions" {...props}>{children}</div>,
+    Snackbar: ({ children, open, ...props }: MockProps) =>
       open ? <div data-testid="snackbar" {...props}>{children}</div> : null,
-    Tooltip: ({ children, title, ...props }: any) => (
+    Tooltip: ({ children, title, ...props }: MockProps) => (
       <div data-testid="tooltip" title={title} {...props}>{children}</div>
     ),
-    IconButton: ({ children, onClick, ...props }: any) => {
+    IconButton: ({ children, onClick, ...props }: MockProps) => {
       // Ensure onClick is called when button is clicked
       // Don't wrap in extra handler - let React handle it naturally
       return (
@@ -80,69 +82,59 @@ jest.mock('@mui/material', () => {
         </button>
       )
     },
-    Table: ({ children, ...props }: any) => <table role="table" {...props}>{children}</table>,
-    TableBody: ({ children, ...props }: any) => <tbody {...props}>{children}</tbody>,
-    TableCell: ({ children, ...props }: any) => <td {...props}>{children}</td>,
-    TableContainer: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    TableHead: ({ children, ...props }: any) => <thead {...props}>{children}</thead>,
-    TableRow: ({ children, ...props }: any) => <tr {...props}>{children}</tr>,
-    TableSortLabel: ({ children, onClick, ...props }: any) => (
+    Table: ({ children, ...props }: MockProps) => <table role="table" {...props}>{children}</table>,
+    TableBody: ({ children, ...props }: MockProps) => <tbody {...props}>{children}</tbody>,
+    TableCell: ({ children, ...props }: MockProps) => <td {...props}>{children}</td>,
+    TableContainer: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+    TableHead: ({ children, ...props }: MockProps) => <thead {...props}>{children}</thead>,
+    TableRow: ({ children, ...props }: MockProps) => <tr {...props}>{children}</tr>,
+    TableSortLabel: ({ children, onClick, ...props }: MockProps) => (
       <button onClick={onClick} {...props}>{children}</button>
     ),
-    Typography: ({ children, variant, component, ...props }: any) => {
+    Typography: ({ children, variant, component, ...props }: MockProps) => {
       const Tag = component || 'div'
       return <Tag data-variant={variant} {...props}>{children}</Tag>
     },
     CircularProgress: () => <div data-testid="circular-progress">Loading...</div>,
-    Chip: ({ label, children, ...props }: any) => <span {...props}>{label || children}</span>,
-    Box: ({ children, component, ...props }: any) => {
+    Chip: ({ label, children, ...props }: MockProps) => <span {...props}>{label || children}</span>,
+    Box: ({ children, component, ...props }: MockProps) => {
       const Tag = component || 'div'
       return <Tag {...props}>{children}</Tag>
     },
-    Grid: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    Stack: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    Card: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    CardContent: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    Button: ({ children, onClick, ...props }: any) => (
+    Grid: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+    Stack: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+    Card: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+    CardContent: ({ children, ...props }: MockProps) => <div {...props}>{children}</div>,
+    Button: ({ children, onClick, ...props }: MockProps) => (
       <button onClick={onClick} {...props}>{children}</button>
     ),
-  }
+    DatePicker: ({ label, value, onChange, ...props }: MockProps) => (
+      <div data-testid="date-picker">
+        <label htmlFor="date-picker-input">{label}</label>
+        <input
+          id="date-picker-input"
+          type="date"
+          data-testid="date-picker-input"
+          aria-label={label || 'Date picker'}
+          aria-required="false"
+          value={value ? value.format('YYYY-MM-DD') : ''}
+          onChange={(e) => {
+            const dayjs = require('dayjs')
+            onChange(dayjs(e.target.value))
+          }}
+          {...props}
+        />
+      </div>
+    ),
+    LocalizationProvider: ({ children }: MockProps) => children,
+    AdapterDayjs: {},  }
 })
 
-// Mock MUI Date Pickers
-jest.mock('@mui/x-date-pickers/DatePicker', () => ({
-  DatePicker: ({ label, value, onChange, ...props }: any) => (
-    <div data-testid="date-picker">
-      <label htmlFor="date-picker-input">{label}</label>
-      <input
-        id="date-picker-input"
-        type="date"
-        data-testid="date-picker-input"
-        aria-label={label || 'Date picker'}
-        aria-required="false"
-        value={value ? value.format('YYYY-MM-DD') : ''}
-        onChange={(e) => {
-          const dayjs = require('dayjs')
-          onChange(dayjs(e.target.value))
-        }}
-        {...props}
-      />
-    </div>
-  ),
-}))
-
-jest.mock('@mui/x-date-pickers/LocalizationProvider', () => ({
-  LocalizationProvider: ({ children }: any) => children,
-}))
-
-jest.mock('@mui/x-date-pickers/AdapterDayjs', () => ({
-  AdapterDayjs: ({ children }: any) => children,
-}))
 
 // Mock dayjs
 jest.mock('dayjs', () => {
   const originalDayjs = jest.requireActual('dayjs')
-  const mockDayjs = (date?: any) => originalDayjs(date)
+  const mockDayjs = (date?: ConfigType) => originalDayjs(date)
   mockDayjs.locale = jest.fn()
   return mockDayjs
 })
@@ -179,7 +171,7 @@ jest.mock('@/lib/design-system', () => ({
 
 // Mock AddOrderModal
 jest.mock('../AddOrderModal', () => ({
-  AddOrderModal: ({ open, onClose, onOrderCreated }: any) =>
+  AddOrderModal: ({ open, onClose, onOrderCreated }: MockProps) =>
     open ? (
       <div data-testid="add-order-modal">
         <button onClick={onClose}>Close Modal</button>
@@ -189,7 +181,7 @@ jest.mock('../AddOrderModal', () => ({
 }))
 
 // Test data factories
-const createMockOrder = (overrides: Partial<any> = {}): any => ({
+const createMockOrder = (overrides: Partial<Order> = {}): Order => ({
   _id: 'order-1',
   _createdAt: '2025-11-20T15:43:00Z',
   _updatedAt: '2025-11-20T15:43:00Z',
@@ -245,7 +237,7 @@ const createMockOrder = (overrides: Partial<any> = {}): any => ({
   ...overrides,
 })
 
-const createMockOrderWithCake = (overrides: Partial<any> = {}): any => ({
+const createMockOrderWithCake = (overrides: Partial<Order> = {}): Order => ({
   ...createMockOrder(),
   orderType: 'browse-catalog',
   items: [
@@ -287,6 +279,7 @@ describe('OrderManagementDashboard - Integration Tests', () => {
 
   beforeEach(() => {
     originalFetch = global.fetch
+    mockFetch.mockReset()
     global.fetch = mockFetch
     jest.clearAllMocks()
 
@@ -295,7 +288,7 @@ describe('OrderManagementDashboard - Integration Tests', () => {
     jest.spyOn(console, 'warn').mockImplementation(() => { })
   })
 
-  const setupFetchMocks = (orders: any[] = []) => {
+  const setupFetchMocks = (orders: UnknownRecord[] = []) => {
     // Mock fetch orders - must be first
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -306,20 +299,7 @@ describe('OrderManagementDashboard - Integration Tests', () => {
       }),
     })
 
-    // Mock earnings API - must be second
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        currentMonth: 0,
-        lastMonth: 0,
-        totalOrders: orders.length,
-        averageOrderValue: orders.length > 0
-          ? orders.reduce((sum, o) => sum + (o.pricing?.total || 0), 0) / orders.length
-          : 0,
-      }),
-    })
-
-    // Mock cakes API - must be third
+    // Mock cakes API - must be second
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({
@@ -335,19 +315,40 @@ describe('OrderManagementDashboard - Integration Tests', () => {
 
 
 
-  describe('Date Picker in Edit Form', () => {
-    it.skip('should display date picker in edit form', async () => {
-      // Skipped: Requires complex dialog interaction mocking
-      // Functionality verified through manual testing in admin interface
-      return
-      const order = createMockOrder({
-        delivery: {
-          dateNeeded: '2025-12-08',
-          deliveryMethod: 'postal',
-        },
-      })
-
-      setupFetchMocks([order])
+  describe('Order focus filters', () => {
+    it('filters the list to needs-action and active orders', async () => {
+      setupFetchMocks([
+        createMockOrder({
+          _id: 'needs-action-order',
+          orderNumber: '260427100001',
+          status: 'confirmed',
+          customer: {
+            name: 'Needs Customer',
+            email: 'needs@example.com',
+            phone: '07111111111'
+          }
+        }),
+        createMockOrder({
+          _id: 'ready-order',
+          orderNumber: '260427100002',
+          status: 'ready-pickup',
+          customer: {
+            name: 'Ready Customer',
+            email: 'ready@example.com',
+            phone: '07222222222'
+          }
+        }),
+        createMockOrder({
+          _id: 'completed-order',
+          orderNumber: '260427100003',
+          status: 'completed',
+          customer: {
+            name: 'Completed Customer',
+            email: 'completed@example.com',
+            phone: '07333333333'
+          }
+        })
+      ])
 
       render(<OrderManagementDashboard />)
 
@@ -355,33 +356,25 @@ describe('OrderManagementDashboard - Integration Tests', () => {
         expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
       }, { timeout: 5000 })
 
-      // Find and click edit button (second icon button in table row)
-      await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1]) // Second button is edit
-      })
+      const focusFilters = screen.getByLabelText('Order focus filters')
 
-      // Wait for edit dialog to appear and find date picker directly
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
+      fireEvent.click(within(focusFilters).getByRole('button', { name: 'Needs action 1' }))
 
-      // Check date picker is present
-      const datePicker = screen.getByTestId('date-picker')
-      expect(datePicker).toBeInTheDocument()
+      expect(screen.getAllByText('Needs Customer').length).toBeGreaterThan(0)
+      expect(screen.queryByText('Ready Customer')).not.toBeInTheDocument()
+      expect(screen.queryByText('Completed Customer')).not.toBeInTheDocument()
 
-      const dateInput = screen.getByTestId('date-picker-input')
-      expect(dateInput).toHaveValue('2025-12-08')
+      fireEvent.click(within(focusFilters).getByRole('button', { name: 'Active orders 2' }))
+
+      expect(screen.getAllByText('Needs Customer').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('Ready Customer').length).toBeGreaterThan(0)
+      expect(screen.queryByText('Completed Customer')).not.toBeInTheDocument()
     })
+  })
 
-    it('should allow changing date in edit form', async () => {
-      const order = createMockOrder({
-        delivery: {
-          dateNeeded: '2025-12-08',
-        },
-      })
+  describe('Order detail navigation', () => {
+    it('keeps order-list actions focused on the detail page', async () => {
+      const order = createMockOrder()
 
       setupFetchMocks([order])
 
@@ -391,62 +384,37 @@ describe('OrderManagementDashboard - Integration Tests', () => {
         expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
       }, { timeout: 5000 })
 
-      // Find edit button in table - second button in row
-      await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1]) // Second button is edit
-      }, { timeout: 5000 })
+      const openLinks = screen.getAllByRole('link', { name: `Open order ${order.orderNumber}` })
 
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      const dateInput = screen.getByTestId('date-picker-input')
-      fireEvent.change(dateInput, { target: { value: '2025-12-25' } })
-
-      expect(dateInput).toHaveValue('2025-12-25')
-    })
-
-    it('should handle null date gracefully in edit form', async () => {
-      const order = createMockOrder({
-        delivery: {
-          dateNeeded: undefined,
-        },
+      openLinks.forEach((link) => {
+        expect(link).toHaveAttribute('href', `/admin/orders/${order.orderNumber}`)
       })
 
-      setupFetchMocks([order])
-
-      render(<OrderManagementDashboard />)
-
-      await waitFor(() => {
-        expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      // Find edit button in table - second button in row
-      await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1]) // Second button is edit
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      const dateInput = screen.getByTestId('date-picker-input')
-      expect(dateInput).toHaveValue('')
+      expect(screen.queryByRole('button', { name: `Edit order ${order.orderNumber}` })).not.toBeInTheDocument()
+      expect(screen.queryByTitle('Edit Order')).not.toBeInTheDocument()
     })
   })
 
   describe('Accessibility', () => {
-    it('should have accessible date picker with aria-label', async () => {
-      const order = createMockOrder({
-        delivery: {
-          dateNeeded: '2025-12-08',
-        },
+    it('should show image thumbnails on orders that have sent images', async () => {
+      const order = createMockOrderWithCake({
+        messages: [
+          {
+            message: 'Please use this reference image',
+            attachments: [
+              {
+                _type: 'image',
+                asset: {
+                  _type: 'supabase-file',
+                  _id: 'orders/25112015431792/references/design.jpg',
+                  _ref: 'orders/25112015431792/references/design.jpg',
+                  url: 'https://example.supabase.co/storage/v1/object/public/custom-cake-enquiries/orders/design.jpg'
+                },
+                alt: 'Customer design reference'
+              }
+            ]
+          }
+        ]
       })
 
       setupFetchMocks([order])
@@ -457,24 +425,11 @@ describe('OrderManagementDashboard - Integration Tests', () => {
         expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
       }, { timeout: 5000 })
 
-      // Find edit button in table - second button in row
-      await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1]) // Second button is edit
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      const dateInput = screen.getByTestId('date-picker-input')
-      expect(dateInput).toHaveAttribute('aria-label', 'Date Needed')
-      expect(dateInput).toHaveAttribute('type', 'date')
+      expect(screen.getAllByAltText('Customer design reference').length).toBeGreaterThan(0)
+      expect(screen.getAllByLabelText(/1 image attached to order/i).length).toBeGreaterThan(0)
     })
 
-    it('should have label associated with date picker input', async () => {
+    it('should keep order detail links keyboard accessible', async () => {
       const order = createMockOrder({
         delivery: {
           dateNeeded: '2025-12-08',
@@ -489,65 +444,14 @@ describe('OrderManagementDashboard - Integration Tests', () => {
         expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
       }, { timeout: 5000 })
 
-      await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1])
-      }, { timeout: 5000 })
+      const detailLink = screen.getAllByRole('link', { name: `Open order ${order.orderNumber}` })[0]
 
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
+      detailLink.focus()
+      expect(detailLink).toHaveFocus()
 
-      const dateInput = screen.getByTestId('date-picker-input')
-      const datePicker = screen.getByTestId('date-picker')
-      const labels = within(datePicker).getAllByText('Date Needed')
-
-      expect(labels.length).toBeGreaterThan(0)
-      expect(dateInput).toHaveAttribute('id', 'date-picker-input')
-      // Verify label is associated with input via htmlFor
-      const label = labels[0]
-      expect(label).toHaveAttribute('for', 'date-picker-input')
-    })
-
-    it('should be keyboard accessible', async () => {
-      const order = createMockOrder({
-        delivery: {
-          dateNeeded: '2025-12-08',
-        },
-      })
-
-      setupFetchMocks([order])
-
-      render(<OrderManagementDashboard />)
-
-      await waitFor(() => {
-        expect(screen.queryByText(/Loading orders/i)).not.toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        const table = screen.getByRole('table')
-        const buttons = within(table).getAllByRole('button')
-        expect(buttons.length).toBeGreaterThan(1)
-        fireEvent.click(buttons[1])
-      }, { timeout: 5000 })
-
-      await waitFor(() => {
-        expect(screen.getByTestId('date-picker-input')).toBeInTheDocument()
-      }, { timeout: 5000 })
-
-      const dateInput = screen.getByTestId('date-picker-input')
-
-      // Verify it's focusable
-      dateInput.focus()
-      expect(dateInput).toHaveFocus()
-
-      // Verify keyboard interaction
-      fireEvent.keyDown(dateInput, { key: 'Enter', code: 'Enter' })
-      expect(dateInput).toHaveFocus()
+      fireEvent.keyDown(detailLink, { key: 'Enter', code: 'Enter' })
+      expect(detailLink).toHaveFocus()
     })
   })
 
 })
-
