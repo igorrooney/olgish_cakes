@@ -10,16 +10,15 @@ import {
   listOldTempImagePaths
 } from '@/lib/storage'
 
-function isAuthorized(request: NextRequest): boolean {
+export function isCleanupRequestAuthorized(request: NextRequest): boolean {
   const secret = getRequiredEnv('CRON_SECRET')
   const authorization = request.headers.get('authorization')
-  const querySecret = request.nextUrl.searchParams.get('secret')
 
-  return authorization === `Bearer ${secret}` || querySecret === secret
+  return authorization === `Bearer ${secret}`
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  if (!isAuthorized(request)) {
+  if (!isCleanupRequestAuthorized(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
