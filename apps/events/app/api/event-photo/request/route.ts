@@ -77,6 +77,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     tempImagePaths: verifiedFiles.map((file) => file.path)
   })
 
+  let deliveredMessageIds: number[] = []
+
   try {
     const documents = await downloadTempDocuments(bucket, verifiedFiles)
     const invalidDocument = await findInvalidImageDocument(documents)
@@ -94,7 +96,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       return jsonError('Please upload a valid JPEG, PNG, WebP or HEIC image.', 400)
     }
 
-    const messageIds = await sendTelegramNotification({
+    deliveredMessageIds = await sendTelegramNotification({
       requestId: requestRow.id,
       eventName: requestRow.event_name,
       fullName: requestRow.full_name,
@@ -102,15 +104,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       documents
     })
 
-    try {
-      await updateTelegramStatus(requestRow.id, 'sent', messageIds, null, false)
-    } catch {
-      // Telegram delivery has succeeded, so do not turn this into a failed submission.
-    }
+    await updateTelegramStatus(requestRow.id, 'sent', deliveredMessageIds, null, false)
 
     try {
       await deleteTempImages(bucket, verifiedFiles.map((file) => file.path))
-      await updateTelegramStatus(requestRow.id, 'sent', messageIds, null, true)
+      await updateTelegramStatus(requestRow.id, 'sent', deliveredMessageIds, null, true)
     } catch {
       // The cleanup cron can remove stale temp files and clear paths later.
     }
@@ -119,7 +117,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       id: requestRow.id
     })
   } catch (error) {
-    const messageIds = error instanceof TelegramDeliveryError ? error.messageIds : []
+    const messageIds = error instanceof TelegramDeliveryError
+      ? error.messageIds
+      : deliveredMessageIds
     const errorMessage = error instanceof Error ? error.message : FALLBACK_ERROR_MESSAGE
 
     await updateTelegramStatus(requestRow.id, 'failed', messageIds, errorMessage, false)
