@@ -24,4 +24,15 @@ describe('Klaviyo CSV export', () => {
 
     expect(csv).toContain('"Olga ""Cake"", Leeds"')
   })
+
+  it('neutralizes spreadsheet formulas in user-controlled fields', () => {
+    const csv = buildKlaviyoCsv([
+      {
+        email: '=cmd@example.com',
+        full_name: '@SUM(1,1)'
+      }
+    ])
+
+    expect(csv).toBe("Email,Name\r\n'=cmd@example.com,\"'@SUM(1,1)\"\r\n")
+  })
 })

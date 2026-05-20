@@ -1,8 +1,9 @@
 import type { EventPhotoRequestRow } from '@/lib/types/database'
 
 function escapeCsvValue(value: string): string {
-  const needsQuotes = /[",\n\r]/.test(value)
-  const escaped = value.replace(/"/g, '""')
+  const safeValue = /^\s*[=+\-@]/.test(value) ? `'${value}` : value
+  const needsQuotes = /[",\n\r]/.test(safeValue)
+  const escaped = safeValue.replace(/"/g, '""')
 
   return needsQuotes ? `"${escaped}"` : escaped
 }

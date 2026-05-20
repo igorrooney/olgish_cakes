@@ -156,7 +156,7 @@ export async function listRequestsForCleanup(cutoffIso: string): Promise<EventPh
   const { data, error } = await supabase
     .from('event_photo_requests')
     .select('*')
-    .in('telegram_status', ['pending', 'failed'])
+    .in('telegram_status', ['pending', 'failed', 'sent'])
     .lt('created_at', cutoffIso)
     .not('temp_image_paths', 'eq', '{}')
 
