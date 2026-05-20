@@ -56,7 +56,7 @@ export const uploadRequestSchema = z.object({
 export function sanitizeFileName(fileName: string): string {
   const cleaned = fileName
     .normalize('NFKD')
-    .replace(/[^\w.\-]+/g, '-')
+    .replace(/[^\w.-]+/g, '-')
     .replace(/-{2,}/g, '-')
     .replace(/^-+|-+$/g, '')
     .toLowerCase()
