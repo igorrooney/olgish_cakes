@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { MAX_FILE_BYTES } from '@/lib/constants'
+
 const { listMock, removeMock } = vi.hoisted(() => ({
   listMock: vi.fn(),
   removeMock: vi.fn()
@@ -17,7 +19,10 @@ vi.mock('@/lib/supabase/admin', () => ({
   })
 }))
 
-import { listOldTempImagePaths } from '@/lib/storage'
+import {
+  findInvalidTempDocumentSize,
+  listOldTempImagePaths
+} from '@/lib/storage'
 
 describe('storage cleanup helpers', () => {
   beforeEach(() => {
@@ -66,5 +71,66 @@ describe('storage cleanup helpers', () => {
     })
     expect(paths).toHaveLength(1001)
     expect(paths).toContain('incoming/photo-1000.jpg')
+  })
+
+  it('accepts downloaded files that match their signed size', () => {
+    expect(findInvalidTempDocumentSize(
+      [
+        {
+          fileName: 'photo.jpg',
+          blob: { size: 1024 } as Blob
+        }
+      ],
+      [
+        {
+          fileName: 'photo.jpg',
+          size: 1024
+        }
+      ]
+    )).toBeNull()
+  })
+
+  it('detects downloaded files that do not match their signed size', () => {
+    expect(findInvalidTempDocumentSize(
+      [
+        {
+          fileName: 'photo.jpg',
+          blob: { size: 2048 } as Blob
+        }
+      ],
+      [
+        {
+          fileName: 'photo.jpg',
+          size: 1024
+        }
+      ]
+    )).toEqual({
+      fileName: 'photo.jpg',
+      expectedSize: 1024,
+      actualSize: 2048,
+      reason: 'mismatch'
+    })
+  })
+
+  it('detects downloaded files over the app size limit', () => {
+    expect(findInvalidTempDocumentSize(
+      [
+        {
+          fileName: 'photo.jpg',
+          blob: { size: MAX_FILE_BYTES + 1 } as Blob
+        }
+      ],
+      [
+        {
+          fileName: 'photo.jpg',
+          size: MAX_FILE_BYTES
+        }
+      ]
+    )).toEqual({
+      fileName: 'photo.jpg',
+      expectedSize: MAX_FILE_BYTES,
+      actualSize: MAX_FILE_BYTES + 1,
+      reason: 'too_large'
+    })
   })
 })

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 
+import { MAX_FILE_BYTES } from '@/lib/constants'
 import { getEventPhotoBucket, getSupabaseAdmin } from '@/lib/supabase/admin'
 import { createUploadProof } from '@/lib/upload-proof'
 import { sanitizeFileName } from '@/lib/validation'
@@ -24,6 +25,13 @@ export interface TempDocument {
   mimeType: string
   path: string
   blob: Blob
+}
+
+export interface TempDocumentSizeIssue {
+  fileName: string
+  expectedSize: number | null
+  actualSize: number
+  reason: 'mismatch' | 'too_large'
 }
 
 function buildUploadPath(fileName: string): string {
@@ -87,6 +95,37 @@ export async function downloadTempDocuments(
       blob: data
     }
   }))
+}
+
+export function findInvalidTempDocumentSize(
+  documents: Pick<TempDocument, 'blob' | 'fileName'>[],
+  files: Pick<SignedUpload, 'fileName' | 'size'>[]
+): TempDocumentSizeIssue | null {
+  for (let index = 0; index < documents.length; index += 1) {
+    const document = documents[index]
+    const file = files[index]
+    const actualSize = document.blob.size
+
+    if (actualSize > MAX_FILE_BYTES) {
+      return {
+        fileName: document.fileName,
+        expectedSize: file?.size ?? null,
+        actualSize,
+        reason: 'too_large'
+      }
+    }
+
+    if (!file || document.fileName !== file.fileName || actualSize !== file.size) {
+      return {
+        fileName: document.fileName,
+        expectedSize: file?.size ?? null,
+        actualSize,
+        reason: 'mismatch'
+      }
+    }
+  }
+
+  return null
 }
 
 export async function deleteTempImages(bucket: string, paths: string[]): Promise<void> {

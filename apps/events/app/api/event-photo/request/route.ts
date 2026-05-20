@@ -1,7 +1,10 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-import { FALLBACK_ERROR_MESSAGE } from '@/lib/constants'
+import {
+  FALLBACK_ERROR_MESSAGE,
+  MAX_FILE_BYTES
+} from '@/lib/constants'
 import { validateCsrfToken } from '@/lib/csrf'
 import { jsonError, readJsonBody } from '@/lib/http'
 import { findInvalidImageDocument } from '@/lib/image-content'
@@ -13,14 +16,18 @@ import { getEventPhotoSettings } from '@/lib/settings'
 import { getEventPhotoBucket } from '@/lib/supabase/admin'
 import {
   deleteTempImages,
-  downloadTempDocuments
+  downloadTempDocuments,
+  findInvalidTempDocumentSize
 } from '@/lib/storage'
 import {
   TelegramDeliveryError,
   sendTelegramNotification
 } from '@/lib/telegram'
 import { verifyUploadProof } from '@/lib/upload-proof'
-import { publicRequestSchema } from '@/lib/validation'
+import {
+  formatFileSize,
+  publicRequestSchema
+} from '@/lib/validation'
 
 export const maxDuration = 60
 
@@ -81,6 +88,28 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   try {
     const documents = await downloadTempDocuments(bucket, verifiedFiles)
+    const invalidSizeDocument = findInvalidTempDocumentSize(documents, verifiedFiles)
+
+    if (invalidSizeDocument) {
+      await deleteTempImages(bucket, verifiedFiles.map((file) => file.path))
+      await updateTelegramStatus(
+        requestRow.id,
+        'failed',
+        [],
+        invalidSizeDocument.reason === 'too_large'
+          ? `Uploaded file exceeded the maximum size: ${invalidSizeDocument.fileName}`
+          : `Uploaded file size did not match verified metadata: ${invalidSizeDocument.fileName}`,
+        true
+      )
+
+      return jsonError(
+        invalidSizeDocument.reason === 'too_large'
+          ? `Each image must be ${formatFileSize(MAX_FILE_BYTES)} or smaller.`
+          : 'The uploaded image could not be verified. Please try again.',
+        400
+      )
+    }
+
     const invalidDocument = await findInvalidImageDocument(documents)
 
     if (invalidDocument) {
