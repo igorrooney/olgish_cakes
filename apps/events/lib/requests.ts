@@ -94,6 +94,24 @@ export async function getEventPhotoRequest(id: string): Promise<EventPhotoReques
   return data
 }
 
+export async function getSentEventPhotoRequest(
+  id: string
+): Promise<Pick<EventPhotoRequestRow, 'id'> | null> {
+  const supabase = getSupabaseAdmin()
+  const { data, error } = await supabase
+    .from('event_photo_requests')
+    .select('id')
+    .eq('id', id)
+    .eq('telegram_status', 'sent')
+    .maybeSingle()
+
+  if (error) {
+    throw new Error(`Could not verify event request: ${error.message}`)
+  }
+
+  return data
+}
+
 export async function listEventNames(): Promise<string[]> {
   const supabase = getSupabaseAdmin()
   const { data, error } = await supabase
