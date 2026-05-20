@@ -3,6 +3,10 @@ import { NextResponse } from 'next/server'
 
 import { validateCsrfToken } from '@/lib/csrf'
 import { jsonError, readJsonBody } from '@/lib/http'
+import {
+  publicRateLimitError,
+  recordPublicUploadAttempt
+} from '@/lib/rate-limit'
 import { getEventPhotoSettings } from '@/lib/settings'
 import { getEventPhotoBucket } from '@/lib/supabase/admin'
 import { createSignedUploads } from '@/lib/storage'
@@ -29,6 +33,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         : `Please upload no more than ${settings.maxImages} images.`,
       400
     )
+  }
+
+  const rateLimit = await recordPublicUploadAttempt(request)
+
+  if (rateLimit.isLimited) {
+    return publicRateLimitError(rateLimit)
   }
 
   const uploads = await createSignedUploads(parsed.data.files.map((file) => ({

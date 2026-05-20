@@ -96,6 +96,31 @@ export interface AdminLoginAttemptUpdate extends Record<string, unknown> {
   failed_at?: string
 }
 
+export type EventPhotoRateLimitAction =
+  | 'event-photo-upload-ip'
+  | 'event-photo-request-ip'
+  | 'event-photo-request-email'
+
+export interface EventPhotoRateLimitAttemptRow extends Record<string, unknown> {
+  id: number
+  action: EventPhotoRateLimitAction
+  key_hash: string
+  attempted_at: string
+}
+
+export interface EventPhotoRateLimitAttemptInsert extends Record<string, unknown> {
+  id?: number
+  action: EventPhotoRateLimitAction
+  key_hash: string
+  attempted_at?: string
+}
+
+export interface EventPhotoRateLimitAttemptUpdate extends Record<string, unknown> {
+  action?: EventPhotoRateLimitAction
+  key_hash?: string
+  attempted_at?: string
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -115,6 +140,12 @@ export interface Database {
         Row: EventPhotoRequestRow
         Insert: EventPhotoRequestInsert
         Update: EventPhotoRequestUpdate
+        Relationships: []
+      }
+      event_photo_rate_limit_attempts: {
+        Row: EventPhotoRateLimitAttemptRow
+        Insert: EventPhotoRateLimitAttemptInsert
+        Update: EventPhotoRateLimitAttemptUpdate
         Relationships: []
       }
     }
