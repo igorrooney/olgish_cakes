@@ -8,6 +8,7 @@
 
 # testing
 /coverage
+**/coverage/
 /.jest-cache
 
 # next.js

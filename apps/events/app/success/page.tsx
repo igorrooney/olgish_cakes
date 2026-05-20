@@ -1,12 +1,35 @@
 import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import Image from 'next/image'
+import { redirect } from 'next/navigation'
 
 import {
   FEATURE_LINKS,
   SUCCESS_MESSAGE
 } from '@/lib/constants'
+import { getSentEventPhotoRequest } from '@/lib/requests'
+import {
+  parseSuccessRequestId,
+  SUCCESS_REQUEST_ID_PARAM
+} from '@/lib/success'
 
-export default function SuccessPage() {
+interface SuccessPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function SuccessPage({ searchParams }: SuccessPageProps) {
+  const params = await searchParams
+  const requestId = parseSuccessRequestId(params[SUCCESS_REQUEST_ID_PARAM])
+
+  if (!requestId) {
+    redirect('/')
+  }
+
+  const request = await getSentEventPhotoRequest(requestId)
+
+  if (!request) {
+    redirect('/')
+  }
+
   return (
     <main className="min-h-screen py-6 sm:py-10">
       <div className="event-shell">

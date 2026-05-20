@@ -16,6 +16,10 @@ import {
 } from '@/lib/constants'
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser'
 import {
+  buildSuccessPath,
+  parseSuccessRequestId
+} from '@/lib/success'
+import {
   ACCEPTED_IMAGE_TYPES,
   normaliseImageMimeType,
   validateClientFile,
@@ -35,6 +39,10 @@ interface CsrfResponse {
 interface SignedUploadResponse {
   bucket: string
   uploads: SignedUploadItem[]
+}
+
+interface EventPhotoRequestResponse {
+  id: string
 }
 
 interface SignedUploadItem {
@@ -103,6 +111,13 @@ function isSignedUploadResponse(value: unknown): value is SignedUploadResponse {
       )
     })
   )
+}
+
+function isEventPhotoRequestResponse(value: unknown): value is EventPhotoRequestResponse {
+  const record = asRecord(value)
+  const id = record?.id
+
+  return typeof id === 'string' && parseSuccessRequestId(id) !== null
 }
 
 function prepareFiles(files: File[]): PreparedFile[] | null {
@@ -288,11 +303,11 @@ export function EventPhotoForm() {
       })
       const requestBody = await readJson(requestResponse)
 
-      if (!requestResponse.ok) {
+      if (!requestResponse.ok || !isEventPhotoRequestResponse(requestBody)) {
         throw new Error(getApiError(requestBody) ?? FALLBACK_ERROR_MESSAGE)
       }
 
-      router.push('/success')
+      router.push(buildSuccessPath(requestBody.id))
     } catch (submitError) {
       if (!controller.signal.aborted) {
         setError(submitError instanceof Error ? submitError.message : FALLBACK_ERROR_MESSAGE)

@@ -10,16 +10,15 @@ import {
   listOldTempImagePaths
 } from '@/lib/storage'
 
-function isAuthorized(request: NextRequest): boolean {
+export function isCleanupRequestAuthorized(request: NextRequest): boolean {
   const secret = getRequiredEnv('CRON_SECRET')
   const authorization = request.headers.get('authorization')
-  const querySecret = request.nextUrl.searchParams.get('secret')
 
-  return authorization === `Bearer ${secret}` || querySecret === secret
+  return authorization === `Bearer ${secret}`
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  if (!isAuthorized(request)) {
+  if (!isCleanupRequestAuthorized(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -36,7 +35,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     row.id,
     row.telegram_status === 'pending' ? 'failed' : row.telegram_status,
     row.telegram_message_ids,
-    row.telegram_error ?? 'Temporary uploaded files were removed after 24 hours.',
+    row.telegram_status === 'sent'
+      ? row.telegram_error
+      : row.telegram_error ?? 'Temporary uploaded files were removed after 24 hours.',
     true
   )))
 

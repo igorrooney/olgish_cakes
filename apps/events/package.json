@@ -10,6 +10,7 @@
     "lint": "eslint . --max-warnings=0",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest"
   },
   "dependencies": {
@@ -26,11 +27,12 @@
     "@types/node": "25.9.1",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
-    "eslint": "10.4.0",
+    "@vitest/coverage-v8": "4.1.7",
+    "eslint": "9.39.1",
     "eslint-config-next": "16.2.6",
     "jsdom": "29.1.1",
     "tailwindcss": "4.3.0",
-    "typescript": "6.0.3",
+    "typescript": "5.9.3",
     "vitest": "4.1.7"
   },
   "engines": {

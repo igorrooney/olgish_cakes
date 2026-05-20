@@ -38,12 +38,18 @@ jobs:
           NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
           NEXT_PUBLIC_SANITY_API_VERSION: "2025-03-31"
 
+      - name: Run events app TypeScript type check
+        run: pnpm --filter @olgish-cakes/events type-check
+
       - name: Run ESLint
         run: pnpm run lint
         env:
           NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
           NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
           NEXT_PUBLIC_SANITY_API_VERSION: "2025-03-31"
+
+      - name: Run events app ESLint
+        run: pnpm --filter @olgish-cakes/events lint
 
       - name: Run unit tests with coverage
         run: pnpm run test:coverage
@@ -52,6 +58,9 @@ jobs:
           NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
           NEXT_PUBLIC_SANITY_API_VERSION: "2025-03-31"
           SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
+
+      - name: Run events app tests with coverage
+        run: pnpm --filter @olgish-cakes/events test:coverage
 
       - name: Run schema validation (mock data)
         run: pnpm run validate:schemas
@@ -139,6 +148,9 @@ jobs:
           NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
           NEXT_PUBLIC_SANITY_API_VERSION: "2025-03-31"
           SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
+
+      - name: Build events app
+        run: pnpm --filter @olgish-cakes/events build
 
       - name: Check build output
         run: |

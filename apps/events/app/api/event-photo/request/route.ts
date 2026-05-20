@@ -1,9 +1,17 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-import { FALLBACK_ERROR_MESSAGE } from '@/lib/constants'
+import {
+  FALLBACK_ERROR_MESSAGE,
+  MAX_FILE_BYTES
+} from '@/lib/constants'
 import { validateCsrfToken } from '@/lib/csrf'
 import { jsonError, readJsonBody } from '@/lib/http'
+import { findInvalidImageDocument } from '@/lib/image-content'
+import {
+  publicRateLimitError,
+  recordPublicRequestAttempt
+} from '@/lib/rate-limit'
 import {
   createEventPhotoRequest,
   updateTelegramStatus
@@ -12,14 +20,18 @@ import { getEventPhotoSettings } from '@/lib/settings'
 import { getEventPhotoBucket } from '@/lib/supabase/admin'
 import {
   deleteTempImages,
-  downloadTempDocuments
+  downloadTempDocuments,
+  findInvalidTempDocumentSize
 } from '@/lib/storage'
 import {
   TelegramDeliveryError,
   sendTelegramNotification
 } from '@/lib/telegram'
 import { verifyUploadProof } from '@/lib/upload-proof'
-import { publicRequestSchema } from '@/lib/validation'
+import {
+  formatFileSize,
+  publicRequestSchema
+} from '@/lib/validation'
 
 export const maxDuration = 60
 
@@ -44,6 +56,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         : `Please upload no more than ${settings.maxImages} images.`,
       400
     )
+  }
+
+  const rateLimit = await recordPublicRequestAttempt(request, parsed.data.email)
+
+  if (rateLimit.isLimited) {
+    return publicRateLimitError(rateLimit)
   }
 
   const verifiedFiles: typeof parsed.data.files = []
@@ -76,9 +94,48 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     tempImagePaths: verifiedFiles.map((file) => file.path)
   })
 
+  let deliveredMessageIds: number[] = []
+
   try {
     const documents = await downloadTempDocuments(bucket, verifiedFiles)
-    const messageIds = await sendTelegramNotification({
+    const invalidSizeDocument = findInvalidTempDocumentSize(documents, verifiedFiles)
+
+    if (invalidSizeDocument) {
+      await deleteTempImages(bucket, verifiedFiles.map((file) => file.path))
+      await updateTelegramStatus(
+        requestRow.id,
+        'failed',
+        [],
+        invalidSizeDocument.reason === 'too_large'
+          ? `Uploaded file exceeded the maximum size: ${invalidSizeDocument.fileName}`
+          : `Uploaded file size did not match verified metadata: ${invalidSizeDocument.fileName}`,
+        true
+      )
+
+      return jsonError(
+        invalidSizeDocument.reason === 'too_large'
+          ? `Each image must be ${formatFileSize(MAX_FILE_BYTES)} or smaller.`
+          : 'The uploaded image could not be verified. Please try again.',
+        400
+      )
+    }
+
+    const invalidDocument = await findInvalidImageDocument(documents)
+
+    if (invalidDocument) {
+      await deleteTempImages(bucket, verifiedFiles.map((file) => file.path))
+      await updateTelegramStatus(
+        requestRow.id,
+        'failed',
+        [],
+        `Uploaded file content did not match a supported image type: ${invalidDocument.fileName}`,
+        true
+      )
+
+      return jsonError('Please upload a valid JPEG, PNG, WebP or HEIC image.', 400)
+    }
+
+    deliveredMessageIds = await sendTelegramNotification({
       requestId: requestRow.id,
       eventName: requestRow.event_name,
       fullName: requestRow.full_name,
@@ -86,14 +143,22 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       documents
     })
 
-    await deleteTempImages(bucket, verifiedFiles.map((file) => file.path))
-    await updateTelegramStatus(requestRow.id, 'sent', messageIds, null, true)
+    await updateTelegramStatus(requestRow.id, 'sent', deliveredMessageIds, null, false)
+
+    try {
+      await deleteTempImages(bucket, verifiedFiles.map((file) => file.path))
+      await updateTelegramStatus(requestRow.id, 'sent', deliveredMessageIds, null, true)
+    } catch {
+      // The cleanup cron can remove stale temp files and clear paths later.
+    }
 
     return NextResponse.json({
       id: requestRow.id
     })
   } catch (error) {
-    const messageIds = error instanceof TelegramDeliveryError ? error.messageIds : []
+    const messageIds = error instanceof TelegramDeliveryError
+      ? error.messageIds
+      : deliveredMessageIds
     const errorMessage = error instanceof Error ? error.message : FALLBACK_ERROR_MESSAGE
 
     await updateTelegramStatus(requestRow.id, 'failed', messageIds, errorMessage, false)

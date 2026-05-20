@@ -15,6 +15,8 @@ export const ACCEPTED_IMAGE_TYPES = [
   'image/heic'
 ] as const
 
+export type AcceptedImageMimeType = (typeof ACCEPTED_IMAGE_TYPES)[number]
+
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export const settingsSchema = z.object({
