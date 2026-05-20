@@ -102,8 +102,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       documents
     })
 
-    await deleteTempImages(bucket, verifiedFiles.map((file) => file.path))
-    await updateTelegramStatus(requestRow.id, 'sent', messageIds, null, true)
+    try {
+      await updateTelegramStatus(requestRow.id, 'sent', messageIds, null, false)
+    } catch {
+      // Telegram delivery has succeeded, so do not turn this into a failed submission.
+    }
+
+    try {
+      await deleteTempImages(bucket, verifiedFiles.map((file) => file.path))
+      await updateTelegramStatus(requestRow.id, 'sent', messageIds, null, true)
+    } catch {
+      // The cleanup cron can remove stale temp files and clear paths later.
+    }
 
     return NextResponse.json({
       id: requestRow.id

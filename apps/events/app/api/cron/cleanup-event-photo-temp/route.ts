@@ -36,7 +36,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     row.id,
     row.telegram_status === 'pending' ? 'failed' : row.telegram_status,
     row.telegram_message_ids,
-    row.telegram_error ?? 'Temporary uploaded files were removed after 24 hours.',
+    row.telegram_status === 'sent'
+      ? row.telegram_error
+      : row.telegram_error ?? 'Temporary uploaded files were removed after 24 hours.',
     true
   )))
 
