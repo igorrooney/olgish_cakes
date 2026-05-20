@@ -1,0 +1,103 @@
+import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
+
+import { FALLBACK_ERROR_MESSAGE } from '@/lib/constants'
+import { validateCsrfToken } from '@/lib/csrf'
+import { jsonError, readJsonBody } from '@/lib/http'
+import {
+  createEventPhotoRequest,
+  updateTelegramStatus
+} from '@/lib/requests'
+import { getEventPhotoSettings } from '@/lib/settings'
+import { getEventPhotoBucket } from '@/lib/supabase/admin'
+import {
+  deleteTempImages,
+  downloadTempDocuments
+} from '@/lib/storage'
+import {
+  TelegramDeliveryError,
+  sendTelegramNotification
+} from '@/lib/telegram'
+import { verifyUploadProof } from '@/lib/upload-proof'
+import { publicRequestSchema } from '@/lib/validation'
+
+export const maxDuration = 60
+
+export async function POST(request: NextRequest): Promise<NextResponse> {
+  const body = await readJsonBody(request)
+  const parsed = publicRequestSchema.safeParse(body)
+
+  if (!parsed.success) {
+    return jsonError('Please check your details and image, then try again.', 400)
+  }
+
+  if (!validateCsrfToken(request, parsed.data.csrfToken)) {
+    return jsonError('This form expired. Please refresh the page and try again.', 403)
+  }
+
+  const settings = await getEventPhotoSettings()
+
+  if (parsed.data.files.length > settings.maxImages) {
+    return jsonError(
+      settings.maxImages === 1
+        ? 'Please upload one image only.'
+        : `Please upload no more than ${settings.maxImages} images.`,
+      400
+    )
+  }
+
+  const verifiedFiles: typeof parsed.data.files = []
+
+  for (const file of parsed.data.files) {
+    const proof = verifyUploadProof(file.proof)
+
+    if (
+      !proof ||
+      proof.path !== file.path ||
+      proof.fileName !== file.fileName ||
+      proof.mimeType !== file.mimeType ||
+      proof.size !== file.size
+    ) {
+      return jsonError('The uploaded image could not be verified. Please try again.', 400)
+    }
+
+    verifiedFiles.push(file)
+  }
+
+  const bucket = getEventPhotoBucket()
+  const requestRow = await createEventPhotoRequest({
+    fullName: parsed.data.fullName,
+    email: parsed.data.email,
+    eventName: settings.eventName,
+    imageFilenames: verifiedFiles.map((file) => file.fileName),
+    imageMimeTypes: verifiedFiles.map((file) => file.mimeType),
+    imageSizes: verifiedFiles.map((file) => file.size),
+    tempImageBucket: bucket,
+    tempImagePaths: verifiedFiles.map((file) => file.path)
+  })
+
+  try {
+    const documents = await downloadTempDocuments(bucket, verifiedFiles)
+    const messageIds = await sendTelegramNotification({
+      requestId: requestRow.id,
+      eventName: requestRow.event_name,
+      fullName: requestRow.full_name,
+      email: requestRow.email,
+      documents
+    })
+
+    await deleteTempImages(bucket, verifiedFiles.map((file) => file.path))
+    await updateTelegramStatus(requestRow.id, 'sent', messageIds, null, true)
+
+    return NextResponse.json({
+      id: requestRow.id
+    })
+  } catch (error) {
+    const messageIds = error instanceof TelegramDeliveryError ? error.messageIds : []
+    const errorMessage = error instanceof Error ? error.message : FALLBACK_ERROR_MESSAGE
+
+    await updateTelegramStatus(requestRow.id, 'failed', messageIds, errorMessage, false)
+
+    return jsonError(FALLBACK_ERROR_MESSAGE, 502)
+  }
+}

@@ -1,0 +1,103 @@
+create table if not exists public.event_photo_settings (
+  id boolean primary key default true,
+  event_name text not null default 'Olgish Cakes event',
+  max_images integer not null default 1,
+  created_at timestamptz not null default timezone('utc'::text, now()),
+  updated_at timestamptz not null default timezone('utc'::text, now()),
+  constraint event_photo_settings_singleton check (id = true),
+  constraint event_photo_settings_event_name_length check (
+    char_length(trim(event_name)) between 1 and 120
+  ),
+  constraint event_photo_settings_max_images_range check (
+    max_images between 1 and 10
+  )
+);
+
+insert into public.event_photo_settings (id, event_name, max_images)
+values (true, 'Olgish Cakes event', 1)
+on conflict (id) do nothing;
+
+create table if not exists public.event_photo_requests (
+  id uuid primary key default gen_random_uuid(),
+  full_name text not null,
+  email text not null,
+  event_name text not null,
+  image_count integer not null,
+  image_filenames text[] not null default '{}',
+  image_mime_types text[] not null default '{}',
+  image_sizes bigint[] not null default '{}',
+  temp_image_bucket text,
+  temp_image_paths text[] not null default '{}',
+  telegram_status text not null default 'pending',
+  telegram_message_ids bigint[] not null default '{}',
+  telegram_error text,
+  files_deleted_at timestamptz,
+  source text not null default 'events-subdomain',
+  created_at timestamptz not null default timezone('utc'::text, now()),
+  updated_at timestamptz not null default timezone('utc'::text, now()),
+  constraint event_photo_requests_name_length check (
+    char_length(trim(full_name)) between 2 and 120
+  ),
+  constraint event_photo_requests_email_length check (
+    char_length(trim(email)) between 3 and 254
+  ),
+  constraint event_photo_requests_event_name_length check (
+    char_length(trim(event_name)) between 1 and 120
+  ),
+  constraint event_photo_requests_image_count_range check (
+    image_count between 1 and 10
+  ),
+  constraint event_photo_requests_telegram_status_check check (
+    telegram_status in ('pending', 'sent', 'failed')
+  )
+);
+
+create index if not exists event_photo_requests_created_at_idx
+  on public.event_photo_requests (created_at desc);
+
+create index if not exists event_photo_requests_event_name_idx
+  on public.event_photo_requests (event_name);
+
+create index if not exists event_photo_requests_telegram_status_idx
+  on public.event_photo_requests (telegram_status);
+
+alter table public.event_photo_settings enable row level security;
+alter table public.event_photo_requests enable row level security;
+
+revoke all on table public.event_photo_settings
+  from public, anon, authenticated;
+
+revoke all on table public.event_photo_requests
+  from public, anon, authenticated;
+
+grant select, insert, update, delete on table public.event_photo_settings
+  to service_role;
+
+grant select, insert, update, delete on table public.event_photo_requests
+  to service_role;
+
+insert into storage.buckets (
+  id,
+  name,
+  public,
+  file_size_limit,
+  allowed_mime_types
+)
+values (
+  'event-photo-temp-uploads',
+  'event-photo-temp-uploads',
+  false,
+  20971520,
+  array[
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+    'image/heic'
+  ]
+)
+on conflict (id) do update
+set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
