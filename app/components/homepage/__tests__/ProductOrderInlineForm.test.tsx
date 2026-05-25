@@ -573,7 +573,7 @@ describe('ProductOrderInlineForm', () => {
     expect(body.get('quantity')).toBeNull()
   })
 
-  it('shows success next steps after submit and disables the submitted button', async () => {
+  it('shows compact success message after submit and disables the submitted button', async () => {
     await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='cake'
@@ -594,14 +594,14 @@ describe('ProductOrderInlineForm', () => {
 
     expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite')
     expect(screen.getByText('Order request received')).toBeInTheDocument()
-    expect(screen.getByText("Thank you. We've received your request.")).toBeInTheDocument()
-    expect(screen.getByText("We'll review your details within 24 hours.")).toBeInTheDocument()
-    expect(screen.getByText("We'll contact you with a quote and final design details.")).toBeInTheDocument()
-    expect(screen.getByText("We'll confirm delivery or collection once you approve.")).toBeInTheDocument()
+    expect(screen.getByText("Thank you, your order request has arrived safely. I'll review the details and get back to you within 24 hours.")).toBeInTheDocument()
+    expect(screen.queryByText("We'll review your details within 24 hours.")).not.toBeInTheDocument()
+    expect(screen.queryByText("We'll contact you with a quote and final design details.")).not.toBeInTheDocument()
+    expect(screen.queryByText("We'll confirm delivery or collection once you approve.")).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: /request sent/i })).toBeDisabled()
   })
 
-  it('shows cakes by post payment next steps after submit', async () => {
+  it('shows cakes by post success message after submit', async () => {
     await renderWithCsrfReady(
       <ProductOrderInlineForm
         productType='gift-hamper'
@@ -627,10 +627,11 @@ describe('ProductOrderInlineForm', () => {
 
     expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite')
     expect(screen.getByText('Order request received')).toBeInTheDocument()
-    expect(screen.getByText("Thank you. We've received your cakes by post request.")).toBeInTheDocument()
-    expect(screen.getByText("We'll review your order and delivery details within 24 hours.")).toBeInTheDocument()
-    expect(screen.getByText("If everything is confirmed, we'll send you a secure payment link.")).toBeInTheDocument()
-    expect(screen.getByText("Once payment is received, we'll prepare, pack, and send your cake by post.")).toBeInTheDocument()
+    expect(screen.getByText("Thank you, your cakes by post request has arrived safely. I'll check the delivery details and send the next steps within 24 hours.")).toBeInTheDocument()
+    expect(screen.queryByText("Thank you, your order request has arrived safely. I'll review the details and get back to you within 24 hours.")).not.toBeInTheDocument()
+    expect(screen.queryByText("We'll review your order and delivery details within 24 hours.")).not.toBeInTheDocument()
+    expect(screen.queryByText("If everything is confirmed, we'll send you a secure payment link.")).not.toBeInTheDocument()
+    expect(screen.queryByText("Once payment is received, we'll prepare, pack, and send your cake by post.")).not.toBeInTheDocument()
     expect(screen.queryByText("We'll contact you with a quote and final design details.")).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: /request sent/i })).toBeDisabled()
   })
