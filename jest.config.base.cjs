@@ -16,6 +16,7 @@ module.exports = {
     '!**/.next/**',
     '!**/coverage/**',
     '!**/dist/**',
+    '!apps/events/**',
     '!**/__tests__/**',
     '!**/*.test.{ts,tsx}',
     '!**/*.spec.{ts,tsx}',
@@ -83,11 +84,16 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '/.next/',
+    '<rootDir>/apps/events/',
     '<rootDir>/\\.tmp-script-run/',
     '<rootDir>/\\.codex-artifacts/',
     '<rootDir>/\\.playwright-mcp/'
   ],
+  modulePathIgnorePatterns: [
+    '<rootDir>/apps/events/'
+  ],
   watchPathIgnorePatterns: [
+    '<rootDir>/apps/events/',
     '<rootDir>/\\.tmp-script-run/',
     '<rootDir>/\\.codex-artifacts/',
     '<rootDir>/\\.playwright-mcp/'

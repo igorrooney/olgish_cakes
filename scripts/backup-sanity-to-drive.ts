@@ -25,13 +25,13 @@ import { createReadStream, existsSync } from 'fs'
 import { mkdir, rm } from 'fs/promises'
 import { google } from 'googleapis'
 import * as path from 'path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 
 // Load environment variables from .env.local
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const scriptFilename = fileURLToPath(import.meta.url)
+const scriptDir = path.dirname(scriptFilename)
 
 interface BackupConfig {
     projectId: string
@@ -41,6 +41,11 @@ interface BackupConfig {
     clientSecret: string
     refreshToken: string
     folderId: string
+}
+
+interface ExportCommand {
+    command: string
+    args: string[]
 }
 
 /**
@@ -78,6 +83,26 @@ const logger = {
     },
     success: (message: string, ...args: unknown[]) => {
         console.log(`[SUCCESS] ${message}`, ...args)
+    }
+}
+
+function getPnpmCommand(): string {
+    return process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
+}
+
+export function buildSanityExportCommand(config: BackupConfig, outputPath: string): ExportCommand {
+    return {
+        command: getPnpmCommand(),
+        args: [
+            'exec',
+            'sanity',
+            'dataset',
+            'export',
+            config.dataset,
+            outputPath,
+            '--project-id',
+            config.projectId
+        ]
     }
 }
 
@@ -220,7 +245,7 @@ async function exportSanityDataset(config: BackupConfig): Promise<string> {
     logger.info(`   Dataset: ${config.dataset}`)
 
     // Create temporary directory for backup
-    const tempDir = path.join(__dirname, '..', '.backup-temp')
+    const tempDir = path.join(scriptDir, '..', '.backup-temp')
     await mkdir(tempDir, { recursive: true })
 
     // Generate filename with UTC timestamp
@@ -236,25 +261,18 @@ async function exportSanityDataset(config: BackupConfig): Promise<string> {
     // Run Sanity CLI export command
     // Note: --no-assets flag is NOT used, so assets are included
     // Use spawn with argument arrays to prevent command injection
-    logger.info('   Running export command...')
+    const exportCommand = buildSanityExportCommand(config, outputPath)
+    logger.info(`   Running export command: ${exportCommand.command} ${exportCommand.args.join(' ')}`)
 
     const EXPORT_TIMEOUT = 30 * 60 * 1000 // 30 minutes
 
     return Promise.race([
         new Promise<string>((resolve, reject) => {
             const child = spawn(
-                'npx',
-                [
-                    'sanity@latest',
-                    'dataset',
-                    'export',
-                    config.dataset,
-                    outputPath,
-                    '--project',
-                    config.projectId
-                ],
+                exportCommand.command,
+                exportCommand.args,
                 {
-                    cwd: path.join(__dirname, '..'),
+                    cwd: path.join(scriptDir, '..'),
                     env: {
                         ...process.env,
                         SANITY_AUTH_TOKEN: config.authToken,
@@ -281,7 +299,13 @@ async function exportSanityDataset(config: BackupConfig): Promise<string> {
                     if (existsSync(tempDir)) {
                         await rm(tempDir, { recursive: true, force: true })
                     }
-                    reject(new Error(`Sanity export failed with code ${code}: ${stderr || stdout}`))
+                    const commandSummary = `${exportCommand.command} ${exportCommand.args.join(' ')}`
+                    reject(
+                        new Error(
+                            `Sanity export failed with code ${code} while running "${commandSummary}". ` +
+                            `CLI output: ${stderr || stdout}`
+                        )
+                    )
                     return
                 }
 
@@ -419,8 +443,12 @@ async function main(): Promise<void> {
     }
 }
 
-// Run the script
-main().catch((error) => {
-    logger.error('Unhandled error in main', error)
-    process.exit(1)
-})
+const isDirectExecution = process.argv[1] !== undefined &&
+    import.meta.url === pathToFileURL(process.argv[1]).href
+
+if (isDirectExecution) {
+    main().catch((error) => {
+        logger.error('Unhandled error in main', error)
+        process.exit(1)
+    })
+}
