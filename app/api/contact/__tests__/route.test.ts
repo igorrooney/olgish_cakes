@@ -639,7 +639,7 @@ describe('/api/contact', () => {
         expect.objectContaining({
           orderNumber: expect.any(String),
           status: 'new',
-          orderType: 'custom-design',
+          orderType: 'custom-cake',
           metadata: expect.objectContaining({
             source: 'website-inline-v2',
             orderSourceVersion: 'v2-inline',
@@ -652,6 +652,7 @@ describe('/api/contact', () => {
               source: 'vercel-ip-headers'
             },
             inlineOrderContext: expect.objectContaining({
+              sourceOrderType: 'custom-design',
               occasion: 'birthday',
               requestMode: 'custom-design',
               designType: 'individual',
@@ -671,11 +672,18 @@ describe('/api/contact', () => {
         .find((payload) => typeof payload.subject === 'string' && payload.subject.includes('New inline order'))
 
       expect(customerEmailCall).toEqual(expect.objectContaining({
-        bcc: 'orders-bcc@example.com'
+        bcc: 'orders-bcc@example.com',
+        subject: expect.stringMatching(/^Order request received #\d+ - Olgish Cakes$/)
       }))
       expect(customerEmailCall?.html).toContain('Order Preferences')
       expect(customerEmailCall?.html).not.toContain('Request type')
+      expect(customerEmailCall?.text).toContain('Thank you. We\'ve received your cake request and will review the details within 24 hours.')
+      expect(customerEmailCall?.text).toContain('Date needed: 15 March 2026')
+      expect(customerEmailCall?.text).toContain('Estimated price: £25')
       expect(customerEmailCall?.text).toContain('Serves 8-12 people')
+      expect(customerEmailCall?.text).toContain('I\'ll confirm availability, final price, and any design details before you need to pay.')
+      expect(customerEmailCall?.text).toContain('Nothing is booked or payable until we agree the design, price, and collection or delivery details.')
+      expect(customerEmailCall?.text).not.toContain('Order Confirmation')
 
       expect(adminEmailCall?.subject).toContain('New inline order')
       expect(adminEmailCall?.html).not.toContain('Request type')
@@ -724,7 +732,12 @@ describe('/api/contact', () => {
       expect(response.status).toBe(200)
       expect(mockCreateFromMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          orderType: 'custom-design',
+          orderType: 'custom-cake',
+          metadata: expect.objectContaining({
+            inlineOrderContext: expect.objectContaining({
+              sourceOrderType: 'custom-design'
+            })
+          }),
           items: [
             expect.objectContaining({
               productType: 'cake',
@@ -755,7 +768,12 @@ describe('/api/contact', () => {
       expect(response.status).toBe(200)
       expect(mockCreateFromMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          orderType: 'browse-catalog',
+          orderType: 'custom-cake',
+          metadata: expect.objectContaining({
+            inlineOrderContext: expect.objectContaining({
+              sourceOrderType: 'browse-catalog'
+            })
+          }),
           items: [
             expect.objectContaining({
               productType: 'cake',
@@ -836,7 +854,7 @@ describe('/api/contact', () => {
 
       expect(mockCreateFromMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          orderType: 'gift-hamper',
+          orderType: 'cakes-by-post',
           customer: expect.objectContaining({
             phone: ''
           }),
@@ -848,6 +866,7 @@ describe('/api/contact', () => {
           }),
           metadata: expect.objectContaining({
             inlineOrderContext: expect.objectContaining({
+              sourceOrderType: 'custom-design',
               deliveryRecipientName: 'Jane Recipient'
             })
           }),
@@ -1055,9 +1074,18 @@ describe('/api/contact', () => {
       const fallbackAdminEmailCall = mockSend.mock.calls
         .map((call) => call[0])
         .find((payload) => typeof payload.subject === 'string' && payload.subject.includes('New Order Inquiry'))
+      const fallbackCustomerEmailCall = mockSend.mock.calls
+        .map((call) => call[0])
+        .find((payload) => payload.to === 'john@example.com' && typeof payload.subject === 'string' && payload.subject.includes('Order request received'))
 
       expect(response.status).toBe(200)
       expect(mockSend).toHaveBeenCalledTimes(2)
+      expect(fallbackCustomerEmailCall?.subject).toBe('Order request received - Olgish Cakes')
+      expect(fallbackCustomerEmailCall?.text).toContain('Thank you. We\'ve received your cake request and will review the details within 24 hours.')
+      expect(fallbackCustomerEmailCall?.text).toContain('Date needed: 20 March 2026')
+      expect(fallbackCustomerEmailCall?.text).toContain('Estimated price: £25')
+      expect(fallbackCustomerEmailCall?.text).toContain('I\'ll confirm availability, final price, and any design details before you need to pay.')
+      expect(fallbackCustomerEmailCall?.text).not.toContain('Order Confirmation')
       expect(fallbackAdminEmailCall?.html).toContain('Date needed')
       expect(fallbackAdminEmailCall?.text).toContain('- Date needed:')
       expect(fallbackAdminEmailCall?.text).toContain('- Product ID: honey-cake')

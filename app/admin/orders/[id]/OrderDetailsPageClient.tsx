@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { DesignSystemDatePicker } from '@/app/components/forms/DesignSystemDatePicker'
 import { ORDER_STATUS_LABELS } from '@/lib/order-constants'
+import { isCakesByPostOrderLike } from '@/lib/order-types'
 import type { Order, OrderItem, OrderMessageAttachment, OrderNoteImage } from '@/types/order'
 
 interface OrderDetailsPageClientProps {
@@ -232,9 +233,11 @@ const formatIpLocation = (location: StoredIpLocation | null) =>
   location ? [location.city, location.region, location.country].filter(Boolean).join(', ') : 'Not captured'
 
 const isCakesByPostOrder = (order: Order) =>
-  order.orderType === 'gift-hamper' ||
-  order.delivery?.deliveryMethod === 'postal' ||
-  order.items.some((item) => item.productType === 'gift-hamper')
+  isCakesByPostOrderLike({
+    orderType: order.orderType,
+    deliveryMethod: order.delivery?.deliveryMethod,
+    itemProductTypes: order.items.map((item) => item.productType)
+  })
 
 const getInlineOrderContext = (order: Order): Record<string, unknown> | null => {
   if (!isRecord(order.metadata)) {

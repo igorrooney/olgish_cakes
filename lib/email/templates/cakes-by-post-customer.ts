@@ -1,4 +1,5 @@
 import type { EmailTemplateCommonInput } from '../types'
+import { isCakesByPostOrderLike } from '@/lib/order-types'
 import {
   buildCompletedReviewHtml,
   buildCompletedReviewText,
@@ -38,7 +39,11 @@ const deliveryCourierMeta: Record<DeliveryCourier, DeliveryCourierMeta> = {
 }
 
 export function isCakesByPostCustomerEmail(input: EmailTemplateCommonInput): boolean {
-  return input.productType === 'gift-hamper'
+  return isCakesByPostOrderLike({
+    orderType: input.orderType,
+    productType: input.productType,
+    deliveryMethod: input.deliveryMethod
+  })
 }
 
 function cakesByPostNextSteps(): string[] {

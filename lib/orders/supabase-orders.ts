@@ -2,6 +2,7 @@ import 'server-only'
 
 import { randomUUID } from 'crypto'
 import { getSupabaseAdminClient } from '@/lib/supabase-admin-client'
+import { resolveCanonicalOrderType } from '@/lib/order-types'
 import type {
   Order,
   OrderCustomer,
@@ -461,7 +462,11 @@ export function buildSupabaseOrderPayload(input: SupabaseOrderInput): JsonObject
     sanity_id: input.sanityId ?? null,
     order_number: input.orderNumber,
     status: input.status,
-    order_type: input.orderType,
+    order_type: resolveCanonicalOrderType({
+      orderType: input.orderType,
+      deliveryMethod: input.delivery.deliveryMethod,
+      itemProductTypes: input.items.map((item) => item.productType)
+    }),
     metadata: input.metadata ?? {},
     ...buildOrderStructuredPayload(input),
     ...(input.createdAt ? { created_at: input.createdAt } : {}),
@@ -473,7 +478,11 @@ export function buildSupabaseOrderPayloadFromOrder(order: Order): JsonObject {
   return {
     order_number: order.orderNumber,
     status: order.status,
-    order_type: order.orderType,
+    order_type: resolveCanonicalOrderType({
+      orderType: order.orderType,
+      deliveryMethod: order.delivery.deliveryMethod,
+      itemProductTypes: order.items.map((item) => item.productType)
+    }),
     metadata: order.metadata ?? {},
     ...buildOrderStructuredPayload(order)
   }

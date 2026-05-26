@@ -766,7 +766,7 @@ describe('OrderDetailsPageClient', () => {
 
   it('shows clean cakes by post notes, image status, and missing location state', async () => {
     mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder({
-      orderType: 'gift-hamper',
+      orderType: 'cakes-by-post',
       customer: {
         name: 'Igor Customer',
         email: 'igor@example.com',

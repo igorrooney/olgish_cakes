@@ -101,6 +101,28 @@ const cakeProductCustomDesignInput = createDefaultScenarioInput({
   adminUrl: 'https://olgishcakes.co.uk/admin/orders/26051220100944'
 })
 
+const cakeRequestNextSteps = [
+  'I\'ll review your requested date, cake details, and any design notes within 24 hours.',
+  'I\'ll confirm availability, final price, and any design details before you need to pay.',
+  'Nothing is booked or payable until we agree the design, price, and collection or delivery details.'
+]
+
+const cakeProductCustomerInput = {
+  ...cakeProductBaseInput,
+  status: undefined,
+  priceLabel: 'Estimated price',
+  intro: 'Thank you. We\'ve received your cake request and will review the details within 24 hours.',
+  nextSteps: cakeRequestNextSteps
+}
+
+const cakeProductCustomDesignCustomerInput = {
+  ...cakeProductCustomDesignInput,
+  status: undefined,
+  priceLabel: 'Estimated price',
+  intro: 'Thank you. We\'ve received your cake request and will review the details within 24 hours.',
+  nextSteps: cakeRequestNextSteps
+}
+
 const adminInquiryScenarios = [
   {
     id: 'default',
@@ -132,12 +154,17 @@ const inlineOrderCustomerScenarios = [
   {
     id: 'default',
     label: 'Cake product customer email',
-    input: cakeProductBaseInput
+    input: cakeProductCustomerInput
   },
   {
     id: 'cakes-by-post',
     label: 'Cakes by post customer',
     input: cakesByPostBaseInput
+  },
+  {
+    id: 'custom-design',
+    label: 'Cake product customer email - custom design',
+    input: cakeProductCustomDesignCustomerInput
   },
   {
     id: 'minimal',
@@ -151,7 +178,10 @@ const inlineOrderCustomerScenarios = [
       productType: 'cake',
       quantity: 1,
       unitPrice: 45,
-      totalPrice: 45
+      totalPrice: 45,
+      priceLabel: 'Estimated price',
+      intro: 'Thank you. We\'ve received your cake request and will review the details within 24 hours.',
+      nextSteps: cakeRequestNextSteps
     }
   }
 ]
@@ -180,7 +210,11 @@ const fallbackCustomerScenarios = [
     label: 'Email to customer if order save fails',
     input: {
       ...cakeProductBaseInput,
-      titleOverride: 'Order Inquiry Received - Olgish Cakes'
+      status: undefined,
+      priceLabel: 'Estimated price',
+      intro: 'Thank you. We\'ve received your cake request and will review the details within 24 hours.',
+      nextSteps: cakeRequestNextSteps,
+      titleOverride: 'Order request received - Olgish Cakes'
     }
   },
   {

@@ -44,7 +44,7 @@ describe('email renderers', () => {
     expect(rendered.text).toContain('Address: 1 Cake Street')
     expect(rendered.text).toContain('City: Leeds')
     expect(rendered.text).toContain('Postcode: LS17 1AA')
-    expect(rendered.text).toContain('Date needed: 25/05/2026')
+    expect(rendered.text).toContain('Date needed: 25 May 2026')
     expect(rendered.text).toContain('Occasion: Mother\'s Day Gifts')
     expect(rendered.text).toContain('Customer message: test requirements')
     expect(rendered.text).toContain('Reference image uploaded: reference.jpg')
@@ -219,7 +219,7 @@ describe('email renderers', () => {
     expect(rendered.html).not.toContain('Product type: gift-hamper')
   })
 
-  it('keeps existing customer inline order wording for non-postal products', () => {
+  it('renders request-safe customer inline cake wording for non-postal products', () => {
     const rendered = renderEmailTemplate('contact-inline-order-customer', {
       customerName: 'Jane',
       customerEmail: 'jane@example.com',
@@ -229,18 +229,34 @@ describe('email renderers', () => {
       orderNumber: 'OC-NON-POSTAL-1',
       productName: 'Honey Cake',
       productType: 'cake',
-      customerMessage: 'Please add candles'
+      totalPrice: 45,
+      priceLabel: 'Estimated price',
+      dateNeeded: '2026-06-02',
+      customerMessage: 'Please add candles',
+      nextSteps: [
+        'I\'ll review your requested date, cake details, and any design notes within 24 hours.',
+        'I\'ll confirm availability, final price, and any design details before you need to pay.',
+        'Nothing is booked or payable until we agree the design, price, and collection or delivery details.'
+      ]
     })
 
+    expect(rendered.subject).toBe('Order request received #OC-NON-POSTAL-1')
+    expect(rendered.subject).not.toContain('Order Confirmation')
     expect(rendered.text).toContain('Order Preferences')
+    expect(rendered.text).toContain('Date needed: 2 June 2026')
+    expect(rendered.text).toContain('Estimated price: £45')
     expect(rendered.text).toContain('Customer message: Please add candles')
-    expect(rendered.text).toContain('We\'ll contact you with a quote and final design details')
-    expect(rendered.text).toContain('We\'ll confirm delivery or collection once you approve')
+    expect(rendered.text).toContain('I\'ll confirm availability, final price, and any design details before you need to pay.')
+    expect(rendered.text).toContain('Nothing is booked or payable until we agree the design, price, and collection or delivery details.')
+    expect(rendered.text).not.toContain('Order Confirmation')
+    expect(rendered.text).not.toContain('Total Amount')
     expect(rendered.text).not.toContain('Contact Details')
     expect(rendered.text).not.toContain('Address: 7 Sample Street')
     expect(rendered.text).not.toContain('secure payment link')
     expect(rendered.text).not.toContain('send your cake by post')
     expect(rendered.html).toContain('Order Preferences')
+    expect(rendered.html).toContain('Estimated price')
+    expect(rendered.html).not.toContain('Order Confirmation')
     expect(rendered.html).not.toContain('Contact details')
   })
 
@@ -249,11 +265,13 @@ describe('email renderers', () => {
       customerName: 'Jane',
       orderNumber: 'OC-ORDER-LABELS-1',
       occasion: 'Birthday',
+      totalPrice: 55,
       customerMessage: 'Please include candles'
     })
 
     expect(rendered.text).toContain('Order Summary')
     expect(rendered.text).toContain('Order Preferences')
+    expect(rendered.text).toContain('Total Amount: £55')
     expect(rendered.text).not.toContain('Enquiry Summary')
     expect(rendered.text).not.toContain('Cake Details')
     expect(rendered.html).toContain('Order Summary')

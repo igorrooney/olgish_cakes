@@ -40,11 +40,8 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Browse Catalog', value: 'browse-catalog' },
-          { title: 'Custom Design', value: 'custom-design' },
-          { title: 'Wedding Cake', value: 'wedding-cake' },
-          { title: 'Gift Hamper', value: 'gift-hamper' },
-          { title: 'Custom Quote', value: 'custom-quote' },
+          { title: 'Custom Cake', value: 'custom-cake' },
+          { title: 'Cakes by Post', value: 'cakes-by-post' },
         ],
         layout: 'dropdown'
       },

@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useState, type CSSProperties, type ChangeEvent, type ReactNode } from 'react'
 import { PortableText } from '@portabletext/react'
 import { CatalogProductDetailLayout, type CatalogProductDetailImage, type CatalogProductDetailSection } from '../components/CatalogProductDetailLayout'
+import { OCCASION_OPTIONS } from '@/app/components/homepage/formOptions'
 import { useOrderFormPrefetch } from '@/app/components/homepage/useOrderFormPrefetch'
 import { portableTextComponents } from '@/app/components/portableTextComponents'
 import {
@@ -245,7 +246,7 @@ export function CakePageClient({
   const [isOrderFormVisible, setIsOrderFormVisible] = useState(false)
   const [isMobileViewport, setIsMobileViewport] = useState(false)
   const [fillingChangeTokenCounter, setFillingChangeTokenCounter] = useState(0)
-  const handleOrderIntent = useOrderFormPrefetch({ prefetchOccasionOptions: true })
+  const handleOrderIntent = useOrderFormPrefetch({ prefetchOccasionOptions: false })
   const servingOptions = useMemo(() => {
     const servingsPricingOptions = getCakeServingsPricingOptions(cake.newDesignPricingByServings)
 
@@ -607,6 +608,7 @@ export function CakePageClient({
               productId={cake.slug.current}
               productName={cake.name}
               totalPrice={currentPrice}
+              occasionOptions={OCCASION_OPTIONS}
               requestMode={designType === 'individual' ? 'custom-design' : 'message'}
               orderEmailContext={{
                 designType,

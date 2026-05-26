@@ -6,6 +6,7 @@ import { getRequestIpLocation } from '@/lib/request-location'
 import { formatValidationErrors, orderSchema, validateRequest } from '@/lib/validation'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
 import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
+import { resolveCanonicalOrderType } from '@/lib/order-types'
 import { urlFor } from '@/sanity/lib/image'
 import {
   createSupabaseOrder,
@@ -128,7 +129,7 @@ async function handlePOST(request: NextRequest) {
       postcode: orderData.postcode || undefined,
       message: orderData.message || '',
       dateNeeded: orderData.dateNeeded || undefined,
-      orderType: orderData.orderType || 'custom-quote',
+      orderType: orderData.orderType || 'custom-cake',
       productType: orderData.productType || 'custom',
       productId: orderData.productId || undefined,
       productName: orderData.productName || 'Custom Order',
@@ -175,6 +176,12 @@ async function handlePOST(request: NextRequest) {
     const items = Array.isArray(orderData.items) && orderData.items.length > 0
       ? orderData.items
       : [fallbackItem]
+    const canonicalOrderType = resolveCanonicalOrderType({
+      orderType: validatedOrderData.orderType,
+      productType: validatedOrderData.productType,
+      deliveryMethod: validatedOrderData.deliveryMethod,
+      itemProductTypes: items.map((item) => item.productType)
+    })
 
     const attachments = Array.isArray(orderData.attachments) ? orderData.attachments : []
     const attachmentNames = attachments.map(getAttachmentLabel)
@@ -184,7 +191,7 @@ async function handlePOST(request: NextRequest) {
     const orderDoc = {
       orderNumber,
       status: 'new',
-      orderType: validatedOrderData.orderType || 'custom-quote',
+      orderType: canonicalOrderType,
       customer: {
         name: validatedOrderData.name,
         email: validatedOrderData.email,
@@ -240,6 +247,7 @@ async function handlePOST(request: NextRequest) {
       })(),
       metadata: {
         source: 'website',
+        sourceOrderType: validatedOrderData.orderType,
         referrer: validatedOrderData.referrer || '',
         userAgent: request.headers.get('user-agent') || '',
         ipAddress: request.headers.get('x-forwarded-for') ||
@@ -288,7 +296,7 @@ async function handlePOST(request: NextRequest) {
           city: validatedOrderData.city,
           postcode: validatedOrderData.postcode,
           orderNumber,
-          orderType: validatedOrderData.orderType,
+          orderType: canonicalOrderType,
           productName: firstItem?.productName || validatedOrderData.productName,
           productId: firstItem?.productId || validatedOrderData.productId,
           productType: firstItem?.productType || validatedOrderData.productType,
@@ -358,7 +366,7 @@ async function handlePOST(request: NextRequest) {
           city: validatedOrderData.city,
           postcode: validatedOrderData.postcode,
           orderNumber,
-          orderType: validatedOrderData.orderType,
+          orderType: canonicalOrderType,
           productName: firstItem?.productName || validatedOrderData.productName,
           productId: firstItem?.productId || validatedOrderData.productId,
           productType: firstItem?.productType || validatedOrderData.productType,

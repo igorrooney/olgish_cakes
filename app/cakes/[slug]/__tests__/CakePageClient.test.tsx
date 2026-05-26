@@ -4,6 +4,7 @@
 import React from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { CakePageClient as CakePageClientBase, type CakePageClientData } from '../CakePageClient'
+import { OCCASION_OPTIONS } from '@/app/components/homepage/formOptions'
 import { useOrderFormPrefetch } from '@/app/components/homepage/useOrderFormPrefetch'
 import { getSanityCdnImageUrl } from '@/lib/utils/image-url'
 import { urlFor } from '@/sanity/lib/image'
@@ -412,7 +413,7 @@ describe('CakePageClient', () => {
     expect(getLatestLayoutProps().backLabel).toBe('Back to all cakes')
   })
 
-  it('configures order-form prefetch with cake occasion options enabled', () => {
+  it('skips dynamic occasion option prefetch because cake order forms use stable options', () => {
     render(
       <CakePageClient
         cake={baseCake}
@@ -420,7 +421,7 @@ describe('CakePageClient', () => {
       />
     )
 
-    expect(mockedUseOrderFormPrefetch).toHaveBeenCalledWith({ prefetchOccasionOptions: true })
+    expect(mockedUseOrderFormPrefetch).toHaveBeenCalledWith({ prefetchOccasionOptions: false })
     expect(getLatestLayoutProps().onCtaIntent).toBe(mockOrderIntentHandler)
   })
   it('reveals inline order form when Add to cart is triggered', () => {
@@ -459,7 +460,7 @@ describe('CakePageClient', () => {
     expect(inlineOrderForm).toHaveAttribute('data-request-mode', 'message')
   })
 
-  it('does not pass explicit occasion options to inline order form', () => {
+  it('passes stable occasion options to inline order form', () => {
     render(
       <CakePageClient
         cake={baseCake}
@@ -471,7 +472,7 @@ describe('CakePageClient', () => {
 
     expect(screen.getByTestId('inline-order-form')).toHaveAttribute(
       'data-occasion-options',
-      JSON.stringify([])
+      JSON.stringify(OCCASION_OPTIONS)
     )
   })
 

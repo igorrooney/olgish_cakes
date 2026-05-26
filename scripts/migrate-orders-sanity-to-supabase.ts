@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto'
 import { createClient as createSanityClient } from '@sanity/client'
 import { createClient } from '@supabase/supabase-js'
 import { config } from 'dotenv'
+import { resolveCanonicalOrderType } from '@/lib/order-types'
 import type {
   OrderCustomer,
   OrderDelivery,
@@ -74,14 +75,20 @@ function buildPayload(order: SanityOrder): SupabaseOrderPayload {
     total: 0,
     paymentStatus: 'pending'
   }
+  const canonicalOrderType = resolveCanonicalOrderType({
+    orderType: order.orderType,
+    deliveryMethod: delivery.deliveryMethod,
+    itemProductTypes: (order.items || []).map((item) => item.productType)
+  })
 
   return {
     sanity_id: order._id,
     order_number: order.orderNumber,
     status: order.status || 'new',
-    order_type: order.orderType || 'custom-quote',
+    order_type: canonicalOrderType,
     metadata: {
       ...(order.metadata || {}),
+      legacyOrderType: order.metadata?.legacyOrderType || order.orderType || undefined,
       migratedFromSanity: true,
       sanityId: order._id
     },
