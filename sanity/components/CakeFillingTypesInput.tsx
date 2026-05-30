@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { Box, Button, Card, Checkbox, Flex, Stack, Text, TextInput } from '@sanity/ui'
 import { ArrayOfObjectsInputProps, set, unset, useClient } from 'sanity'
 
@@ -224,7 +224,7 @@ export function CakeFillingTypesInput(props: ArrayOfObjectsInputProps<FillingTyp
           <Stack space={3}>
             <TextInput
               value={searchQuery}
-              onChange={(event) => setSearchQuery(event.currentTarget.value)}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => setSearchQuery(event.currentTarget.value)}
               placeholder='Search filling types'
             />
 
@@ -258,7 +258,7 @@ export function CakeFillingTypesInput(props: ArrayOfObjectsInputProps<FillingTyp
                       <Checkbox
                         checked={selectedIds.has(option.baseId)}
                         disabled={props.readOnly}
-                        onChange={(event) => toggleFillingType(option.baseId, event.currentTarget.checked)}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => toggleFillingType(option.baseId, event.currentTarget.checked)}
                       />
                       <Text size={2}>{option.name}</Text>
                     </Flex>

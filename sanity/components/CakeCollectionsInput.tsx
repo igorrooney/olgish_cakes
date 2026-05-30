@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { Badge, Box, Button, Card, Checkbox, Flex, Stack, Text, TextInput } from '@sanity/ui'
 import { ArrayOfObjectsInputProps, set, unset, useClient } from 'sanity'
 
@@ -220,7 +220,7 @@ export function CakeCollectionsInput(props: ArrayOfObjectsInputProps<CollectionR
           <Stack space={3}>
             <TextInput
               value={searchQuery}
-              onChange={(event) => setSearchQuery(event.currentTarget.value)}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => setSearchQuery(event.currentTarget.value)}
               placeholder='Search collections'
             />
 
@@ -254,7 +254,7 @@ export function CakeCollectionsInput(props: ArrayOfObjectsInputProps<CollectionR
                       <Checkbox
                         checked={selectedIds.has(option.baseId)}
                         disabled={props.readOnly}
-                        onChange={(event) => toggleCollection(option.baseId, event.currentTarget.checked)}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => toggleCollection(option.baseId, event.currentTarget.checked)}
                       />
                       <Text size={2}>{option.name}</Text>
                       {option.isFeatured ? <Badge tone='primary'>Featured</Badge> : null}
