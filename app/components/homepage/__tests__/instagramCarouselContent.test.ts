@@ -46,6 +46,7 @@ describe('instagramCarouselContent', () => {
       captionLine: 'Honey cake close-up',
       imageAlt: 'Honey cake close-up',
       imageUrl: 'https://scontent.cdninstagram.com/media.jpg',
+      mediaType: 'IMAGE',
       permalink: 'https://instagram.com/p/post-1'
     })
   })

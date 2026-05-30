@@ -18,6 +18,7 @@ interface InstagramCarouselProps {
 }
 
 const defaultProfileImage = '/design/mobile-home/instagram-avatar.png'
+const instagramGridMediaAspectRatio = '3 / 4'
 
 export function InstagramCarousel({
   posts,
@@ -200,7 +201,10 @@ export function InstagramCarousel({
                   href={post.permalink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative mt-3 block h-[342px] w-full overflow-hidden rounded-[12px] bg-base-200"
+                  className="relative mt-3 block w-full overflow-hidden rounded-[12px] bg-base-200"
+                  style={{
+                    aspectRatio: instagramGridMediaAspectRatio
+                  }}
                 >
                   <Image
                     src={post.imageUrl}

@@ -5,6 +5,7 @@ export type InstagramCarouselPost = {
   captionLine: string | null
   imageAlt: string
   imageUrl: string
+  mediaType: InstagramPost['mediaType']
   permalink: string
 }
 
@@ -50,5 +51,6 @@ export const mapInstagramPostToCarouselPost = (post: InstagramPost): InstagramCa
   captionLine: getInstagramPostCaptionLine(post),
   imageAlt: getInstagramPostAlt(post),
   imageUrl: post.imageUrl,
+  mediaType: post.mediaType,
   permalink: post.permalink
 })

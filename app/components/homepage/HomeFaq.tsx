@@ -15,6 +15,11 @@ export const faqItems = [
       'Order online and choose local delivery or collection in Leeds. You\'ll also find us at local farmers\' markets during the year. Follow our schedule for upcoming market dates.'
   },
   {
+    question: 'Do you deliver cakes across the UK?',
+    answer:
+      'Yes, selected cakes can go by post across the UK. I\'ll confirm the best option when you place your order.'
+  },
+  {
     question: 'Can you make custom birthday or wedding cakes?',
     answer:
       'Yes, we make custom birthday and wedding cakes with flavours including Ukrainian Medovik, Napoleon, chocolate cake, red velvet, and more. Share your date and ideas, and we\'ll suggest sizes and designs.'

@@ -13,9 +13,9 @@ describe('HomeFaq', () => {
     expect(screen.getByText('What is Medovik honey cake?')).toBeInTheDocument()
     expect(screen.getByText('Do you make Napoleon cake in Leeds?')).toBeInTheDocument()
     expect(screen.getByText('Looking for a bakery or dessert near me in Leeds?')).toBeInTheDocument()
+    expect(screen.getByText('Do you deliver cakes across the UK?')).toBeInTheDocument()
     expect(screen.getByText('Can you make custom birthday or wedding cakes?')).toBeInTheDocument()
-    expect(screen.queryByText('Do you deliver cakes across the UK?')).not.toBeInTheDocument()
-    expect(screen.getAllByRole('checkbox')).toHaveLength(4)
+    expect(screen.getAllByRole('checkbox')).toHaveLength(5)
     expect(screen.getByRole('checkbox', {
       name: 'Toggle answer for What is Medovik honey cake?'
     })).toBeInTheDocument()
