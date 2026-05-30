@@ -49,8 +49,8 @@ export default async function CakesPage() {
   return (
     <CatalogPageTemplate
       variant='cakes'
-      heading='Traditional Ukrainian custom cakes in Leeds for celebrations'
-      intro='Browse handmade Ukrainian cakes prepared in Leeds with traditional recipes, quality ingredients and flavours that feel like home.'
+      heading='Handmade Celebration Cakes in Leeds'
+      intro='Bespoke cakes for birthdays, weddings, christenings, corporate events and Ukrainian celebrations, made in Leeds and delivered across West Yorkshire by arrangement.'
       canonicalPath='/cakes'
       localBusinessDescription='Authentic traditional Ukrainian cakes made with love in Leeds. Specialising in Ukrainian birthday cakes, wedding cakes, and traditional honey cake (Medovik).'
       catalogData={catalogData}

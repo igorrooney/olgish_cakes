@@ -26,6 +26,13 @@ const buttonClassName =
 const answerClassName =
   `${categoryLandingAccordionAnswerPaddingClassName} font-oldenburg text-[15px] leading-7 tracking-[0.03em] text-base-content/82 tablet:text-base tablet:leading-8`
 
+function getAnswerParagraphs(answer: string) {
+  return answer
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter((paragraph) => paragraph !== '')
+}
+
 export function CatalogFaqAccordion({
   title,
   items,
@@ -70,6 +77,7 @@ export function CatalogFaqAccordion({
           const isOpen = openIndex === index
           const buttonId = `${sectionId}-question-${index}`
           const panelId = `${sectionId}-panel-${index}`
+          const answerParagraphs = getAnswerParagraphs(item.answer)
 
           return (
             <div key={item.question} className='rounded-[24px] border border-base-300 bg-base-100 shadow-[0_14px_24px_rgba(15,23,42,0.025)]'>
@@ -93,9 +101,11 @@ export function CatalogFaqAccordion({
                   id={panelId}
                   role='region'
                   aria-labelledby={buttonId}
-                  className={answerClassName}
+                  className={`${answerClassName} space-y-4`}
                 >
-                  <p>{item.answer}</p>
+                  {answerParagraphs.map((paragraph) => (
+                    <p key={`${item.question}-${paragraph}`}>{paragraph}</p>
+                  ))}
                 </div>
               ) : null}
             </div>

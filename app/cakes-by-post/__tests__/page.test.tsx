@@ -177,7 +177,7 @@ describe('CakesByPostPage', () => {
       expect(
         screen.getByRole('heading', {
           level: 1,
-          name: 'Cakes by post across the UK with handmade Ukrainian flavour'
+          name: 'Personalised cake cards and cake slices by post'
         })
       ).toBeInTheDocument()
       expect(screen.getByTestId('cakes-catalog')).toBeInTheDocument()
@@ -196,10 +196,10 @@ describe('CakesByPostPage', () => {
 
     const pageHeading = screen.getByRole('heading', {
       level: 1,
-      name: 'Cakes by post across the UK with handmade Ukrainian flavour'
+      name: 'Personalised cake cards and cake slices by post'
     })
     const pageIntro = screen.getByText(
-      'Browse our cakes-by-post collection, handcrafted in Leeds and delivered nationwide for birthdays, celebrations and thoughtful surprises.'
+      'Send handmade Ukrainian honey cake slices and personalised cake cards by post, made in Yorkshire and delivered across the UK.'
     )
 
     expect(pageHeading).toBeInTheDocument()
@@ -235,7 +235,7 @@ describe('CakesByPostPage', () => {
     expect(screen.queryByRole('navigation', { name: 'Catalog product crawl links' })).not.toBeInTheDocument()
   })
 
-  it('renders gift hamper faq accordion content', async () => {
+  it('renders cakes by post faq accordion content', async () => {
     const page = await CakesByPostPage()
     render(page)
 
@@ -250,14 +250,29 @@ describe('CakesByPostPage', () => {
       screen.getByText('Quick answers about UK delivery, gifting options, and what to expect from cakes by post.')
     ).toBeInTheDocument()
 
-    expect(screen.getByRole('button', { name: 'Do you deliver gift hampers across the UK?' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Do you deliver cakes by post across the UK?' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Can I include a personalised gift message?' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'How long do cakes by post stay fresh after delivery?' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Are your cake by post suitable for corporate gifting?' })).toBeInTheDocument()
 
-    const hamperContentsButton = screen.getByRole('button', { name: 'What is included in each gift hamper?' })
-    fireEvent.click(hamperContentsButton)
+    const freshnessButton = screen.getByRole('button', { name: 'How long do cakes by post stay fresh after delivery?' })
+    fireEvent.click(freshnessButton)
 
     expect(
-      screen.getByText('Each product page lists exact hamper contents, sizes, and key details so you can choose with confidence.')
+      screen.getByText('Our honey cake slices and caramel biscuits by post stay fresh for 5 to 7 days when kept refrigerated.')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Please check the label for the best-before date.')
+    ).toBeInTheDocument()
+
+    const cakeByPostContentsButton = screen.getByRole('button', { name: 'What is included in each cake by post?' })
+    fireEvent.click(cakeByPostContentsButton)
+
+    expect(
+      screen.getByText('Each cake by post includes a free personalised gift note and UK-wide delivery.')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('For corporate orders, branded cake slices and larger hamper orders are available by request.')
     ).toBeInTheDocument()
   })
 
