@@ -1,4 +1,5 @@
 import { logger } from '@/lib/logger'
+import { resolveCanonicalOrderType } from '@/lib/order-types'
 import { generateOrderNumber, generateUniqueKey } from '@/lib/order-utils'
 import { withRateLimit } from '@/lib/rate-limit'
 import { formatRequestIpLocation, getRequestIpLocation } from '@/lib/request-location'
@@ -22,7 +23,7 @@ const contactEnquiriesTable = 'contact_enquiries'
 type InlineOrderProductType = 'cake' | 'gift-hamper'
 type InlineOrderRequestMode = 'message' | 'custom-design'
 type InlineOrderDesignType = 'standard' | 'individual'
-type InlineOrderType = 'browse-catalog' | 'custom-design' | 'wedding-cake' | 'gift-hamper' | 'custom-quote'
+type InlineOrderSourceType = 'browse-catalog' | 'custom-design' | 'wedding-cake' | 'gift-hamper' | 'custom-quote' | 'custom-cake' | 'cakes-by-post'
 
 const ukPostcodePattern = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i
 
@@ -92,7 +93,7 @@ function isInlineOrderDesignType(value: string): value is InlineOrderDesignType 
   return value === 'standard' || value === 'individual'
 }
 
-const inlineOrderTypeNormalizationMap: Record<string, InlineOrderType> = {
+const inlineOrderTypeNormalizationMap: Record<string, InlineOrderSourceType> = {
   'browse-catalog': 'browse-catalog',
   'browse our catalog': 'browse-catalog',
   'custom-design': 'custom-design',
@@ -101,11 +102,15 @@ const inlineOrderTypeNormalizationMap: Record<string, InlineOrderType> = {
   'wedding cake': 'wedding-cake',
   'gift-hamper': 'gift-hamper',
   'gift hamper': 'gift-hamper',
+  'cakes-by-post': 'cakes-by-post',
+  'cakes by post': 'cakes-by-post',
+  'custom-cake': 'custom-cake',
+  'custom cake': 'custom-cake',
   'custom-quote': 'custom-quote',
   'custom quote': 'custom-quote'
 }
 
-function normalizeInlineOrderType(value: string): InlineOrderType | null {
+function normalizeInlineOrderType(value: string): InlineOrderSourceType | null {
   const normalizedValue = value.trim().toLowerCase()
   if (normalizedValue.length === 0) {
     return null
@@ -114,17 +119,17 @@ function normalizeInlineOrderType(value: string): InlineOrderType | null {
   return inlineOrderTypeNormalizationMap[normalizedValue] || null
 }
 
-function resolveInlineOrderType(params: {
+function resolveInlineSourceOrderType(params: {
   productType: InlineOrderProductType
-  normalizedIncomingOrderType: InlineOrderType | null
+  normalizedIncomingOrderType: InlineOrderSourceType | null
   requestMode: InlineOrderRequestMode
-}): InlineOrderType {
-  if (params.productType === 'gift-hamper') {
-    return 'gift-hamper'
+}): InlineOrderSourceType {
+  if (params.normalizedIncomingOrderType) {
+    return params.normalizedIncomingOrderType
   }
 
-  if (params.normalizedIncomingOrderType && params.normalizedIncomingOrderType !== 'gift-hamper') {
-    return params.normalizedIncomingOrderType
+  if (params.productType === 'gift-hamper') {
+    return 'gift-hamper'
   }
 
   if (params.requestMode === 'custom-design') {
@@ -144,6 +149,14 @@ function buildDeliveryAddress(address?: string | null, city?: string | null, pos
 function normalizeDesignTypeLabel(designType: InlineOrderDesignType): string {
   return designType === 'individual' ? 'Individual design' : 'Standard design'
 }
+
+const cakeRequestIntro = 'Thank you. We\'ve received your cake request and will review the details within 24 hours.'
+const cakeRequestPriceLabel = 'Estimated price'
+const cakeRequestNextSteps = [
+  'I\'ll review your requested date, cake details, and any design notes within 24 hours.',
+  'I\'ll confirm availability, final price, and any design details before you need to pay.',
+  'Nothing is booked or payable until we agree the design, price, and collection or delivery details.'
+]
 
 function getPostalOrderAddressValidationErrors(address: string, city: string, postcode: string) {
   const errors: string[] = []
@@ -662,7 +675,7 @@ async function handlePOST(request: NextRequest) {
 
     try {
       const resolvedProductType: InlineOrderProductType = normalizedProductType || 'cake'
-      const resolvedOrderType = resolveInlineOrderType({
+      const sourceOrderType = resolveInlineSourceOrderType({
         productType: resolvedProductType,
         normalizedIncomingOrderType,
         requestMode
@@ -673,6 +686,11 @@ async function handlePOST(request: NextRequest) {
       const inferredPaymentMethod = resolvedProductType === 'gift-hamper'
         ? 'card'
         : 'cash-collection'
+      const resolvedOrderType = resolveCanonicalOrderType({
+        orderType: sourceOrderType,
+        productType: resolvedProductType,
+        deliveryMethod: inferredDeliveryMethod
+      })
       const inferredDeliveryAddress = buildDeliveryAddress(address, city, postcode)
       const isCakesByPostOrder = resolvedProductType === 'gift-hamper'
       const designTypeLabel = normalizeDesignTypeLabel(designType)
@@ -754,6 +772,7 @@ async function handlePOST(request: NextRequest) {
           ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
           ...(requestIpLocation ? { ipLocation: requestIpLocation } : {}),
           inlineOrderContext: {
+            sourceOrderType,
             occasion: occasion || undefined,
             requestMode,
             designType,
@@ -804,6 +823,7 @@ async function handlePOST(request: NextRequest) {
           quantity: 1,
           unitPrice: totalPrice || 0,
           totalPrice: totalPrice || 0,
+          priceLabel: isCakesByPostOrder ? undefined : cakeRequestPriceLabel,
           dateNeeded: dateNeeded || undefined,
           occasion: occasion || undefined,
           designType: designTypeLabel,
@@ -819,10 +839,9 @@ async function handlePOST(request: NextRequest) {
           referrer: referrer || undefined,
           intro: isCakesByPostOrder
             ? 'Thank you. We\'ve received your cakes by post request and will review your order and delivery details within 24 hours.'
-            : undefined,
-          titleOverride: isCakesByPostOrder
-            ? `Order request received #${orderNumber} - Olgish Cakes`
-            : `Order Confirmation #${orderNumber} - Olgish Cakes`
+            : cakeRequestIntro,
+          nextSteps: isCakesByPostOrder ? undefined : cakeRequestNextSteps,
+          titleOverride: `Order request received #${orderNumber} - Olgish Cakes`
         },
         modeOverride: emailMode,
         message: {
@@ -919,13 +938,18 @@ async function handlePOST(request: NextRequest) {
       const fallbackProductType: InlineOrderProductType = isInlineOrderProductType(productTypeValue) || isLegacyOrderProductType(productTypeValue)
         ? (productTypeValue === 'gift-hamper' ? 'gift-hamper' : 'cake')
         : 'cake'
-      const fallbackOrderType = resolveInlineOrderType({
+      const fallbackSourceOrderType = resolveInlineSourceOrderType({
         productType: fallbackProductType,
         normalizedIncomingOrderType,
         requestMode
       })
       const fallbackDeliveryMethod = fallbackProductType === 'gift-hamper' ? 'postal' : 'collection'
       const fallbackPaymentMethod = fallbackProductType === 'gift-hamper' ? 'card' : 'cash-collection'
+      const fallbackOrderType = resolveCanonicalOrderType({
+        orderType: fallbackSourceOrderType,
+        productType: fallbackProductType,
+        deliveryMethod: fallbackDeliveryMethod
+      })
       const fallbackDeliveryAddress = buildDeliveryAddress(address, city, postcode)
       const isFallbackCakesByPostOrder = fallbackProductType === 'gift-hamper'
       const fallbackDesignTypeLabel = normalizeDesignTypeLabel(designType)
@@ -1004,6 +1028,7 @@ async function handlePOST(request: NextRequest) {
           quantity: 1,
           unitPrice: totalPrice || 0,
           totalPrice: totalPrice || 0,
+          priceLabel: isFallbackCakesByPostOrder ? undefined : cakeRequestPriceLabel,
           dateNeeded: dateNeeded || undefined,
           occasion: occasion || undefined,
           designType: fallbackDesignTypeLabel,
@@ -1018,10 +1043,9 @@ async function handlePOST(request: NextRequest) {
           giftNote: giftNote || undefined,
           intro: isFallbackCakesByPostOrder
             ? 'Thank you. We\'ve received your cakes by post request and will review your order and delivery details within 24 hours.'
-            : undefined,
-          titleOverride: isFallbackCakesByPostOrder
-            ? 'Order request received - Olgish Cakes'
-            : 'Order Inquiry Received - Olgish Cakes'
+            : cakeRequestIntro,
+          nextSteps: isFallbackCakesByPostOrder ? undefined : cakeRequestNextSteps,
+          titleOverride: 'Order request received - Olgish Cakes'
         },
         modeOverride: emailMode,
         message: {

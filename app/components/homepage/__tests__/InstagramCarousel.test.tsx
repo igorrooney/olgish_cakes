@@ -27,6 +27,7 @@ describe('InstagramCarousel', () => {
       captionLine: 'Honey cake close-up',
       imageAlt: 'Honey cake close-up',
       imageUrl: 'https://scontent.cdninstagram.com/media-1.jpg',
+      mediaType: 'IMAGE',
       permalink: 'https://instagram.com/p/post-1'
     },
     {
@@ -34,6 +35,7 @@ describe('InstagramCarousel', () => {
       captionLine: 'Birthday cake details',
       imageAlt: 'Birthday cake details',
       imageUrl: 'https://scontent.cdninstagram.com/media-2.jpg',
+      mediaType: 'VIDEO',
       permalink: 'https://instagram.com/p/post-2'
     }
   ]
@@ -50,6 +52,8 @@ describe('InstagramCarousel', () => {
 
     expect(screen.getAllByText('View Profile')).toHaveLength(2)
     expect(screen.getByAltText('Honey cake close-up')).toBeInTheDocument()
+    expect(screen.getByAltText('Honey cake close-up')).toHaveClass('object-cover')
+    expect(screen.getByAltText('Birthday cake details').closest('a')?.style.aspectRatio).toBe('3 / 4')
     expect(screen.getByText('Honey cake close-up')).toBeInTheDocument()
     expect(screen.queryByText('More details here')).toBeNull()
     expect(screen.getByText('Birthday cake details')).toBeInTheDocument()

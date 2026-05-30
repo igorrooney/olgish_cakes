@@ -49,19 +49,29 @@ describe('fetchInstagramPosts', () => {
           like_count: 1200
         },
         {
-          id: 'post-2',
+          id: 'reel-only-post',
           media_type: 'VIDEO',
           media_url: 'https://scontent.cdninstagram.com/video-1.mp4',
           thumbnail_url: 'https://scontent.cdninstagram.com/thumb-1.jpg',
+          permalink: 'https://instagram.com/reel/reel-only-post',
+          timestamp: '2024-01-02T10:00:00+0000',
+          is_shared_to_feed: false
+        },
+        {
+          id: 'post-2',
+          media_type: 'VIDEO',
+          media_url: 'https://scontent.cdninstagram.com/video-2.mp4',
+          thumbnail_url: 'https://scontent.cdninstagram.com/thumb-2.jpg',
           permalink: 'https://instagram.com/p/post-2',
-          timestamp: '2024-01-02T10:00:00+0000'
+          timestamp: '2024-01-03T10:00:00+0000',
+          is_shared_to_feed: true
         },
         {
           id: 'post-3',
           media_type: 'CAROUSEL_ALBUM',
           media_url: 'https://scontent.cdninstagram.com/media-3.jpg',
           permalink: 'https://instagram.com/p/post-3',
-          timestamp: '2024-01-03T10:00:00+0000'
+          timestamp: '2024-01-04T10:00:00+0000'
         }
       ]
     }
@@ -75,12 +85,14 @@ describe('fetchInstagramPosts', () => {
 
     const posts = await getLatestInstagramPosts({ limit: 4 })
 
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect(mockFetch).toHaveBeenNthCalledWith(
+      1,
       expect.stringContaining('limit=9'),
       expect.objectContaining({ next: { revalidate: 1800 }, signal: expect.any(AbortSignal) })
     )
+    expect(mockFetch).toHaveBeenCalledTimes(1)
 
-    expect(posts).toHaveLength(2)
+    expect(posts).toHaveLength(3)
     expect(posts[0]).toEqual<InstagramPost>({
       id: 'post-1',
       caption: 'Honey cake love',
@@ -91,11 +103,18 @@ describe('fetchInstagramPosts', () => {
       likeCount: 1200
     })
     expect(posts[1]).toEqual<InstagramPost>({
+      id: 'post-2',
+      imageUrl: 'https://scontent.cdninstagram.com/thumb-2.jpg',
+      permalink: 'https://instagram.com/p/post-2',
+      mediaType: 'VIDEO',
+      timestamp: '2024-01-03T10:00:00+0000'
+    })
+    expect(posts[2]).toEqual<InstagramPost>({
       id: 'post-3',
       imageUrl: 'https://scontent.cdninstagram.com/media-3.jpg',
       permalink: 'https://instagram.com/p/post-3',
       mediaType: 'CAROUSEL_ALBUM',
-      timestamp: '2024-01-03T10:00:00+0000'
+      timestamp: '2024-01-04T10:00:00+0000'
     })
   })
 

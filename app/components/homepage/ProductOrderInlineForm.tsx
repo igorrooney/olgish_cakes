@@ -249,20 +249,9 @@ export function ProductOrderInlineForm({
     ? '!border-base-300 !bg-base-200 !text-base-content/70 shadow-none opacity-100 disabled:!border-base-300 disabled:!bg-base-200 disabled:!text-base-content/70 disabled:opacity-100'
     : 'bg-primary-500 hover:bg-primary-700'
   const buttonLabel = hasSubmittedSuccessfully ? 'Request sent' : 'Submit order'
-  const successIntro = isPostalOrder
-    ? "Thank you. We've received your cakes by post request."
-    : "Thank you. We've received your request."
-  const successNextSteps = isPostalOrder
-    ? [
-        "We'll review your order and delivery details within 24 hours.",
-        "If everything is confirmed, we'll send you a secure payment link.",
-        "Once payment is received, we'll prepare, pack, and send your cake by post."
-      ]
-    : [
-        "We'll review your details within 24 hours.",
-        "We'll contact you with a quote and final design details.",
-        "We'll confirm delivery or collection once you approve."
-      ]
+  const successMessage = isPostalOrder
+    ? "Thank you, your cakes by post request has arrived safely. I'll check the delivery details and send the next steps within 24 hours."
+    : "Thank you, your order request has arrived safely. I'll review the details and get back to you within 24 hours."
   const userRequestDetails = useMemo(() => {
     const value = requestMode === 'custom-design'
       ? formData.requirements?.trim()
@@ -739,14 +728,9 @@ export function ProductOrderInlineForm({
               d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
             />
           </svg>
-          <div className='space-y-2'>
+          <div>
             <p className='font-semibold'>Order request received</p>
-            <p>{successIntro}</p>
-            <ul className='list-disc space-y-1 pl-5'>
-              {successNextSteps.map((step) => (
-                <li key={step}>{step}</li>
-              ))}
-            </ul>
+            <p className='mt-1 leading-6'>{successMessage}</p>
           </div>
         </div>
       ) : null}

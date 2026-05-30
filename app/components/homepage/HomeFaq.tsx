@@ -2,27 +2,27 @@ export const faqItems = [
   {
     question: 'What is Medovik honey cake?',
     answer:
-      'Medovik is a traditional Ukrainian honey cake with thin honey layers and light cream. I bake it in Leeds from a family recipe and let it rest overnight so it goes soft and rich.'
+      'Medovik is a traditional Ukrainian honey cake with thin honey layers and buttercream made with condensed milk. Made in Leeds from a Ukrainian recipe with real honey, then rested overnight for a soft, rich texture and deep honey flavour.'
   },
   {
     question: 'Do you make Napoleon cake in Leeds?',
     answer:
-      'Yes — it’s handmade in Leeds with flaky pastry layers and smooth custard cream. Lovely for birthdays and tea parties.'
+      'Yes, our Napoleon cake is handmade in Leeds with puff pastry layers and fresh patisserie cream made with fresh cream. A lovely choice for birthdays, tea parties, and family celebrations.'
   },
   {
     question: 'Looking for a bakery or dessert near me in Leeds?',
     answer:
-      'You can order online and choose local delivery or collection in Leeds. I’m also at selected farmers’ markets during the year.'
+      'Order online and choose local delivery or collection in Leeds. You\'ll also find us at local farmers\' markets during the year. Follow our schedule for upcoming market dates.'
   },
   {
     question: 'Do you deliver cakes across the UK?',
     answer:
-      'Yes, selected cakes can go by post across the UK. I’ll confirm the best option when you place your order.'
+      'Yes, selected cakes can go by post across the UK. I\'ll confirm the best option when you place your order.'
   },
   {
     question: 'Can you make custom birthday or wedding cakes?',
     answer:
-      'Yes — I make custom birthday and wedding cakes with Ukrainian flavours like Medovik and Napoleon. Share your date and ideas and I’ll suggest sizes and designs.'
+      'Yes, we make custom birthday and wedding cakes with flavours including Ukrainian Medovik, Napoleon, chocolate cake, red velvet, and more. Share your date and ideas, and we\'ll suggest sizes and designs.'
   }
 ]
 

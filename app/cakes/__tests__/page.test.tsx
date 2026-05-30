@@ -388,7 +388,7 @@ describe('CakesPage', () => {
       expect(
         screen.getByRole('heading', {
           level: 1,
-          name: 'Traditional Ukrainian custom cakes in Leeds for celebrations'
+          name: 'Handmade Celebration Cakes in Leeds'
         })
       ).toBeInTheDocument()
       expect(screen.getByRole('link', { name: /View details for Sample Honey Cake/i })).toBeInTheDocument()
@@ -659,10 +659,10 @@ describe('CakesPage', () => {
 
     const pageHeading = screen.getByRole('heading', {
       level: 1,
-      name: 'Traditional Ukrainian custom cakes in Leeds for celebrations'
+      name: 'Handmade Celebration Cakes in Leeds'
     })
     const pageIntro = screen.getByText(
-      'Browse handmade Ukrainian cakes prepared in Leeds with traditional recipes, quality ingredients and flavours that feel like home.'
+      'Bespoke cakes for birthdays, weddings, christenings, corporate events and Ukrainian celebrations, made in Leeds and delivered across West Yorkshire by arrangement.'
     )
 
     expect(pageHeading).toBeInTheDocument()
@@ -696,7 +696,18 @@ describe('CakesPage', () => {
     )
     expect(screen.getByRole('heading', { level: 2, name: 'Sample Honey Cake' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Cake ordering FAQs' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Do you make custom birthday and wedding cakes in Leeds?' })).toBeInTheDocument()
+
+    const customCakeButton = screen.getByRole('button', { name: 'Do you make custom birthday and wedding cakes in Leeds?' })
+    expect(customCakeButton).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByText('Yes. We make bespoke birthday cakes and wedding cakes in Leeds for birthdays, weddings and family celebrations. Choose your size, flavour, filling, finish and design, with delivery across Leeds and West Yorkshire by arrangement.')).toBeInTheDocument()
+
+    const noticeButton = screen.getByRole('button', { name: 'How far in advance should I order a custom cake?' })
+    fireEvent.click(noticeButton)
+    expect(screen.getByText('Some cakes are ready for collection or delivery at short notice, including same-day delivery when we have availability. For custom designs, order at least one week ahead. For wedding cakes, large cakes and busy dates, please book earlier.')).toBeInTheDocument()
+
+    const bespokeFlavoursButton = screen.getByRole('button', { name: 'Do you offer bespoke cake flavours, fillings and designs?' })
+    fireEvent.click(bespokeFlavoursButton)
+    expect(screen.getByText('Yes. We make bespoke cakes with your chosen flavour, filling, finish and design style. Share your occasion, serving size, colours and reference images, and we will guide you through the best options.')).toBeInTheDocument()
 
     const ukDeliveryButton = screen.getByRole('button', { name: 'Can any cake be delivered across the UK?' })
     fireEvent.click(ukDeliveryButton)

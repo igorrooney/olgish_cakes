@@ -3,6 +3,7 @@ import type { InstagramMediaType, InstagramPost } from '@/app/types/instagram'
 interface InstagramApiMediaItem {
   id: string
   caption?: string
+  is_shared_to_feed?: boolean
   media_type?: string
   media_url?: string
   permalink?: string
@@ -156,14 +157,14 @@ const resolveMediaUrl = (item: InstagramApiMediaItem): string | null => {
   const fallbackUrl = typeof item.thumbnail_url === 'string' ? item.thumbnail_url : null
 
   if (item.media_type === 'VIDEO') {
-    return fallbackUrl || primaryUrl
+    return fallbackUrl
   }
 
   return primaryUrl || fallbackUrl
 }
 
 const mapInstagramPost = (item: InstagramApiMediaItem): InstagramPost | null => {
-  if (item.media_type === 'VIDEO') {
+  if (item.media_type === 'VIDEO' && item.is_shared_to_feed === false) {
     return null
   }
 
@@ -202,6 +203,7 @@ export async function getLatestInstagramPosts(
   const fields = [
     'id',
     'caption',
+    'is_shared_to_feed',
     'media_type',
     'media_url',
     'permalink',

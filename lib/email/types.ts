@@ -47,6 +47,7 @@ export interface EmailTemplateCommonInput {
   quantity?: number
   unitPrice?: number
   totalPrice?: number
+  priceLabel?: string
   dateNeeded?: string
   cakeInterest?: string
   occasion?: string

@@ -168,8 +168,8 @@ export default async function CakesByPostPage() {
   return (
     <CatalogPageTemplate
       variant='giftHampers'
-      heading='Cakes by post across the UK with handmade Ukrainian flavour'
-      intro='Browse our cakes-by-post collection, handcrafted in Leeds and delivered nationwide for birthdays, celebrations and thoughtful surprises.'
+      heading='Personalised cake cards and cake slices by post'
+      intro='Send handmade Ukrainian honey cake slices and personalised cake cards by post, made in Yorkshire and delivered across the UK.'
       canonicalPath='/cakes-by-post'
       localBusinessDescription='Handmade Ukrainian cakes by post, prepared in Leeds and delivered across the UK.'
       catalogData={catalogData}

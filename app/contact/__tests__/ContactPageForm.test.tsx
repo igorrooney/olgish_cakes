@@ -30,6 +30,8 @@ describe('ContactPageForm', () => {
     return calendarAriaFormatter.format(new Date(year, month - 1, day))
   }
 
+  const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
   const getDateInput = () => {
     const input = document.getElementById('dateNeeded')
 
@@ -46,9 +48,19 @@ describe('ContactPageForm', () => {
     }
 
     fireEvent.click(getDateInput())
-    fireEvent.click(screen.getByRole('button', {
-      name: new RegExp(`select ${formatCalendarButtonName(dateValue)}`, 'i')
-    }))
+    const buttonName = new RegExp(`select ${escapeRegExp(formatCalendarButtonName(dateValue))}`, 'i')
+    let dateButton = screen.queryByRole('button', { name: buttonName })
+
+    for (let monthOffset = 0; !dateButton && monthOffset < 24; monthOffset += 1) {
+      fireEvent.click(screen.getByRole('button', { name: /next month/i }))
+      dateButton = screen.queryByRole('button', { name: buttonName })
+    }
+
+    if (!dateButton) {
+      throw new Error(`Could not find enabled calendar button for ${dateValue}`)
+    }
+
+    fireEvent.click(dateButton)
   }
 
   const getMessageField = () => screen.getByRole('textbox', { name: /^Message/i })

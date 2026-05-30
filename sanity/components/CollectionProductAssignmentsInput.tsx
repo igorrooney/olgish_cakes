@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { Box, Button, Card, Checkbox, Flex, Stack, Text, TextInput } from '@sanity/ui'
 import { ArrayOfObjectsInputProps, set, unset, useClient, useFormValue } from 'sanity'
 import {
@@ -380,7 +380,7 @@ function createCollectionProductAssignmentsInput(config: CollectionAssignmentInp
             <Stack space={3}>
               <TextInput
                 value={searchQuery}
-                onChange={(event) => setSearchQuery(event.currentTarget.value)}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => setSearchQuery(event.currentTarget.value)}
                 placeholder={`Search ${emptyLabel}`}
               />
 
@@ -414,7 +414,7 @@ function createCollectionProductAssignmentsInput(config: CollectionAssignmentInp
                         <Checkbox
                           checked={selectedProductIds.has(product.baseId)}
                           disabled={isSyncing || readOnly}
-                          onChange={(event) => toggleProduct(product.baseId, event.currentTarget.checked)}
+                          onChange={(event: ChangeEvent<HTMLInputElement>) => toggleProduct(product.baseId, event.currentTarget.checked)}
                         />
                         <Text size={2}>{product.name}</Text>
                       </Flex>

@@ -31,7 +31,7 @@ const buildOrder = (): Order => ({
   _updatedAt: '2026-04-27T18:32:51.000Z',
   orderNumber: '26042718325184',
   status: 'new',
-  orderType: 'custom-design',
+  orderType: 'custom-cake',
   customer: {
     name: 'Customer',
     email: 'customer@example.com',
@@ -170,6 +170,7 @@ describe('Supabase order row mapping', () => {
 
     const order = mapSupabaseOrderRow(row, relationalItems, relationalMessages, relationalNotes)
 
+    expect(order.orderType).toBe('custom-design')
     expect(order.customer).toMatchObject({
       name: 'Structured Customer',
       email: 'structured@example.com',
@@ -354,7 +355,7 @@ describe('Supabase order payload builders', () => {
     const payload = buildSupabaseOrderPayload({
       orderNumber: 'OC-1001',
       status: 'new',
-      orderType: 'gift-hamper',
+      orderType: 'cakes-by-post',
       customer: {
         name: 'Jane Doe',
         email: 'jane@example.com',
@@ -389,6 +390,7 @@ describe('Supabase order payload builders', () => {
 
     expect(payload).toMatchObject({
       order_number: 'OC-1001',
+      order_type: 'cakes-by-post',
       customer_name: 'Jane Doe',
       customer_email: 'jane@example.com',
       date_needed: '2026-07-26',
@@ -411,7 +413,7 @@ describe('Supabase order payload builders', () => {
     const payload = buildSupabaseOrderPayload({
       orderNumber: 'OC-1002',
       status: 'new',
-      orderType: 'custom-quote',
+      orderType: 'custom-cake',
       customer: {
         name: 'Jane Doe',
         email: 'jane@example.com',
@@ -433,6 +435,7 @@ describe('Supabase order payload builders', () => {
     })
 
     expect(payload.date_needed).toBeNull()
+    expect(payload.order_type).toBe('custom-cake')
   })
 
   it('builds ordered child item payloads for order_items', () => {

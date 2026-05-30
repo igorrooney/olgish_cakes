@@ -1,6 +1,7 @@
 import { isAdminAuthenticated } from '@/lib/admin-auth'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
 import { logger } from '@/lib/logger'
+import { isCakesByPostOrderLike } from '@/lib/order-types'
 import {
   deleteSupabaseOrder,
   getSupabaseOrderByIdentifier,
@@ -568,10 +569,11 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
     return
   }
 
-  const isCakesByPostOrder = order.orderType === 'gift-hamper' ||
-    order.delivery.deliveryMethod === 'postal' ||
-    order.delivery.deliveryMethod === 'postal-delivery' ||
-    order.items.some((item) => item.productType === 'gift-hamper')
+  const isCakesByPostOrder = isCakesByPostOrderLike({
+    orderType: order.orderType,
+    deliveryMethod: order.delivery.deliveryMethod,
+    itemProductTypes: order.items.map((item) => item.productType)
+  })
 
   const statusMessages = {
     confirmed: {

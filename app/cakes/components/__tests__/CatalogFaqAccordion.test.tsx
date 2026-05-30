@@ -66,6 +66,29 @@ describe('CatalogFaqAccordion', () => {
     expect(screen.queryByText('Quick answers before you order.')).not.toBeInTheDocument()
   })
 
+  it('renders blank-line separated answers as paragraphs', () => {
+    render(
+      <CatalogFaqAccordion
+        sectionId='catalog-faq-paragraphs'
+        title='Catalog FAQ'
+        items={[
+          {
+            question: 'How should I store cakes by post?',
+            answer: `Keep them refrigerated.
+
+Take them out before serving.
+
+Check the label for the best-before date.`
+          }
+        ]}
+      />
+    )
+
+    expect(screen.getByText('Keep them refrigerated.').tagName).toBe('P')
+    expect(screen.getByText('Take them out before serving.').tagName).toBe('P')
+    expect(screen.getByText('Check the label for the best-before date.').tagName).toBe('P')
+  })
+
   it('renders nothing when no faq items are provided', () => {
     const { container } = render(
       <CatalogFaqAccordion

@@ -1,4 +1,5 @@
 import type { EmailTemplateCommonInput } from '../types'
+import { isCakesByPostOrderLike } from '@/lib/order-types'
 import {
   formatCurrency,
   formatDate,
@@ -10,7 +11,11 @@ import {
 } from './shared'
 
 function isCakesByPostAdminEmail(input: EmailTemplateCommonInput): boolean {
-  return input.productType === 'gift-hamper'
+  return isCakesByPostOrderLike({
+    orderType: input.orderType,
+    productType: input.productType,
+    deliveryMethod: input.deliveryMethod
+  })
 }
 
 function row(rows: CustomerRow[], label: string, value: string | null | undefined) {

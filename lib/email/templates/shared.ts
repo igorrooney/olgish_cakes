@@ -42,6 +42,25 @@ export function formatDate(value: string | null | undefined): string {
   return parsed.toLocaleDateString('en-GB')
 }
 
+function formatLongDate(value: string | null | undefined): string {
+  const raw = toTrimmed(value)
+  if (raw.length === 0) {
+    return ''
+  }
+
+  const parsed = new Date(raw)
+  if (Number.isNaN(parsed.getTime())) {
+    return raw
+  }
+
+  return parsed.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+    year: 'numeric'
+  })
+}
+
 export function formatCurrency(value: number | null | undefined): string {
   if (typeof value !== 'number' || !Number.isFinite(value)) {
     return ''
@@ -386,6 +405,7 @@ export const commonInputSchema = z.object({
   quantity: z.number().optional(),
   unitPrice: z.number().optional(),
   totalPrice: z.number().optional(),
+  priceLabel: z.string().optional(),
   dateNeeded: z.string().optional(),
   cakeInterest: z.string().optional(),
   occasion: z.string().optional(),
@@ -499,6 +519,10 @@ function isCustomCakeEnquiry(input: EmailTemplateCommonInput): boolean {
   return input.orderType === 'custom-cake-enquiry'
 }
 
+function isCakeRequestEmail(input: EmailTemplateCommonInput): boolean {
+  return isCustomCakeEnquiry(input) || toTrimmed(input.priceLabel).length > 0
+}
+
 function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
   const contactRows: CustomerRow[] = []
   const summaryRows: CustomerRow[] = []
@@ -514,6 +538,8 @@ function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
   }
 
   const customCakeEnquiry = isCustomCakeEnquiry(input)
+  const priceLabel = toTrimmed(input.priceLabel) || 'Total Amount'
+  const dateNeeded = isCakeRequestEmail(input) ? formatLongDate(input.dateNeeded) : formatDate(input.dateNeeded)
 
   if (customCakeEnquiry) {
     row(contactRows, 'Name', input.customerName)
@@ -526,8 +552,8 @@ function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
 
   row(summaryRows, 'Order Number', input.orderNumber)
   row(summaryRows, 'Product', input.productName)
-  row(summaryRows, 'Date needed', formatDate(input.dateNeeded))
-  row(summaryRows, 'Total Amount', formatCurrency(input.totalPrice))
+  row(summaryRows, 'Date needed', dateNeeded)
+  row(summaryRows, priceLabel, formatCurrency(input.totalPrice))
 
   const normalizedStatus = toTrimmed(input.status).toLowerCase()
   if (normalizedStatus === 'out-for-delivery' || normalizedStatus === 'out-delivery') {

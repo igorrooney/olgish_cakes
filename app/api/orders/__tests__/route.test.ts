@@ -97,11 +97,77 @@ describe('/api/orders POST', () => {
     const response = await POST(request)
 
     expect(response.status).toBe(200)
+    expect(mockCreateSupabaseOrder).toHaveBeenCalledWith(expect.objectContaining({
+      orderType: 'custom-cake',
+      metadata: expect.objectContaining({
+        sourceOrderType: 'standard'
+      })
+    }))
     expect(mockSendEmail).toHaveBeenCalledTimes(2)
     expect(mockUpdateSupabaseOrderMetadata).toHaveBeenCalledWith('order-1', {}, expect.objectContaining({
       emailSent: false,
       emailError: expect.stringContaining('Transport did not accept the customer email')
     }))
+  })
+
+  it('normalizes legacy cakes by post order types before saving', async () => {
+    mockSendEmail
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'customer-id-1',
+        error: null,
+        rendered: {
+          subject: 'Customer subject',
+          text: 'Customer text',
+          html: '<p>Customer</p>'
+        }
+      })
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'admin-id-1',
+        error: null,
+        rendered: {
+          subject: 'Admin subject',
+          text: 'Admin text',
+          html: '<p>Admin</p>'
+        }
+      })
+
+    const request = new NextRequest('http://localhost/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        phone: '07123456789',
+        message: 'Please send this by post',
+        orderType: 'gift-hamper',
+        productType: 'gift-hamper',
+        productName: 'Honey Cake Card',
+        designType: 'standard',
+        quantity: 1,
+        unitPrice: 12.5,
+        totalPrice: 12.5,
+        deliveryMethod: 'postal',
+        paymentMethod: 'card'
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(mockCreateSupabaseOrder).toHaveBeenCalledWith(expect.objectContaining({
+      orderType: 'cakes-by-post',
+      metadata: expect.objectContaining({
+        sourceOrderType: 'gift-hamper'
+      })
+    }))
+    expect(mockSendEmail.mock.calls[0]?.[0].input.orderType).toBe('cakes-by-post')
+    expect(mockSendEmail.mock.calls[1]?.[0].input.orderType).toBe('cakes-by-post')
   })
 
   it('stores approximate request location from Vercel IP headers', async () => {

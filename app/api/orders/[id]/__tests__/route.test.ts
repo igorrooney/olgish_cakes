@@ -208,14 +208,14 @@ describe('/api/orders/[id] PATCH', () => {
     expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
-  it('passes cakes by post status email fields for confirmed orders', async () => {
+  it('passes cakes by post status email fields for canonical confirmed orders', async () => {
     const currentOrder = {
       _id: 'order-1',
       _createdAt: '2026-05-12T18:00:00.000Z',
       _updatedAt: '2026-05-12T18:00:00.000Z',
       orderNumber: '26051220022842',
       status: 'new',
-      orderType: 'gift-hamper',
+      orderType: 'cakes-by-post',
       customer: {
         name: 'Igor Ieromenko',
         email: 'igor@example.com',
