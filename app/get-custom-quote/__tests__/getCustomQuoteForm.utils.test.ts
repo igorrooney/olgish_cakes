@@ -67,7 +67,7 @@ describe('getCustomQuoteForm.utils', () => {
       fullName: 'Jane Doe',
       email: 'jane@example.com',
       phone: '',
-      date: '2026-06-01',
+      date: '2099-06-01',
       servings: '10',
       brief: 'test cake',
       csrfToken: 'csrf-token'
@@ -82,7 +82,7 @@ describe('getCustomQuoteForm.utils', () => {
       fullName: 'Jane Doe',
       email: 'jane@example.com',
       phone: '',
-      date: '2026-06-01',
+      date: '2099-06-01',
       servings: '10',
       brief: 'cake',
       csrfToken: 'csrf-token'

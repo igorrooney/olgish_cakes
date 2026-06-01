@@ -65,6 +65,13 @@ const deliveryMethodOptions = supportedDeliveryMethods.map((method) => ({
   title: method === defaultDeliveryMethod ? 'Mail delivery (default)' : method,
   value: method
 }))
+const imageArrayEditorOptions = {
+  layout: 'grid' as const,
+  modal: {
+    type: 'popover' as const,
+    width: 'auto' as const
+  }
+}
 function toBaseReferenceId(referenceId: string) {
   return referenceId.startsWith('drafts.')
     ? referenceId.slice('drafts.'.length)
@@ -757,6 +764,7 @@ export default {
       name: "images",
       title: "Additional Images",
       type: "array",
+      options: imageArrayEditorOptions,
       of: [
         {
           type: "image",
@@ -930,6 +938,7 @@ export default {
           name: "standard",
           title: "Standard Designs",
           type: "array",
+          options: imageArrayEditorOptions,
           of: [
             {
               type: "image",
@@ -967,6 +976,7 @@ export default {
           name: "individual",
           title: "Individual Designs",
           type: "array",
+          options: imageArrayEditorOptions,
           of: [
             {
               type: "image",
