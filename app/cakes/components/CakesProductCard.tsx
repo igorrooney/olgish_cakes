@@ -114,9 +114,6 @@ export function CakesProductCard({
         </div>
         <div className='flex flex-1 flex-col gap-2 px-4 pb-3 pt-3'>
           <h2 className='text-[19px] leading-[28px] text-base-content'>{cake.name}</h2>
-          <p className='line-clamp-2 text-[14px] leading-7 text-base-content/70' title={cake.description}>
-            {cake.description}
-          </p>
           <p className='mt-auto text-[20px] font-semibold leading-7 text-base-content'>
             {isLandingNavigation ? (
               <>Explore</>

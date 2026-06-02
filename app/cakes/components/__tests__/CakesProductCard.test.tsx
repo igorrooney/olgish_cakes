@@ -84,11 +84,11 @@ function renderMobileCard(
 }
 
 describe('CakesProductCard', () => {
-  it('renders cake name, description and image alt text', () => {
+  it('renders cake name and image alt text without description', () => {
     renderCard()
 
     expect(screen.getByText('Christmas Honey Cake')).toBeInTheDocument()
-    expect(screen.getByText('Layered honey sponge with sour cream and festive decoration.')).toBeInTheDocument()
+    expect(screen.queryByText('Layered honey sponge with sour cream and festive decoration.')).not.toBeInTheDocument()
     expect(screen.getByAltText('Christmas honey cake decorated with festive details')).toBeInTheDocument()
   })
 

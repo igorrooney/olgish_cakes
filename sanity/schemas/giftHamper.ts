@@ -45,6 +45,13 @@ const deliveryMethodOptions = supportedDeliveryMethods.map((method) => ({
   title: method === defaultDeliveryMethod ? 'Mail delivery (default)' : method,
   value: method
 }))
+const imageArrayEditorOptions = {
+  layout: 'grid' as const,
+  modal: {
+    type: 'popover' as const,
+    width: 'auto' as const
+  }
+}
 
 function extractDeliveryContextSegments(text: string) {
   return text
@@ -438,6 +445,7 @@ export default {
       name: "images",
       title: "Additional Images",
       type: "array",
+      options: imageArrayEditorOptions,
       of: [
         {
           type: "image",

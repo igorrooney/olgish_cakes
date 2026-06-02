@@ -6,6 +6,7 @@ import { act, fireEvent, render as rtlRender, screen, waitFor } from '@testing-l
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ProductOrderInlineForm } from '../ProductOrderInlineForm'
 import { OCCASION_OPTIONS, type OccasionOption } from '../formOptions'
+import { getTodayDateInputValue } from '../mobileForm.utils'
 import { fetchOccasionOptions } from '@/app/services/occasionOptions'
 import { csrfTokenLoadErrorMessage, fetchCsrfToken } from '@/app/services/csrfToken'
 
@@ -71,10 +72,7 @@ describe('ProductOrderInlineForm', () => {
   const getDateInputValue = (daysFromNow: number) => {
     const date = new Date()
     date.setDate(date.getDate() + daysFromNow)
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
+    return getTodayDateInputValue(date)
   }
 
   const calendarAriaFormatter = new Intl.DateTimeFormat('en-GB', {
