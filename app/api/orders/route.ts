@@ -4,6 +4,7 @@ import { generateOrderNumber } from '@/lib/order-utils'
 import { withRateLimit } from '@/lib/rate-limit'
 import { getRequestIpLocation } from '@/lib/request-location'
 import { formatValidationErrors, orderSchema, validateRequest } from '@/lib/validation'
+import { getCustomerEmailBcc } from '@/lib/email/customer-bcc'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
 import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
 import { resolveCanonicalOrderType } from '@/lib/order-types'
@@ -98,6 +99,56 @@ function normalizeEmailOrderItems(items: OrderItem[]) {
   }))
 }
 
+function isGeneratedProductSummary(value: string | undefined): boolean {
+  const normalizedValue = value?.trim().toLowerCase() || ''
+
+  return normalizedValue.includes('product:') &&
+    normalizedValue.includes('product type:') &&
+    normalizedValue.includes('price:')
+}
+
+function extractExplicitCustomerMessage(value: string | undefined): string | undefined {
+  const lines = value?.split(/\r?\n/) || []
+  const messageLine = lines.find((line) => {
+    const normalizedLine = line.trim().toLowerCase()
+    return normalizedLine.startsWith('message:') ||
+      normalizedLine.startsWith('customer message:') ||
+      normalizedLine.startsWith('requirements:')
+  })
+
+  if (!messageLine) {
+    return undefined
+  }
+
+  return messageLine.replace(/^(message|customer message|requirements):\s*/i, '').trim() || undefined
+}
+
+function resolveCustomerMessage(...values: Array<string | undefined>): string | undefined {
+  for (const value of values) {
+    const explicitMessage = extractExplicitCustomerMessage(value)
+    if (explicitMessage) {
+      const resolvedExplicitMessage = resolveCustomerMessage(explicitMessage)
+      if (resolvedExplicitMessage) {
+        return resolvedExplicitMessage
+      }
+    }
+
+    const trimmedValue = value?.trim() || ''
+    const normalizedValue = trimmedValue.toLowerCase()
+
+    if (
+      trimmedValue.length > 0 &&
+      normalizedValue !== 'message' &&
+      normalizedValue !== 'test message' &&
+      !isGeneratedProductSummary(trimmedValue)
+    ) {
+      return trimmedValue
+    }
+  }
+
+  return undefined
+}
+
 function getAttachmentLabel(attachment: Attachment) {
   return attachment.alt || attachment.caption || 'Attachment'
 }
@@ -159,6 +210,10 @@ async function handlePOST(request: NextRequest) {
 
     const validatedOrderData = validationResult.data
     const orderNumber = generateOrderNumber()
+    const resolvedCustomerMessage = resolveCustomerMessage(
+      validatedOrderData.specialInstructions,
+      validatedOrderData.message
+    )
 
     const fallbackItem: OrderItem = {
       productType: validatedOrderData.productType,
@@ -170,7 +225,7 @@ async function handlePOST(request: NextRequest) {
       totalPrice: validatedOrderData.totalPrice || 0,
       size: validatedOrderData.size || '',
       flavor: validatedOrderData.flavor || '',
-      specialInstructions: validatedOrderData.specialInstructions || ''
+      specialInstructions: resolvedCustomerMessage || ''
     }
 
     const items = Array.isArray(orderData.items) && orderData.items.length > 0
@@ -308,7 +363,7 @@ async function handlePOST(request: NextRequest) {
           designType: firstItem?.designType,
           filling: firstItem?.flavor,
           servings: firstItem?.size,
-          customerMessage: firstItem?.specialInstructions || validatedOrderData.specialInstructions,
+          customerMessage: resolveCustomerMessage(firstItem?.specialInstructions, resolvedCustomerMessage),
           deliveryMethod: toDeliveryMethodLabel(validatedOrderData.deliveryMethod || 'collection'),
           deliveryAddress: validatedOrderData.deliveryAddress,
           paymentMethod: toPaymentMethodLabel(validatedOrderData.paymentMethod || 'cash-collection'),
@@ -320,7 +375,7 @@ async function handlePOST(request: NextRequest) {
         message: {
           from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
           to: validatedOrderData.email,
-          bcc: process.env.ADMIN_BCC_EMAIL || undefined
+          bcc: getCustomerEmailBcc(process.env.ADMIN_BCC_EMAIL)
         }
       })
 
@@ -378,7 +433,7 @@ async function handlePOST(request: NextRequest) {
           designType: firstItem?.designType,
           filling: firstItem?.flavor,
           servings: firstItem?.size,
-          customerMessage: firstItem?.specialInstructions || validatedOrderData.specialInstructions,
+          customerMessage: resolveCustomerMessage(firstItem?.specialInstructions, resolvedCustomerMessage),
           deliveryMethod: toDeliveryMethodLabel(validatedOrderData.deliveryMethod || 'collection'),
           deliveryAddress: validatedOrderData.deliveryAddress,
           paymentMethod: toPaymentMethodLabel(validatedOrderData.paymentMethod || 'cash-collection'),

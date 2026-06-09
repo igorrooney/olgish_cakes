@@ -379,7 +379,7 @@ export function EnquiryForm({
               <div>
                 <p className='font-semibold'>Enquiry sent</p>
                 <p className='mt-1 leading-6'>
-                  Thank you, your cake enquiry has arrived safely. I&apos;ll get back to you as soon as I can.
+                  Thank you, your cake enquiry has arrived safely. We&apos;ll get back to you as soon as we can.
                 </p>
               </div>
             </div>

@@ -18,10 +18,10 @@ export function GetCustomQuoteFormSection({
               Quote form
             </p>
             <h2 className='mt-3 font-moreSugar text-[28px] uppercase leading-[1.2] tracking-[0.1em] text-primary-700 tablet:text-[40px]'>
-              Tell me what you are planning
+              Tell us what you are planning
             </h2>
             <p className='mt-4 font-oldenburg text-[15px] leading-7 tracking-[0.03em] text-base-content/80 tablet:text-base tablet:leading-8'>
-              Start with the details that help me price the cake properly: date, servings, your main design idea, and whether you need collection, local delivery or UK delivery by agreement.
+              Start with the details that help us price the cake properly: date, servings, your main design idea, and whether you need collection, local delivery or UK delivery by agreement.
             </p>
             <p className='mt-4 text-sm leading-6 text-base-content/70'>
               You do not need a finished cake concept before enquiring. A short brief is enough.

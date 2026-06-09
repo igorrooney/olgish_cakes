@@ -42,7 +42,7 @@ export function formatDate(value: string | null | undefined): string {
   return parsed.toLocaleDateString('en-GB')
 }
 
-function formatLongDate(value: string | null | undefined): string {
+export function formatLongDate(value: string | null | undefined): string {
   const raw = toTrimmed(value)
   if (raw.length === 0) {
     return ''
@@ -67,6 +67,33 @@ export function formatCurrency(value: number | null | undefined): string {
   }
 
   return `\u00A3${value}`
+}
+
+function formatDisplayLabel(value: string | null | undefined): string {
+  const trimmedValue = toTrimmed(value)
+  if (trimmedValue.length === 0 || /[A-Z]/.test(trimmedValue)) {
+    return trimmedValue
+  }
+
+  return trimmedValue
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b[a-z]/g, (letter) => letter.toUpperCase())
+}
+
+function getTrackingMeta(value: string | null | undefined): { label: string, url: (trackingNumber: string) => string } {
+  const normalizedValue = toTrimmed(value).toLowerCase()
+
+  if (normalizedValue === 'royal-mail') {
+    return {
+      label: 'Royal Mail',
+      url: (trackingNumber) => `https://www.royalmail.com/track-your-item#/tracking-results/${encodeURIComponent(trackingNumber)}`
+    }
+  }
+
+  return {
+    label: 'Evri',
+    url: (trackingNumber) => `https://www.evri.com/track/parcel/${encodeURIComponent(trackingNumber)}/details`
+  }
 }
 
 export function formatPhoneDisplay(value: string | null | undefined): string {
@@ -238,6 +265,28 @@ function renderOrderItemText(item: NormalizedOrderItem): string {
   return lines.join('\n')
 }
 
+function renderCustomerOrderItemText(item: NormalizedOrderItem): string {
+  const lines = [formatOrderItemSummary(item)]
+
+  if (item.designType.length > 0) {
+    lines.push(`Design type: ${formatDisplayLabel(item.designType)}`)
+  }
+
+  if (item.servings.length > 0) {
+    lines.push(`Servings: ${item.servings}`)
+  }
+
+  if (item.filling.length > 0) {
+    lines.push(`Filling: ${item.filling}`)
+  }
+
+  if (item.specialInstructions.length > 0) {
+    lines.push(`Customer message / requirements: ${item.specialInstructions}`)
+  }
+
+  return lines.join('\n')
+}
+
 export function renderOrderItemsText(items: NormalizedOrderItem[]): string {
   return items
     .map((item, index) => {
@@ -269,6 +318,40 @@ export function renderOrderItemsHtml(items: NormalizedOrderItem[]): string {
 
     if (item.designType.length > 0) {
       details.push(`Design type: ${item.designType}`)
+    }
+
+    if (item.servings.length > 0) {
+      details.push(`Servings: ${item.servings}`)
+    }
+
+    if (item.filling.length > 0) {
+      details.push(`Filling: ${item.filling}`)
+    }
+
+    if (item.specialInstructions.length > 0) {
+      details.push(`Customer message / requirements: ${item.specialInstructions}`)
+    }
+
+    const detailsHtml = details.length > 0
+      ? `<ul style="margin: 8px 0 0 18px; padding: 0; color: #4B5563; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 21px;">${details.map((detail) => `<li>${escapeHtml(detail)}</li>`).join('')}</ul>`
+      : ''
+
+    return `<li style="margin: 0 0 12px 0;"><p style="margin: 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 15px; line-height: 23px;">${escapeHtml(formatOrderItemSummary(item))}</p>${detailsHtml}</li>`
+  }).join('')
+
+  return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#ffffff" style="background-color: #ffffff; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;"><tr><td style="padding: 22px 24px;"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"><tr><td style="padding: 0 0 14px 0; color: #2E3192; font-family: ${EMAIL_FONT_DISPLAY}; font-size: 16px; font-weight: 700; line-height: 22px; text-transform: uppercase;">Order items</td></tr></table><ol style="margin: 0; padding-left: 18px;">${itemRows}</ol></td></tr></table>${renderEmailSpacer(14)}`
+}
+
+function renderCustomerOrderItemsHtml(items: NormalizedOrderItem[]): string {
+  if (items.length === 0) {
+    return ''
+  }
+
+  const itemRows = items.map((item) => {
+    const details: string[] = []
+
+    if (item.designType.length > 0) {
+      details.push(`Design type: ${formatDisplayLabel(item.designType)}`)
     }
 
     if (item.servings.length > 0) {
@@ -477,7 +560,15 @@ function buildSubject(meta: TemplateMeta, input: EmailTemplateCommonInput): stri
   return meta.subject
 }
 
-function defaultNextSteps(): string[] {
+function defaultNextSteps(input: EmailTemplateCommonInput): string[] {
+  if (isCustomCakeEnquiry(input)) {
+    return [
+      'We\'ll check the date, your notes and the delivery details.',
+      'We\'ll reply with availability, any questions, and a quote if we can make it for that date.',
+      'Nothing is booked or payable until we agree the design, price and collection or delivery details.'
+    ]
+  }
+
   return [
     'We\'ll review your order and confirm all details within 24 hours',
     'We\'ll contact you with a quote and final design details',
@@ -494,7 +585,7 @@ function resolveNextSteps(input: EmailTemplateCommonInput): string[] {
     return []
   }
 
-  return defaultNextSteps()
+  return defaultNextSteps(input)
 }
 
 export interface CustomerRow {
@@ -510,8 +601,7 @@ interface CustomerRows {
 }
 
 const TRUSTPILOT_REVIEW_URL = 'https://uk.trustpilot.com/review/olgishcakes.co.uk'
-const EMAIL_LOGO_CID = 'olgish-cakes-email-logo'
-const EMAIL_LOGO_SRC = `cid:${EMAIL_LOGO_CID}`
+const EMAIL_HOSTED_LOGO_SRC = 'https://olgishcakes.co.uk/images/olgish-cakes-email-logo.png'
 export const EMAIL_FONT_SANS = 'Inter, Arial, Helvetica, sans-serif'
 export const EMAIL_FONT_DISPLAY = '\'More Sugar\', \'Trebuchet MS\', Arial, Helvetica, sans-serif'
 
@@ -519,8 +609,115 @@ function isCustomCakeEnquiry(input: EmailTemplateCommonInput): boolean {
   return input.orderType === 'custom-cake-enquiry'
 }
 
+function renderCustomerOrderItemsText(items: NormalizedOrderItem[]): string {
+  return items
+    .map((item, index) => {
+      const lines = renderCustomerOrderItemText(item).split('\n')
+      const [firstLine, ...extraLines] = lines
+      return [
+        `${index + 1}. ${firstLine}`,
+        ...extraLines.map((line) => `   ${line}`)
+      ].join('\n')
+    })
+    .join('\n')
+}
+
 function isCakeRequestEmail(input: EmailTemplateCommonInput): boolean {
   return isCustomCakeEnquiry(input) || toTrimmed(input.priceLabel).length > 0
+}
+
+function resolveEmailLogoSrc(): string {
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim()
+  if (!configuredSiteUrl) {
+    return EMAIL_HOSTED_LOGO_SRC
+  }
+
+  try {
+    const parsedSiteUrl = new URL(configuredSiteUrl)
+    if (parsedSiteUrl.protocol !== 'https:') {
+      return EMAIL_HOSTED_LOGO_SRC
+    }
+
+    return new URL('/images/olgish-cakes-email-logo.png', parsedSiteUrl).toString()
+  } catch {
+    return EMAIL_HOSTED_LOGO_SRC
+  }
+}
+
+function resolveCustomerMessage(value: string | null | undefined): string {
+  const trimmedValue = toTrimmed(value)
+  const normalizedValue = trimmedValue.toLowerCase()
+
+  if (
+    normalizedValue === 'message' ||
+    normalizedValue === 'test message' ||
+    isGeneratedProductSummary(normalizedValue)
+  ) {
+    return ''
+  }
+
+  return trimmedValue
+}
+
+function resolveCakeBrief(value: string | null | undefined): string {
+  const customerMessage = resolveCustomerMessage(value)
+  if (customerMessage.length === 0) {
+    return ''
+  }
+
+  const lines = customerMessage
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+
+  if (lines[0]?.toLowerCase() !== 'quote brief') {
+    return customerMessage
+  }
+
+  const briefLine = lines.find((line) => line.toLowerCase().startsWith('brief:'))
+  if (!briefLine) {
+    return ''
+  }
+
+  return briefLine.slice('Brief:'.length).trim()
+}
+
+function parseQuoteRequirementFields(value: string | null | undefined): Map<string, string> {
+  const customerMessage = resolveCustomerMessage(value)
+  const lines = customerMessage
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+
+  if (lines[0]?.toLowerCase() !== 'quote brief') {
+    return new Map()
+  }
+
+  return lines.slice(1).reduce<Map<string, string>>((fields, line) => {
+    const separatorIndex = line.indexOf(':')
+    if (separatorIndex <= 0) {
+      return fields
+    }
+
+    const label = line.slice(0, separatorIndex).trim()
+    const fieldValue = line.slice(separatorIndex + 1).trim()
+    if (label.length === 0 || fieldValue.length === 0) {
+      return fields
+    }
+
+    fields.set(label.toLowerCase(), fieldValue)
+    return fields
+  }, new Map())
+}
+
+function isGeneratedProductSummary(normalizedValue: string): boolean {
+  if (normalizedValue.length === 0) {
+    return false
+  }
+
+  return normalizedValue.includes('product:') &&
+    normalizedValue.includes('product type:') &&
+    normalizedValue.includes('price:')
 }
 
 function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
@@ -536,10 +733,23 @@ function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
 
     rows.push({ label, value: trimmed })
   }
+  const linkedRow = (rows: CustomerRow[], label: string, value: string | null | undefined, href: string | undefined) => {
+    const trimmed = toTrimmed(value)
+    if (trimmed.length === 0) {
+      return
+    }
+
+    rows.push({ label, value: trimmed, href })
+  }
 
   const customCakeEnquiry = isCustomCakeEnquiry(input)
+  const quoteFields = customCakeEnquiry
+    ? parseQuoteRequirementFields(input.customerMessage)
+    : new Map<string, string>()
   const priceLabel = toTrimmed(input.priceLabel) || 'Total Amount'
-  const dateNeeded = isCakeRequestEmail(input) ? formatLongDate(input.dateNeeded) : formatDate(input.dateNeeded)
+  const dateNeeded = isCakeRequestEmail(input) || toTrimmed(input.status).length > 0
+    ? formatLongDate(input.dateNeeded)
+    : formatDate(input.dateNeeded)
 
   if (customCakeEnquiry) {
     row(contactRows, 'Name', input.customerName)
@@ -557,14 +767,39 @@ function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
 
   const normalizedStatus = toTrimmed(input.status).toLowerCase()
   if (normalizedStatus === 'out-for-delivery' || normalizedStatus === 'out-delivery') {
-    row(summaryRows, 'Tracking number', input.trackingNumber)
+    const trackingNumber = toTrimmed(input.trackingNumber)
+    const trackingMeta = getTrackingMeta(input.deliveryCourier)
+
+    if (trackingNumber.length > 0) {
+      row(summaryRows, 'Courier', trackingMeta.label)
+    }
+
+    linkedRow(
+      summaryRows,
+      'Tracking number',
+      trackingNumber,
+      trackingNumber ? trackingMeta.url(trackingNumber) : undefined
+    )
   }
 
-  row(preferencesRows, 'Occasion', input.occasion)
-  row(preferencesRows, 'Design type', input.designType)
+  row(preferencesRows, 'Occasion', formatDisplayLabel(input.occasion) || quoteFields.get('occasion'))
+  row(preferencesRows, 'Design type', formatDisplayLabel(input.designType))
   row(preferencesRows, 'Filling', input.filling)
-  row(preferencesRows, 'Servings', input.servings)
-  row(preferencesRows, 'Customer message', input.customerMessage)
+  row(preferencesRows, 'Servings', input.servings || quoteFields.get('servings'))
+  row(
+    preferencesRows,
+    customCakeEnquiry ? 'Cake brief' : 'Customer message',
+    customCakeEnquiry
+      ? quoteFields.get('brief') || resolveCakeBrief(input.customerMessage)
+      : resolveCustomerMessage(input.customerMessage)
+  )
+  quoteFields.forEach((fieldValue, fieldKey) => {
+    if (['occasion', 'servings', 'brief'].includes(fieldKey)) {
+      return
+    }
+
+    row(preferencesRows, formatDisplayLabel(fieldKey), fieldValue)
+  })
   row(preferencesRows, 'Gift note', input.giftNote)
   if (customCakeEnquiry && Array.isArray(input.attachmentNames)) {
     row(preferencesRows, 'Reference image uploaded', input.attachmentNames.join(', '))
@@ -597,16 +832,24 @@ function buildCustomerTextBody(input: EmailTemplateCommonInput, nextSteps: strin
   const rows = buildCustomerRows(input)
   const normalizedOrderItems = normalizeOrderItems(input)
   const customCakeEnquiry = isCustomCakeEnquiry(input)
+  const isStatusUpdate = toTrimmed(input.status).length > 0
   const summaryTitle = customCakeEnquiry ? 'Enquiry Summary' : 'Order Summary'
   const preferencesTitle = customCakeEnquiry ? 'Cake Details' : 'Order Preferences'
   const contact = rows.contact.length > 0
     ? `Contact Details\n${rows.contact.map((entry) => `- ${entry.label}: ${entry.value}`).join('\n')}`
     : ''
   const summary = rows.summary.length > 0
-    ? `${summaryTitle}\n${rows.summary.map((entry) => `- ${entry.label}: ${entry.value}`).join('\n')}`
+    ? `${summaryTitle}\n${rows.summary.flatMap((entry) => {
+        const rowLines = [`- ${entry.label}: ${entry.value}`]
+        if (entry.href) {
+          rowLines.push(`- Track your parcel: ${entry.href}`)
+        }
+
+        return rowLines
+      }).join('\n')}`
     : ''
-  const orderItemsSection = normalizedOrderItems.length > 0
-    ? `Order items\n${renderOrderItemsText(normalizedOrderItems)}`
+  const orderItemsSection = normalizedOrderItems.length > 0 && !isStatusUpdate
+    ? `Order items\n${renderCustomerOrderItemsText(normalizedOrderItems)}`
     : ''
   const preferences = rows.preferences.length > 0
     ? `${preferencesTitle}\n${rows.preferences.map((entry) => `- ${entry.label}: ${entry.value}`).join('\n')}`
@@ -625,9 +868,13 @@ function buildCustomerTextBody(input: EmailTemplateCommonInput, nextSteps: strin
     .filter((section) => section.length > 0)
     .join('\n\n')
 }
-export function buildCustomerFooterText(): string {
+function getCustomerFooterQuestion(input?: EmailTemplateCommonInput): string {
+  return isCustomCakeEnquiry(input ?? {}) ? 'Questions about your enquiry?' : 'Questions about your order?'
+}
+
+export function buildCustomerFooterText(input?: EmailTemplateCommonInput): string {
   return [
-    'Questions about your order? We\'re here to help.',
+    `${getCustomerFooterQuestion(input)} We're here to help.`,
     'hello@olgishcakes.co.uk',
     '+44 7867 218194'
   ].join('\n')
@@ -656,16 +903,18 @@ export function renderCustomerCard(title: string, rows: CustomerRow[]): string {
   return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#ffffff" style="background-color: #ffffff; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;"><tr><td style="padding: 22px 24px;"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"><tr><td style="padding: 0 0 14px 0; color: #2E3192; font-family: ${EMAIL_FONT_DISPLAY}; font-size: 16px; font-weight: 700; line-height: 22px; text-transform: uppercase;">${escapeHtml(title)}</td></tr></table><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">${tableRows}</table></td></tr></table>${renderEmailSpacer(14)}`
 }
 
-export function buildCustomerFooterHtml(): string {
-  return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-top: 1px solid #D8D9F3;"><tr><td align="center" style="padding: 20px 0 0 0; text-align: center;"><p style="margin: 0 0 10px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 22px;">Questions about your order? We're here to help.</p><p style="margin: 0; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 24px;"><a href="mailto:hello@olgishcakes.co.uk" style="color: #2E3192; text-decoration: none; font-weight: 700;">hello@olgishcakes.co.uk</a><br><a href="tel:+447867218194" style="color: #2E3192; text-decoration: none; font-weight: 700;">+44 7867 218194</a></p></td></tr></table>`
+export function buildCustomerFooterHtml(input?: EmailTemplateCommonInput): string {
+  const question = escapeHtml(getCustomerFooterQuestion(input))
+  return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-top: 1px solid #D8D9F3;"><tr><td align="center" style="padding: 20px 0 0 0; text-align: center;"><p style="margin: 0 0 10px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 22px;">${question} We're here to help.</p><p style="margin: 0; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 24px;"><a href="mailto:hello@olgishcakes.co.uk" style="color: #2E3192; text-decoration: none; font-weight: 700;">hello@olgishcakes.co.uk</a><br><a href="tel:+447867218194" style="color: #2E3192; text-decoration: none; font-weight: 700;">+44 7867 218194</a></p></td></tr></table>`
 }
 
 function buildCustomerHtmlBody(input: EmailTemplateCommonInput, nextSteps: string[]): string {
   const rows = buildCustomerRows(input)
   const customCakeEnquiry = isCustomCakeEnquiry(input)
+  const isStatusUpdate = toTrimmed(input.status).length > 0
   const contactCard = renderCustomerCard('Contact details', rows.contact)
   const summaryCard = renderCustomerCard(customCakeEnquiry ? 'Enquiry summary' : 'Order Summary', rows.summary)
-  const orderItemsCard = renderOrderItemsHtml(normalizeOrderItems(input))
+  const orderItemsCard = isStatusUpdate ? '' : renderCustomerOrderItemsHtml(normalizeOrderItems(input))
   const preferencesCard = renderCustomerCard(customCakeEnquiry ? 'Cake details' : 'Order Preferences', rows.preferences)
 
   const steps = nextSteps.length > 0
@@ -676,7 +925,7 @@ function buildCustomerHtmlBody(input: EmailTemplateCommonInput, nextSteps: strin
     ? buildCompletedReviewHtml()
     : ''
 
-  return `${contactCard}${summaryCard}${orderItemsCard}${preferencesCard}${steps}${completedReviewCard}${buildCustomerFooterHtml()}`
+  return `${contactCard}${summaryCard}${orderItemsCard}${preferencesCard}${steps}${completedReviewCard}${buildCustomerFooterHtml(input)}`
 }
 function buildTemplateEmail(meta: TemplateMeta, input: EmailTemplateCommonInput, options: TemplateOptions = {}): RenderedEmail {
   const subject = buildSubject(meta, input)
@@ -696,7 +945,7 @@ function buildTemplateEmail(meta: TemplateMeta, input: EmailTemplateCommonInput,
 
   const greetingName = input.customerName?.trim() || 'there'
   const greetingPrefix = meta.admin ? 'Hello' : 'Dear'
-  const signature = meta.admin ? 'Olgish Cakes' : buildCustomerFooterText()
+  const signature = meta.admin ? 'Olgish Cakes' : buildCustomerFooterText(input)
 
   const text = [
     heading,
@@ -713,7 +962,8 @@ function buildTemplateEmail(meta: TemplateMeta, input: EmailTemplateCommonInput,
   const htmlSignature = meta.admin
     ? '<p style="margin: 24px 0 0 0; color: #374151; font-size: 14px;">Olgish Cakes</p>'
     : ''
-  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(subject)}</title></head><body bgcolor="#FFF5E6" style="margin: 0; padding: 0; background-color: #FFF5E6; font-family: ${EMAIL_FONT_SANS};"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#FFF5E6" style="background-color: #FFF5E6; border-collapse: collapse;"><tr><td align="center" style="padding: 28px 14px;"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" bgcolor="#FFFBEB" style="width: 100%; max-width: 600px; background-color: #FFFBEB; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;"><tr><td align="center" bgcolor="#2E3192" style="background-color: #2E3192; padding: 24px 24px 22px 24px; text-align: center;"><img src="${EMAIL_LOGO_SRC}" alt="Olgish Cakes" width="112" height="112" style="display: block; width: 112px; height: 112px; margin: 0 auto 16px auto; border: 0; outline: none; text-decoration: none;"><h1 style="margin: 0; color: #ffffff; font-family: ${EMAIL_FONT_DISPLAY}; font-size: 25px; font-weight: 700; line-height: 32px; letter-spacing: 0;">${escapeHtml(heading)}</h1></td></tr><tr><td bgcolor="#FFFBEB" style="background-color: #FFFBEB; padding: 30px 28px;"><p style="margin: 0 0 16px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 16px; line-height: 26px;">${greetingPrefix} <strong>${escapeHtml(greetingName)}</strong>,</p><p style="margin: 0 0 24px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 16px; line-height: 27px;">${escapeHtml(intro)}</p>${bodyHtml}${htmlSignature}</td></tr></table></td></tr></table></body></html>`
+  const logoSrc = resolveEmailLogoSrc()
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${escapeHtml(subject)}</title></head><body bgcolor="#FFF5E6" style="margin: 0; padding: 0; background-color: #FFF5E6; font-family: ${EMAIL_FONT_SANS};"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#FFF5E6" style="background-color: #FFF5E6; border-collapse: collapse;"><tr><td align="center" style="padding: 28px 14px;"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" bgcolor="#FFFBEB" style="width: 100%; max-width: 600px; background-color: #FFFBEB; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;"><tr><td align="center" bgcolor="#2E3192" style="background-color: #2E3192; padding: 24px 24px 22px 24px; text-align: center;"><img src="${logoSrc}" alt="Olgish Cakes" width="112" height="112" style="display: block; width: 112px; height: 112px; margin: 0 auto 16px auto; border: 0; outline: none; text-decoration: none;"><h1 style="margin: 0; color: #ffffff; font-family: ${EMAIL_FONT_DISPLAY}; font-size: 25px; font-weight: 700; line-height: 32px; letter-spacing: 0;">${escapeHtml(heading)}</h1></td></tr><tr><td bgcolor="#FFFBEB" style="background-color: #FFFBEB; padding: 30px 28px;"><p style="margin: 0 0 16px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 16px; line-height: 26px;">${greetingPrefix} <strong>${escapeHtml(greetingName)}</strong>,</p><p style="margin: 0 0 24px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 16px; line-height: 27px;">${escapeHtml(intro)}</p>${bodyHtml}${htmlSignature}</td></tr></table></td></tr></table></body></html>`
 
   return {
     subject,

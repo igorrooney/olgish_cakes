@@ -182,7 +182,7 @@ describe('/api/dev/email-preview', () => {
     expect(response.status).toBe(200)
     expect(json.input.deliveryCourier).toBe('evri')
     expect(json.input.statusMessage).toContain('Evri')
-    expect(json.rendered.text).toContain('Great news, your cakes by post order has been dispatched with Evri.')
+    expect(json.rendered.text).toContain('Great news, your cake by post order has been dispatched with Evri.')
     expect(json.rendered.text).toContain('Courier: Evri')
     expect(json.rendered.text).toContain('Evri will update the tracking as your parcel moves through their network.')
     expect(json.rendered.html).toContain('https://www.evri.com/track/parcel/H02X8A0022918652/details')

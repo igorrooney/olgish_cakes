@@ -22,7 +22,7 @@ export const getCustomQuoteFaqItems: QuoteFaqItem[] = [
   },
   {
     question: 'Can you help if I am not sure about size yet?',
-    answer: 'Yes. An approximate guest count is enough for the first quote. Once I know whether the cake is for a smaller dinner, family party or bigger celebration, I can suggest a more realistic starting size.'
+    answer: 'Yes. An approximate guest count is enough for the first quote. Once we know whether the cake is for a smaller dinner, family party or bigger celebration, we can suggest a more realistic starting size.'
   }
 ]
 

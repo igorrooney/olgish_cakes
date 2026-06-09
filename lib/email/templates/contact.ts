@@ -1,7 +1,16 @@
 import type { EmailTemplateCommonInput, TemplateDefinition } from '../types'
 import { buildCakesByPostAdminContent } from './cakes-by-post-admin'
 import { buildCakesByPostCustomerContent } from './cakes-by-post-customer'
-import { createDefaultScenarioInput, createTemplateDefinition } from './shared'
+import {
+  createDefaultScenarioInput,
+  createTemplateDefinition,
+  EMAIL_FONT_SANS,
+  escapeHtml,
+  formatLongDate,
+  renderCustomerCard,
+  type CustomerEmailContent,
+  type CustomerRow
+} from './shared'
 
 const cakesByPostBaseInput = createDefaultScenarioInput({
   customerName: 'Igor Ieromenko',
@@ -102,8 +111,8 @@ const cakeProductCustomDesignInput = createDefaultScenarioInput({
 })
 
 const cakeRequestNextSteps = [
-  'I\'ll review your requested date, cake details, and any design notes within 24 hours.',
-  'I\'ll confirm availability, final price, and any design details before you need to pay.',
+  'We\'ll review your requested date, cake details, and any design notes within 24 hours.',
+  'We\'ll confirm availability, final price, and any design details before you need to pay.',
   'Nothing is booked or payable until we agree the design, price, and collection or delivery details.'
 ]
 
@@ -149,6 +158,109 @@ const adminInquiryScenarios = [
     }
   }
 ]
+
+const customerConfirmationScenarios = [
+  {
+    id: 'default',
+    label: 'General contact customer confirmation',
+    input: createDefaultScenarioInput({
+      orderNumber: undefined,
+      orderType: 'custom-cake-enquiry',
+      productName: undefined,
+      productId: undefined,
+      productType: undefined,
+      quantity: undefined,
+      unitPrice: undefined,
+      totalPrice: undefined,
+      status: undefined,
+      customerMessage: 'Can you help with a cake order?',
+      nextSteps: [
+        'We\'ll read your message and check the details you sent.',
+        'We\'ll reply with the next practical step as soon as we can.'
+      ]
+    })
+  },
+  {
+    id: 'minimal',
+    label: 'General contact customer confirmation - minimal',
+    input: {
+      customerName: 'Test Customer',
+      customerEmail: 'test@example.com',
+      customerMessage: 'Can you help with a cake order?'
+    }
+  }
+]
+
+function withColon(label: string) {
+  return `${label}:`
+}
+
+function addCustomerContactRow(rows: CustomerRow[], label: string, value: string | null | undefined) {
+  const trimmedValue = value?.trim()
+  if (!trimmedValue) {
+    return
+  }
+
+  rows.push({ label: withColon(label), value: trimmedValue })
+}
+
+function renderContactCustomerRowsText(rows: CustomerRow[]) {
+  return rows
+    .map((entry) => `- ${entry.label.replace(/:$/, '')}: ${entry.value}`)
+    .join('\n')
+}
+
+function renderContactCustomerFooterHtml() {
+  return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-top: 1px solid #D8D9F3;"><tr><td align="center" style="padding: 20px 0 0 0; text-align: center;"><p style="margin: 0 0 10px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 22px;">Questions about your enquiry? We're here to help.</p><p style="margin: 0; color: #2E3192; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; font-weight: 700; line-height: 24px;">${escapeHtml('hello@olgishcakes.co.uk')}<br>${escapeHtml('+44 7867 218194')}</p></td></tr></table>`
+}
+
+function renderContactCustomerConfirmation(input: EmailTemplateCommonInput): CustomerEmailContent {
+  const contactRows: CustomerRow[] = []
+  const enquiryRows: CustomerRow[] = []
+  const nextSteps = input.nextSteps && input.nextSteps.length > 0
+    ? input.nextSteps
+    : [
+        'We\'ll read your message and check the details you sent.',
+        'We\'ll reply with the next practical step as soon as we can.'
+      ]
+
+  addCustomerContactRow(contactRows, 'Name', input.customerName)
+  addCustomerContactRow(contactRows, 'Email', input.customerEmail)
+  addCustomerContactRow(contactRows, 'Phone', input.customerPhone)
+  addCustomerContactRow(enquiryRows, 'Address', input.address)
+  addCustomerContactRow(enquiryRows, 'City', input.city)
+  addCustomerContactRow(enquiryRows, 'Postcode', input.postcode)
+  addCustomerContactRow(enquiryRows, 'Topic', input.cakeInterest)
+  addCustomerContactRow(enquiryRows, 'Date', formatLongDate(input.dateNeeded))
+  addCustomerContactRow(enquiryRows, 'Message', input.customerMessage || input.message)
+  addCustomerContactRow(enquiryRows, 'Additional note', input.note)
+  addCustomerContactRow(enquiryRows, 'Gift note', input.giftNote)
+  addCustomerContactRow(enquiryRows, 'Attachments', input.attachmentNames?.join(', '))
+
+  const nextStepsText = `What happens next\n${nextSteps.map((step) => `- ${step}`).join('\n')}`
+  const nextStepsHtml = renderCustomerCard(
+    'What happens next',
+    nextSteps.map((step, index) => ({ label: `Step ${index + 1}:`, value: step }))
+  )
+
+  return {
+    bodyText: [
+      contactRows.length > 0
+        ? `Contact details\n${renderContactCustomerRowsText(contactRows)}`
+        : '',
+      enquiryRows.length > 0
+        ? `Your message\n${renderContactCustomerRowsText(enquiryRows)}`
+        : '',
+      nextStepsText,
+    ].filter((section) => section.length > 0).join('\n\n'),
+    bodyHtml: [
+      renderCustomerCard('Contact details', contactRows),
+      renderCustomerCard('Your message', enquiryRows),
+      nextStepsHtml,
+      renderContactCustomerFooterHtml()
+    ].join('')
+  }
+}
 
 const inlineOrderCustomerScenarios = [
   {
@@ -255,6 +367,18 @@ export const contactTemplateDefinitions: Record<string, TemplateDefinition<Email
       admin: true
     },
     adminInquiryScenarios
+  ),
+  'contact-customer-confirmation': createTemplateDefinition(
+    {
+      subject: 'We have received your message',
+      heading: 'Thank you for contacting Olgish Cakes',
+      intro: 'Thank you, we\'ve received your message and we\'ll get back to you as soon as we can.',
+      admin: false
+    },
+    customerConfirmationScenarios,
+    {
+      customerContentBuilder: renderContactCustomerConfirmation
+    }
   ),
   'contact-inline-order-customer': createTemplateDefinition(
     {

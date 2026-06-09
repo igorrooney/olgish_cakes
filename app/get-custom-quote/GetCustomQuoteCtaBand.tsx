@@ -11,7 +11,7 @@ export function GetCustomQuoteCtaBand() {
               Ready when the brief is clear
             </p>
             <h2 className='mt-3 font-moreSugar text-[24px] uppercase leading-[1.18] tracking-[0.08em] text-primary-700 tablet:text-[32px]'>
-              Send the essentials and I will take it from there
+              Send the essentials and we will take it from there
             </h2>
             <p className='mt-4 font-oldenburg text-[15px] leading-7 tracking-[0.03em] text-base-content/80 tablet:text-base tablet:leading-8'>
               If you already know the date, servings and general style, the quote form is enough to start a sensible conversation about your cake.

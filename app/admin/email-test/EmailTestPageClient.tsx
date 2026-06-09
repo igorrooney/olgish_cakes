@@ -175,7 +175,10 @@ const requestOptions: EmailRequestOption[] = [
   {
     id: 'contact-enquiry',
     label: 'Contact page enquiry',
-    scenarios: createScenarioOptions('contact-admin-inquiry', 'Admin')
+    scenarios: [
+      ...createScenarioOptions('contact-admin-inquiry', 'Admin'),
+      ...createScenarioOptions('contact-customer-confirmation', 'Customer')
+    ]
   },
   {
     id: 'homepage-custom-cake-enquiry',
@@ -337,6 +340,16 @@ const templateFieldMap: Record<EmailTemplateId, EditableFieldKey[]> = {
     'referrer',
     'giftNote',
     'attachmentNames'
+  ],
+  'contact-customer-confirmation': [
+    ...commonFields,
+    'address',
+    'city',
+    'postcode',
+    'cakeInterest',
+    'dateNeeded',
+    'giftNote',
+    ...listFields
   ],
   'contact-inline-order-customer': [
     ...commonFields,

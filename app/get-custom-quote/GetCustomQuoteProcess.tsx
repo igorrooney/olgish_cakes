@@ -2,17 +2,17 @@ const quoteSteps = [
   {
     step: '01',
     title: 'Start with the practical details',
-    body: 'Share the date, rough servings and the occasion. That helps me judge what is realistic, and whether collection, local delivery or UK delivery by agreement would work best.'
+    body: 'Share the date, rough servings and the occasion. That helps us judge what is realistic, and whether collection, local delivery or UK delivery by agreement would work best.'
   },
   {
     step: '02',
     title: 'Add the style direction',
-    body: 'A short description is enough. Colours, finish, flavour ideas and one or two inspiration images usually tell me more than a long wishlist.'
+    body: 'A short description is enough. Colours, finish, flavour ideas and one or two inspiration images usually tell us more than a long wishlist.'
   },
   {
     step: '03',
     title: 'Get a quote you can work with',
-    body: 'My reply will be based on your date and brief, so you get a quote that fits the cake you actually need.'
+    body: 'Our reply will be based on your date and brief, so you get a quote that fits the cake you actually need.'
   }
 ]
 

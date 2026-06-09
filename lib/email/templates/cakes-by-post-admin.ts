@@ -1,5 +1,5 @@
 import type { EmailTemplateCommonInput } from '../types'
-import { isCakesByPostOrderLike } from '@/lib/order-types'
+import { isCakesByPostOrderType, isCakesByPostProductType } from '@/lib/order-types'
 import {
   formatCurrency,
   formatDate,
@@ -11,11 +11,13 @@ import {
 } from './shared'
 
 function isCakesByPostAdminEmail(input: EmailTemplateCommonInput): boolean {
-  return isCakesByPostOrderLike({
-    orderType: input.orderType,
-    productType: input.productType,
-    deliveryMethod: input.deliveryMethod
-  })
+  const productType = toTrimmed(input.productType)
+
+  if (productType.length > 0) {
+    return isCakesByPostProductType(productType)
+  }
+
+  return isCakesByPostOrderType(input.orderType)
 }
 
 function row(rows: CustomerRow[], label: string, value: string | null | undefined) {

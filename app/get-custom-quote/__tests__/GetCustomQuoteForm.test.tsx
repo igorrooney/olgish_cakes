@@ -129,7 +129,7 @@ describe('GetCustomQuoteForm', () => {
     expect(screen.getByLabelText(/^Occasion/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Cake brief/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Reference image/i)).toBeInTheDocument()
-    expect(screen.getByText(/please add either an email address or a phone number so i can get back to you/i)).toBeInTheDocument()
+    expect(screen.getByText(/please add either an email address or a phone number so we can get back to you/i)).toBeInTheDocument()
     expect(screen.queryByText(/optional section 1/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/add design, budget and dietary detail/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/add fulfilment and location guidance/i)).not.toBeInTheDocument()
@@ -380,7 +380,8 @@ describe('GetCustomQuoteForm', () => {
     })
 
     expect(screen.getByText(/your cake enquiry has arrived safely/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /send quote request/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /send quote request/i })).not.toBeInTheDocument()
+    expect(screen.queryByText(/please add either an email address or a phone number/i)).not.toBeInTheDocument()
 
     expect(screen.queryByText(/selected:\s*cake\.png/i)).not.toBeInTheDocument()
     expect(fileInput.value).toBe('')

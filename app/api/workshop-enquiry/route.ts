@@ -6,6 +6,7 @@ import {
   requiresLiveEmailConfiguration,
   sendEmail
 } from '@/lib/email/service'
+import { getCustomerEmailBcc } from '@/lib/email/customer-bcc'
 import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
 import {
   applyEnquiryRateLimitHeaders,
@@ -312,15 +313,15 @@ export async function POST(request: NextRequest) {
           designType: validated.decorationTheme,
           customerMessage: validated.brief,
           nextSteps: [
-            'I will review the date and location details first.',
-            'If the workshop format is a fit, I will come back with the next practical steps.'
+            'We will review the date and location details first.',
+            'If the workshop format is a fit, we will come back with the next practical steps.'
           ]
         },
         modeOverride: emailMode,
         message: {
           from: getEmailFromAddress(),
           to: validated.email,
-          bcc: process.env.ADMIN_BCC_EMAIL || undefined,
+          bcc: getCustomerEmailBcc(process.env.ADMIN_BCC_EMAIL),
           replyTo: getRecipientEmail()
         }
       })

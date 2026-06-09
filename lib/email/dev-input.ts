@@ -94,8 +94,8 @@ function withDerivedCakesByPostCourierMessage(input: UnknownRecord): UnknownReco
   return {
     ...input,
     statusMessage: input.trackingNumber
-      ? `Great news, your cakes by post order has been dispatched with ${courierLabel}.`
-      : `Great news, your cakes by post order has been dispatched with ${courierLabel} and is on the way.`
+      ? `Great news, your cake by post order has been dispatched with ${courierLabel}.`
+      : `Great news, your cake by post order has been dispatched with ${courierLabel} and is on the way.`
   }
 }
 

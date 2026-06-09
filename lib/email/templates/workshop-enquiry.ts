@@ -65,7 +65,7 @@ export const workshopTemplateDefinitions: Record<string, TemplateDefinition<Emai
     {
       subject: 'Workshop enquiry received',
       heading: 'Workshop enquiry received',
-      intro: 'Thank you for your workshop enquiry. I will review the details and come back to you shortly.',
+      intro: 'Thank you for your workshop enquiry. We will review the details and come back to you shortly.',
       admin: false
     },
     customerScenarios

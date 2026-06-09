@@ -250,8 +250,8 @@ export function ProductOrderInlineForm({
     : 'bg-primary-500 hover:bg-primary-700'
   const buttonLabel = hasSubmittedSuccessfully ? 'Request sent' : 'Submit order'
   const successMessage = isPostalOrder
-    ? "Thank you, your cakes by post request has arrived safely. I'll check the delivery details and send the next steps within 24 hours."
-    : "Thank you, your order request has arrived safely. I'll review the details and get back to you within 24 hours."
+    ? "Thank you, your cakes by post request has arrived safely. We'll check the delivery details and send the next steps within 24 hours."
+    : "Thank you, your order request has arrived safely. We'll review the details and get back to you within 24 hours."
   const userRequestDetails = useMemo(() => {
     const value = requestMode === 'custom-design'
       ? formData.requirements?.trim()

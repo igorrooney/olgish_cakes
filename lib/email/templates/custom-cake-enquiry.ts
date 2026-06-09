@@ -111,8 +111,8 @@ const customerScenarios = [
       giftNote: undefined,
       attachmentNames: ['floral-cake-reference.jpg'],
       nextSteps: [
-        'I\'ll check the date, your notes and the delivery details.',
-        'I\'ll reply with availability, any questions, and a quote if I can make it for that date.',
+        'We\'ll check the date, your notes and the delivery details.',
+        'We\'ll reply with availability, any questions, and a quote if we can make it for that date.',
         'Nothing is booked or payable until we agree the design, price and collection or delivery details.'
       ]
     })
@@ -129,8 +129,8 @@ const customerScenarios = [
       customerMessage: 'Need a custom cake with floral style.',
       message: 'Date needed: 20/06/2026',
       nextSteps: [
-        'I\'ll check the date, your notes and the delivery details.',
-        'I\'ll reply with availability, any questions, and a quote if I can make it for that date.',
+        'We\'ll check the date, your notes and the delivery details.',
+        'We\'ll reply with availability, any questions, and a quote if we can make it for that date.',
         'Nothing is booked or payable until we agree the design, price and collection or delivery details.'
       ]
     }
@@ -169,8 +169,8 @@ const customerScenarios = [
       giftNote: undefined,
       attachmentNames: ['wedding-cake-reference.jpg'],
       nextSteps: [
-        'I\'ll check the date, your notes and the delivery details.',
-        'I\'ll reply with availability, any questions, and a quote if I can make it for that date.',
+        'We\'ll check the date, your notes and the delivery details.',
+        'We\'ll reply with availability, any questions, and a quote if we can make it for that date.',
         'Nothing is booked or payable until we agree the design, price and collection or delivery details.'
       ]
     })
@@ -187,8 +187,8 @@ const customerScenarios = [
       customerMessage: 'Please quote for a two-tier cake.',
       message: 'Date needed: 05/07/2026',
       nextSteps: [
-        'I\'ll check the date, your notes and the delivery details.',
-        'I\'ll reply with availability, any questions, and a quote if I can make it for that date.',
+        'We\'ll check the date, your notes and the delivery details.',
+        'We\'ll reply with availability, any questions, and a quote if we can make it for that date.',
         'Nothing is booked or payable until we agree the design, price and collection or delivery details.'
       ]
     }

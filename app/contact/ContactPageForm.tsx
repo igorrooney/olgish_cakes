@@ -152,9 +152,6 @@ export function ContactPageForm() {
     }
   }
 
-  const submitLabel = hasSubmittedSuccessfully ? 'Message sent' : 'Send your message'
-  const submitClassName = hasSubmittedSuccessfully ? 'btn-success' : 'btn-primary'
-
   return (
     <form
       id='contact-form'
@@ -257,20 +254,45 @@ export function ContactPageForm() {
       ) : null}
 
       {hasSubmittedSuccessfully ? (
-        <div className='alert alert-success text-sm' role='status'>
-          <span>Thanks. I&apos;ve got your message and I&apos;ll be back in touch soon.</span>
+        <div
+          className='alert alert-success w-full items-start text-sm'
+          role='status'
+          aria-live='polite'
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            className='h-5 w-5 shrink-0 stroke-current'
+            fill='none'
+            viewBox='0 0 24 24'
+            aria-hidden='true'
+          >
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth='2'
+              d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+            />
+          </svg>
+          <div>
+            <p className='font-semibold'>Message sent</p>
+            <p className='mt-1 leading-6'>
+              Thank you, we&apos;ve got your message and we&apos;ll be back in touch soon.
+            </p>
+          </div>
         </div>
       ) : null}
 
       <div>
-        <button
-          type='submit'
-          className={`btn btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base ${submitClassName}`}
-          disabled={isSubmitting || isCsrfLoading}
-          aria-busy={isSubmitting || isCsrfLoading}
-        >
-          {isSubmitting ? 'Sending...' : submitLabel}
-        </button>
+        {hasSubmittedSuccessfully ? null : (
+          <button
+            type='submit'
+            className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'
+            disabled={isSubmitting || isCsrfLoading}
+            aria-busy={isSubmitting || isCsrfLoading}
+          >
+            {isSubmitting ? 'Sending...' : 'Send your message'}
+          </button>
+        )}
       </div>
     </form>
   )

@@ -280,9 +280,10 @@ describe('ContactPageForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /send your message/i }))
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /message sent/i })).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /send your message/i })).not.toBeInTheDocument()
+      expect(screen.getByRole('status')).toHaveTextContent(/message sent/i)
       expect(
-        screen.getByText(/thanks\. i've got your message and i'll be back in touch soon\./i)
+        screen.getByText(/thank you, we've got your message and we'll be back in touch soon\./i)
       ).toBeInTheDocument()
     })
 

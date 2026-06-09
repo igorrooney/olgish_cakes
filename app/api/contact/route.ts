@@ -4,6 +4,7 @@ import { generateOrderNumber, generateUniqueKey } from '@/lib/order-utils'
 import { withRateLimit } from '@/lib/rate-limit'
 import { formatRequestIpLocation, getRequestIpLocation } from '@/lib/request-location'
 import { validateCsrfToken } from '@/lib/csrf'
+import { getCustomerEmailBcc } from '@/lib/email/customer-bcc'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
 import { readRequiredFormData } from '@/lib/form-request'
@@ -78,11 +79,7 @@ function resolveInlineOrderProductType(value: string): InlineOrderProductType | 
 
 function getCustomerOrderEmailBcc(): string | undefined {
   const configuredBcc = process.env.ORDER_EMAIL_BCC?.trim() || process.env.ADMIN_BCC_EMAIL?.trim()
-  if (!configuredBcc || configuredBcc.length === 0) {
-    return undefined
-  }
-
-  return configuredBcc
+  return getCustomerEmailBcc(configuredBcc)
 }
 
 function isInlineOrderRequestMode(value: string): value is InlineOrderRequestMode {
@@ -150,11 +147,72 @@ function normalizeDesignTypeLabel(designType: InlineOrderDesignType): string {
   return designType === 'individual' ? 'Individual design' : 'Standard design'
 }
 
+function normalizeDisplayLabel(value: string): string {
+  const trimmedValue = value.trim()
+  if (trimmedValue.length === 0 || /[A-Z]/.test(trimmedValue)) {
+    return trimmedValue
+  }
+
+  return trimmedValue
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b[a-z]/g, (letter) => letter.toUpperCase())
+}
+
+function isGeneratedProductSummary(value: string | undefined): boolean {
+  const normalizedValue = value?.trim().toLowerCase() || ''
+
+  return normalizedValue.includes('product:') &&
+    normalizedValue.includes('product type:') &&
+    normalizedValue.includes('price:')
+}
+
+function extractExplicitCustomerMessage(value: string | undefined): string | undefined {
+  const lines = value?.split(/\r?\n/) || []
+  const messageLine = lines.find((line) => {
+    const normalizedLine = line.trim().toLowerCase()
+    return normalizedLine.startsWith('message:') ||
+      normalizedLine.startsWith('customer message:') ||
+      normalizedLine.startsWith('requirements:')
+  })
+
+  if (!messageLine) {
+    return undefined
+  }
+
+  return messageLine.replace(/^(message|customer message|requirements):\s*/i, '').trim() || undefined
+}
+
+function resolveInlineCustomerMessage(...values: string[]): string {
+  for (const value of values) {
+    const explicitMessage = extractExplicitCustomerMessage(value)
+    if (explicitMessage) {
+      const resolvedExplicitMessage = resolveInlineCustomerMessage(explicitMessage)
+      if (resolvedExplicitMessage.length > 0) {
+        return resolvedExplicitMessage
+      }
+    }
+
+    const trimmedValue = value.trim()
+    const normalizedValue = trimmedValue.toLowerCase()
+
+    if (
+      trimmedValue.length > 0 &&
+      normalizedValue !== 'message' &&
+      normalizedValue !== 'test message' &&
+      !isGeneratedProductSummary(trimmedValue)
+    ) {
+      return trimmedValue
+    }
+  }
+
+  return ''
+}
+
 const cakeRequestIntro = 'Thank you. We\'ve received your cake request and will review the details within 24 hours.'
 const cakeRequestPriceLabel = 'Estimated price'
 const cakeRequestNextSteps = [
-  'I\'ll review your requested date, cake details, and any design notes within 24 hours.',
-  'I\'ll confirm availability, final price, and any design details before you need to pay.',
+  'We\'ll review your requested date, cake details, and any design notes within 24 hours.',
+  'We\'ll confirm availability, final price, and any design details before you need to pay.',
   'Nothing is booked or payable until we agree the design, price, and collection or delivery details.'
 ]
 
@@ -526,6 +584,28 @@ async function handlePOST(request: NextRequest) {
     if (!isOrderInquiry) {
       let enquiryPersisted = false
       let adminEmailAccepted = false
+      let customerEmailAccepted = false
+      const contactEmailInput = {
+        customerName: name,
+        customerEmail: email,
+        customerPhone: normalizedPhone,
+        orderType: 'custom-cake-enquiry',
+        address: address || undefined,
+        city: city || undefined,
+        postcode: postcode || undefined,
+        dateNeeded: dateNeeded || undefined,
+        cakeInterest: cakeInterest || undefined,
+        customerMessage: message || undefined,
+        message: message || undefined,
+        note: note || undefined,
+        giftNote: giftNote || undefined,
+        referrer: referrer || undefined,
+        attachmentNames: designImage ? [designImage.name] : [],
+        nextSteps: [
+          'We\'ll read your message and check the details you sent.',
+          'We\'ll reply with the next practical step as soon as we can.'
+        ]
+      }
 
       try {
         enquiryPersisted = await saveContactEnquiry({
@@ -569,19 +649,8 @@ async function handlePOST(request: NextRequest) {
         const adminEmailResult = await sendEmail({
           templateId: 'contact-admin-inquiry',
           input: {
-            customerName: name,
-            customerEmail: email,
-            customerPhone: normalizedPhone,
-            address: address || undefined,
-            city: city || undefined,
-            postcode: postcode || undefined,
-            dateNeeded: dateNeeded || undefined,
-            cakeInterest: cakeInterest || undefined,
-            message: message || undefined,
-            note: note || undefined,
-            giftNote: giftNote || undefined,
-            referrer: referrer || undefined,
-            attachmentNames: designImage ? [designImage.name] : [],
+            ...contactEmailInput,
+            orderType: undefined,
             titleOverride: `New Contact: ${name}`
           },
           modeOverride: emailMode,
@@ -607,7 +676,34 @@ async function handlePOST(request: NextRequest) {
 
         adminEmailAccepted = true
       } catch (emailError) {
-        logger.error('Contact enquiry email failed after persistence', {
+        logger.error('Contact enquiry admin email failed after persistence', {
+          emailError,
+          customerEmail: email,
+          referrer: referrer || null
+        })
+      }
+
+      try {
+        const customerEmailResult = await sendEmail({
+          templateId: 'contact-customer-confirmation',
+          input: contactEmailInput,
+          modeOverride: emailMode,
+          message: {
+            from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
+            to: email,
+            bcc: getCustomerEmailBcc(process.env.ADMIN_BCC_EMAIL),
+            replyTo: recipientEmail,
+            attachments: []
+          }
+        })
+
+        if (!customerEmailResult.accepted || customerEmailResult.error) {
+          throw new Error(customerEmailResult.error?.message || 'Transport did not accept customer email')
+        }
+
+        customerEmailAccepted = true
+      } catch (emailError) {
+        logger.error('Contact enquiry customer email failed after persistence', {
           emailError,
           customerEmail: email,
           referrer: referrer || null
@@ -615,11 +711,19 @@ async function handlePOST(request: NextRequest) {
       }
 
       if (!enquiryPersisted && !adminEmailAccepted) {
-        logger.error('Contact enquiry was not persisted or emailed', {
+        logger.error('Contact enquiry was not persisted or admin-emailed', {
           customerEmail: email,
           referrer: referrer || null
         })
         return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
+      }
+
+      if (!adminEmailAccepted) {
+        logger.error('Contact enquiry admin email delivery incomplete', {
+          customerEmailAccepted,
+          customerEmail: email,
+          referrer: referrer || null
+        })
       }
 
       return NextResponse.json({ success: true })
@@ -694,9 +798,7 @@ async function handlePOST(request: NextRequest) {
       const inferredDeliveryAddress = buildDeliveryAddress(address, city, postcode)
       const isCakesByPostOrder = resolvedProductType === 'gift-hamper'
       const designTypeLabel = normalizeDesignTypeLabel(designType)
-      const resolvedCustomerMessage = customerMessage.length > 0
-        ? customerMessage
-        : message
+      const resolvedCustomerMessage = resolveInlineCustomerMessage(customerMessage, message)
 
       const orderNumber = generateOrderNumber()
       let attachmentImages: OrderMessageAttachment[] = []
@@ -825,7 +927,7 @@ async function handlePOST(request: NextRequest) {
           totalPrice: totalPrice || 0,
           priceLabel: isCakesByPostOrder ? undefined : cakeRequestPriceLabel,
           dateNeeded: dateNeeded || undefined,
-          occasion: occasion || undefined,
+          occasion: normalizeDisplayLabel(occasion) || undefined,
           designType: designTypeLabel,
           filling: filling || undefined,
           servings: servings || undefined,
@@ -875,7 +977,7 @@ async function handlePOST(request: NextRequest) {
           unitPrice: totalPrice || 0,
           totalPrice: totalPrice || 0,
           dateNeeded: dateNeeded || undefined,
-          occasion: occasion || undefined,
+          occasion: normalizeDisplayLabel(occasion) || undefined,
           designType: designTypeLabel,
           filling: filling || undefined,
           servings: servings || undefined,
@@ -971,7 +1073,7 @@ async function handlePOST(request: NextRequest) {
           unitPrice: totalPrice || 0,
           totalPrice: totalPrice || 0,
           dateNeeded: dateNeeded || undefined,
-          occasion: occasion || undefined,
+          occasion: normalizeDisplayLabel(occasion) || undefined,
           designType: fallbackDesignTypeLabel,
           filling: filling || undefined,
           servings: servings || undefined,
@@ -1030,7 +1132,7 @@ async function handlePOST(request: NextRequest) {
           totalPrice: totalPrice || 0,
           priceLabel: isFallbackCakesByPostOrder ? undefined : cakeRequestPriceLabel,
           dateNeeded: dateNeeded || undefined,
-          occasion: occasion || undefined,
+          occasion: normalizeDisplayLabel(occasion) || undefined,
           designType: fallbackDesignTypeLabel,
           filling: filling || undefined,
           servings: servings || undefined,

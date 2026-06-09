@@ -46,14 +46,21 @@ describe('email renderers', () => {
     expect(rendered.text).toContain('Postcode: LS17 1AA')
     expect(rendered.text).toContain('Date needed: 25 May 2026')
     expect(rendered.text).toContain('Occasion: Mother\'s Day Gifts')
-    expect(rendered.text).toContain('Customer message: test requirements')
+    expect(rendered.text).toContain('Cake brief: test requirements')
+    expect(rendered.text).not.toContain('Customer message: test requirements')
     expect(rendered.text).toContain('Reference image uploaded: reference.jpg')
+    expect(rendered.text).toContain('We\'ll check the date, your notes and the delivery details.')
+    expect(rendered.text).not.toContain('We\'ll review your order and confirm all details within 24 hours')
+    expect(rendered.text).toContain('Questions about your enquiry? We\'re here to help.')
+    expect(rendered.text).not.toContain('Questions about your order? We\'re here to help.')
     expect(rendered.html).toContain('Contact details')
     expect(rendered.html).toContain('Cake details')
+    expect(rendered.html).toContain('Cake brief')
+    expect(rendered.html).not.toContain('Customer message</td>')
     expect(rendered.html).toContain('reference.jpg')
-    expect(rendered.html).toContain('src="cid:olgish-cakes-email-logo"')
+    expect(rendered.html).toContain('src="https://olgishcakes.co.uk/images/olgish-cakes-email-logo.png"')
     expect(rendered.html).toContain('width="112" height="112"')
-    expect(rendered.html).not.toContain('olgish-cakes-email-logo.png')
+    expect(rendered.html).not.toContain('src="cid:olgish-cakes-email-logo"')
     expect(rendered.html).not.toContain('olgish-cakes-logo-bakery-brand.png')
     expect(rendered.html).not.toContain('olgish-cakes-logo-bakery-brand-128.webp')
     expect(rendered.html).toContain('font-family: Inter, Arial, Helvetica, sans-serif')
@@ -61,6 +68,31 @@ describe('email renderers', () => {
     expect(rendered.html).toContain('background-color: #FFF5E6')
     expect(rendered.html).toContain('background-color: #FFFBEB')
     expect(rendered.html).toContain('background-color: #2E3192')
+  })
+
+  it('shows only the cake brief from generated quote summaries in custom enquiry customer emails', () => {
+    const rendered = renderEmailTemplate('custom-cake-enquiry-customer', {
+      orderType: 'custom-cake-enquiry',
+      customerName: 'Igor Ieromenko',
+      customerEmail: 'igor@example.com',
+      dateNeeded: '2026-07-09',
+      occasion: 'Birthday Cakes',
+      customerMessage: [
+        'Quote brief',
+        'Occasion: Birthday Cakes',
+        'Servings: 100',
+        'Brief: cake brief'
+      ].join('\n')
+    })
+
+    expect(rendered.text).toContain('Cake brief: cake brief')
+    expect(rendered.text).toContain('Servings: 100')
+    expect(rendered.text).not.toContain('Customer message:')
+    expect(rendered.text).not.toContain('Quote brief')
+    expect(rendered.text).not.toContain('Brief: cake brief')
+    expect(rendered.html).toContain('Cake brief')
+    expect(rendered.html).not.toContain('Customer message</td>')
+    expect(rendered.html).not.toContain('Quote brief')
   })
 
   it('omits empty optional fields', () => {
@@ -234,8 +266,8 @@ describe('email renderers', () => {
       dateNeeded: '2026-06-02',
       customerMessage: 'Please add candles',
       nextSteps: [
-        'I\'ll review your requested date, cake details, and any design notes within 24 hours.',
-        'I\'ll confirm availability, final price, and any design details before you need to pay.',
+        'We\'ll review your requested date, cake details, and any design notes within 24 hours.',
+        'We\'ll confirm availability, final price, and any design details before you need to pay.',
         'Nothing is booked or payable until we agree the design, price, and collection or delivery details.'
       ]
     })
@@ -246,7 +278,8 @@ describe('email renderers', () => {
     expect(rendered.text).toContain('Date needed: 2 June 2026')
     expect(rendered.text).toContain('Estimated price: £45')
     expect(rendered.text).toContain('Customer message: Please add candles')
-    expect(rendered.text).toContain('I\'ll confirm availability, final price, and any design details before you need to pay.')
+    expect(rendered.text).toContain('We\'ll confirm availability, final price, and any design details before you need to pay.')
+    expect(rendered.text).not.toContain('I\'ll')
     expect(rendered.text).toContain('Nothing is booked or payable until we agree the design, price, and collection or delivery details.')
     expect(rendered.text).not.toContain('Order Confirmation')
     expect(rendered.text).not.toContain('Total Amount')
@@ -258,6 +291,21 @@ describe('email renderers', () => {
     expect(rendered.html).toContain('Estimated price')
     expect(rendered.html).not.toContain('Order Confirmation')
     expect(rendered.html).not.toContain('Contact details')
+  })
+
+  it('renders the customer intro visibly and omits placeholder customer messages', () => {
+    const rendered = renderEmailTemplate('contact-inline-order-customer', {
+      customerName: 'Jane',
+      productName: 'Honey Cake',
+      priceLabel: 'Estimated price',
+      customerMessage: 'message',
+      intro: 'Thank you. We\'ve received your cake request and will review the details within 24 hours.'
+    })
+
+    expect(rendered.html).not.toContain('display: none')
+    expect(rendered.html).toContain('We&#39;ve received your cake request')
+    expect(rendered.text).not.toContain('Customer message: message')
+    expect(rendered.html).not.toContain('Customer message</td>')
   })
 
   it('keeps order labels for non-enquiry customer emails', () => {
@@ -320,12 +368,31 @@ describe('email renderers', () => {
       customerName: 'Jane',
       orderNumber: 'OC-TRACK-1',
       status: 'out-for-delivery',
+      deliveryCourier: 'evri',
       trackingNumber: 'TRACK-123456'
     })
 
+    expect(rendered.text).toContain('Courier: Evri')
     expect(rendered.text).toContain('Tracking number: TRACK-123456')
+    expect(rendered.text).toContain('Track your parcel: https://www.evri.com/track/parcel/TRACK-123456/details')
     expect(rendered.html).toContain('Tracking number')
     expect(rendered.html).toContain('TRACK-123456')
+    expect(rendered.html).toContain('https://www.evri.com/track/parcel/TRACK-123456/details')
+  })
+
+  it('renders Royal Mail tracking links for out-for-delivery status updates', () => {
+    const rendered = renderEmailTemplate('orders-status-update', {
+      customerName: 'Jane',
+      orderNumber: 'OC-TRACK-ROYAL-MAIL',
+      status: 'out-for-delivery',
+      deliveryCourier: 'royal-mail',
+      trackingNumber: 'RM123456789GB'
+    })
+
+    expect(rendered.text).toContain('Courier: Royal Mail')
+    expect(rendered.text).toContain('Tracking number: RM123456789GB')
+    expect(rendered.text).toContain('Track your parcel: https://www.royalmail.com/track-your-item#/tracking-results/RM123456789GB')
+    expect(rendered.html).toContain('https://www.royalmail.com/track-your-item#/tracking-results/RM123456789GB')
   })
 
   it('does not render tracking number for non-delivery statuses', () => {
@@ -444,7 +511,7 @@ describe('email renderers', () => {
       deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
       headingOverride: 'Order dispatched',
       titleOverride: 'Order Dispatched #26051220022842 - Olgish Cakes',
-      statusMessage: 'Great news, your cakes by post order has been dispatched with Royal Mail.'
+      statusMessage: 'Great news, your cake by post order has been dispatched with Royal Mail.'
     })
     const evri = renderEmailTemplate('orders-status-update', {
       customerName: 'Igor Ieromenko',
@@ -462,16 +529,19 @@ describe('email renderers', () => {
       deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
       headingOverride: 'Order dispatched',
       titleOverride: 'Order Dispatched #26051220022842 - Olgish Cakes',
-      statusMessage: 'Great news, your cakes by post order has been dispatched with Evri.'
+      statusMessage: 'Great news, your cake by post order has been dispatched with Evri.'
     })
 
     expect(royalMail.subject).toBe('Order Dispatched #26051220022842 - Olgish Cakes')
     expect(royalMail.text).toContain('Order dispatched')
+    expect(royalMail.text).toContain('Date needed: 26 May 2026')
     expect(royalMail.text).toContain('Courier: Royal Mail')
     expect(royalMail.text).toContain('Tracking number: TRACK-123456')
     expect(royalMail.text).toContain('Track your parcel: https://www.royalmail.com/track-your-item#/tracking-results/TRACK-123456')
     expect(royalMail.text).toContain('Royal Mail will update the tracking as your parcel moves through their network.')
+    expect(royalMail.text).not.toContain('Date needed: 26/05/2026')
     expect(royalMail.html).toContain('https://www.royalmail.com/track-your-item#/tracking-results/TRACK-123456')
+    expect(royalMail.html).toContain('Track your parcel')
     expect(royalMail.text.match(/Tracking number/g)).toHaveLength(1)
     expect(royalMail.text).not.toContain('Customer Notes')
     expect(royalMail.text).not.toContain('Gift Details')
@@ -497,12 +567,119 @@ describe('email renderers', () => {
       deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
       headingOverride: 'Order dispatched',
       titleOverride: 'Order Dispatched #26051220022842 - Olgish Cakes',
-      statusMessage: 'Great news, your cakes by post order has been dispatched with Evri.'
+      statusMessage: 'Great news, your cake by post order has been dispatched with Evri.'
     })
 
     expect(rendered.text).toContain('Courier: Evri')
     expect(rendered.text).toContain('Track your parcel: https://www.evri.com/track/parcel/H02X8A0022918652/details')
     expect(rendered.text).toContain('Evri will update the tracking as your parcel moves through their network.')
+  })
+
+  it('hides generated product summary from custom cake status customer messages', () => {
+    const generatedSummary = [
+      'Product: Vintage Red Velvet Cake',
+      'Product type: cake',
+      'Design type: standard',
+      'Filling: Red Velvet',
+      'Serves 8-12 people',
+      'Price: \u00A338'
+    ].join('\n')
+    const rendered = renderEmailTemplate('orders-status-update', {
+      customerName: 'Igor Ieromenko',
+      orderNumber: '26060623195079',
+      productName: 'Vintage Red Velvet Cake',
+      productType: 'cake',
+      totalPrice: 38,
+      dateNeeded: '2026-07-11',
+      status: 'out-for-delivery',
+      deliveryMethod: 'local-delivery',
+      designType: 'standard',
+      filling: 'Red Velvet',
+      servings: 'Serves 8-12 people',
+      customerMessage: generatedSummary,
+      headingOverride: 'Order out for delivery',
+      titleOverride: 'Order Out for Delivery #26060623195079 - Olgish Cakes',
+      statusMessage: 'Great news! Your order is on its way to you.'
+    })
+
+    expect(rendered.text).not.toContain('Customer message:')
+    expect(rendered.html).not.toContain('Customer message</td>')
+    expect(rendered.text).not.toContain('Product type: cake')
+    expect(rendered.html).not.toContain('Product type: cake')
+    expect(rendered.text).not.toContain('Price: \u00A338')
+  })
+
+  it('keeps postal custom cake status updates out of the cakes by post layout', () => {
+    const rendered = renderEmailTemplate('orders-status-update', {
+      customerName: 'Igor Ieromenko',
+      orderNumber: '26060623310313',
+      productName: 'Vintage Red Velvet Cake',
+      productType: 'cake',
+      totalPrice: 38,
+      status: 'out-for-delivery',
+      deliveryMethod: 'postal',
+      deliveryCourier: 'royal-mail',
+      trackingNumber: '12345',
+      deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+      headingOverride: 'Order out for delivery',
+      titleOverride: 'Order Out for Delivery #26060623310313 - Olgish Cakes',
+      statusMessage: 'Great news, your cake order has been dispatched with Royal Mail.'
+    })
+
+    expect(rendered.subject).toBe('Order Out for Delivery #26060623310313 - Olgish Cakes')
+    expect(rendered.text).toContain('Order out for delivery')
+    expect(rendered.text).toContain('Great news, your cake order has been dispatched with Royal Mail.')
+    expect(rendered.text).toContain('Track your parcel: https://www.royalmail.com/track-your-item#/tracking-results/12345')
+    expect(rendered.text).not.toContain('Great news, your cake by post order')
+    expect(rendered.text).not.toContain('Delivery Details')
+  })
+
+  it('keeps delivered postal custom cake updates out of the cakes by post layout', () => {
+    const rendered = renderEmailTemplate('orders-status-update', {
+      customerName: 'Igor Ieromenko',
+      orderNumber: '26060623310313',
+      productName: 'Vintage Red Velvet Cake',
+      productType: 'cake',
+      totalPrice: 38,
+      status: 'delivered',
+      deliveryMethod: 'postal',
+      deliveryCourier: 'royal-mail',
+      trackingNumber: '12345',
+      deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+      headingOverride: 'Order delivered',
+      titleOverride: 'Order Delivered #26060623310313 - Olgish Cakes',
+      statusMessage: 'Your order has been delivered. We hope you enjoy your cake.'
+    })
+
+    expect(rendered.subject).toBe('Order Delivered #26060623310313 - Olgish Cakes')
+    expect(rendered.text).toContain('Order delivered')
+    expect(rendered.text).toContain('Your order has been delivered. We hope you enjoy your cake.')
+    expect(rendered.text).not.toContain('cakes by post order')
+    expect(rendered.text).not.toContain('cake by post order')
+    expect(rendered.text).not.toContain('Delivery Details')
+  })
+
+  it('uses cake layout when stale cakes-by-post order type has cake product type', () => {
+    const rendered = renderEmailTemplate('orders-status-update', {
+      customerName: 'Igor Ieromenko',
+      orderNumber: '26060501382235',
+      orderType: 'cakes-by-post',
+      productName: 'Vintage Red Velvet Cake',
+      productType: 'cake',
+      totalPrice: 38,
+      status: 'delivered',
+      deliveryMethod: 'postal',
+      deliveryCourier: 'evri',
+      trackingNumber: '12345',
+      deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+      headingOverride: 'Order delivered',
+      titleOverride: 'Order Delivered #26060501382235 - Olgish Cakes',
+      statusMessage: 'Your order has been delivered. We hope you enjoy your cake.'
+    })
+
+    expect(rendered.text).toContain('Your order has been delivered. We hope you enjoy your cake.')
+    expect(rendered.text).not.toContain('cakes by post order')
+    expect(rendered.text).not.toContain('Delivery Details')
   })
 
   it('renders concise cakes by post delivered updates with courier tracking and support next step', () => {
@@ -702,16 +879,22 @@ describe('email renderers', () => {
     expect(rendered.html).toContain('Napoleon Slice')
   })
 
-  it('renders multiple order items in status updates for text and html', () => {
+  it('omits technical order item rows in customer status updates', () => {
     const rendered = renderEmailTemplate('orders-status-update', {
       customerName: 'Jane',
       orderNumber: 'OC-MULTI-STATUS',
+      productName: 'Honey Cake',
+      dateNeeded: '2026-07-10',
+      designType: 'standard',
       status: 'confirmed',
       orderItems: [
         {
           productName: 'Honey Cake',
           quantity: 2,
           totalPrice: 40,
+          productType: 'cake',
+          productId: 'honey-cake',
+          designType: 'standard',
           specialInstructions: 'No nuts'
         },
         {
@@ -722,13 +905,17 @@ describe('email renderers', () => {
       ]
     })
 
-    expect(rendered.text).toContain('Order items')
-    expect(rendered.text).toContain('Honey Cake (Qty: 2) - \u00A340')
-    expect(rendered.text).toContain('Napoleon Slice (Qty: 1) - \u00A315')
-    expect(rendered.text).toContain('Customer message / requirements: No nuts')
-    expect(rendered.html).toContain('Order items')
-    expect(rendered.html).toContain('Honey Cake')
-    expect(rendered.html).toContain('Napoleon Slice')
+    expect(rendered.text).toContain('Order Summary')
+    expect(rendered.text).toContain('Product: Honey Cake')
+    expect(rendered.text).toContain('Date needed: 10 July 2026')
+    expect(rendered.text).toContain('Design type: Standard')
+    expect(rendered.text).not.toContain('Order items')
+    expect(rendered.text).not.toContain('Product ID')
+    expect(rendered.text).not.toContain('Type: cake')
+    expect(rendered.text).not.toContain('Honey Cake (Qty: 2)')
+    expect(rendered.html).not.toContain('Order items')
+    expect(rendered.html).not.toContain('Product ID')
+    expect(rendered.html).not.toContain('Type: cake')
   })
 })
 

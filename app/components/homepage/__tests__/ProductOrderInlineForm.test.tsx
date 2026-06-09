@@ -592,7 +592,7 @@ describe('ProductOrderInlineForm', () => {
 
     expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite')
     expect(screen.getByText('Order request received')).toBeInTheDocument()
-    expect(screen.getByText("Thank you, your order request has arrived safely. I'll review the details and get back to you within 24 hours.")).toBeInTheDocument()
+    expect(screen.getByText("Thank you, your order request has arrived safely. We'll review the details and get back to you within 24 hours.")).toBeInTheDocument()
     expect(screen.queryByText("We'll review your details within 24 hours.")).not.toBeInTheDocument()
     expect(screen.queryByText("We'll contact you with a quote and final design details.")).not.toBeInTheDocument()
     expect(screen.queryByText("We'll confirm delivery or collection once you approve.")).not.toBeInTheDocument()
@@ -625,8 +625,8 @@ describe('ProductOrderInlineForm', () => {
 
     expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite')
     expect(screen.getByText('Order request received')).toBeInTheDocument()
-    expect(screen.getByText("Thank you, your cakes by post request has arrived safely. I'll check the delivery details and send the next steps within 24 hours.")).toBeInTheDocument()
-    expect(screen.queryByText("Thank you, your order request has arrived safely. I'll review the details and get back to you within 24 hours.")).not.toBeInTheDocument()
+    expect(screen.getByText("Thank you, your cakes by post request has arrived safely. We'll check the delivery details and send the next steps within 24 hours.")).toBeInTheDocument()
+    expect(screen.queryByText("Thank you, your order request has arrived safely. We'll review the details and get back to you within 24 hours.")).not.toBeInTheDocument()
     expect(screen.queryByText("We'll review your order and delivery details within 24 hours.")).not.toBeInTheDocument()
     expect(screen.queryByText("If everything is confirmed, we'll send you a secure payment link.")).not.toBeInTheDocument()
     expect(screen.queryByText("Once payment is received, we'll prepare, pack, and send your cake by post.")).not.toBeInTheDocument()
