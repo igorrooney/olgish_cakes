@@ -2,6 +2,7 @@ import type { z } from 'zod'
 
 export const emailTemplateIds = [
   'contact-admin-inquiry',
+  'contact-customer-confirmation',
   'contact-inline-order-customer',
   'contact-inline-order-admin',
   'contact-inline-order-fallback-customer',
@@ -91,6 +92,7 @@ export interface EmailTemplateCommonInput {
 }
 
 export type ContactAdminInquiryInput = EmailTemplateCommonInput
+export type ContactCustomerConfirmationInput = EmailTemplateCommonInput
 export type ContactInlineOrderCustomerInput = EmailTemplateCommonInput
 export type ContactInlineOrderAdminInput = EmailTemplateCommonInput
 export type ContactInlineOrderFallbackCustomerInput = EmailTemplateCommonInput
@@ -109,6 +111,7 @@ export type InstagramTokenRefreshAlertInput = EmailTemplateCommonInput
 
 export type EmailRenderInputMap = {
   'contact-admin-inquiry': ContactAdminInquiryInput
+  'contact-customer-confirmation': ContactCustomerConfirmationInput
   'contact-inline-order-customer': ContactInlineOrderCustomerInput
   'contact-inline-order-admin': ContactInlineOrderAdminInput
   'contact-inline-order-fallback-customer': ContactInlineOrderFallbackCustomerInput

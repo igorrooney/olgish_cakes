@@ -36,7 +36,7 @@ describe('email render/send parity', () => {
     expect(sendResult.rendered.html).toBe(preview.html)
   })
 
-  it('embeds the customer email logo as an inline attachment', async () => {
+  it('uses the hosted customer email logo without adding an inline attachment', async () => {
     const sendResult = await sendEmail({
       templateId: 'custom-cake-enquiry-customer',
       input: {
@@ -52,13 +52,8 @@ describe('email render/send parity', () => {
     })
 
     expect(sendResult.accepted).toBe(true)
-    expect(sendResult.rendered.html).toContain('src="cid:olgish-cakes-email-logo"')
-    expect(getCapturedEmails()[0]?.message.attachments).toEqual(expect.arrayContaining([
-      expect.objectContaining({
-        filename: 'olgish-cakes-email-logo.png',
-        contentType: 'image/png',
-        contentId: 'olgish-cakes-email-logo'
-      })
-    ]))
+    expect(sendResult.rendered.html).toContain('src="https://olgishcakes.co.uk/images/olgish-cakes-email-logo.png"')
+    expect(sendResult.rendered.html).not.toContain('src="cid:olgish-cakes-email-logo"')
+    expect(getCapturedEmails()[0]?.message.attachments).toBeUndefined()
   })
 })

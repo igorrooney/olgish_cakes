@@ -1,7 +1,7 @@
 'use client'
 
 import Image, { getImageProps } from 'next/image'
-import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState, type FocusEvent as ReactFocusEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode, type TouchEvent as ReactTouchEvent } from 'react'
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState, type FocusEvent as ReactFocusEvent, type KeyboardEvent, type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { normalizePathname, readPreviousPathnameFromHistoryState } from '@/app/utils/history-state'
 import { getSanityCdnImageLoader, isSanityCdnImageUrl } from '@/lib/utils/image-url'
 
@@ -76,9 +76,8 @@ const fallbackImage: CatalogProductDetailImage = {
   src: '/images/placeholder-cake.jpg',
   alt: 'Product image placeholder'
 }
-const swipeNavigationMinDistancePx = 48
-const swipeNavigationMaxVerticalDriftPx = 24
-const swipeNavigationHorizontalDominanceRatio = 1.25
+const swipeNavigationMinDistancePx = 40
+const swipeNavigationHorizontalDominanceRatio = 1.4
 
 const pricePrefixClass = '[font-family:var(--font-more-sugar),cursive,fantasy] [font-weight:var(--t-font-weight-bold)] [font-style:normal] [font-size:12px] tablet:[font-size:var(--t-font-size-subtitle-small)] [leading-trim:none] [line-height:100%] [letter-spacing:-0.02em] align-top text-primary-500'
 const tabletPriceSignClass = 'tablet:[font-family:var(--font-more-sugar),cursive,fantasy] tablet:[font-weight:var(--t-font-weight-bold)] tablet:[font-style:normal] tablet:[font-size:var(--t-font-size-subtitle-small)] tablet:[leading-trim:none] tablet:[line-height:100%] tablet:[letter-spacing:-0.02em] tablet:align-top tablet:text-primary-500'
@@ -250,10 +249,11 @@ export function CatalogProductDetailLayout({
   const preloadedGalleryImageSrcsRef = useRef(new Set<string>())
   const activeGalleryPreloadImagesRef = useRef(new Map<string, HTMLImageElement>())
   const readyGalleryImageSrcsRef = useRef(new Set<string>())
-  const touchStartXRef = useRef<number | null>(null)
-  const touchStartYRef = useRef<number | null>(null)
-  const touchCurrentXRef = useRef<number | null>(null)
-  const touchCurrentYRef = useRef<number | null>(null)
+  const pointerStartXRef = useRef<number | null>(null)
+  const pointerStartYRef = useRef<number | null>(null)
+  const pointerCurrentXRef = useRef<number | null>(null)
+  const pointerCurrentYRef = useRef<number | null>(null)
+  const pointerIdRef = useRef<number | null>(null)
   const isSwipeTrackingRef = useRef(false)
   const resolvedImages = useMemo(() => {
     return images.length > 0 ? images : [fallbackImage]
@@ -395,10 +395,11 @@ export function CatalogProductDetailLayout({
   }, [canStartImageTransition, prefersReducedMotion, resolvedImages])
 
   const resetSwipeTrackingState = useCallback(() => {
-    touchStartXRef.current = null
-    touchStartYRef.current = null
-    touchCurrentXRef.current = null
-    touchCurrentYRef.current = null
+    pointerStartXRef.current = null
+    pointerStartYRef.current = null
+    pointerCurrentXRef.current = null
+    pointerCurrentYRef.current = null
+    pointerIdRef.current = null
     isSwipeTrackingRef.current = false
   }, [])
 
@@ -482,73 +483,71 @@ export function CatalogProductDetailLayout({
     }
   }, [handleNextImage, handlePreviousImage, isMultiImageGallery])
 
-  const handleGalleryTouchStart = useCallback((event: ReactTouchEvent<HTMLElement>) => {
-    if (!isMultiImageGallery || event.touches.length !== 1) {
+  const handleGalleryPointerDown = useCallback((event: ReactPointerEvent<HTMLElement>) => {
+    if (!isMultiImageGallery || event.isPrimary === false) {
       resetSwipeTrackingState()
       return
     }
 
     focusGalleryRegion()
 
-    const touchPoint = event.touches[0]
-    touchStartXRef.current = touchPoint.clientX
-    touchStartYRef.current = touchPoint.clientY
-    touchCurrentXRef.current = touchPoint.clientX
-    touchCurrentYRef.current = touchPoint.clientY
+    pointerStartXRef.current = event.clientX
+    pointerStartYRef.current = event.clientY
+    pointerCurrentXRef.current = event.clientX
+    pointerCurrentYRef.current = event.clientY
+    pointerIdRef.current = event.pointerId
     isSwipeTrackingRef.current = true
+
+    if (typeof event.currentTarget.setPointerCapture === 'function') {
+      try {
+        event.currentTarget.setPointerCapture(event.pointerId)
+      } catch {
+        // Some test and automation environments do not create an active native pointer.
+      }
+    }
   }, [focusGalleryRegion, isMultiImageGallery, resetSwipeTrackingState])
 
-  const handleGalleryTouchMove = useCallback((event: ReactTouchEvent<HTMLElement>) => {
-    if (!isSwipeTrackingRef.current) {
+  const handleGalleryPointerMove = useCallback((event: ReactPointerEvent<HTMLElement>) => {
+    if (!isSwipeTrackingRef.current || pointerIdRef.current !== event.pointerId) {
       return
     }
 
-    if (event.touches.length !== 1) {
+    pointerCurrentXRef.current = event.clientX
+    pointerCurrentYRef.current = event.clientY
+  }, [])
+
+  const handleGalleryPointerUp = useCallback((event: ReactPointerEvent<HTMLElement>) => {
+    if (!isMultiImageGallery || !isSwipeTrackingRef.current || pointerIdRef.current !== event.pointerId) {
       resetSwipeTrackingState()
       return
     }
 
-    const touchPoint = event.touches[0]
-    touchCurrentXRef.current = touchPoint.clientX
-    touchCurrentYRef.current = touchPoint.clientY
-  }, [resetSwipeTrackingState])
+    const pointerStartX = pointerStartXRef.current
+    const pointerStartY = pointerStartYRef.current
 
-  const handleGalleryTouchEnd = useCallback((event: ReactTouchEvent<HTMLElement>) => {
-    if (!isMultiImageGallery || !isSwipeTrackingRef.current) {
+    if (pointerStartX === null || pointerStartY === null) {
       resetSwipeTrackingState()
       return
     }
 
-    const touchStartX = touchStartXRef.current
-    const touchStartY = touchStartYRef.current
+    const pointerEndX = event.clientX ?? pointerCurrentXRef.current
+    const pointerEndY = event.clientY ?? pointerCurrentYRef.current
 
-    if (touchStartX === null || touchStartY === null) {
+    if (pointerEndX === null || pointerEndY === null) {
       resetSwipeTrackingState()
       return
     }
 
-    const changedTouchPoint = event.changedTouches.length > 0
-      ? event.changedTouches[0]
-      : null
-    const touchEndX = changedTouchPoint?.clientX ?? touchCurrentXRef.current
-    const touchEndY = changedTouchPoint?.clientY ?? touchCurrentYRef.current
-
-    if (touchEndX === null || touchEndY === null) {
-      resetSwipeTrackingState()
-      return
-    }
-
-    const deltaX = touchEndX - touchStartX
-    const deltaY = touchEndY - touchStartY
+    const deltaX = pointerEndX - pointerStartX
+    const deltaY = pointerEndY - pointerStartY
     const absDeltaX = Math.abs(deltaX)
     const absDeltaY = Math.abs(deltaY)
     const hasSufficientSwipeDistance = absDeltaX >= swipeNavigationMinDistancePx
-    const hasAcceptableVerticalDrift = absDeltaY <= swipeNavigationMaxVerticalDriftPx
     const isHorizontallyDominantGesture = absDeltaX >= absDeltaY * swipeNavigationHorizontalDominanceRatio
 
     resetSwipeTrackingState()
 
-    if (!hasSufficientSwipeDistance || !hasAcceptableVerticalDrift || !isHorizontallyDominantGesture) {
+    if (!hasSufficientSwipeDistance || !isHorizontallyDominantGesture) {
       return
     }
 
@@ -567,7 +566,7 @@ export function CatalogProductDetailLayout({
     resetSwipeTrackingState
   ])
 
-  const handleGalleryTouchCancel = useCallback(() => {
+  const handleGalleryPointerCancel = useCallback(() => {
     resetSwipeTrackingState()
   }, [resetSwipeTrackingState])
 
@@ -861,12 +860,12 @@ export function CatalogProductDetailLayout({
             Image {normalizedDisplayedImageIndex + 1} of {resolvedImages.length}
           </span>
           <div
-            onTouchStart={handleGalleryTouchStart}
-            onTouchMove={handleGalleryTouchMove}
-            onTouchEnd={handleGalleryTouchEnd}
-            onTouchCancel={handleGalleryTouchCancel}
+            onPointerDown={handleGalleryPointerDown}
+            onPointerMove={handleGalleryPointerMove}
+            onPointerUp={handleGalleryPointerUp}
+            onPointerCancel={handleGalleryPointerCancel}
             data-testid='product-gallery-viewport'
-            className={`catalog-gallery-viewport relative -mx-4 aspect-square w-[calc(100%+2rem)] touch-none overflow-hidden rounded-none bg-base-200 ${isGalleryFocused ? 'outline outline-2 outline-offset-2 outline-primary-500' : ''} tablet:mx-0 tablet:w-full tablet:touch-pan-y tablet:rounded-[8px]`}
+            className={`catalog-gallery-viewport relative -mx-4 aspect-square w-[calc(100%+2rem)] touch-pan-y overflow-hidden rounded-none bg-base-200 ${isGalleryFocused ? 'outline outline-2 outline-offset-2 outline-primary-500' : ''} tablet:mx-0 tablet:w-full tablet:rounded-[8px]`}
           >
             <div
               data-testid='product-gallery-stage'

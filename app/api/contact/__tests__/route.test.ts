@@ -288,8 +288,16 @@ describe('/api/contact', () => {
         referrer: null,
         attachment_names: null
       })
-      expect(mockSend).toHaveBeenCalledTimes(1)
+      expect(mockSend).toHaveBeenCalledTimes(2)
       expect(mockSend.mock.calls[0]?.[0]?.html).not.toContain('>Phone<')
+      const customerEmailPayload = mockSend.mock.calls.find((call) => call[0].to === 'john@example.com')?.[0]
+      expect(customerEmailPayload).toEqual(expect.objectContaining({
+        replyTo: 'hello@olgishcakes.co.uk',
+        subject: 'We have received your message'
+      }))
+      expect(customerEmailPayload?.text).toContain('Thank you, we\'ve received your message')
+      expect(customerEmailPayload?.text).toContain('Test message with enough characters')
+      expect(customerEmailPayload?.text).toContain('Questions about your enquiry?')
       expect(mockSendTelegramManagerNotification).toHaveBeenCalledWith(expect.objectContaining({
         type: 'contact-enquiry',
         customerName: 'John',
@@ -317,7 +325,7 @@ describe('/api/contact', () => {
       expect(json).toEqual({ success: true })
       expect(mockGetSupabaseAdminClient).not.toHaveBeenCalled()
       expect(mockSupabaseInsert).not.toHaveBeenCalled()
-      expect(mockSend).toHaveBeenCalledTimes(1)
+      expect(mockSend).toHaveBeenCalledTimes(2)
       expect(mockSendTelegramManagerNotification).not.toHaveBeenCalled()
     })
 
@@ -564,7 +572,7 @@ describe('/api/contact', () => {
       const response = await POST(request)
       const adminEmailCall = mockSend.mock.calls[0]?.[0]
 
-      expect(mockSend).toHaveBeenCalledTimes(1)
+      expect(mockSend).toHaveBeenCalledTimes(2)
       expect(response.status).toBe(200)
       expect(adminEmailCall?.subject).toContain('New Contact: John Doe')
       expect(adminEmailCall?.text).toContain('- Date needed:')
@@ -573,6 +581,21 @@ describe('/api/contact', () => {
       expect(adminEmailCall?.text).toContain('- Additional note: Please call after 6pm')
       expect(adminEmailCall?.text).toContain('- Gift note: Happy birthday!')
       expect(adminEmailCall?.text).toContain('- Attachments: contact-design.jpg')
+      const customerEmailCall = mockSend.mock.calls.find((call) => call[0].to === 'john@example.com')?.[0]
+      expect(customerEmailCall?.subject).toBe('We have received your message')
+      expect(customerEmailCall?.text).toContain('- Name: John Doe')
+      expect(customerEmailCall?.text).toContain('- Email: john@example.com')
+      expect(customerEmailCall?.text).toContain('- Phone: 07123456789')
+      expect(customerEmailCall?.text).toContain('- Address: 42 Baker Street')
+      expect(customerEmailCall?.text).toContain('- City: London')
+      expect(customerEmailCall?.text).toContain('- Postcode: NW1 6XE')
+      expect(customerEmailCall?.text).toContain('- Topic: Honey cake')
+      expect(customerEmailCall?.text).toContain('- Date: 12 March 2026')
+      expect(customerEmailCall?.text).toContain('- Message: I need a quote for a celebration cake')
+      expect(customerEmailCall?.text).toContain('- Additional note: Please call after 6pm')
+      expect(customerEmailCall?.text).toContain('- Gift note: Happy birthday!')
+      expect(customerEmailCall?.text).not.toContain('Referrer')
+      expect(customerEmailCall?.text).toContain('- Attachments: contact-design.jpg')
       expect(adminEmailCall?.html).toContain('Date needed')
       expect(adminEmailCall?.html).toContain('Cake interest')
       expect(adminEmailCall?.html).toContain('Submitted message')
@@ -680,8 +703,10 @@ describe('/api/contact', () => {
       expect(customerEmailCall?.text).toContain('Thank you. We\'ve received your cake request and will review the details within 24 hours.')
       expect(customerEmailCall?.text).toContain('Date needed: 15 March 2026')
       expect(customerEmailCall?.text).toContain('Estimated price: £25')
+      expect(customerEmailCall?.text).toContain('Occasion: Birthday')
       expect(customerEmailCall?.text).toContain('Serves 8-12 people')
-      expect(customerEmailCall?.text).toContain('I\'ll confirm availability, final price, and any design details before you need to pay.')
+      expect(customerEmailCall?.text).toContain('We\'ll confirm availability, final price, and any design details before you need to pay.')
+      expect(customerEmailCall?.text).not.toContain('I\'ll')
       expect(customerEmailCall?.text).toContain('Nothing is booked or payable until we agree the design, price, and collection or delivery details.')
       expect(customerEmailCall?.text).not.toContain('Order Confirmation')
 
@@ -712,6 +737,62 @@ describe('/api/contact', () => {
         emailAttemptedAt: expect.any(String)
       }))
     })
+
+    it('should hide generated product summary when customer message is empty', async () => {
+      const generatedSummary = [
+        'Product: Vintage Red Velvet Cake',
+        'Product type: cake',
+        'Design type: standard',
+        'Filling: Red Velvet',
+        'Serves 8-12 people',
+        'Price: \u00A338'
+      ].join('\n')
+      const formData = new FormData()
+      formData.append('name', 'Jane')
+      formData.append('email', 'jane@example.com')
+      formData.append('phone', '07123456789')
+      formData.append('address', '10 High Street')
+      formData.append('city', 'Leeds')
+      formData.append('postcode', 'LS1 1AA')
+      formData.append('dateNeeded', '2026-07-08')
+      formData.append('message', generatedSummary)
+      formData.append('isOrderForm', 'true')
+      formData.append('productType', 'cake')
+      formData.append('productId', 'vintage-red-velvet-cake')
+      formData.append('productName', 'Vintage Red Velvet Cake')
+      formData.append('totalPrice', '38')
+      formData.append('requestMode', 'browse-catalog')
+      formData.append('designType', 'standard')
+      formData.append('occasion', 'anniversary')
+      formData.append('filling', 'Red Velvet')
+      formData.append('servings', 'Serves 8-12 people')
+
+      const request = createRequest(formData)
+
+      const response = await POST(request)
+
+      const customerEmailCall = mockSend.mock.calls.find((call) => call[0].to === 'jane@example.com')?.[0]
+
+      expect(response.status).toBe(200)
+      expect(mockCreateFromMock).toHaveBeenCalledWith(expect.objectContaining({
+        items: [
+          expect.objectContaining({
+            specialInstructions: ''
+          })
+        ],
+        metadata: expect.objectContaining({
+          inlineOrderContext: expect.not.objectContaining({
+            customerMessage: expect.any(String)
+          })
+        })
+      }))
+      expect(customerEmailCall?.html).not.toContain('Customer message')
+      expect(customerEmailCall?.text).not.toContain('Customer message')
+      expect(customerEmailCall?.html).not.toContain('Product type: cake')
+      expect(customerEmailCall?.text).not.toContain('Product type: cake')
+      expect(customerEmailCall?.text).not.toContain('Price: \u00A338')
+    })
+
     it('should accept legacy order page payload with custom product type and normalize custom design order type', async () => {
       const formData = new FormData()
       formData.append('name', 'John')
@@ -735,13 +816,15 @@ describe('/api/contact', () => {
           orderType: 'custom-cake',
           metadata: expect.objectContaining({
             inlineOrderContext: expect.objectContaining({
-              sourceOrderType: 'custom-design'
+              sourceOrderType: 'custom-design',
+              customerMessage: 'Legacy order flow message with enough details'
             })
           }),
           items: [
             expect.objectContaining({
               productType: 'cake',
-              productName: 'Custom Order'
+              productName: 'Custom Order',
+              specialInstructions: 'Legacy order flow message with enough details'
             })
           ]
         })
@@ -771,13 +854,15 @@ describe('/api/contact', () => {
           orderType: 'custom-cake',
           metadata: expect.objectContaining({
             inlineOrderContext: expect.objectContaining({
-              sourceOrderType: 'browse-catalog'
+              sourceOrderType: 'browse-catalog',
+              customerMessage: 'Legacy order flow message with enough details'
             })
           }),
           items: [
             expect.objectContaining({
               productType: 'cake',
-              productName: 'Custom Order'
+              productName: 'Custom Order',
+              specialInstructions: 'Legacy order flow message with enough details'
             })
           ]
         })
@@ -790,6 +875,7 @@ describe('/api/contact', () => {
       formData.append('email', 'john@example.com')
       formData.append('phone', '07123456789')
       formData.append('message', 'Please call before delivery')
+      formData.append('customerMessage', 'Please call before delivery')
       formData.append('isOrderForm', 'true')
       formData.append('productType', 'cake')
       formData.append('productId', 'honey-cake')
@@ -918,8 +1004,10 @@ describe('/api/contact', () => {
       const request = createRequest(formData)
 
       const response = await POST(request)
+      const json = await response.json()
 
       expect(response.status).toBe(200)
+      expect(json).toEqual({ success: true })
       expect(mockSupabaseInsert).toHaveBeenCalledTimes(1)
     })
 
@@ -935,10 +1023,36 @@ describe('/api/contact', () => {
       const request = createRequest(formData)
 
       const response = await POST(request)
+      const json = await response.json()
 
       expect(response.status).toBe(200)
+      expect(json).toEqual({ success: true })
       expect(mockSupabaseInsert).toHaveBeenCalledTimes(1)
       expect(mockSend).not.toHaveBeenCalled()
+    })
+
+    it('should still return 200 when only the customer confirmation email fails', async () => {
+      mockSend
+        .mockResolvedValueOnce({ data: { id: 'admin-email-id' }, error: null })
+        .mockResolvedValueOnce({ error: { message: 'Customer confirmation failed' } })
+
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('phone', '07123456789')
+      formData.append('message', 'Test message with enough characters')
+
+      const request = createRequest(formData)
+
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(200)
+      expect(json).toEqual({ success: true })
+      expect(mockSupabaseInsert).toHaveBeenCalledTimes(1)
+      expect(mockSend).toHaveBeenCalledTimes(2)
+      expect(mockSend.mock.calls[0]?.[0]?.to).toBe('hello@olgishcakes.co.uk')
+      expect(mockSend.mock.calls[1]?.[0]?.to).toBe('john@example.com')
     })
 
     it('should still send the contact email when saving a general contact enquiry to Supabase fails', async () => {
@@ -964,7 +1078,7 @@ describe('/api/contact', () => {
       expect(response.status).toBe(200)
       expect(json).toEqual({ success: true })
       expect(mockSupabaseInsert).toHaveBeenCalledTimes(1)
-      expect(mockSend).toHaveBeenCalledTimes(1)
+      expect(mockSend).toHaveBeenCalledTimes(2)
     })
 
     it('should return 500 when a general contact enquiry is neither persisted nor emailed', async () => {
@@ -985,7 +1099,7 @@ describe('/api/contact', () => {
       expect(response.status).toBe(500)
       expect(json).toEqual({ error: 'Failed to send email' })
       expect(mockGetSupabaseAdminClient).not.toHaveBeenCalled()
-      expect(mockSend).toHaveBeenCalledTimes(1)
+      expect(mockSend).toHaveBeenCalledTimes(2)
     })
 
     it('should return 500 when both Supabase persistence and contact email fail', async () => {
@@ -1012,7 +1126,7 @@ describe('/api/contact', () => {
       expect(response.status).toBe(500)
       expect(json).toEqual({ error: 'Failed to send email' })
       expect(mockSupabaseInsert).toHaveBeenCalledTimes(1)
-      expect(mockSend).toHaveBeenCalledTimes(1)
+      expect(mockSend).toHaveBeenCalledTimes(2)
     })
 
     it('should mark inline order emails as unsent when transport does not accept delivery', async () => {
@@ -1084,7 +1198,8 @@ describe('/api/contact', () => {
       expect(fallbackCustomerEmailCall?.text).toContain('Thank you. We\'ve received your cake request and will review the details within 24 hours.')
       expect(fallbackCustomerEmailCall?.text).toContain('Date needed: 20 March 2026')
       expect(fallbackCustomerEmailCall?.text).toContain('Estimated price: £25')
-      expect(fallbackCustomerEmailCall?.text).toContain('I\'ll confirm availability, final price, and any design details before you need to pay.')
+      expect(fallbackCustomerEmailCall?.text).toContain('We\'ll confirm availability, final price, and any design details before you need to pay.')
+      expect(fallbackCustomerEmailCall?.text).not.toContain('I\'ll')
       expect(fallbackCustomerEmailCall?.text).not.toContain('Order Confirmation')
       expect(fallbackAdminEmailCall?.html).toContain('Date needed')
       expect(fallbackAdminEmailCall?.text).toContain('- Date needed:')
@@ -1092,7 +1207,7 @@ describe('/api/contact', () => {
       expect(fallbackAdminEmailCall?.text).toContain('- Quantity: 1')
       expect(fallbackAdminEmailCall?.text).toContain('- Delivery method: collection')
       expect(fallbackAdminEmailCall?.text).toContain('- Delivery address: 12 Queen Road, Manchester, M1 1AA')
-      expect(fallbackAdminEmailCall?.text).toContain('- Occasion: wedding')
+      expect(fallbackAdminEmailCall?.text).toContain('- Occasion: Wedding')
       expect(fallbackAdminEmailCall?.text).toContain('- Design type: Individual design')
       expect(fallbackAdminEmailCall?.text).toContain('- Filling: Vanilla cream')
       expect(fallbackAdminEmailCall?.text).toContain('- Servings: Serves 20')

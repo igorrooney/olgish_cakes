@@ -404,9 +404,11 @@ describe('/api/custom-cake-enquiry', () => {
         dateNeeded: '2026-12-25',
         occasion: 'Birthday',
         customerMessage: expect.stringContaining('Blue florals'),
-        nextSteps: expect.arrayContaining([
-          expect.stringContaining('availability')
-        ])
+        nextSteps: [
+          'We\'ll check the date, your notes and the delivery details.',
+          'We\'ll reply with availability, any questions, and a quote if we can make it for that date.',
+          'Nothing is booked or payable until we agree the design, price and collection or delivery details.'
+        ]
       })
     }))
   })
@@ -912,6 +914,15 @@ describe('/api/custom-cake-enquiry', () => {
         attachments: expect.arrayContaining([
           expect.objectContaining({ filename: 'reference.jpg' })
         ])
+      })
+    }))
+    expect(mockSendEmail).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      templateId: 'custom-cake-enquiry-customer',
+      input: expect.objectContaining({
+        attachmentNames: ['reference.jpg']
+      }),
+      message: expect.objectContaining({
+        attachments: []
       })
     }))
   })

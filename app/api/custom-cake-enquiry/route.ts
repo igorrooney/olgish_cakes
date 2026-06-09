@@ -8,6 +8,7 @@ import {
   takeEnquiryRateLimit
 } from '@/lib/enquiry-rate-limit'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import { getCustomerEmailBcc } from '@/lib/email/customer-bcc'
 import {
   createUnsupportedFormContentTypeResponse,
   isSupportedFormContentType,
@@ -695,8 +696,8 @@ export async function POST(request: NextRequest) {
           attachmentNames: referenceImage ? [referenceImage.name] : [],
           message: 'Date needed: ' + formattedDate,
           nextSteps: [
-            'I\'ll check the date, your notes and the delivery details.',
-            'I\'ll reply with availability, any questions, and a quote if I can make it for that date.',
+            'We\'ll check the date, your notes and the delivery details.',
+            'We\'ll reply with availability, any questions, and a quote if we can make it for that date.',
             'Nothing is booked or payable until we agree the design, price and collection or delivery details.'
           ]
         },
@@ -704,17 +705,9 @@ export async function POST(request: NextRequest) {
         message: {
           from: getEmailFromAddress(),
           to: formData.email,
-          bcc: process.env.ADMIN_BCC_EMAIL || undefined,
+          bcc: getCustomerEmailBcc(process.env.ADMIN_BCC_EMAIL),
           replyTo: recipientEmail,
-          attachments: referenceImage && attachmentBuffer
-            ? [
-                {
-                  filename: referenceImage.name,
-                  content: attachmentBuffer,
-                  contentType: referenceImage.type || undefined
-                }
-              ]
-            : []
+          attachments: []
         }
       })
 

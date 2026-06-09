@@ -37,8 +37,8 @@ describe('GetCustomQuoteFormSection', () => {
       />
     )
 
-    expect(screen.getByRole('heading', { level: 2, name: /tell me what you are planning/i })).toBeInTheDocument()
-    expect(screen.getByText(/start with the details that help me price the cake properly/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: /tell us what you are planning/i })).toBeInTheDocument()
+    expect(screen.getByText(/start with the details that help us price the cake properly/i)).toBeInTheDocument()
     expect(screen.getByTestId('query-providers')).toBeInTheDocument()
     expect(screen.getByTestId('get-custom-quote-form')).toHaveAttribute('data-occasion-count', '2')
   })

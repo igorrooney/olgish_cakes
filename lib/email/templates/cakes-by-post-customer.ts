@@ -1,5 +1,5 @@
 import type { EmailTemplateCommonInput } from '../types'
-import { isCakesByPostOrderLike } from '@/lib/order-types'
+import { isCakesByPostOrderType, isCakesByPostProductType } from '@/lib/order-types'
 import {
   buildCompletedReviewHtml,
   buildCompletedReviewText,
@@ -8,7 +8,7 @@ import {
   EMAIL_FONT_SANS,
   escapeHtml,
   formatCurrency,
-  formatDate,
+  formatLongDate,
   formatPhoneDisplay,
   renderCustomerCard,
   renderEmailSpacer,
@@ -39,11 +39,13 @@ const deliveryCourierMeta: Record<DeliveryCourier, DeliveryCourierMeta> = {
 }
 
 export function isCakesByPostCustomerEmail(input: EmailTemplateCommonInput): boolean {
-  return isCakesByPostOrderLike({
-    orderType: input.orderType,
-    productType: input.productType,
-    deliveryMethod: input.deliveryMethod
-  })
+  const productType = toTrimmed(input.productType)
+
+  if (productType.length > 0) {
+    return isCakesByPostProductType(productType)
+  }
+
+  return isCakesByPostOrderType(input.orderType)
 }
 
 function cakesByPostNextSteps(): string[] {
@@ -70,6 +72,15 @@ function linkedRow(rows: CustomerRow[], label: string, value: string | null | un
   }
 
   rows.push({ label, value: trimmed, href })
+}
+
+function trackingLinkRow(rows: CustomerRow[], value: string | null | undefined, href: string | undefined) {
+  const trimmedValue = toTrimmed(value)
+  if (trimmedValue.length === 0 || !href) {
+    return
+  }
+
+  rows.push({ label: 'Tracking link', value: 'Track your parcel', href })
 }
 
 function getCourierMeta(value: string | null | undefined): DeliveryCourierMeta {
@@ -124,7 +135,7 @@ function buildDeliveryRows(input: EmailTemplateCommonInput): CustomerRow[] {
     row(rows, 'Town or city', input.city)
     row(rows, 'Postcode', input.postcode)
   }
-  row(rows, 'Date needed', formatDate(input.dateNeeded))
+  row(rows, 'Date needed', formatLongDate(input.dateNeeded))
 
   return rows
 }
@@ -175,6 +186,10 @@ function renderRowsText(title: string, rows: CustomerRow[]): string {
   }
 
   const lines = rows.flatMap((entry) => {
+    if (entry.label === 'Tracking link' && entry.href) {
+      return [`- Track your parcel: ${entry.href}`]
+    }
+
     const rowLines = [`- ${entry.label}: ${entry.value}`]
 
     if (entry.href) {
@@ -208,7 +223,7 @@ function buildStatusDeliveryRows(input: EmailTemplateCommonInput): CustomerRow[]
 
   row(rows, 'Delivery method', formatDeliveryMethod(input.deliveryMethod))
   row(rows, 'Recipient', input.deliveryRecipientName || input.customerName)
-  row(rows, 'Date needed', formatDate(input.dateNeeded))
+  row(rows, 'Date needed', formatLongDate(input.dateNeeded))
   if (courierValue.length > 0 || trackingNumber.length > 0 || normalizedStatus === 'out-for-delivery') {
     row(rows, 'Courier', courier.label)
   }
@@ -217,8 +232,9 @@ function buildStatusDeliveryRows(input: EmailTemplateCommonInput): CustomerRow[]
     rows,
     'Tracking number',
     trackingNumber,
-    trackingNumber ? courier.trackingUrl(trackingNumber) : undefined
+    undefined
   )
+  trackingLinkRow(rows, trackingNumber, trackingNumber ? courier.trackingUrl(trackingNumber) : undefined)
 
   return rows
 }

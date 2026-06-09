@@ -154,6 +154,11 @@ export function GetCustomQuoteForm({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    if (hasSubmittedSuccessfully) {
+      return
+    }
+
     setHasAttemptedSubmit(true)
     setErrors({})
     submitMutation.reset()
@@ -215,6 +220,8 @@ export function GetCustomQuoteForm({
   }
 
   const normalizedOccasionOptions = optionalFieldOptions(normalizeOccasionOptions(occasionOptions))
+  const isSubmitDisabled = isSubmitting || isCsrfLoading
+  const submitButtonLabel = isSubmitting ? 'Sending...' : 'Send quote request'
 
   return (
     <form
@@ -305,7 +312,7 @@ export function GetCustomQuoteForm({
         label='Cake brief'
         labelAlt='(Required)'
         labelLayout='stacked'
-        placeholder='Tell me the main idea, style, colours, flavour direction, dietary notes, delivery or collection preference, and anything else that matters.'
+        placeholder='Tell us the main idea, style, colours, flavour direction, dietary notes, delivery or collection preference, and anything else that matters.'
         hintText='Describe the cake briefly, including any extra detail that would help the first reply'
         inputClassName='min-h-40'
         error={errors.brief}
@@ -340,7 +347,7 @@ export function GetCustomQuoteForm({
 
       {hasSubmittedSuccessfully ? (
         <div
-          className='alert alert-success items-start text-sm'
+          className='alert alert-success w-full items-start text-sm'
           role='status'
           aria-live='polite'
         >
@@ -361,24 +368,28 @@ export function GetCustomQuoteForm({
           <div>
             <p className='font-semibold'>Enquiry sent</p>
             <p className='mt-1 leading-6'>
-              Thank you, your cake enquiry has arrived safely. I&apos;ll get back to you as soon as I can.
+              Thank you, your cake enquiry has arrived safely. We&apos;ll get back to you as soon as we can.
             </p>
           </div>
         </div>
       ) : null}
 
       <div className='bottom-3'>
-        <button
-          type='submit'
-          className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'
-          disabled={isSubmitting || isCsrfLoading}
-          aria-busy={isSubmitting || isCsrfLoading}
-        >
-          {isSubmitting ? 'Sending...' : 'Send quote request'}
-        </button>
-        <p className='mt-3 text-center text-sm leading-6 text-base-content/70'>
-          I&apos;ll review your enquiry and reply within 24 hours. Please add either an email address or a phone number so I can get back to you.
-        </p>
+        {hasSubmittedSuccessfully ? null : (
+          <button
+            type='submit'
+            className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'
+            disabled={isSubmitDisabled}
+            aria-busy={isSubmitting || isCsrfLoading}
+          >
+            {submitButtonLabel}
+          </button>
+        )}
+        {hasSubmittedSuccessfully ? null : (
+          <p className='mt-3 text-center text-sm leading-6 text-base-content/70'>
+            We&apos;ll review your enquiry and reply within 24 hours. Please add either an email address or a phone number so we can get back to you.
+          </p>
+        )}
       </div>
     </form>
   )

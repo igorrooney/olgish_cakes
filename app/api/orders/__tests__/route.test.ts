@@ -104,10 +104,72 @@ describe('/api/orders POST', () => {
       })
     }))
     expect(mockSendEmail).toHaveBeenCalledTimes(2)
+    expect(mockSendEmail.mock.calls[0]?.[0].input.customerMessage).toBe('Please make it less sweet')
     expect(mockUpdateSupabaseOrderMetadata).toHaveBeenCalledWith('order-1', {}, expect.objectContaining({
       emailSent: false,
       emailError: expect.stringContaining('Transport did not accept the customer email')
     }))
+  })
+
+  it('extracts customer message from generated order message for customer emails', async () => {
+    mockSendEmail
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'customer-id-1',
+        error: null,
+        rendered: {
+          subject: 'Customer subject',
+          text: 'Customer text',
+          html: '<p>Customer</p>'
+        }
+      })
+      .mockResolvedValueOnce({
+        mode: 'disabled',
+        accepted: true,
+        id: 'admin-id-1',
+        error: null,
+        rendered: {
+          subject: 'Admin subject',
+          text: 'Admin text',
+          html: '<p>Admin</p>'
+        }
+      })
+
+    const request = new NextRequest('http://localhost/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: 'John Doe',
+        email: 'john@example.com',
+        phone: '07123456789',
+        message: 'Product: Vintage Red Velvet Cake\nProduct type: cake\nPrice: \u00A338\nMessage: Please add candles',
+        orderType: 'standard',
+        productType: 'cake',
+        productName: 'Vintage Red Velvet Cake',
+        designType: 'standard',
+        quantity: 1,
+        unitPrice: 38,
+        totalPrice: 38,
+        deliveryMethod: 'collection',
+        paymentMethod: 'cash-collection'
+      })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(mockCreateSupabaseOrder).toHaveBeenCalledWith(expect.objectContaining({
+      items: [
+        expect.objectContaining({
+          specialInstructions: 'Please add candles'
+        })
+      ]
+    }))
+    expect(mockSendEmail.mock.calls[0]?.[0].input.customerMessage).toBe('Please add candles')
+    expect(mockSendEmail.mock.calls[1]?.[0].input.customerMessage).toBe('Please add candles')
   })
 
   it('normalizes legacy cakes by post order types before saving', async () => {

@@ -18,6 +18,17 @@ RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 2. Verify your domain `olgishcakes.co.uk`
 3. Generate an API key in the API Keys section
 
+## Domain Authentication
+
+Production email must be sent from a fully verified Resend domain. Before release, check the Resend dashboard for `olgishcakes.co.uk` and confirm:
+
+- SPF is verified for the configured sending domain.
+- DKIM is verified and outgoing test emails include a `DKIM-Signature` header.
+- The `from` address uses the verified domain, for example `Olgish Cakes <hello@olgishcakes.co.uk>`.
+- DMARC is configured for `olgishcakes.co.uk` so mailbox providers can evaluate SPF/DKIM alignment.
+
+Resend domain verification requires DNS records for SPF and DKIM. Missing DKIM is not fixed by changing the email template; update the DNS records shown in Resend, wait for propagation, then resend a test email and inspect the headers.
+
 ### Optional Variables (with defaults)
 
 ```bash

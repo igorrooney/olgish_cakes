@@ -18,7 +18,7 @@ export function GetCustomQuoteHero() {
               Get a custom cake quote in Leeds
             </h1>
             <p className='mx-auto max-w-[560px] font-oldenburg text-base leading-7 tracking-[0.05em] text-primary-800 tablet:text-[22px] tablet:leading-9 small-laptop:mx-0'>
-              Tell me the date, guest count and the kind of cake you have in mind, and I&apos;ll come back with a quote for your birthday, anniversary, wedding or celebration cake.
+              Tell us the date, guest count and the kind of cake you have in mind, and we&apos;ll come back with a quote for your birthday, anniversary, wedding or celebration cake.
             </p>
           </div>
           <div className='flex w-full flex-col gap-3 tablet:flex-row tablet:justify-center small-laptop:justify-start'>

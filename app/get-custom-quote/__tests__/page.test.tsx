@@ -18,7 +18,7 @@ const mockedGetCustomQuoteFormSection = jest.fn(({ occasionOptions }: {
   occasionOptions: Array<{ label: string, value?: string, disabled?: boolean }>
 }) => (
   <section id='quote-form'>
-    <h2>Tell me what you are planning</h2>
+    <h2>Tell us what you are planning</h2>
     <div>Mock quote form section</div>
     <div data-testid='occasion-options-count'>{occasionOptions.length}</div>
   </section>
@@ -72,9 +72,9 @@ describe('GetCustomQuotePage', () => {
     expect(screen.getAllByRole('link', { name: /start your quote/i })[0]).toHaveAttribute('href', '/get-custom-quote#quote-form')
     expect(screen.getByRole('heading', { level: 2, name: 'A clear process from the start' })).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 2, name: 'Browse a few good places to start' })).toHaveLength(1)
-    expect(screen.getByText('Tell me what you are planning')).toBeInTheDocument()
+    expect(screen.getByText('Tell us what you are planning')).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'A few practical answers' })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { level: 2, name: 'Send the essentials and I will take it from there' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { level: 2, name: 'Send the essentials and we will take it from there' })).not.toBeInTheDocument()
     expect(screen.getByText(/collection from leeds, local delivery where suitable, and uk delivery by agreement/i)).toBeInTheDocument()
     expect(screen.queryByText('Review score')).not.toBeInTheDocument()
     expect(screen.queryByText(/reviews from customers ordering handmade cakes/i)).not.toBeInTheDocument()

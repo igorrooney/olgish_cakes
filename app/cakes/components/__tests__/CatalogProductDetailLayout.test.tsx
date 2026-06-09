@@ -435,30 +435,54 @@ function fireGallerySwipeGesture({
   endX: number
   endY: number
 }) {
-  const startTouchPoint = createTouchPoint({
+  fireGalleryPointerEvent(element, 'pointerdown', {
     clientX: startX,
-    clientY: startY
+    clientY: startY,
+    isPrimary: true,
+    pointerId: 1,
+    pointerType: 'touch'
   })
-  const endTouchPoint = createTouchPoint({
+  fireGalleryPointerEvent(element, 'pointermove', {
     clientX: endX,
-    clientY: endY
+    clientY: endY,
+    isPrimary: true,
+    pointerId: 1,
+    pointerType: 'touch'
+  })
+  fireGalleryPointerEvent(element, 'pointerup', {
+    clientX: endX,
+    clientY: endY,
+    isPrimary: true,
+    pointerId: 1,
+    pointerType: 'touch'
+  })
+}
+
+function fireGalleryPointerEvent(
+  element: HTMLElement,
+  type: string,
+  eventInit: {
+    clientX: number
+    clientY: number
+    isPrimary: boolean
+    pointerId: number
+    pointerType: string
+  }
+) {
+  const event = new Event(type, {
+    bubbles: true,
+    cancelable: true
   })
 
-  fireEvent.touchStart(element, {
-    touches: [startTouchPoint],
-    changedTouches: [startTouchPoint],
-    targetTouches: [startTouchPoint]
+  Object.defineProperties(event, {
+    clientX: { value: eventInit.clientX },
+    clientY: { value: eventInit.clientY },
+    isPrimary: { value: eventInit.isPrimary },
+    pointerId: { value: eventInit.pointerId },
+    pointerType: { value: eventInit.pointerType }
   })
-  fireEvent.touchMove(element, {
-    touches: [endTouchPoint],
-    changedTouches: [endTouchPoint],
-    targetTouches: [endTouchPoint]
-  })
-  fireEvent.touchEnd(element, {
-    touches: [],
-    changedTouches: [endTouchPoint],
-    targetTouches: []
-  })
+
+  fireEvent(element, event)
 }
 
 function fireNativeClickSequence(elements: HTMLElement[]) {
@@ -587,12 +611,13 @@ describe('CatalogProductDetailLayout', () => {
     expect(imageWrapper).not.toHaveClass('rounded-box')
   })
 
-  it('uses touch none on mobile and pan-y touch behavior from tablet up on gallery image container', () => {
+  it('allows vertical panning on mobile gallery image container', () => {
     renderLayout()
 
     const imageWrapper = getGalleryViewport()
 
-    expect(imageWrapper).toHaveClass('touch-none', 'tablet:touch-pan-y')
+    expect(imageWrapper).toHaveClass('touch-pan-y')
+    expect(imageWrapper).not.toHaveClass('touch-none')
   })
 
   it('renders a stable gallery layer when no image transition is active', () => {
@@ -1237,7 +1262,7 @@ describe('CatalogProductDetailLayout', () => {
     expect(galleryViewport).not.toHaveClass('outline', 'outline-2', 'outline-offset-2', 'outline-primary-500')
   })
 
-  it('focuses gallery on image touch start so arrows become visible on mobile', () => {
+  it('focuses gallery on image pointer down so arrows become visible on mobile', () => {
     renderLayout()
 
     const galleryRegion = screen.getByRole('region', { name: 'Product gallery' })
@@ -1250,10 +1275,12 @@ describe('CatalogProductDetailLayout', () => {
       clientY: 120
     })
 
-    fireEvent.touchStart(imageWrapper, {
-      touches: [touchPoint],
-      changedTouches: [touchPoint],
-      targetTouches: [touchPoint]
+    fireGalleryPointerEvent(imageWrapper, 'pointerdown', {
+      clientX: touchPoint.clientX,
+      clientY: touchPoint.clientY,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: 'touch'
     })
 
     expect(galleryRegion).toHaveFocus()
@@ -1856,7 +1883,7 @@ describe('CatalogProductDetailLayout', () => {
       startX: 220,
       startY: 120,
       endX: 140,
-      endY: 160
+      endY: 190
     })
 
     expectActiveImage(1, 2)
@@ -1890,43 +1917,38 @@ describe('CatalogProductDetailLayout', () => {
     expectActiveImage(1, 2)
   })
 
-  it('does not navigate images after touch cancel', () => {
+  it('does not navigate images after pointer cancel', () => {
     renderLayout()
 
     const imageWrapper = getGalleryViewport()
 
-    const startTouchPoint = createTouchPoint({
+    fireGalleryPointerEvent(imageWrapper, 'pointerdown', {
       clientX: 220,
-      clientY: 120
+      clientY: 120,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: 'touch'
     })
-    const moveTouchPoint = createTouchPoint({
+    fireGalleryPointerEvent(imageWrapper, 'pointermove', {
       clientX: 180,
-      clientY: 124
+      clientY: 124,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: 'touch'
     })
-    const endTouchPoint = createTouchPoint({
+    fireGalleryPointerEvent(imageWrapper, 'pointercancel', {
+      clientX: 180,
+      clientY: 124,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: 'touch'
+    })
+    fireGalleryPointerEvent(imageWrapper, 'pointerup', {
       clientX: 80,
-      clientY: 126
-    })
-
-    fireEvent.touchStart(imageWrapper, {
-      touches: [startTouchPoint],
-      changedTouches: [startTouchPoint],
-      targetTouches: [startTouchPoint]
-    })
-    fireEvent.touchMove(imageWrapper, {
-      touches: [moveTouchPoint],
-      changedTouches: [moveTouchPoint],
-      targetTouches: [moveTouchPoint]
-    })
-    fireEvent.touchCancel(imageWrapper, {
-      touches: [],
-      changedTouches: [moveTouchPoint],
-      targetTouches: []
-    })
-    fireEvent.touchEnd(imageWrapper, {
-      touches: [],
-      changedTouches: [endTouchPoint],
-      targetTouches: []
+      clientY: 126,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: 'touch'
     })
 
     expectActiveImage(1, 2)

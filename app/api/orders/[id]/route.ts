@@ -1,7 +1,8 @@
 import { isAdminAuthenticated } from '@/lib/admin-auth'
+import { getCustomerEmailBcc } from '@/lib/email/customer-bcc'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
 import { logger } from '@/lib/logger'
-import { isCakesByPostOrderLike } from '@/lib/order-types'
+import { isCakesByPostOrderType, isCakesByPostProductType } from '@/lib/order-types'
 import {
   deleteSupabaseOrder,
   getSupabaseOrderByIdentifier,
@@ -61,6 +62,92 @@ function getDeliveryCourierLabel(order: Order): string {
   const courier = getDeliveryCourier(order) || 'evri'
 
   return deliveryCourierLabels[courier]
+}
+
+function getPostalOrderDescription(order: Order): 'cake by post order' | 'cake order' {
+  return isCakesByPostSourceOrder(order) ? 'cake by post order' : 'cake order'
+}
+
+function isCakesByPostSourceOrder(order: Order): boolean {
+  const productTypes = order.items
+    .map((item) => item.productType?.trim())
+    .filter((productType): productType is string => Boolean(productType))
+
+  if (productTypes.length > 0) {
+    return productTypes.some(isCakesByPostProductType)
+  }
+
+  return isCakesByPostOrderType(order.orderType)
+}
+
+function isGeneratedProductSummary(value: string | undefined): boolean {
+  const normalizedValue = value?.trim().toLowerCase() || ''
+
+  return normalizedValue.includes('product:') &&
+    normalizedValue.includes('product type:') &&
+    normalizedValue.includes('price:')
+}
+
+function extractExplicitCustomerMessage(value: string | undefined): string | undefined {
+  const lines = value?.split(/\r?\n/) || []
+  const messageLine = lines.find((line) => {
+    const normalizedLine = line.trim().toLowerCase()
+    return normalizedLine.startsWith('message:') ||
+      normalizedLine.startsWith('customer message:') ||
+      normalizedLine.startsWith('requirements:')
+  })
+
+  if (!messageLine) {
+    return undefined
+  }
+
+  return messageLine.replace(/^(message|customer message|requirements):\s*/i, '').trim() || undefined
+}
+
+function resolveCustomerMessage(value: string | undefined): string | undefined {
+  const explicitMessage = extractExplicitCustomerMessage(value)
+  if (explicitMessage) {
+    return resolveCustomerMessage(explicitMessage)
+  }
+
+  const trimmedValue = value?.trim() || ''
+  const normalizedValue = trimmedValue.toLowerCase()
+
+  if (
+    trimmedValue.length === 0 ||
+    normalizedValue === 'message' ||
+    normalizedValue === 'test message' ||
+    isGeneratedProductSummary(trimmedValue)
+  ) {
+    return undefined
+  }
+
+  return trimmedValue
+}
+
+function getStringRecordField(record: Record<string, unknown>, key: string): string | undefined {
+  const value = record[key]
+
+  return typeof value === 'string' ? value : undefined
+}
+
+function getOrderMetadataCustomerMessage(order: Order): string | undefined {
+  if (!isRecord(order.metadata)) {
+    return undefined
+  }
+
+  const inlineOrderContext = isRecord(order.metadata.inlineOrderContext)
+    ? order.metadata.inlineOrderContext
+    : undefined
+
+  return getStringRecordField(inlineOrderContext || {}, 'customerMessage') ||
+    getStringRecordField(order.metadata, 'customerMessage')
+}
+
+function getStatusEmailCustomerMessage(order: Order, firstItem: Order['items'][number] | undefined): string | undefined {
+  return resolveCustomerMessage(firstItem?.specialInstructions) ||
+    resolveCustomerMessage(getOrderMetadataCustomerMessage(order)) ||
+    resolveCustomerMessage(order.messages?.find((message) => resolveCustomerMessage(message.message))?.message)
 }
 
 function getFormString(formData: FormData, key: string): string | undefined {
@@ -569,11 +656,7 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
     return
   }
 
-  const isCakesByPostOrder = isCakesByPostOrderLike({
-    orderType: order.orderType,
-    deliveryMethod: order.delivery.deliveryMethod,
-    itemProductTypes: order.items.map((item) => item.productType)
-  })
+  const isCakesByPostOrder = isCakesByPostSourceOrder(order)
 
   const statusMessages = {
     confirmed: {
@@ -607,10 +690,11 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
 
         if (deliveryMethod === 'postal' || deliveryMethod === 'postal-delivery') {
           const courierLabel = getDeliveryCourierLabel(order)
+          const orderDescription = getPostalOrderDescription(order)
 
           return order.delivery.trackingNumber
-            ? `Great news, your cakes by post order has been dispatched with ${courierLabel}.`
-            : `Great news, your cakes by post order has been dispatched with ${courierLabel} and is on the way.`
+            ? `Great news, your ${orderDescription} has been dispatched with ${courierLabel}.`
+            : `Great news, your ${orderDescription} has been dispatched with ${courierLabel} and is on the way.`
         }
 
         if (deliveryMethod === 'local-delivery') {
@@ -696,7 +780,7 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
         designType: firstItem?.designType,
         filling: firstItem?.flavor,
         servings: firstItem?.size,
-        customerMessage: firstItem?.specialInstructions,
+        customerMessage: getStatusEmailCustomerMessage(order, firstItem),
         deliveryMethod: order.delivery.deliveryMethod,
         deliveryRecipientName: order.delivery.recipientName || order.customer.name,
         deliveryAddress: order.delivery.deliveryAddress,
@@ -713,7 +797,7 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
       message: {
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: order.customer.email,
-        bcc: process.env.ADMIN_BCC_EMAIL || undefined
+        bcc: getCustomerEmailBcc(process.env.ADMIN_BCC_EMAIL)
       }
     })
 
