@@ -711,7 +711,7 @@ describe('CakesMobileFilterSortSheet', () => {
     setModalBoxScrollTop(modalBox, 0)
 
     fireSwipeGesture({
-      element: getDragHandleElement(),
+      element: modalBox,
       startX: 24,
       startY: 120,
       endX: 30,
@@ -732,7 +732,7 @@ describe('CakesMobileFilterSortSheet', () => {
     setModalBoxScrollTop(modalBox, 0)
 
     fireSwipeGesture({
-      element: getDragHandleElement(),
+      element: modalBox,
       startX: 28,
       startY: 110,
       endX: 31,
@@ -761,14 +761,18 @@ describe('CakesMobileFilterSortSheet', () => {
       clientY: 154
     })
 
-    const dragHandle = getDragHandleElement()
+    const sortOptionRow = screen.getByRole('radio', { name: 'Latest/Newest' }).closest('label')
 
-    fireEvent.touchStart(dragHandle, {
+    if (sortOptionRow === null) {
+      throw new Error('Expected sort option row to render')
+    }
+
+    fireEvent.touchStart(sortOptionRow, {
       touches: [startTouchPoint],
       changedTouches: [startTouchPoint],
       targetTouches: [startTouchPoint]
     })
-    fireEvent.touchMove(dragHandle, {
+    fireEvent.touchMove(sortOptionRow, {
       touches: [moveTouchPoint],
       changedTouches: [moveTouchPoint],
       targetTouches: [moveTouchPoint]
@@ -776,7 +780,7 @@ describe('CakesMobileFilterSortSheet', () => {
 
     expect(modalBox.style.transform).toBe('translate3d(0, 44px, 0)')
 
-    fireEvent.touchEnd(dragHandle, {
+    fireEvent.touchEnd(sortOptionRow, {
       touches: [],
       changedTouches: [moveTouchPoint],
       targetTouches: []
@@ -784,6 +788,27 @@ describe('CakesMobileFilterSortSheet', () => {
 
     expect(onCancel).not.toHaveBeenCalled()
     expect(modalBox.style.transform).toBe('')
+  })
+
+  it('closes on downward swipe from the filter section', async () => {
+    const { onCancel } = renderSheet()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    const modalBox = getModalBoxElement()
+    setModalBoxScrollTop(modalBox, 0)
+
+    fireSwipeGesture({
+      element: screen.getByRole('heading', { name: 'Filter by' }),
+      startX: 24,
+      startY: 300,
+      endX: 28,
+      endY: 390
+    })
+
+    expect(onCancel).toHaveBeenCalledTimes(1)
   })
 
   it('does not close on downward swipe when sheet is scrolled', async () => {
@@ -797,7 +822,7 @@ describe('CakesMobileFilterSortSheet', () => {
     setModalBoxScrollTop(modalBox, 32)
 
     fireSwipeGesture({
-      element: getDragHandleElement(),
+      element: modalBox,
       startX: 24,
       startY: 100,
       endX: 27,
@@ -818,14 +843,14 @@ describe('CakesMobileFilterSortSheet', () => {
     setModalBoxScrollTop(modalBox, 0)
 
     fireSwipeGesture({
-      element: getDragHandleElement(),
+      element: modalBox,
       startX: 32,
       startY: 220,
       endX: 34,
       endY: 140
     })
     fireSwipeGesture({
-      element: getDragHandleElement(),
+      element: modalBox,
       startX: 20,
       startY: 100,
       endX: 150,
