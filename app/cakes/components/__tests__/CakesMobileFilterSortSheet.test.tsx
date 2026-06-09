@@ -732,6 +732,48 @@ describe('CakesMobileFilterSortSheet', () => {
     })
 
     expect(onCancel).not.toHaveBeenCalled()
+    expect(modalBox.style.transform).toBe('')
+  })
+
+  it('moves with the finger during a downward drag and resets after release', async () => {
+    const { onCancel } = renderSheet()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    const modalBox = getModalBoxElement()
+    setModalBoxScrollTop(modalBox, 0)
+    const startTouchPoint = createTouchPoint({
+      clientX: 28,
+      clientY: 110
+    })
+    const moveTouchPoint = createTouchPoint({
+      clientX: 31,
+      clientY: 154
+    })
+
+    fireEvent.touchStart(modalBox, {
+      touches: [startTouchPoint],
+      changedTouches: [startTouchPoint],
+      targetTouches: [startTouchPoint]
+    })
+    fireEvent.touchMove(modalBox, {
+      touches: [moveTouchPoint],
+      changedTouches: [moveTouchPoint],
+      targetTouches: [moveTouchPoint]
+    })
+
+    expect(modalBox.style.transform).toBe('translate3d(0, 44px, 0)')
+
+    fireEvent.touchEnd(modalBox, {
+      touches: [],
+      changedTouches: [moveTouchPoint],
+      targetTouches: []
+    })
+
+    expect(onCancel).not.toHaveBeenCalled()
+    expect(modalBox.style.transform).toBe('')
   })
 
   it('does not close on downward swipe when sheet is scrolled', async () => {

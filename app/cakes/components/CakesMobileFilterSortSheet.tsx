@@ -5,6 +5,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type FormEvent,
   type SyntheticEvent,
   type TouchEvent as ReactTouchEvent
@@ -39,7 +40,10 @@ const mobileFilterCollapseIconClassName = 'mobile-filter-collapse-icon'
 const mobileFilterCollapseIndicatorClassName =
   'pointer-events-none absolute right-[22px] top-1/2 -translate-y-1/2 [font-family:var(--t-font-family-theme-primary)] [font-style:normal] [font-size:var(--t-font-size-xl)] [font-weight:var(--t-font-weight-semibold)] leading-none text-(--color-primary-400)'
 const swipeCloseMinDistancePx = 72
+const swipeCloseMinVelocityPxPerMs = 0.55
+const swipeCloseVelocityMinDistancePx = 56
 const swipeCloseScrollTopTolerancePx = 4
+const swipeDirectionLockMinDistancePx = 10
 
 function CollectionCheckbox({
   checked,
@@ -94,7 +98,11 @@ export function CakesMobileFilterSortSheet({
   const touchCurrentXRef = useRef<number | null>(null)
   const touchCurrentYRef = useRef<number | null>(null)
   const touchStartScrollTopRef = useRef(0)
+  const touchStartTimeRef = useRef(0)
+  const touchCurrentTimeRef = useRef(0)
   const isSwipeTrackingRef = useRef(false)
+  const [sheetDragOffsetY, setSheetDragOffsetY] = useState(0)
+  const [isSheetDragging, setIsSheetDragging] = useState(false)
   const [isFeaturedExpanded, setIsFeaturedExpanded] = useState(true)
   const [isCollectionsExpanded, setIsCollectionsExpanded] = useState(false)
   const [showAllCollections, setShowAllCollections] = useState(false)
@@ -175,7 +183,11 @@ export function CakesMobileFilterSortSheet({
     touchCurrentXRef.current = null
     touchCurrentYRef.current = null
     touchStartScrollTopRef.current = 0
+    touchStartTimeRef.current = 0
+    touchCurrentTimeRef.current = 0
     isSwipeTrackingRef.current = false
+    setIsSheetDragging(false)
+    setSheetDragOffsetY(0)
   }
 
   function isTopScrollPosition(scrollTop: number) {
@@ -201,7 +213,11 @@ export function CakesMobileFilterSortSheet({
     touchCurrentXRef.current = touchPoint.clientX
     touchCurrentYRef.current = touchPoint.clientY
     touchStartScrollTopRef.current = modalBox.scrollTop
+    touchStartTimeRef.current = event.timeStamp
+    touchCurrentTimeRef.current = event.timeStamp
     isSwipeTrackingRef.current = true
+    setIsSheetDragging(true)
+    setSheetDragOffsetY(0)
   }
 
   function handleSheetTouchMove(event: ReactTouchEvent<HTMLDivElement>) {
@@ -222,8 +238,38 @@ export function CakesMobileFilterSortSheet({
     }
 
     const touchPoint = event.touches[0]
+    const touchStartX = touchStartXRef.current
+    const touchStartY = touchStartYRef.current
+
+    if (touchStartX === null || touchStartY === null) {
+      resetSwipeTrackingState()
+      return
+    }
+
     touchCurrentXRef.current = touchPoint.clientX
     touchCurrentYRef.current = touchPoint.clientY
+    touchCurrentTimeRef.current = event.timeStamp
+
+    const deltaX = touchPoint.clientX - touchStartX
+    const deltaY = touchPoint.clientY - touchStartY
+    const absoluteDeltaX = Math.abs(deltaX)
+    const absoluteDeltaY = Math.abs(deltaY)
+
+    if (absoluteDeltaX > swipeDirectionLockMinDistancePx && absoluteDeltaX > absoluteDeltaY) {
+      resetSwipeTrackingState()
+      return
+    }
+
+    if (deltaY <= 0) {
+      setSheetDragOffsetY(0)
+      return
+    }
+
+    if (event.cancelable) {
+      event.preventDefault()
+    }
+
+    setSheetDragOffsetY(deltaY)
   }
 
   function handleSheetTouchEnd(event: ReactTouchEvent<HTMLDivElement>) {
@@ -256,8 +302,13 @@ export function CakesMobileFilterSortSheet({
     const endedAtTop = modalBox !== null && isTopScrollPosition(modalBox.scrollTop)
     const deltaX = touchEndX - touchStartX
     const deltaY = touchEndY - touchStartY
+    const elapsedMs = Math.max(1, (event.timeStamp || touchCurrentTimeRef.current) - touchStartTimeRef.current)
+    const swipeVelocity = deltaY / elapsedMs
     const isVerticalDownwardSwipe = deltaY > 0 && Math.abs(deltaY) > Math.abs(deltaX)
     const hasSufficientSwipeDistance = deltaY >= swipeCloseMinDistancePx
+    const hasSufficientSwipeVelocity =
+      deltaY >= swipeCloseVelocityMinDistancePx &&
+      swipeVelocity >= swipeCloseMinVelocityPxPerMs
 
     resetSwipeTrackingState()
 
@@ -265,7 +316,7 @@ export function CakesMobileFilterSortSheet({
       return
     }
 
-    if (!isVerticalDownwardSwipe || !hasSufficientSwipeDistance) {
+    if (!isVerticalDownwardSwipe || (!hasSufficientSwipeDistance && !hasSufficientSwipeVelocity)) {
       return
     }
 
@@ -466,6 +517,12 @@ export function CakesMobileFilterSortSheet({
     }
   }
 
+  const modalBoxStyle: CSSProperties = sheetDragOffsetY > 0
+    ? {
+        transform: `translate3d(0, ${sheetDragOffsetY}px, 0)`
+      }
+    : {}
+
   return (
     <dialog
       ref={dialogRef}
@@ -479,7 +536,10 @@ export function CakesMobileFilterSortSheet({
         onTouchMove={handleSheetTouchMove}
         onTouchEnd={handleSheetTouchEnd}
         onTouchCancel={handleSheetTouchCancel}
-        className='modal-box m-0 w-full max-w-none rounded-t-[36px] rounded-b-none border border-base-300 bg-(--color-filter-sort-mobile-sheet-bg) px-6 pb-6 pt-3 shadow-none'
+        style={modalBoxStyle}
+        className={`modal-box m-0 w-full max-w-none transform-gpu rounded-t-[36px] rounded-b-none border border-base-300 bg-(--color-filter-sort-mobile-sheet-bg) px-6 pb-6 pt-3 shadow-none motion-reduce:transition-none ${
+          isSheetDragging ? 'touch-none transition-none' : 'transition-transform duration-300 ease-out'
+        }`}
       >
         <div className='mx-auto h-[5px] w-[40px] rounded-[8px] bg-(--color-filter-sort-mobile-handle)' aria-hidden='true' />
 
