@@ -493,7 +493,7 @@ describe("BlogPage", () => {
     expect(screen.queryByAltText("Custom cake travel image")).not.toBeInTheDocument();
   });
 
-  it("uses by-post archive commerce copy for a cake when the delivery policy allows GB mail delivery", async () => {
+  it("keeps cake archive commerce copy out of by-post CTA wording", async () => {
     mockGetPaginatedArchiveArticles.mockResolvedValue({
       articles: [
         {
@@ -519,10 +519,12 @@ describe("BlogPage", () => {
     render(view);
 
     expect(screen.getByText(/shop postal loaf cake/i)).toBeInTheDocument();
+    expect(screen.getByText(/planning a celebration cake/i)).toBeInTheDocument();
+    expect(screen.queryByText(/need something that can travel/i)).not.toBeInTheDocument();
     expect(
-      screen.getByText(/postal loaf cake is prepared as a vacuum-packed parcel for uk post when you need slices, biscuits, or standard-design honey cake that can travel neatly/i)
+      screen.getByText(/postal loaf cake is a cake olga suggests when the order needs a proper celebration finish, local delivery, or collection rather than parcel-post packing/i)
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /see this cake by post/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^see this cake$/i })).toHaveAttribute(
       "href",
       "/cakes/postal-loaf-cake"
     );

@@ -478,14 +478,14 @@ describe("BlogArticlePage", () => {
         /tall custom cake is the kind of cake olga suggests when the order needs a proper celebration finish, local delivery, or collection rather than parcel-post packing/i
       )
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /see this custom cake/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^see this cake$/i })).toHaveAttribute(
       "href",
       "/cakes/tall-custom-cake"
     );
     expect(screen.queryByRole("link", { name: /see this cake by post/i })).not.toBeInTheDocument();
   });
 
-  it("treats a cake as by-post on the article page when policy allows GB mail delivery", async () => {
+  it("keeps cake article commerce copy out of by-post CTA wording", async () => {
     mockGetArticleBySlug.mockResolvedValue({
       ...baseArticle,
       primaryProduct: {
@@ -509,15 +509,15 @@ describe("BlogArticlePage", () => {
 
     render(view);
 
-    expect(screen.getByText(/useful if the cake has to travel/i)).toBeInTheDocument();
+    expect(screen.getByText(/better for local delivery or collection/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/postal loaf cake is prepared as a vacuum-packed parcel for uk post when you want slices, biscuits, or standard-design honey cake that can travel neatly/i)
+      screen.getByText(/postal loaf cake is the kind of cake olga suggests when the order needs a proper celebration finish, local delivery, or collection rather than parcel-post packing/i)
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /see this cake by post/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^see this cake$/i })).toHaveAttribute(
       "href",
       "/cakes/postal-loaf-cake"
     );
-    expect(screen.queryByRole("link", { name: /see this custom cake/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /see this cake by post/i })).not.toBeInTheDocument();
   });
 
   it("uses the static blog archive href for the back link", async () => {

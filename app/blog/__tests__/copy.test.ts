@@ -108,7 +108,7 @@ describe('blog commerce copy', () => {
     })
   })
 
-  it('treats a GB-mail cake as by-post when delivery policy allows UK posting', () => {
+  it('keeps a GB-mail cake product out of by-post CTA wording', () => {
     expect(
       getArchiveCommerceCopy({
         product: {
@@ -120,9 +120,9 @@ describe('blog commerce copy', () => {
         }
       })
     ).toEqual({
-      eyebrow: 'Need something that can travel?',
+      eyebrow: 'Planning a celebration cake?',
       heading: 'Shop Postal loaf cake',
-      body: 'Postal loaf cake is prepared as a vacuum-packed parcel for UK post when you need slices, biscuits, or standard-design honey cake that can travel neatly.',
+      body: 'Postal loaf cake is a cake Olga suggests when the order needs a proper celebration finish, local delivery, or collection rather than parcel-post packing.',
       bullets: [
         'The cakes by post range is prepared for post, with bakes vacuum-packed and dispatched as parcels',
         'Honey cake slices, caramel biscuits, and standard-design honey cake work well when you want a posted surprise without sending a full celebration cake',
@@ -130,7 +130,7 @@ describe('blog commerce copy', () => {
       ],
       primaryCta: {
         href: '/cakes/postal-loaf-cake',
-        label: 'See this cake by post'
+        label: 'See this cake'
       },
       secondaryCta: {
         href: '/cakes',
@@ -139,7 +139,7 @@ describe('blog commerce copy', () => {
     })
   })
 
-  it('treats a GB-mail cake as by-post on article commerce copy when delivery policy allows posting', () => {
+  it('keeps a GB-mail cake product out of article by-post wording', () => {
     expect(
       getArticleCommerceCopy({
         _id: 'cake-2',
@@ -149,9 +149,9 @@ describe('blog commerce copy', () => {
         isPostableToUk: true
       })
     ).toEqual({
-      eyebrow: 'Useful if the cake has to travel',
+      eyebrow: 'Better for local delivery or collection',
       heading: 'Start with Postal loaf cake',
-      body: 'Postal loaf cake is prepared as a vacuum-packed parcel for UK post when you want slices, biscuits, or standard-design honey cake that can travel neatly.'
+      body: 'Postal loaf cake is the kind of cake Olga suggests when the order needs a proper celebration finish, local delivery, or collection rather than parcel-post packing.'
     })
   })
 

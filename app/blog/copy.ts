@@ -57,6 +57,10 @@ function isBlogPostalProduct(product?: ArticleProduct) {
   return isArticleProductPostableToUk(product)
 }
 
+function isByPostCatalogueProduct(product?: ArticleProduct) {
+  return product?._type === 'giftHamper' || isGenericPostalProduct(product)
+}
+
 function getArchiveDefaultSecondaryCta(activeTopicSlug?: BlogTopicSlug): CommerceCta {
   if (activeTopicSlug === 'custom-cakes') {
     return {
@@ -191,21 +195,30 @@ export function getArchiveCommerceCopy({
   }
 
   const postalProduct = isPostalProduct ? product : undefined
-  const heading = postalProduct
-    ? isGenericPostalProduct(postalProduct)
+  const byPostCatalogueProduct = isByPostCatalogueProduct(postalProduct) ? postalProduct : undefined
+  const customCakeProduct = isCustomCakeProduct(product) && !byPostCatalogueProduct ? product : undefined
+  const heading = byPostCatalogueProduct
+    ? isGenericPostalProduct(byPostCatalogueProduct)
       ? 'Shop the by-post options'
-      : `Shop ${postalProduct.name}`
+      : `Shop ${byPostCatalogueProduct.name}`
+    : customCakeProduct
+      ? `Shop ${customCakeProduct.name}`
     : 'Shop the options that travel best'
-  const body = postalProduct
-    ? isGenericPostalProduct(postalProduct)
+  const body = byPostCatalogueProduct
+    ? isGenericPostalProduct(byPostCatalogueProduct)
       ? 'Start here if you need cakes by post with honey cake slices, caramel biscuits, or standard-design honey cake vacuum-packed and sent as a parcel across the UK.'
-      : `${postalProduct.name} is prepared as a vacuum-packed parcel for UK post when you need slices, biscuits, or standard-design honey cake that can travel neatly.`
+      : `${byPostCatalogueProduct.name} is prepared as a vacuum-packed parcel for UK post when you need slices, biscuits, or standard-design honey cake that can travel neatly.`
+    : customCakeProduct
+      ? `${customCakeProduct.name} is a cake Olga suggests when the order needs a proper celebration finish, local delivery, or collection rather than parcel-post packing.`
     : activeTopicSlug === 'celebration-planning'
       ? 'If you are sending cake as a gift, start with the by-post options that travel cleanly, then compare custom cakes only if the occasion really needs a larger centrepiece.'
       : 'If you need something to travel, start with the cakes by post range for honey cake slices, caramel biscuits, or standard-design honey cake vacuum-packed for parcel post. For full celebration cakes, ask about local delivery, collection, or UK delivery by agreement.'
+  const eyebrow = customCakeProduct
+    ? 'Planning a celebration cake?'
+    : 'Need something that can travel?'
 
   return {
-    eyebrow: 'Need something that can travel?',
+    eyebrow,
     heading,
     body,
     bullets: [
@@ -214,8 +227,12 @@ export function getArchiveCommerceCopy({
       'Tall, chilled, or highly decorated cakes are better kept to local delivery, collection, or UK delivery by agreement'
     ],
     primaryCta: {
-      href: postalProduct ? getProductHref(postalProduct) : '/cakes-by-post',
-      label: postalProduct ? 'See this cake by post' : 'Shop cakes by post'
+      href: product ? getProductHref(product) : '/cakes-by-post',
+      label: byPostCatalogueProduct
+        ? 'See this cake by post'
+        : customCakeProduct
+          ? 'See this cake'
+          : 'Shop cakes by post'
     },
     secondaryCta
   }
@@ -223,22 +240,23 @@ export function getArchiveCommerceCopy({
 
 export function getArticleCommerceCopy(product?: ArticleProduct) {
   const isPostalProduct = isBlogPostalProduct(product)
+  const byPostCatalogueProduct = isByPostCatalogueProduct(product) ? product : undefined
   const eyebrow = product
-    ? isPostalProduct
+    ? byPostCatalogueProduct && isPostalProduct
       ? 'Useful if the cake has to travel'
       : isCustomCakeProduct(product)
         ? 'Better for local delivery or collection'
         : 'Better arranged directly'
     : 'Useful if the cake has to travel'
   const heading = product
-    ? isPostalProduct && isGenericPostalProduct(product)
+    ? byPostCatalogueProduct && isGenericPostalProduct(product)
       ? 'Start with the by-post options'
       : `Start with ${product.name}`
     : 'Start with the format that fits the journey'
   const body = product
-    ? isPostalProduct && isGenericPostalProduct(product)
+    ? byPostCatalogueProduct && isGenericPostalProduct(product)
       ? 'This is where Olga points people when they need standard-design honey cake, honey cake slices, or caramel biscuits vacuum-packed and sent as a parcel.'
-      : isPostalProduct
+      : byPostCatalogueProduct && isPostalProduct
         ? `${product.name} is prepared as a vacuum-packed parcel for UK post when you want slices, biscuits, or standard-design honey cake that can travel neatly.`
         : isCustomCakeProduct(product)
         ? `${product.name} is the kind of cake Olga suggests when the order needs a proper celebration finish, local delivery, or collection rather than parcel-post packing.`

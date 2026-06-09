@@ -64,11 +64,11 @@ const getArticlePageData = cache(async (slug: string) => {
 });
 
 function getArticlePrimaryCtaLabel(featuredProduct: ArticleProduct) {
-  if (isArticleProductPostableToUk(featuredProduct)) {
+  if (featuredProduct._type === "giftHamper" && isArticleProductPostableToUk(featuredProduct)) {
     return "See this cake by post";
   }
 
-  return featuredProduct._type === "cake" ? "See this custom cake" : "See this cake";
+  return "See this cake";
 }
 
 function ArticleTableOfContentsCard({
