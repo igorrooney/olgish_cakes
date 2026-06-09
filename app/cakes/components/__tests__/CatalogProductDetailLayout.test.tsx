@@ -1234,6 +1234,32 @@ describe('CatalogProductDetailLayout', () => {
     expect(nextArrow).toHaveClass('opacity-0', 'pointer-events-none', 'tablet:opacity-80', 'tablet:pointer-events-auto')
   })
 
+  it('does not start gallery pointer capture when desktop arrows are pressed', () => {
+    renderLayout()
+
+    const galleryViewport = getGalleryViewport()
+    const nextArrow = screen.getByRole('button', { name: 'View next image' })
+    const setPointerCapture = jest.fn()
+
+    Object.defineProperty(galleryViewport, 'setPointerCapture', {
+      configurable: true,
+      value: setPointerCapture
+    })
+
+    fireGalleryPointerEvent(nextArrow, 'pointerdown', {
+      clientX: 560,
+      clientY: 430,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: 'mouse'
+    })
+    fireEvent.click(nextArrow)
+
+    expect(setPointerCapture).not.toHaveBeenCalled()
+    expectActiveImage(2, 2)
+    expect(getActiveGalleryImage()).toHaveAttribute('alt', 'Gift hamper image 2')
+  })
+
   it('reveals mobile arrows while gallery is focused and hides them again on blur', () => {
     renderLayout()
 

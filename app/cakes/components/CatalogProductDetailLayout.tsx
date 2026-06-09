@@ -466,6 +466,10 @@ export function CatalogProductDetailLayout({
     moveImageByDirection('next')
   }, [moveImageByDirection])
 
+  const handleGalleryControlPointerDown = useCallback((event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+  }, [])
+
   const handleGalleryKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
     if (!isMultiImageGallery) {
       return
@@ -955,6 +959,7 @@ export function CatalogProductDetailLayout({
               <>
                 <button
                   type='button'
+                  onPointerDown={handleGalleryControlPointerDown}
                   onClick={handlePreviousImage}
                   aria-label='View previous image'
                   className={`touch-target cursor-pointer absolute left-3 top-1/2 z-20 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-base-100/90 text-primary-500 shadow-md transition-opacity hover:opacity-100 ${isGalleryFocused ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} tablet:opacity-80 tablet:pointer-events-auto`}
@@ -963,6 +968,7 @@ export function CatalogProductDetailLayout({
                 </button>
                 <button
                   type='button'
+                  onPointerDown={handleGalleryControlPointerDown}
                   onClick={handleNextImage}
                   aria-label='View next image'
                   className={`touch-target cursor-pointer absolute right-3 top-1/2 z-20 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-base-100/90 text-primary-500 shadow-md transition-opacity hover:opacity-100 ${isGalleryFocused ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} tablet:opacity-80 tablet:pointer-events-auto`}
