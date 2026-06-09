@@ -526,22 +526,28 @@ export function CakesMobileFilterSortSheet({
   return (
     <dialog
       ref={dialogRef}
-      className='modal modal-bottom tablet:hidden'
+      className='modal modal-bottom overscroll-y-contain tablet:hidden'
       onCancel={handleDialogCancel}
       data-testid='mobile-filter-sort-sheet'
     >
       <div
         ref={modalBoxRef}
-        onTouchStart={handleSheetTouchStart}
-        onTouchMove={handleSheetTouchMove}
-        onTouchEnd={handleSheetTouchEnd}
-        onTouchCancel={handleSheetTouchCancel}
         style={modalBoxStyle}
-        className={`modal-box m-0 w-full max-w-none transform-gpu rounded-t-[36px] rounded-b-none border border-base-300 bg-(--color-filter-sort-mobile-sheet-bg) px-6 pb-6 pt-3 shadow-none motion-reduce:transition-none ${
+        className={`modal-box relative m-0 w-full max-w-none transform-gpu overscroll-y-contain rounded-t-[36px] rounded-b-none border border-base-300 bg-(--color-filter-sort-mobile-sheet-bg) px-6 pb-6 pt-3 shadow-none motion-reduce:transition-none ${
           isSheetDragging ? 'touch-none transition-none' : 'transition-transform duration-300 ease-out'
         }`}
       >
-        <div className='mx-auto h-[5px] w-[40px] rounded-[8px] bg-(--color-filter-sort-mobile-handle)' aria-hidden='true' />
+        <div
+          data-testid='mobile-filter-sort-drag-handle'
+          onTouchStart={handleSheetTouchStart}
+          onTouchMove={handleSheetTouchMove}
+          onTouchEnd={handleSheetTouchEnd}
+          onTouchCancel={handleSheetTouchCancel}
+          className='absolute inset-x-0 top-0 z-10 flex h-10 touch-none justify-center overscroll-y-contain pt-3'
+        >
+          <div className='h-[5px] w-[40px] rounded-[8px] bg-(--color-filter-sort-mobile-handle)' aria-hidden='true' />
+        </div>
+        <div className='mx-auto h-[5px] w-[40px]' aria-hidden='true' />
 
         <section className='mt-6'>
           <h2 className={sheetSectionHeadingClassName}>

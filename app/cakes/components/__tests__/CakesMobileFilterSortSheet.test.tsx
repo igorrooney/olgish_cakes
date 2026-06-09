@@ -301,6 +301,10 @@ function getModalBoxElement() {
   return modalBoxElement as HTMLDivElement
 }
 
+function getDragHandleElement() {
+  return screen.getByTestId('mobile-filter-sort-drag-handle')
+}
+
 function setModalBoxScrollTop(modalBox: HTMLDivElement, scrollTop: number) {
   Object.defineProperty(modalBox, 'scrollTop', {
     configurable: true,
@@ -339,7 +343,7 @@ function fireSwipeGesture({
   endX,
   endY
 }: {
-  element: HTMLDivElement
+  element: HTMLElement
   startX: number
   startY: number
   endX: number
@@ -398,6 +402,10 @@ describe('CakesMobileFilterSortSheet', () => {
     await waitFor(() => {
       expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
     })
+
+    expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveClass('overscroll-y-contain')
+    expect(getModalBoxElement()).toHaveClass('overscroll-y-contain')
+    expect(getDragHandleElement()).toHaveClass('touch-none')
 
     const sortByHeading = screen.getByRole('heading', { name: 'Sort by' })
 
@@ -703,7 +711,7 @@ describe('CakesMobileFilterSortSheet', () => {
     setModalBoxScrollTop(modalBox, 0)
 
     fireSwipeGesture({
-      element: modalBox,
+      element: getDragHandleElement(),
       startX: 24,
       startY: 120,
       endX: 30,
@@ -724,7 +732,7 @@ describe('CakesMobileFilterSortSheet', () => {
     setModalBoxScrollTop(modalBox, 0)
 
     fireSwipeGesture({
-      element: modalBox,
+      element: getDragHandleElement(),
       startX: 28,
       startY: 110,
       endX: 31,
@@ -753,12 +761,14 @@ describe('CakesMobileFilterSortSheet', () => {
       clientY: 154
     })
 
-    fireEvent.touchStart(modalBox, {
+    const dragHandle = getDragHandleElement()
+
+    fireEvent.touchStart(dragHandle, {
       touches: [startTouchPoint],
       changedTouches: [startTouchPoint],
       targetTouches: [startTouchPoint]
     })
-    fireEvent.touchMove(modalBox, {
+    fireEvent.touchMove(dragHandle, {
       touches: [moveTouchPoint],
       changedTouches: [moveTouchPoint],
       targetTouches: [moveTouchPoint]
@@ -766,7 +776,7 @@ describe('CakesMobileFilterSortSheet', () => {
 
     expect(modalBox.style.transform).toBe('translate3d(0, 44px, 0)')
 
-    fireEvent.touchEnd(modalBox, {
+    fireEvent.touchEnd(dragHandle, {
       touches: [],
       changedTouches: [moveTouchPoint],
       targetTouches: []
@@ -787,7 +797,7 @@ describe('CakesMobileFilterSortSheet', () => {
     setModalBoxScrollTop(modalBox, 32)
 
     fireSwipeGesture({
-      element: modalBox,
+      element: getDragHandleElement(),
       startX: 24,
       startY: 100,
       endX: 27,
@@ -808,14 +818,14 @@ describe('CakesMobileFilterSortSheet', () => {
     setModalBoxScrollTop(modalBox, 0)
 
     fireSwipeGesture({
-      element: modalBox,
+      element: getDragHandleElement(),
       startX: 32,
       startY: 220,
       endX: 34,
       endY: 140
     })
     fireSwipeGesture({
-      element: modalBox,
+      element: getDragHandleElement(),
       startX: 20,
       startY: 100,
       endX: 150,
