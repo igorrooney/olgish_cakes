@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import type {
   CatalogCategoryLandingConfig,
   CatalogCategoryLandingSlug
@@ -10,9 +10,11 @@ import { WeddingLandingEditorial } from './WeddingLandingEditorial'
 
 const categoryLandingEditorialResolvers: Record<
   CatalogCategoryLandingSlug,
-  (config: CatalogCategoryLandingConfig) => ReactElement
+  (config: CatalogCategoryLandingConfig, reviewSection?: ReactNode) => ReactElement
 > = {
-  'wedding-cakes': (config) => <WeddingLandingEditorial config={config} />,
+  'wedding-cakes': (config, reviewSection) => (
+    <WeddingLandingEditorial config={config} reviewSection={reviewSection} />
+  ),
   'birthday-cakes': (config) => <BirthdayLandingEditorial config={config} />,
   'anniversary-cakes-leeds': (config) => <AnniversaryLandingEditorial config={config} />,
   'baby-shower-cakes': (config) => <BabyShowerLandingEditorial config={config} />
@@ -20,7 +22,8 @@ const categoryLandingEditorialResolvers: Record<
 
 export function getCategoryLandingPostCatalogContent(
   slug: CatalogCategoryLandingSlug,
-  config: CatalogCategoryLandingConfig
+  config: CatalogCategoryLandingConfig,
+  reviewSection?: ReactNode
 ) {
-  return categoryLandingEditorialResolvers[slug](config)
+  return categoryLandingEditorialResolvers[slug](config, reviewSection)
 }

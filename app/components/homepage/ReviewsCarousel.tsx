@@ -14,6 +14,7 @@ export type HomepageReview = {
 
 interface ReviewProps {
   testimonials: HomepageReview[]
+  titleClassName?: string
 }
 
 interface ReviewCardProps {
@@ -378,7 +379,12 @@ function ReviewCard({ testimonial, reviewTextId, className }: ReviewCardProps) {
   )
 }
 
-export function ReviewsCarousel({ testimonials }: ReviewProps) {
+const defaultReviewsTitleClassName = 'font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px] tablet:leading-[52px]'
+
+export function ReviewsCarousel({
+  testimonials,
+  titleClassName = defaultReviewsTitleClassName
+}: ReviewProps) {
   const mobileCarouselRef = useRef<HTMLDivElement>(null)
   const tabletCarouselRef = useRef<HTMLDivElement>(null)
   const smallLaptopCarouselRef = useRef<HTMLDivElement>(null)
@@ -415,7 +421,7 @@ export function ReviewsCarousel({ testimonials }: ReviewProps) {
   return (
     <section className='bg-base-100 px-4 py-8 tablet:py-12'>
       <div className='homepage-container flex flex-col gap-6'>
-        <h2 className='font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px] tablet:leading-[52px]'>
+        <h2 className={titleClassName}>
           Our reviews
         </h2>
 

@@ -301,6 +301,10 @@ function getModalBoxElement() {
   return modalBoxElement as HTMLDivElement
 }
 
+function getDragHandleElement() {
+  return screen.getByTestId('mobile-filter-sort-drag-handle')
+}
+
 function setModalBoxScrollTop(modalBox: HTMLDivElement, scrollTop: number) {
   Object.defineProperty(modalBox, 'scrollTop', {
     configurable: true,
@@ -339,7 +343,7 @@ function fireSwipeGesture({
   endX,
   endY
 }: {
-  element: HTMLDivElement
+  element: HTMLElement
   startX: number
   startY: number
   endX: number
@@ -398,6 +402,10 @@ describe('CakesMobileFilterSortSheet', () => {
     await waitFor(() => {
       expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
     })
+
+    expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveClass('overscroll-y-contain')
+    expect(getModalBoxElement()).toHaveClass('overscroll-y-contain')
+    expect(getDragHandleElement()).toHaveClass('touch-none')
 
     const sortByHeading = screen.getByRole('heading', { name: 'Sort by' })
 
@@ -732,6 +740,75 @@ describe('CakesMobileFilterSortSheet', () => {
     })
 
     expect(onCancel).not.toHaveBeenCalled()
+    expect(modalBox.style.transform).toBe('')
+  })
+
+  it('moves with the finger during a downward drag and resets after release', async () => {
+    const { onCancel } = renderSheet()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    const modalBox = getModalBoxElement()
+    setModalBoxScrollTop(modalBox, 0)
+    const startTouchPoint = createTouchPoint({
+      clientX: 28,
+      clientY: 110
+    })
+    const moveTouchPoint = createTouchPoint({
+      clientX: 31,
+      clientY: 154
+    })
+
+    const sortOptionRow = screen.getByRole('radio', { name: 'Latest/Newest' }).closest('label')
+
+    if (sortOptionRow === null) {
+      throw new Error('Expected sort option row to render')
+    }
+
+    fireEvent.touchStart(sortOptionRow, {
+      touches: [startTouchPoint],
+      changedTouches: [startTouchPoint],
+      targetTouches: [startTouchPoint]
+    })
+    fireEvent.touchMove(sortOptionRow, {
+      touches: [moveTouchPoint],
+      changedTouches: [moveTouchPoint],
+      targetTouches: [moveTouchPoint]
+    })
+
+    expect(modalBox.style.transform).toBe('translate3d(0, 44px, 0)')
+
+    fireEvent.touchEnd(sortOptionRow, {
+      touches: [],
+      changedTouches: [moveTouchPoint],
+      targetTouches: []
+    })
+
+    expect(onCancel).not.toHaveBeenCalled()
+    expect(modalBox.style.transform).toBe('')
+  })
+
+  it('closes on downward swipe from the filter section', async () => {
+    const { onCancel } = renderSheet()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('mobile-filter-sort-sheet')).toHaveAttribute('open')
+    })
+
+    const modalBox = getModalBoxElement()
+    setModalBoxScrollTop(modalBox, 0)
+
+    fireSwipeGesture({
+      element: screen.getByRole('heading', { name: 'Filter by' }),
+      startX: 24,
+      startY: 300,
+      endX: 28,
+      endY: 390
+    })
+
+    expect(onCancel).toHaveBeenCalledTimes(1)
   })
 
   it('does not close on downward swipe when sheet is scrolled', async () => {

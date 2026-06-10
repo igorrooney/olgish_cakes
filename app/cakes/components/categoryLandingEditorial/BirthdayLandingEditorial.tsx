@@ -28,14 +28,11 @@ export function BirthdayLandingEditorial({ config }: BirthdayLandingEditorialPro
         id={`${config.slug}-flavour-planning`}
         title={config.flavourSectionTitle}
         intro={config.flavourSectionIntro}
-      >
-        <EditorialCardGrid items={config.flavourHighlights} />
-      </EditorialSection>
+      />
 
       <EditorialSplitSection
         id={`${config.slug}-delivery`}
-        title={config.serviceAreaTitle || 'Birthday cake delivery planning in Leeds'}
-        intro={config.serviceAreaBody}
+        title='Birthday cake delivery planning in Leeds'
       >
         <p>
           Collection versus delivery is part of the design brief once toppers, cleaner finishes or tight event timing enter the picture.

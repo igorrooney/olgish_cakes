@@ -27,12 +27,6 @@ export interface CatalogTrustItem {
   detail: string
 }
 
-export interface CatalogCategorySupportContent {
-  title: string
-  body: string
-  highlights: string[]
-}
-
 export interface CatalogCategoryCtaBandContent {
   title: string
   body: string
@@ -49,28 +43,20 @@ export interface CatalogCategoryLandingConfig {
   title: string
   description: string
   keywords: string
-  heroEyebrow: string
   heroTitle: string
-  heroLead: string
   heroBody: string
   heroSupportLine?: string
   trustEyebrow?: string
-  catalogSectionTitle: string
-  catalogSectionIntro: string
   localBusinessDescription: string
   itemListName: string
   heroPrimaryAction: CategoryLandingAction
   heroSecondaryAction: CategoryLandingAction
   trustItems: CatalogTrustItem[]
-  supportContent: CatalogCategorySupportContent
   audienceIntroTitle: string
   audienceIntroBody: string
   useCases: CategoryLandingContentBlock[]
   flavourSectionTitle: string
   flavourSectionIntro: string
-  flavourHighlights: CategoryLandingContentBlock[]
-  serviceAreaTitle?: string
-  serviceAreaBody?: string
   proofSectionTitle: string
   proofPoints: string[]
   orderingSectionTitle: string
@@ -118,14 +104,10 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     title: 'Wedding Cakes Leeds | Elegant Handmade Wedding Cakes',
     description: 'Browse wedding cakes in Leeds by Olgish Cakes. Discover elegant handmade designs, bespoke finishes and flavours prepared for modern wedding celebrations.',
     keywords: 'wedding cakes leeds, bespoke wedding cakes leeds, handmade wedding cakes, leeds wedding cake maker',
-    heroEyebrow: 'Handmade in Leeds',
-    heroTitle: 'Wedding Cakes in Leeds',
-    heroLead: 'Elegant handmade wedding cakes for modern celebrations, carefully finished around your venue, style and serving plans.',
-    heroBody: 'Browse bespoke wedding cake designs, from floral details and clean finishes to centrepieces that still feel personal to your day.',
+    heroTitle: 'Bespoke Wedding Cakes in Leeds',
+    heroBody: 'Elegant wedding cakes for celebrations across Yorkshire and the UK.',
     heroSupportLine: 'Consultation-friendly ordering, refined finishes and reliable planning support for your date.',
     trustEyebrow: defaultTrustEyebrow,
-    catalogSectionTitle: 'Browse wedding cake designs',
-    catalogSectionIntro: 'Compare elegant styles, flavour ideas and handcrafted finishes to find a wedding cake that fits the look and scale of your celebration.',
     localBusinessDescription: 'Handmade wedding cakes in Leeds with bespoke decoration, elegant flavours and careful celebration planning from Olgish Cakes.',
     itemListName: 'Wedding Cakes in Leeds',
     heroPrimaryAction: {
@@ -137,73 +119,44 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
       label: 'View all cakes'
     },
     trustItems: defaultTrustItems,
-    supportContent: {
-      title: 'Designed for wedding planning that feels calm and clear',
-      body: 'These wedding cakes are ideal when you want a polished design, clear communication and flavour choices that still feel personal to your day.',
-      highlights: [
-        'Bespoke decoration matched to your wedding style',
-        'Flexible flavour and finish options for different themes',
-        'Clear planning support for delivery, collection and timings'
-      ]
-    },
-    audienceIntroTitle: 'Wedding cake planning should feel specific to your day, not borrowed from a generic template',
-    audienceIntroBody: 'Couples usually need more than a pretty centrepiece. The cake has to suit guest numbers, venue setup, flavour expectations and the overall visual tone of the celebration, while still feeling personal to the couple.',
+    audienceIntroTitle: 'Wedding cake planning should feel personal to your day',
+    audienceIntroBody: 'Couples need more than a beautiful centrepiece. A bespoke wedding cake should suit your guest numbers, venue style, flavour preferences and wedding theme, while still feeling personal',
     useCases: [
       {
-        title: 'Designed to fit the venue and the styling',
-        body: 'A strong wedding cake brief should connect with the flowers, table styling and room setting so the cake feels like part of the celebration rather than a separate visual idea.'
+        title: 'Designed for your venue and wedding style',
+        body: 'Your wedding cake should work with the flowers, table styling and room layout, so it feels like part of the celebration.'
       },
       {
-        title: 'Balanced around guest count and serving plans',
-        body: 'Tier count, portioning and display decisions matter just as much as decoration. The right structure keeps the cake elegant in the room and practical once guests are being served.'
-      },
-      {
-        title: 'Flexible enough for modern wedding preferences',
-        body: 'Some couples want a clean and understated finish, while others want more floral detail or a stronger statement cake. The brief should follow your day, not force you into one style.'
+        title: 'Balanced around guest numbers and servings',
+        body: 'Tier count, portion size and display all matter. The right wedding cake structure keeps the design elegant and practical for serving.'
       }
     ],
-    flavourSectionTitle: 'Flavour, tier and finish choices should support the way the cake will actually be served',
-    flavourSectionIntro: 'Wedding cakes work best when flavour and structure are chosen with the same care as the decoration. That means thinking about the couple, the guest mix and how the cake will be cut and plated on the day.',
-    flavourHighlights: [
-      {
-        title: 'Choose tiers around real guest numbers',
-        body: 'Guest count and serving style should decide the scale of the cake before the final finish is locked in. That keeps the design realistic and avoids under- or over-ordering.'
-      },
-      {
-        title: 'Flavours should feel generous and memorable',
-        body: 'Wedding cake flavours usually need to satisfy a wider group of guests while still feeling personal to the couple. A balanced brief often combines a polished finish with flavours that are easy to enjoy at a formal celebration.'
-      },
-      {
-        title: 'Delicate decoration needs practical planning',
-        body: 'Fresh florals, textured finishes and taller tiered designs can all affect transport, setup and display timing, so the practical details should be considered early.'
-      }
-    ],
-    serviceAreaTitle: 'Leeds venue delivery and setup are part of the cake brief, not an afterthought',
-    serviceAreaBody: 'If the cake is travelling to a hotel, wedding barn, restaurant or private venue, access windows and setup timing matter. Local collection and delivery can be planned around the finish, venue logistics and the point in the day when the cake needs to look its best.',
-    proofSectionTitle: 'Why couples usually choose a bespoke wedding cake from a local maker',
+    flavourSectionTitle: 'Wedding cake flavours',
+    flavourSectionIntro: 'Choose from Honey Cake, Red Velvet, Chocolate Delicia and other bespoke wedding cake flavours. Each cake is made to order and tailored to your celebration.',
+    proofSectionTitle: 'Why couples choose Olgish Cakes',
     proofPoints: [
-      'A design brief shaped around venue style, guest numbers and serving plans',
-      'Flexible flavours and finishes matched to the overall wedding mood',
-      'Leeds collection or local delivery planning for the practical side of the day',
-      'Clear communication so design, timing and expectations stay aligned'
+      'Handmade wedding cakes made to order',
+      'Signature Honey Cake available for weddings',
+      'Bespoke designs tailored to your celebration',
+      'Delivery available across Yorkshire and the UK'
     ],
-    orderingSectionTitle: 'A calmer wedding cake process starts with the details that matter most',
+    orderingSectionTitle: 'How to order your wedding cake',
     orderingSteps: [
       {
-        title: 'Share the date, venue and guest count',
-        body: 'Once those basics are clear, it becomes much easier to sense-check tier size, serving plan and whether the cake needs delivery or collection.'
+        title: 'Share your wedding date',
+        body: 'Tell us your wedding date, venue and approximate guest numbers.'
       },
       {
-        title: 'Refine the visual direction',
-        body: 'At this stage the cake can start borrowing from your flowers, styling, colour palette and the tone of the day rather than from generic wedding imagery.'
+        title: 'Choose your design and flavours',
+        body: 'Share inspiration photos or ideas, then choose your preferred cake flavour and finish.'
       },
       {
-        title: 'Confirm flavour, finish and logistics',
-        body: 'This is where the practical details matter most, especially for taller cakes, venue setup windows and more delicate decoration.'
+        title: 'Confirm the details',
+        body: 'Finalise the size, design, guest numbers and any delivery requirements.'
       },
       {
-        title: 'Finalise a cake that still works once guests are being served',
-        body: 'The finished design should feel rewarding in the room and still make sense when it is cut, plated and remembered after the celebration.'
+        title: 'Receive your bespoke wedding cake',
+        body: 'Your wedding cake will be prepared to order and delivered or collected as agreed.'
       }
     ],
     internalLinks: [
@@ -229,8 +182,8 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
         answer: 'Yes. Flavours, fillings and finishes can be shaped around your preferences, guest mix and serving plans. The best choice usually balances what feels personal to you with what will still work well for guests at the reception.'
       },
       {
-        question: 'Do you provide wedding cake delivery in Leeds?',
-        answer: 'Yes. Local delivery and collection can be arranged depending on the scale of the cake, the finish, venue access and the timing required on the wedding day. Delivery planning is especially important for tiered cakes and delicate decoration.'
+        question: 'Do you provide wedding cake delivery?',
+        answer: 'Yes. Delivery and collection are available across Leeds, Yorkshire and selected UK locations by arrangement, depending on your wedding cake and date.'
       },
       {
         question: 'Can you make a wedding cake for dietary requirements?',
@@ -262,14 +215,10 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     title: 'Birthday Cakes Leeds | Handmade Custom Birthday Cakes',
     description: 'Explore birthday cakes in Leeds by Olgish Cakes. Find handmade custom cakes for children, adults and milestone celebrations with flavour and design flexibility.',
     keywords: 'birthday cakes leeds, custom birthday cakes leeds, handmade birthday cake, celebration cakes leeds',
-    heroEyebrow: 'Handmade in Leeds',
     heroTitle: 'Birthday Cakes in Leeds',
-    heroLead: 'Handmade custom cakes for children, adults and milestone birthdays, with designs shaped around the person and the occasion.',
     heroBody: 'Browse birthday cake styles prepared for playful themes, elegant milestones and family celebrations, with flavour and finish choices tailored to your brief.',
     heroSupportLine: 'Flexible customisation, clear ordering and handmade cakes prepared in Leeds for memorable birthdays.',
     trustEyebrow: defaultTrustEyebrow,
-    catalogSectionTitle: 'Browse birthday cake designs',
-    catalogSectionIntro: 'Explore birthday cake ideas by finish, flavour and mood, then choose a design that suits the theme, age and size of your celebration.',
     localBusinessDescription: 'Custom birthday cakes in Leeds made to order with handmade decoration, personal design details and flexible flavour options from Olgish Cakes.',
     itemListName: 'Birthday Cakes in Leeds',
     heroPrimaryAction: {
@@ -281,15 +230,6 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
       label: 'View all cakes'
     },
     trustItems: defaultTrustItems,
-    supportContent: {
-      title: 'Built for birthdays that need more than a generic supermarket brief',
-      body: 'These cakes are suited to themed children\'s parties, polished adult celebrations and milestone birthdays where flavour, finish and personal touches all need to work together.',
-      highlights: [
-        'Design choices shaped around the person and the celebration style',
-        'Flexible sizing for family parties, milestone dinners and larger gatherings',
-        'Clear collection or Leeds delivery planning before the finish becomes delicate'
-      ]
-    },
     audienceIntroTitle: 'Birthday cakes work best when the brief fits the person, not just the party theme',
     audienceIntroBody: 'A birthday cake should still make sense for the person being celebrated. The right brief depends on the age, the style of the event, the guest count and how much visual detail the cake really needs.',
     useCases: [
@@ -308,22 +248,6 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     ],
     flavourSectionTitle: 'Size, flavour and decoration should follow the gathering rather than guesswork',
     flavourSectionIntro: 'Birthday cakes usually work best when the practical choices are settled early. That means matching portions, flavour direction and finish to the people actually attending the celebration.',
-    flavourHighlights: [
-      {
-        title: 'Match portions to the real guest list',
-        body: 'Smaller dinners, children\'s parties and milestone gatherings all need different portion planning. Deciding the size early makes the visual brief much more realistic.'
-      },
-      {
-        title: 'Let flavour reflect the occasion',
-        body: 'A playful children\'s cake and a refined adult birthday cake may need very different flavour expectations. The right choice should feel enjoyable for the crowd, not chosen in isolation.'
-      },
-      {
-        title: 'More delicate finishes need transport planning',
-        body: 'Tall toppers, intricate details and cleaner fondant finishes can all affect whether collection or local delivery is the safer option on the day.'
-      }
-    ],
-    serviceAreaTitle: 'Collection or local delivery in Leeds should be decided before the finish gets more delicate',
-    serviceAreaBody: 'Some birthday cakes travel easily, while others need a more careful plan because of their size, finish or event timing. Deciding collection versus delivery early helps keep the decoration realistic and reduces stress closer to the celebration.',
     proofSectionTitle: 'Why a bespoke birthday cake often works better than a generic celebration design',
     proofPoints: [
       'A design direction shaped around the age, theme and tone of the event',
@@ -407,14 +331,10 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     title: 'Anniversary Cakes Leeds | Handmade Cakes for Milestones',
     description: 'Discover anniversary cakes in Leeds by Olgish Cakes. Find handmade designs for intimate dinners, family milestones and elegant celebrations with bespoke finishing.',
     keywords: 'anniversary cakes leeds, milestone cakes leeds, handmade anniversary cake, bespoke anniversary cakes',
-    heroEyebrow: 'Handmade in Leeds',
     heroTitle: 'Anniversary Cakes in Leeds',
-    heroLead: 'Elegant handmade anniversary cakes designed for intimate dinners, milestone gatherings and polished celebrations.',
     heroBody: 'Browse refined anniversary cake styles with personal details, balanced flavours and finishing that suits the scale of the occasion.',
     heroSupportLine: 'Thoughtful personalisation, handmade finishing and calm planning support for anniversary celebrations in Leeds.',
     trustEyebrow: defaultTrustEyebrow,
-    catalogSectionTitle: 'Browse anniversary cake designs',
-    catalogSectionIntro: 'Explore anniversary cake ideas with softer styling, milestone details and portion options that suit both intimate and larger family celebrations.',
     localBusinessDescription: 'Handmade anniversary cakes in Leeds with bespoke styling, flavour flexibility and careful celebration planning from Olgish Cakes.',
     itemListName: 'Anniversary Cakes in Leeds',
     heroPrimaryAction: {
@@ -426,15 +346,6 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
       label: 'View all cakes'
     },
     trustItems: defaultTrustItems,
-    supportContent: {
-      title: 'Made for anniversary milestones that need a more refined brief',
-      body: 'These cakes work well when you want elegant decoration, controlled personalisation and a finish that suits the scale of the milestone rather than a louder party style.',
-      highlights: [
-        'Designs shaped for intimate dinners, restaurant bookings and family gatherings',
-        'Selective personal details that keep the cake polished instead of crowded',
-        'Collection or Leeds delivery planning matched to timing and venue needs'
-      ]
-    },
     audienceIntroTitle: 'Anniversary cakes should fit the scale of the milestone and the way you are actually celebrating',
     audienceIntroBody: 'Anniversary orders tend to work best when the cake reflects the real setting. A quiet dinner, a family lunch and a larger milestone event all need a different balance of size, detail and visual presence.',
     useCases: [
@@ -453,22 +364,6 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     ],
     flavourSectionTitle: 'Flavour and size decisions should support the mood of the anniversary, not compete with it',
     flavourSectionIntro: 'A refined anniversary cake should still be practical. The flavours need to suit the people attending and the scale should make sense for the type of celebration being planned.',
-    flavourHighlights: [
-      {
-        title: 'Choose scale around the real event format',
-        body: 'A restaurant table cake, a family lunch and a larger home celebration all need different size expectations. Working from the guest list first keeps the design realistic.'
-      },
-      {
-        title: 'Keep flavours polished and appropriate for the milestone',
-        body: 'Anniversary cakes usually feel strongest when the flavour direction is considered and balanced, especially when the celebration is more intimate or more formal.'
-      },
-      {
-        title: 'Minimal finishes still need careful transport planning',
-        body: 'Cleaner styling can look simple, but it still benefits from deciding early whether the cake is being collected or delivered to a restaurant, venue or family home.'
-      }
-    ],
-    serviceAreaTitle: 'Collection and local delivery in Leeds should match the timing and setting of the celebration',
-    serviceAreaBody: 'A cake heading to a restaurant, venue or family home on a fixed schedule needs the delivery plan to be part of the brief. Timing, table setup and transport all affect what finish is most sensible.',
     proofSectionTitle: 'Why anniversary customers usually want a more bespoke brief',
     proofPoints: [
       'Decoration that feels measured and personal rather than generic',
@@ -551,14 +446,10 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     title: 'Baby Shower Cakes Leeds | Handmade Baby Shower Cakes',
     description: 'Browse baby shower cakes in Leeds by Olgish Cakes. Discover handmade designs for gatherings, gifting and softer celebration styling with flexible flavours.',
     keywords: 'baby shower cakes leeds, handmade baby shower cake, custom baby shower cakes, celebration cakes leeds',
-    heroEyebrow: 'Handmade in Leeds',
     heroTitle: 'Baby Shower Cakes in Leeds',
-    heroLead: 'Handmade baby shower cakes with warm styling, flexible sizing and practical planning for gifting and celebration tables.',
     heroBody: 'Browse baby shower cake ideas with gentle colours, personal details and portion choices suited to smaller gatherings and family events.',
     heroSupportLine: 'Soft styling, handmade finishing and straightforward ordering for baby shower celebrations in Leeds.',
     trustEyebrow: defaultTrustEyebrow,
-    catalogSectionTitle: 'Browse baby shower cake designs',
-    catalogSectionIntro: 'Explore softer celebration cakes with practical sizing, gentle decoration and flavour options suited to baby showers, gifting and family gatherings.',
     localBusinessDescription: 'Handmade baby shower cakes in Leeds with bespoke styling, flexible flavour choices and clear celebration planning from Olgish Cakes.',
     itemListName: 'Baby Shower Cakes in Leeds',
     heroPrimaryAction: {
@@ -570,15 +461,6 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
       label: 'View all cakes'
     },
     trustItems: defaultTrustItems,
-    supportContent: {
-      title: 'A softer celebration brief still needs practical planning',
-      body: 'These cakes are suited to baby showers, gifting moments and family gatherings where warmth, clear styling and manageable portions matter more than louder decoration.',
-      highlights: [
-        'Gentle personalisation that still feels polished',
-        'Sizes suited to showers, gifting and smaller family tables',
-        'Clear collection or Leeds delivery planning when timings are tight'
-      ]
-    },
     audienceIntroTitle: 'Baby shower cakes should feel warm, personal and easy to place into the celebration',
     audienceIntroBody: 'Baby shower cakes often work best when the brief stays calm and practical. The cake may be a centrepiece, a family-table dessert or a thoughtful gift, so the finish should suit the real setting rather than just follow a trend.',
     useCases: [
@@ -597,22 +479,6 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     ],
     flavourSectionTitle: 'Flavour and size decisions should stay practical for the gathering',
     flavourSectionIntro: 'A baby shower cake still needs the practical details to be right. Portion size, flavour direction and transport should all be settled before the finish becomes more specific.',
-    flavourHighlights: [
-      {
-        title: 'Choose size around the real event',
-        body: 'A smaller shower, a larger family gathering and a gift-led order all need different scales. Deciding this early keeps the design and budget more realistic.'
-      },
-      {
-        title: 'Keep flavour choices approachable',
-        body: 'Baby shower cakes usually feel strongest when the flavour is easy for a mixed group to enjoy and still suits the softer, more personal tone of the event.'
-      },
-      {
-        title: 'Transport can shape the finish',
-        body: 'Even gentle-looking cakes benefit from deciding early whether they will be collected or delivered locally, especially when the timing window is short.'
-      }
-    ],
-    serviceAreaTitle: 'Collection and local delivery should be planned early when the order window is short',
-    serviceAreaBody: 'Baby shower orders often run on tighter timelines than wedding cakes or larger event cakes. Deciding how the cake will travel helps keep the design practical and avoids last-minute changes to the finish.',
     proofSectionTitle: 'Why this type of cake works well for baby showers and gifting moments',
     proofPoints: [
       'A softer design brief that still feels personal and polished',

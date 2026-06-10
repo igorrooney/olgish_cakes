@@ -11,7 +11,7 @@ interface EditorialSectionProps {
   id?: string
   title: string
   intro?: string
-  children: ReactNode
+  children?: ReactNode
 }
 
 interface EditorialSplitSectionProps {
@@ -73,7 +73,9 @@ export function EditorialSection({
           </p>
         ) : null}
       </div>
-      <div className='mt-8'>{children}</div>
+      {children ? (
+        <div className='mt-8'>{children}</div>
+      ) : null}
     </section>
   )
 }

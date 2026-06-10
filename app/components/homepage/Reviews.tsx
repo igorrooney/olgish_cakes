@@ -5,6 +5,7 @@ import type { HomepageReview } from './ReviewsCarousel'
 
 interface ReviewsProps {
   testimonials?: Testimonial[]
+  titleClassName?: string
 }
 
 const hasVisibleReviewText = (testimonial: Testimonial) =>
@@ -21,7 +22,10 @@ const mapHomepageReview = (testimonial: Testimonial): HomepageReview => ({
   ...(testimonial.title ? { title: testimonial.title } : {})
 })
 
-export async function Reviews({ testimonials }: ReviewsProps = {}) {
+export async function Reviews({
+  testimonials,
+  titleClassName
+}: ReviewsProps = {}) {
   const resolvedTestimonials = testimonials ?? await getAllTestimonials()
   const displayTestimonials = resolvedTestimonials
     .filter((testimonial) => hasVisibleReviewText(testimonial) && hasValidReviewRating(testimonial))
@@ -31,5 +35,5 @@ export async function Reviews({ testimonials }: ReviewsProps = {}) {
     return null
   }
 
-  return <DeferredReviewsCarousel testimonials={homepageReviews} />
+  return <DeferredReviewsCarousel testimonials={homepageReviews} titleClassName={titleClassName} />
 }

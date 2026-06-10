@@ -3,10 +3,9 @@ import type { Metadata } from 'next'
 import { CatalogPageTemplate } from './CatalogPageTemplate'
 import { CatalogFaqAccordion } from './components/CatalogFaqAccordion'
 import { CatalogCategoryHero } from './components/CatalogCategoryHero'
-import { CatalogCategoryCatalogIntro } from './components/CatalogCategoryCatalogIntro'
-import { CatalogCategorySupport } from './components/CatalogCategorySupport'
 import { CatalogCategoryCtaBand } from './components/CatalogCategoryCtaBand'
 import { getCategoryLandingPostCatalogContent } from './components/categoryLandingEditorial'
+import { Reviews } from '@/app/components/homepage/Reviews'
 import type { CatalogCategoryLandingSlug } from './categoryLandingConfig'
 import { getCategoryLandingConfig } from './categoryLandingConfig'
 import { getCatalogPageData } from './catalogPageData'
@@ -69,22 +68,24 @@ export async function renderCategoryLandingPage(slug: CatalogCategoryLandingSlug
     featuredOffer: null,
     collectionOptions: [targetCollection]
   }
+  const reviewTitleClassName = 'text-center font-oldenburg text-3xl tracking-[0.08em] text-base-content tablet:text-4xl'
+  const reviewSection = slug === 'wedding-cakes'
+    ? await Reviews({ titleClassName: reviewTitleClassName })
+    : undefined
 
   return (
     <CatalogPageTemplate
       variant='cakes'
       heading={config.heroTitle}
-      intro={config.heroLead}
+      intro={config.heroBody}
       canonicalPath={config.canonicalPath}
       localBusinessDescription={config.localBusinessDescription}
       catalogData={categoryCatalogData}
       initialFilterDefaults={{ byPost: false, custom: true }}
       heroSection={<CatalogCategoryHero config={config} />}
-      catalogSectionIntro={<CatalogCategoryCatalogIntro config={config} />}
       postCatalogContent={(
         <>
-          {getCategoryLandingPostCatalogContent(slug, config)}
-          <CatalogCategorySupport config={config} />
+          {getCategoryLandingPostCatalogContent(slug, config, reviewSection)}
           <CatalogFaqAccordion
             sectionId={`${config.slug}-faq-title`}
             title={config.faqTitle}
