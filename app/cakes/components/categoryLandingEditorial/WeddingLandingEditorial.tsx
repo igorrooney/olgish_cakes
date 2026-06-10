@@ -3,7 +3,6 @@ import type { CatalogCategoryLandingConfig } from '../../categoryLandingConfig'
 import {
   EditorialCardGrid,
   EditorialChecklist,
-  EditorialLinkGrid,
   EditorialSection,
   EditorialStepGrid
 } from './shared'

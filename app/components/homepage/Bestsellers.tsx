@@ -44,7 +44,7 @@ export async function Bestsellers() {
           width: 560,
           height: 560,
           fit: 'crop',
-          quality: 56
+          quality: 80
         }) ?? rawImageUrl
         : null
 

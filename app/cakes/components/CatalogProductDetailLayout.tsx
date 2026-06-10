@@ -69,7 +69,7 @@ const productGalleryImageLoader = getSanityCdnImageLoader({
   width: galleryImageIntrinsicSizePx,
   height: galleryImageIntrinsicSizePx,
   fit: 'crop',
-  quality: 45
+  quality: 82
 })
 
 const fallbackImage: CatalogProductDetailImage = {

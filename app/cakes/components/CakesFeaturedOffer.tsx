@@ -12,7 +12,7 @@ export function CakesFeaturedOffer({ featuredOffer }: CakesFeaturedOfferProps) {
     fallbackWidth: 560,
     fit: 'crop',
     heightWidthRatio: 1,
-    quality: 56,
+    quality: 80,
     sizes: '208px',
     widths: featuredOfferImageWidths
   })

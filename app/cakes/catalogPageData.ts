@@ -231,7 +231,7 @@ function getCatalogCardImageUrl(image: ImageSelection | null) {
     width: 560,
     height: 560,
     fit: 'crop',
-    quality: 56
+    quality: 75
   }) ?? imageUrl
 }
 

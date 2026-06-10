@@ -54,7 +54,7 @@ const mobileBestsellerImageLoader = getSanityCdnImageLoader({
   width: 560,
   height: 560,
   fit: 'crop',
-  quality: 56
+  quality: 80
 })
 
 export function BestsellersCarousel({ cakes }: BestsellersCarouselProps) {

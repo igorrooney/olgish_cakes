@@ -14,7 +14,7 @@ interface CakesProductCardProps {
 const cardImageSizes = '(min-width: 1512px) 379px, (min-width: 1280px) 301px, (min-width: 1024px) 336px, calc(100vw - 2rem)'
 const mobileGridImageSizes = '(min-width: 952px) 452px, calc((100vw - 3rem) / 2)'
 const catalogCardImageWidths = [256, 384, 480, 560, 640, 750] as const
-const catalogCardImageQuality = 45
+const catalogCardImageQuality = 75
 
 function formatPrice(value: number) {
   return Number.isInteger(value) ? String(value) : value.toFixed(2)

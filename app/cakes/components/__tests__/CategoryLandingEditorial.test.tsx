@@ -36,7 +36,7 @@ describe('category landing editorial components', () => {
       'text-center'
     )
     expect(container.querySelector('article')).not.toHaveClass('text-center')
-    expect(screen.getByRole('heading', { level: 3, name: 'Get a custom quote' }).closest('a')).toHaveAttribute('href', '/get-custom-quote')
+    expect(screen.queryByRole('heading', { level: 3, name: 'Get a custom quote' })).not.toBeInTheDocument()
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
 
@@ -84,7 +84,7 @@ describe('category landing editorial components', () => {
       [
         getCategoryLandingConfig('wedding-cakes').audienceIntroTitle,
         getCategoryLandingConfig('wedding-cakes').proofSectionTitle,
-        'A calmer wedding cake process starts with the details that matter most'
+        getCategoryLandingConfig('wedding-cakes').orderingSectionTitle
       ],
       [
         'Birthday cakes work best when the brief fits the person, not just the party theme',
