@@ -58,7 +58,7 @@ export function DeferredViewportImage({
   }, [rootMargin, shouldLoad])
 
   return (
-    <div ref={containerRef} className='h-full w-full'>
+    <div ref={containerRef} className='relative h-full w-full'>
       {shouldLoad ? (
         <Image
           {...imageProps}
