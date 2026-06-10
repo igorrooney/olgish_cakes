@@ -16,10 +16,10 @@ export function WorkshopEnquiryFormSection() {
         <div className='grid gap-4 rounded-[24px] border border-primary/10 bg-base-100 p-4 shadow-sm small-laptop:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] tablet:gap-8 tablet:rounded-[28px] tablet:p-8'>
           <div className='max-w-[430px] self-start'>
             <h2 className='font-oldenburg text-[1.75rem] leading-[1.04] tracking-[0.02em] text-primary-800 tablet:text-[2.4rem]'>
-              Tell me about the event
+              Tell us about the event
             </h2>
             <p className='mt-3 text-[14px] leading-6 text-base-content/80 tablet:mt-4 tablet:text-base tablet:leading-8'>
-              Send the date, venue and rough numbers first. Then tell me about stairs, loading
+              Send the date, venue and rough numbers first. Then tell us about stairs, loading
               rules, a tight setup window or anything else that changes the job.
             </p>
             <p className='mt-3 text-[13px] leading-5 text-base-content/70 tablet:mt-4 tablet:text-sm tablet:leading-6'>

@@ -105,12 +105,14 @@ describe('/api/workshop-enquiry', () => {
   let consoleErrorSpy: jest.SpyInstance
   const originalUrl = process.env.SUPABASE_URL
   const originalServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const originalEmailFrom = process.env.NEXT_PUBLIC_EMAIL_FROM
 
   beforeEach(() => {
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
     jest.clearAllMocks()
     process.env.RESEND_API_KEY = 'test-key'
     process.env.CONTACT_EMAIL_TO = 'admin@example.com'
+    process.env.NEXT_PUBLIC_EMAIL_FROM = 'hello@olgishcakes.co.uk'
     process.env.SUPABASE_URL = 'https://example.supabase.co'
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
     mockedTakeEnquiryRateLimit.mockResolvedValue(createRateLimitResult())
@@ -125,6 +127,11 @@ describe('/api/workshop-enquiry', () => {
     consoleErrorSpy.mockRestore()
     process.env.SUPABASE_URL = originalUrl
     process.env.SUPABASE_SERVICE_ROLE_KEY = originalServiceRoleKey
+    if (typeof originalEmailFrom === 'string') {
+      process.env.NEXT_PUBLIC_EMAIL_FROM = originalEmailFrom
+    } else {
+      delete process.env.NEXT_PUBLIC_EMAIL_FROM
+    }
   })
 
   it('rejects a request without a csrf token', async () => {
@@ -327,6 +334,7 @@ describe('/api/workshop-enquiry', () => {
           occasion: 'Corporate event'
         }),
         message: expect.objectContaining({
+          from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
           to: 'admin@example.com',
           replyTo: 'test@example.com'
         })
@@ -334,6 +342,7 @@ describe('/api/workshop-enquiry', () => {
       expect(mockSendEmail).toHaveBeenNthCalledWith(2, expect.objectContaining({
         templateId: 'workshop-enquiry-customer',
         message: expect.objectContaining({
+          from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
           to: 'test@example.com',
           replyTo: 'admin@example.com'
         })
@@ -390,7 +399,7 @@ describe('/api/workshop-enquiry', () => {
     )
   })
 
-  it('returns 200 when customer email fails but operator visibility is preserved', async () => {
+  it('returns 200 with a warning when customer email fails but operator visibility is preserved', async () => {
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
     mockSendEmail
       .mockResolvedValueOnce(createSendResult())
@@ -411,6 +420,10 @@ describe('/api/workshop-enquiry', () => {
 
     expect(response.status).toBe(200)
     expect(data.message).toBe('Workshop enquiry submitted successfully')
+    expect(data.warning).toBe(
+      'Your enquiry was saved, but we could not send the confirmation email. We will follow up manually.'
+    )
+    expect(response.headers.get('X-RateLimit-Limit')).toBe('5')
     expect(mockSendEmail).toHaveBeenCalledTimes(3)
     expect(mockSendEmail).toHaveBeenNthCalledWith(3, expect.objectContaining({
       templateId: 'workshop-enquiry-failure-alert',

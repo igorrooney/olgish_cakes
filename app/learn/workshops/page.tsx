@@ -57,24 +57,24 @@ const workshopFacts: WorkshopFact[] = [
 const workshopStages: WorkshopStage[] = [
   {
     step: '01',
-    title: 'I quote from the real venue details',
-    body: 'I need the venue, headcount, start time and access details first. If there are stairs, loading rules or a short setup window, that affects the quote and sometimes whether I take the booking at all.',
+    title: 'We quote from the real venue details',
+    body: 'We need the venue, headcount, start time and access details first. If there are stairs, loading rules or a short setup window, that affects the quote and sometimes whether we take the booking at all.',
   },
   {
     step: '02',
-    title: 'I bring the cakes ready to decorate',
-    body: 'The cakes are finished before I arrive and packed with the boards, boxes, tools and decorating materials. That means the session starts with decorating, not with me trying to prep cakes in the room.',
+    title: 'We bring the cakes ready to decorate',
+    body: 'The cakes are finished before we arrive and packed with the boards, boxes, tools and decorating materials. That means the session starts with decorating, not with us trying to prep cakes in the room.',
   },
   {
     step: '03',
-    title: 'I set up, teach, and box everything before people leave',
-    body: 'Once the tables are ready, I get everyone started, teach the design step by step and move around to help. Before people leave, every cake is boxed properly so nobody is carrying fresh buttercream back to the car.',
+    title: 'We set up, teach, and box everything before people leave',
+    body: 'Once the tables are ready, we get everyone started, teach the design step by step and move around to help. Before people leave, every cake is boxed properly so nobody is carrying fresh buttercream back to the car.',
   },
 ]
 
 const heroFeaturePoints = [
   'One cake per guest, ready to decorate as soon as everyone is seated.',
-  'Boards, boxes, tools and decorating materials brought with me.',
+  'Boards, boxes, tools and decorating materials brought with us.',
   'Step-by-step teaching, help at the table, and boxing at the end.',
 ]
 
@@ -87,13 +87,13 @@ const goodOccasionPoints = [
 const refusalPoints = [
   'Drop-in events where people will keep leaving the table for drinks, speeches or something else.',
   'Venues with awkward access, loading restrictions or a setup window that is too tight.',
-  'Rooms where I cannot get around the table once everyone is seated.',
+  'Rooms where we cannot get around the table once everyone is seated.',
 ]
 
 const roomNeedsPoints = [
-  'Tables and chairs set before I arrive, with enough room for each guest to work.',
+  'Tables and chairs set before we arrive, with enough room for each guest to work.',
   'A clear route in from the entrance or loading point, especially if the venue runs on timed access.',
-  'Enough room for me to move around the guests without stopping the whole table every few minutes.',
+  'Enough room for us to move around the guests without stopping the whole table every few minutes.',
 ]
 
 const heroPhotos: WorkshopPhoto[] = [
@@ -217,13 +217,13 @@ export default function WorkshopsPage() {
                 Cake decorating workshops at your venue
               </h1>
               <p className='max-w-[35rem] text-[15px] leading-7 text-base-content/84 tablet:text-[18px] tablet:leading-8'>
-                I get asked for these workshops by office teams, birthdays and hen parties. Most
-                of them are in London, but I do travel elsewhere in the UK when the numbers, venue
+                We get asked for these workshops by office teams, birthdays and hen parties. Most
+                of them are in London, but we do travel elsewhere in the UK when the numbers, venue
                 and timings make sense. Some briefs are an easy yes. Some are not.
               </p>
               <p className='max-w-[35rem] text-[15px] leading-7 text-base-content/76 tablet:text-[17px] tablet:leading-8'>
-                I prep the cakes before I arrive, so each guest sits down to one ready to
-                decorate. I bring the tools, boards, boxes and materials with me, then teach the
+                We prep the cakes before we arrive, so each guest sits down to one ready to
+                decorate. We bring the tools, boards, boxes and materials with us, then teach the
                 design in stages so the table can get on with it straight away.
               </p>
             </div>
@@ -317,11 +317,11 @@ export default function WorkshopsPage() {
         <div className='grid gap-5 small-laptop:grid-cols-[minmax(0,0.84fr)_minmax(0,1.16fr)] small-laptop:items-start small-laptop:gap-8'>
           <div className='max-w-[35rem]'>
             <h2 className='font-oldenburg text-3xl tracking-[0.08em] text-base-content tablet:text-4xl'>
-              How I run the workshop
+              How we run the workshop
             </h2>
             <p className='mt-4 text-base leading-7 text-base-content/80 tablet:text-lg'>
-              This goes well when I know the real venue details before the date is confirmed. If I
-              have the timings, access notes and headcount early, I can prep off-site and turn up
+              This goes well when we know the real venue details before the date is confirmed. If we
+              have the timings, access notes and headcount early, we can prep off-site and turn up
               ready to teach instead of fixing room problems on the day.
             </p>
           </div>
@@ -363,7 +363,7 @@ export default function WorkshopsPage() {
               </h2>
               <p className='mt-4 text-base leading-6 text-base-content/80 tablet:text-lg tablet:leading-7'>
                 These workshops are not right for every room or every schedule. They go best when
-                people are there to sit down, decorate and stay with it, and when I can get in and
+                people are there to sit down, decorate and stay with it, and when we can get in and
                 set up properly before everyone arrives.
               </p>
             </div>
@@ -400,11 +400,11 @@ export default function WorkshopsPage() {
 
             <article className='rounded-[24px] border border-base-300/70 bg-base-100 px-4 py-4 shadow-sm small-laptop:rounded-none small-laptop:border-0 small-laptop:border-t small-laptop:bg-transparent small-laptop:px-0 small-laptop:pt-6 small-laptop:pb-0 small-laptop:shadow-none'>
               <h3 className='font-oldenburg text-[1.55rem] leading-[1.08] tracking-[0.02em] text-primary-800'>
-                When I say no
+                When we say no
               </h3>
               <p className='mt-2.5 text-sm leading-6 text-base-content/78 tablet:mt-3 tablet:text-base tablet:leading-7'>
-                If I can see from the brief that people will be up and down all session, or that I
-                will be dragging equipment through a venue with no proper setup time, I would
+                If we can see from the brief that people will be up and down all session, or that we
+                will be dragging equipment through a venue with no proper setup time, we would
                 rather say no early than pretend it will be fine.
               </p>
               <div className='mt-4'>
@@ -417,7 +417,7 @@ export default function WorkshopsPage() {
                 What the room needs
               </h3>
               <p className='mt-2.5 text-sm leading-6 text-base-content/78 tablet:mt-3 tablet:text-base tablet:leading-7'>
-                I do not need a fancy venue. I need a room I can get into, set up in and move
+                We do not need a fancy venue. We need a room we can get into, set up in and move
                 around once everybody is seated. That matters far more than how dressed up the room
                 looks.
               </p>

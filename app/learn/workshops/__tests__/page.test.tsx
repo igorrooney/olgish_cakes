@@ -7,7 +7,7 @@ import WorkshopsPage, { metadata } from '../page'
 jest.mock('../WorkshopEnquiryFormSection', () => ({
   WorkshopEnquiryFormSection: () => (
     <section id='workshop-enquiry-form'>
-      <h2>Tell me about the event</h2>
+      <h2>Tell us about the event</h2>
       <div>Mock workshop form section</div>
     </section>
   ),
@@ -54,15 +54,15 @@ describe('WorkshopsPage', () => {
     expect(screen.getByText('Around 1.5 hours')).toBeInTheDocument()
     expect(screen.getByText('London and the UK')).toBeInTheDocument()
     expect(
-      screen.getByText(/i get asked for these workshops by office teams, birthdays and hen parties/i)
+      screen.getByText(/we get asked for these workshops by office teams, birthdays and hen parties/i)
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/i prep the cakes before i arrive, so each guest sits down to one ready to decorate/i)
+      screen.getByText(/we prep the cakes before we arrive, so each guest sits down to one ready to decorate/i)
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', {
         level: 2,
-        name: /how i run the workshop/i,
+        name: /how we run the workshop/i,
       })
     ).toBeInTheDocument()
     expect(
@@ -80,7 +80,7 @@ describe('WorkshopsPage', () => {
     expect(
       screen.getByRole('heading', {
         level: 3,
-        name: /when i say no/i,
+        name: /when we say no/i,
       })
     ).toBeInTheDocument()
     expect(
@@ -92,25 +92,25 @@ describe('WorkshopsPage', () => {
     expect(
       screen.getByRole('heading', {
         level: 3,
-        name: /i quote from the real venue details/i,
+        name: /we quote from the real venue details/i,
       })
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', {
         level: 3,
-        name: /i bring the cakes ready to decorate/i,
+        name: /we bring the cakes ready to decorate/i,
       })
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', {
         level: 3,
-        name: /i set up, teach, and box everything before people leave/i,
+        name: /we set up, teach, and box everything before people leave/i,
       })
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', {
         level: 2,
-        name: /tell me about the event/i,
+        name: /tell us about the event/i,
       })
     ).toBeInTheDocument()
     expect(

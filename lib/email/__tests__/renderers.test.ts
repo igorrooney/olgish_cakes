@@ -95,6 +95,51 @@ describe('email renderers', () => {
     expect(rendered.html).not.toContain('Quote brief')
   })
 
+  it('renders workshop customer confirmations with workshop labels', () => {
+    const rendered = renderEmailTemplate('workshop-enquiry-customer', {
+      orderType: 'workshop-enquiry',
+      customerName: 'Igor Ieromenko',
+      customerEmail: 'igor@example.com',
+      productName: 'Cake Decorating Workshop',
+      productType: 'workshop',
+      dateNeeded: '2026-07-10',
+      occasion: 'Birthday',
+      designType: 'Sex Party',
+      servings: '1000',
+      deliveryAddress: 'Clerkenwell, London',
+      customerMessage: 'test brief brief',
+      nextSteps: [
+        'We will review the date and location details first.',
+        'If the workshop format is a fit, we will come back with the next practical steps.'
+      ]
+    })
+
+    expect(rendered.subject).toBe('Workshop enquiry received')
+    expect(rendered.text).toContain('Workshop enquiry summary')
+    expect(rendered.text).toContain('Product: Cake Decorating Workshop')
+    expect(rendered.text).toContain('Preferred date: 10 July 2026')
+    expect(rendered.text).toContain('Workshop details')
+    expect(rendered.text).toContain('Occasion: Birthday')
+    expect(rendered.text).toContain('Design type: Sex Party')
+    expect(rendered.text).toContain('Group size: 1000')
+    expect(rendered.text).toContain('Location: Clerkenwell, London')
+    expect(rendered.text).toContain('Event brief: test brief brief')
+    expect(rendered.text).toContain('Questions about your workshop enquiry? We\'re here to help.')
+    expect(rendered.text).toContain('+44 786 721 8194')
+    expect(rendered.text).not.toContain('Order Summary')
+    expect(rendered.text).not.toContain('Order Preferences')
+    expect(rendered.text).not.toContain('Date needed:')
+    expect(rendered.text).not.toContain('Servings:')
+    expect(rendered.text).not.toContain('Customer message:')
+    expect(rendered.html).toContain('Workshop enquiry summary')
+    expect(rendered.html).toContain('Workshop details')
+    expect(rendered.html).toContain('Preferred date')
+    expect(rendered.html).toContain('Group size')
+    expect(rendered.html).toContain('Event brief')
+    expect(rendered.html).not.toContain('Order Summary')
+    expect(rendered.html).not.toContain('Order Preferences')
+  })
+
   it('omits empty optional fields', () => {
     const rendered = renderEmailTemplate('contact-admin-inquiry', {
       customerName: 'Jane',

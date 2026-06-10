@@ -9,6 +9,8 @@ import { WorkshopEnquiryForm } from '../WorkshopEnquiryForm'
 describe('WorkshopEnquiryForm', () => {
   const notificationFailureErrorMessage =
     'Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.'
+  const customerConfirmationFailureMessage =
+    'Your enquiry was saved, but we could not send the confirmation email. We will follow up manually.'
   const originalScrollIntoView = Element.prototype.scrollIntoView
   const scrollIntoViewMock = jest.fn()
   const getBriefField = () => screen.getByRole('textbox', { name: /event brief/i })
@@ -126,10 +128,10 @@ describe('WorkshopEnquiryForm', () => {
       screen.getByPlaceholderText(/for example: 16 guests plus 2 organisers/i)
     ).toBeInTheDocument()
     expect(
-      screen.getByPlaceholderText(/whether people will stay at the table for the full session/i)
+      screen.getByPlaceholderText(/tell us the venue, start time, access details/i)
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/i'll reply by email with the quote, travel cost and whether the venue and timings sound realistic/i)
+      screen.getByText(/we'll reply by email with the quote, travel cost and whether the venue and timings sound realistic/i)
     ).toBeInTheDocument()
     expect(screen.getByLabelText(/^Preferred date$/i)).toHaveAttribute('data-min-date', tomorrowDate)
   })
@@ -252,8 +254,11 @@ describe('WorkshopEnquiryForm', () => {
     fireEvent.click(screen.getByRole('button', { name: /send workshop enquiry/i }))
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /enquiry sent/i })).toBeInTheDocument()
+      expect(screen.getByRole('status')).toHaveTextContent(/enquiry sent/i)
     })
+
+    expect(screen.queryByRole('button', { name: /enquiry sent/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /send workshop enquiry/i })).not.toBeInTheDocument()
 
     expect(screen.getByLabelText(/^Full name$/i)).toHaveValue('')
     expect(screen.getByLabelText(/^Email address$/i)).toHaveValue('')
@@ -352,5 +357,40 @@ describe('WorkshopEnquiryForm', () => {
       ).toBeInTheDocument()
       expect(screen.queryByText(notificationFailureErrorMessage)).not.toBeInTheDocument()
     })
+  })
+
+  it('shows the success state when the enquiry is saved but customer confirmation email fails', async () => {
+    ;(global.fetch as jest.Mock).mockImplementation((url: string) => {
+      if (url === '/api/csrf-token') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ token: 'csrf-token-123' }),
+        })
+      }
+
+      if (url === '/api/workshop-enquiry') {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({
+            message: 'Workshop enquiry submitted successfully',
+            warning: customerConfirmationFailureMessage
+          }),
+        })
+      }
+
+      return Promise.reject(new Error(`Unexpected fetch call: ${url}`))
+    })
+
+    await renderForm()
+    fillRequiredFields()
+
+    fireEvent.click(screen.getByRole('button', { name: /send workshop enquiry/i }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('status')).toHaveTextContent(/enquiry sent/i)
+    })
+
+    expect(screen.queryByText(customerConfirmationFailureMessage)).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /send workshop enquiry/i })).not.toBeInTheDocument()
   })
 })

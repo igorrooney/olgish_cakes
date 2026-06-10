@@ -11,6 +11,10 @@ import {
 describe('workshopEnquiry service', () => {
   const notificationFailureErrorMessage =
     'Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.'
+  const fallbackErrorMessage =
+    'Something went wrong while sending your workshop enquiry. Please try again, or contact us directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
+  const customerConfirmationFailureMessage =
+    'Your enquiry was saved, but we could not send the confirmation email. We will follow up manually.'
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -133,9 +137,22 @@ describe('workshopEnquiry service', () => {
       })
     }) as jest.Mock
 
-    await expect(submitWorkshopEnquiry(new FormData())).rejects.toThrow(
-      'Something went wrong while sending your workshop enquiry. Please try again, or contact me directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
-    )
+    await expect(submitWorkshopEnquiry(new FormData())).rejects.toThrow(fallbackErrorMessage)
+  })
+
+  it('resolves saved enquiries that include a customer confirmation warning', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        message: 'Workshop enquiry submitted successfully',
+        warning: customerConfirmationFailureMessage
+      })
+    }) as jest.Mock
+
+    await expect(submitWorkshopEnquiry(new FormData())).resolves.toEqual({
+      message: 'Workshop enquiry submitted successfully',
+      warning: customerConfirmationFailureMessage
+    })
   })
 
   it('falls back to the contact message when the server payload is empty', async () => {
@@ -144,9 +161,7 @@ describe('workshopEnquiry service', () => {
       json: async () => ({})
     }) as jest.Mock
 
-    await expect(submitWorkshopEnquiry(new FormData())).rejects.toThrow(
-      'Something went wrong while sending your workshop enquiry. Please try again, or contact me directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
-    )
+    await expect(submitWorkshopEnquiry(new FormData())).rejects.toThrow(fallbackErrorMessage)
   })
 
   it('exposes the submission error type guard', async () => {

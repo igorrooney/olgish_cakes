@@ -154,9 +154,6 @@ export function WorkshopEnquiryForm() {
     }
   }
 
-  const submitLabel = hasSubmittedSuccessfully ? 'Enquiry sent' : 'Send workshop enquiry'
-  const submitClassName = hasSubmittedSuccessfully ? 'btn-success' : 'btn-primary'
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -168,7 +165,7 @@ export function WorkshopEnquiryForm() {
         <ValidatorInput
           id='fullName'
           type='text'
-          placeholder='Who should I send the quote to?'
+          placeholder='Who should we send the quote to?'
           value={formData.fullName}
           label='Full name'
           autoComplete='name'
@@ -250,7 +247,7 @@ export function WorkshopEnquiryForm() {
           labelPlacement='outside'
           error={errors.preferredDate}
           required
-          hintText='Choose the date you want me to check first'
+          hintText='Choose the date you want us to check first'
           onValueChange={value => updateField('preferredDate', value, true)}
         />
         <ValidatorInput
@@ -274,8 +271,8 @@ export function WorkshopEnquiryForm() {
         label='Event brief'
         labelAlt='(Required)'
         labelLayout='stacked'
-        placeholder='Tell me the venue, start time, access details and whether people will stay at the table for the full session.'
-        hintText='Practical details tell me if I can quote this properly and run it cleanly on the day'
+        placeholder='Tell us the venue, start time, access details and whether people will stay at the table for the full session.'
+        hintText='Practical details tell us if we can quote this properly and run it cleanly on the day'
         inputClassName='min-h-32 tablet:min-h-40'
         error={errors.brief}
         required
@@ -288,21 +285,52 @@ export function WorkshopEnquiryForm() {
         </div>
       ) : null}
 
-      <div>
-        <button
-          type='submit'
-          className={`btn btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base ${submitClassName}`}
-          disabled={isSubmitting || isCsrfLoading}
-          aria-busy={isSubmitting || isCsrfLoading}
+      {hasSubmittedSuccessfully ? (
+        <div
+          className='alert alert-success w-full items-start text-sm'
+          role='status'
+          aria-live='polite'
         >
-          {isSubmitting ? 'Sending...' : submitLabel}
-        </button>
-        <p className='mt-2 text-center text-sm leading-6 text-base-content/70'>
-          I&apos;ll reply by email with the quote, travel cost and whether the venue and timings
-          sound realistic for this setup. Add a phone number if access or timings would be quicker
-          to sort that way.
-        </p>
-      </div>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            className='h-5 w-5 shrink-0 stroke-current'
+            fill='none'
+            viewBox='0 0 24 24'
+            aria-hidden='true'
+          >
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth='2'
+              d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+            />
+          </svg>
+          <div>
+            <p className='font-semibold'>Enquiry sent</p>
+            <p className='mt-1 leading-6'>
+              Thank you, your workshop enquiry has arrived safely. We&apos;ll get back to you as soon as we can.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
+      {hasSubmittedSuccessfully ? null : (
+        <div>
+          <button
+            type='submit'
+            className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'
+            disabled={isSubmitting || isCsrfLoading}
+            aria-busy={isSubmitting || isCsrfLoading}
+          >
+            {isSubmitting ? 'Sending...' : 'Send workshop enquiry'}
+          </button>
+          <p className='mt-2 text-center text-sm leading-6 text-base-content/70'>
+            We&apos;ll reply by email with the quote, travel cost and whether the venue and timings
+            sound realistic for this setup. Add a phone number if access or timings would be quicker
+            to sort that way.
+          </p>
+        </div>
+      )}
     </form>
   )
 }

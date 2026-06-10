@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import type {
   EmailFieldRow,
   EmailSection,
@@ -609,6 +610,10 @@ function isCustomCakeEnquiry(input: EmailTemplateCommonInput): boolean {
   return input.orderType === 'custom-cake-enquiry'
 }
 
+function isWorkshopEnquiry(input: EmailTemplateCommonInput): boolean {
+  return input.orderType === 'workshop-enquiry'
+}
+
 function renderCustomerOrderItemsText(items: NormalizedOrderItem[]): string {
   return items
     .map((item, index) => {
@@ -869,14 +874,19 @@ function buildCustomerTextBody(input: EmailTemplateCommonInput, nextSteps: strin
     .join('\n\n')
 }
 function getCustomerFooterQuestion(input?: EmailTemplateCommonInput): string {
-  return isCustomCakeEnquiry(input ?? {}) ? 'Questions about your enquiry?' : 'Questions about your order?'
+  const footerInput = input ?? {}
+  if (isWorkshopEnquiry(footerInput)) {
+    return 'Questions about your workshop enquiry?'
+  }
+
+  return isCustomCakeEnquiry(footerInput) ? 'Questions about your enquiry?' : 'Questions about your order?'
 }
 
 export function buildCustomerFooterText(input?: EmailTemplateCommonInput): string {
   return [
     `${getCustomerFooterQuestion(input)} We're here to help.`,
-    'hello@olgishcakes.co.uk',
-    '+44 7867 218194'
+    BUSINESS_CONSTANTS.EMAIL,
+    BUSINESS_CONSTANTS.PHONE
   ].join('\n')
 }
 
@@ -905,7 +915,10 @@ export function renderCustomerCard(title: string, rows: CustomerRow[]): string {
 
 export function buildCustomerFooterHtml(input?: EmailTemplateCommonInput): string {
   const question = escapeHtml(getCustomerFooterQuestion(input))
-  return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-top: 1px solid #D8D9F3;"><tr><td align="center" style="padding: 20px 0 0 0; text-align: center;"><p style="margin: 0 0 10px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 22px;">${question} We're here to help.</p><p style="margin: 0; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 24px;"><a href="mailto:hello@olgishcakes.co.uk" style="color: #2E3192; text-decoration: none; font-weight: 700;">hello@olgishcakes.co.uk</a><br><a href="tel:+447867218194" style="color: #2E3192; text-decoration: none; font-weight: 700;">+44 7867 218194</a></p></td></tr></table>`
+  const email = escapeHtml(BUSINESS_CONSTANTS.EMAIL)
+  const phone = escapeHtml(BUSINESS_CONSTANTS.PHONE)
+  const phoneHref = escapeHtml(`tel:${BUSINESS_CONSTANTS.PHONE.replace(/\s/g, '')}`)
+  return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-top: 1px solid #D8D9F3;"><tr><td align="center" style="padding: 20px 0 0 0; text-align: center;"><p style="margin: 0 0 10px 0; color: #1F2937; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 22px;">${question} We're here to help.</p><p style="margin: 0; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 24px;"><a href="mailto:${email}" style="color: #2E3192; text-decoration: none; font-weight: 700;">${email}</a><br><a href="${phoneHref}" style="color: #2E3192; text-decoration: none; font-weight: 700;">${phone}</a></p></td></tr></table>`
 }
 
 function buildCustomerHtmlBody(input: EmailTemplateCommonInput, nextSteps: string[]): string {

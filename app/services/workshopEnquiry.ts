@@ -33,7 +33,7 @@ type ErrorResponse = {
 }
 
 const workshopFallbackErrorMessage =
-  'Something went wrong while sending your workshop enquiry. Please try again, or contact me directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
+  'Something went wrong while sending your workshop enquiry. Please try again, or contact us directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
 const maskedServerErrorMessages = new Set([
   'Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.'
 ])

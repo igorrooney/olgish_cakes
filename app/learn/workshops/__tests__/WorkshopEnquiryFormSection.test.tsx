@@ -15,7 +15,7 @@ describe('WorkshopEnquiryFormSection', () => {
     render(<WorkshopEnquiryFormSection />)
 
     expect(
-      screen.getByRole('heading', { level: 2, name: /tell me about the event/i })
+      screen.getByRole('heading', { level: 2, name: /tell us about the event/i })
     ).toBeInTheDocument()
     expect(
       screen.getByText(/send the date, venue and rough numbers first/i)

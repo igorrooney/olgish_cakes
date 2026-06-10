@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { validateCsrfToken } from '@/lib/csrf'
 import {
   getEmailTransportMode,
@@ -20,6 +21,8 @@ const RATE_LIMIT = 5
 const RATE_LIMIT_WINDOW = 60 * 1000
 const notificationFailureErrorMessage =
   'Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.'
+const customerConfirmationFailureErrorMessage =
+  'Your enquiry was saved, but we could not send the confirmation email. We will follow up manually.'
 const eventTypeLabels: Record<string, string> = {
   'corporate event': 'Corporate event',
   'team building': 'Team building',
@@ -100,8 +103,24 @@ const logFailureAlertFailure = (
 
 const getRecipientEmail = () => process.env.CONTACT_EMAIL_TO || 'hello@olgishcakes.co.uk'
 
-const getEmailFromAddress = () =>
-  process.env.NEXT_PUBLIC_EMAIL_FROM || 'Olgish Cakes <hello@olgishcakes.co.uk>'
+const getEmailFromAddress = () => {
+  const configuredFromAddress = process.env.NEXT_PUBLIC_EMAIL_FROM?.trim()
+  const defaultFromAddress = `${BUSINESS_CONSTANTS.NAME} <${BUSINESS_CONSTANTS.EMAIL}>`
+
+  if (!configuredFromAddress) {
+    return defaultFromAddress
+  }
+
+  if (configuredFromAddress.includes('<')) {
+    return configuredFromAddress
+  }
+
+  if (configuredFromAddress === BUSINESS_CONSTANTS.EMAIL) {
+    return defaultFromAddress
+  }
+
+  return configuredFromAddress
+}
 
 const canSendOperationalEmails = (emailMode: ReturnType<typeof getEmailTransportMode>) =>
   !requiresLiveEmailConfiguration(emailMode) || Boolean(process.env.RESEND_API_KEY)
@@ -256,6 +275,7 @@ export async function POST(request: NextRequest) {
     }
     const notificationErrors: NotificationError[] = []
     let adminEmailSent = false
+    let customerEmailSent = false
     try {
       const adminEmailResponse = await sendEmail({
         templateId: 'workshop-enquiry-admin',
@@ -326,7 +346,7 @@ export async function POST(request: NextRequest) {
         }
       })
 
-      const customerEmailSent = customerEmailResponse.accepted && !customerEmailResponse.error
+      customerEmailSent = customerEmailResponse.accepted && !customerEmailResponse.error
 
       if (!customerEmailSent) {
         notificationErrors.push({
@@ -376,6 +396,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: notificationFailureErrorMessage },
         { status: 500 }
+      )
+    }
+
+    if (!customerEmailSent) {
+      return applyEnquiryRateLimitHeaders(
+        NextResponse.json(
+          {
+            message: 'Workshop enquiry submitted successfully',
+            warning: customerConfirmationFailureErrorMessage
+          },
+          { status: 200 }
+        ),
+        rateLimitResult
       )
     }
 
