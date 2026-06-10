@@ -28,6 +28,14 @@ export function WeddingLandingEditorial({
       {reviewSection}
 
       <EditorialSection
+        id={`${config.slug}-process`}
+        title={config.orderingSectionTitle}
+        intro='Ordering your wedding cake is simple. Share your plans, choose your design and flavours, and we will guide you through the rest.'
+      >
+        <EditorialStepGrid steps={config.orderingSteps} />
+      </EditorialSection>
+
+      <EditorialSection
         id={`${config.slug}-overview`}
         title={config.audienceIntroTitle}
         intro={config.audienceIntroBody}
@@ -41,13 +49,6 @@ export function WeddingLandingEditorial({
         intro={config.flavourSectionIntro}
       />
 
-      <EditorialSection
-        id={`${config.slug}-process`}
-        title={config.orderingSectionTitle}
-        intro='Ordering your wedding cake is simple. Share your plans, choose your design and flavours, and we will guide you through the rest.'
-      >
-        <EditorialStepGrid steps={config.orderingSteps} />
-      </EditorialSection>
     </>
   )
 }
