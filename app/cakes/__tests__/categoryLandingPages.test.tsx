@@ -6,6 +6,7 @@ import { render, screen } from '@testing-library/react'
 import type { Metadata } from 'next'
 import { generateCategoryLandingMetadata, renderCategoryLandingPage } from '../renderCategoryLandingPage'
 import { getCategoryLandingPostCatalogContent } from '../components/categoryLandingEditorial'
+import { Reviews } from '@/app/components/homepage/Reviews'
 import {
   categoryLandingCanonicalPaths,
   getCategoryLandingConfig,
@@ -53,7 +54,20 @@ jest.mock('../catalogPageData', () => ({
   getCatalogPageData: jest.fn()
 }))
 
+jest.mock('@/app/components/homepage/Reviews', () => {
+  const React = jest.requireActual('react')
+
+  return {
+    Reviews: jest.fn(async ({ titleClassName }: { titleClassName?: string } = {}) => React.createElement(
+      'section',
+      { 'data-testid': 'homepage-reviews' },
+      React.createElement('h2', { className: titleClassName }, 'Our reviews')
+    ))
+  }
+})
+
 const mockedGetCatalogPageData = getCatalogPageData as jest.MockedFunction<typeof getCatalogPageData>
+const mockedReviews = Reviews as jest.MockedFunction<typeof Reviews>
 
 describe('category landing pages', () => {
   beforeEach(() => {
@@ -241,18 +255,29 @@ describe('category landing pages', () => {
   })
 
   it('renders wedding landing pages with commercial sections, page-specific links and matching structured data', async () => {
+    const weddingConfig = getCategoryLandingConfig('wedding-cakes')
     const page = await renderCategoryLandingPage('wedding-cakes')
     render(page)
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Wedding Cakes in Leeds' })).toBeInTheDocument()
-    expect(screen.getByText('Elegant handmade wedding cakes for modern celebrations, carefully finished around your venue, style and serving plans.')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Browse wedding cake designs' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Wedding cake planning should feel specific to your day, not borrowed from a generic template' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Flavour, tier and finish choices should support the way the cake will actually be served' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Why couples usually choose a bespoke wedding cake from a local maker' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'A calmer wedding cake process starts with the details that matter most' })).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
-    expect(screen.getByRole('heading', { level: 3, name: 'Get a custom quote' }).closest('a')).toHaveAttribute('href', '/get-custom-quote')
+    expect(screen.getByRole('heading', { level: 1, name: 'Bespoke Wedding Cakes in Leeds' })).toBeInTheDocument()
+    expect(screen.getByText('Elegant wedding cakes for celebrations across Yorkshire and the UK.')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { level: 2, name: 'Browse wedding cake designs' })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: weddingConfig.audienceIntroTitle })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: weddingConfig.flavourSectionTitle })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: weddingConfig.proofSectionTitle })).toBeInTheDocument()
+    expect(screen.getByTestId('homepage-reviews')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Our reviews' })).toHaveClass(
+      'text-center',
+      'font-oldenburg',
+      'text-3xl',
+      'tracking-[0.08em]',
+      'text-base-content',
+      'tablet:text-4xl'
+    )
+    expect(mockedReviews).toHaveBeenCalledWith({
+      titleClassName: 'text-center font-oldenburg text-3xl tracking-[0.08em] text-base-content tablet:text-4xl'
+    })
+    expect(screen.getByRole('heading', { level: 2, name: weddingConfig.orderingSectionTitle })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Wedding cake FAQs' })).toBeInTheDocument()
     expect(screen.getByText('How far ahead should I enquire about a wedding cake?')).toBeInTheDocument()
     expect(screen.queryByRole('navigation', { name: /breadcrumb/i })).not.toBeInTheDocument()
@@ -279,10 +304,10 @@ describe('category landing pages', () => {
     expect(templateProps.breadcrumbItems).toEqual([
       { name: 'Home', item: '/' },
       { name: 'Cakes', item: '/cakes' },
-      { name: 'Wedding Cakes in Leeds', item: '/wedding-cakes' }
+      { name: 'Bespoke Wedding Cakes in Leeds', item: '/wedding-cakes' }
     ])
     expect(templateProps.preCatalogContent).toBeUndefined()
-    expect(templateProps.catalogSectionIntro).toBeDefined()
+    expect(templateProps.catalogSectionIntro).toBeUndefined()
     expect(templateProps.catalogData.cakesForUi).toEqual([
       expect.objectContaining({ name: 'Wedding Elegance' })
     ])
@@ -349,7 +374,7 @@ describe('category landing pages', () => {
       </>
     )
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Wedding cake planning should feel specific to your day, not borrowed from a generic template' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: weddingConfig.audienceIntroTitle })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Birthday cakes work best when the brief fits the person, not just the party theme' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Anniversary cakes should fit the scale of the milestone and the way you are actually celebrating' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Baby shower cakes should feel warm, personal and easy to place into the celebration' })).toBeInTheDocument()

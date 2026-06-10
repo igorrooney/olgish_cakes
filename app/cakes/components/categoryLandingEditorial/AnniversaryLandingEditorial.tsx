@@ -28,14 +28,11 @@ export function AnniversaryLandingEditorial({ config }: AnniversaryLandingEditor
         id={`${config.slug}-flavour-planning`}
         title={config.flavourSectionTitle}
         intro={config.flavourSectionIntro}
-      >
-        <EditorialCardGrid items={config.flavourHighlights} />
-      </EditorialSection>
+      />
 
       <EditorialSplitSection
         id={`${config.slug}-delivery`}
-        title={config.serviceAreaTitle || 'Anniversary cake delivery planning in Leeds'}
-        intro={config.serviceAreaBody}
+        title='Anniversary cake delivery planning in Leeds'
       >
         <p>
           Timing matters more when the cake is heading to a restaurant, venue or carefully staged home celebration where the finish needs to arrive intact.

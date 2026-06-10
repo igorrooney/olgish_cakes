@@ -3,15 +3,12 @@
  */
 import type { ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
-import { CatalogCategoryCatalogIntro } from '../CatalogCategoryCatalogIntro'
 import { CatalogCategoryCtaBand } from '../CatalogCategoryCtaBand'
 import { CatalogCategoryHero } from '../CatalogCategoryHero'
-import { CatalogCategorySupport } from '../CatalogCategorySupport'
 import { CatalogFaqAccordion } from '../CatalogFaqAccordion'
 import { EditorialQuotePanel } from '../categoryLandingEditorial/shared'
 import { getCategoryLandingConfig } from '../../categoryLandingConfig'
 import {
-  categoryLandingCompactShellClassName,
   categoryLandingCtaShellClassName,
   categoryLandingHeroShellClassName,
   categoryLandingQuotePanelPaddingClassName,
@@ -31,8 +28,6 @@ describe('category landing spacing roles', () => {
     const { container } = render(
       <>
         <CatalogCategoryHero config={config} />
-        <CatalogCategoryCatalogIntro config={config} />
-        <CatalogCategorySupport config={config} />
         <CatalogFaqAccordion
           title={config.faqTitle}
           intro={config.faqIntro}
@@ -51,11 +46,9 @@ describe('category landing spacing roles', () => {
     const sections = container.querySelectorAll('section')
 
     expect(sections[0]).toHaveClass(...categoryLandingHeroShellClassName.split(' '))
-    expect(sections[1]).toHaveClass(...categoryLandingCompactShellClassName.split(' '))
-    expect(sections[2]).toHaveClass(...categoryLandingStandardShellClassName.split(' '))
-    expect(sections[3]).toHaveClass(...categoryLandingWideShellClassName.split(' '))
-    expect(sections[4]).toHaveClass(...categoryLandingCtaShellClassName.split(' '))
-    expect(sections[5]).toHaveClass(...categoryLandingStandardShellClassName.split(' '))
+    expect(sections[1]).toHaveClass(...categoryLandingWideShellClassName.split(' '))
+    expect(sections[2]).toHaveClass(...categoryLandingCtaShellClassName.split(' '))
+    expect(sections[3]).toHaveClass(...categoryLandingStandardShellClassName.split(' '))
     expect(screen.getByText('Quote panels should use the normalized inner spacing.').parentElement).toHaveClass(
       ...categoryLandingQuotePanelPaddingClassName.split(' ')
     )

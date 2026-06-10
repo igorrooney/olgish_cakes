@@ -9,10 +9,12 @@ const ReviewsCarousel = dynamic(
 
 type DeferredReviewsCarouselProps = {
   testimonials: HomepageReview[]
+  titleClassName?: string
 }
 
 export function DeferredReviewsCarousel({
-  testimonials
+  testimonials,
+  titleClassName
 }: DeferredReviewsCarouselProps) {
-  return <ReviewsCarousel testimonials={testimonials} />
+  return <ReviewsCarousel testimonials={testimonials} titleClassName={titleClassName} />
 }

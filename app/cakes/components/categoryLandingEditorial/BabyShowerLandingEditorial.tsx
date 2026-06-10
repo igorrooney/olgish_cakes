@@ -28,14 +28,11 @@ export function BabyShowerLandingEditorial({ config }: BabyShowerLandingEditoria
         id={`${config.slug}-flavour-planning`}
         title={config.flavourSectionTitle}
         intro={config.flavourSectionIntro}
-      >
-        <EditorialCardGrid items={config.flavourHighlights} />
-      </EditorialSection>
+      />
 
       <EditorialSplitSection
         id={`${config.slug}-delivery`}
-        title={config.serviceAreaTitle || 'Baby shower cake delivery planning in Leeds'}
-        intro={config.serviceAreaBody}
+        title='Baby shower cake delivery planning in Leeds'
       >
         <p>
           Shorter notice periods mean the travel plan matters early, especially if the cake is being gifted or timed closely to the shower itself.

@@ -76,11 +76,12 @@ describe('Deferred homepage client wrappers', () => {
   })
 
   it('passes testimonials to the deferred reviews carousel', () => {
-    render(<DeferredReviewsCarousel testimonials={[testimonial]} />)
+    render(<DeferredReviewsCarousel testimonials={[testimonial]} titleClassName='custom-title-class' />)
 
     expect(dynamicPropsMock.mock.calls[0]?.[0]).toEqual(
       expect.objectContaining({
-        testimonials: [testimonial]
+        testimonials: [testimonial],
+        titleClassName: 'custom-title-class'
       })
     )
     expect(screen.getByTestId('dynamic-component')).toBeInTheDocument()

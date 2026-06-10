@@ -26,10 +26,27 @@ describe('CatalogCategoryHero', () => {
     const heading = screen.getByRole('heading', { level: 1, name: config.heroTitle })
     const secondaryCopy = screen.getByText(config.heroBody)
 
-    expect(heading).toHaveClass('max-w-[16ch]', 'tablet:max-w-[18ch]', 'small-laptop:max-w-[20ch]')
+    expect(heading).toHaveClass(
+      'sr-only',
+      'tablet:not-sr-only',
+      'rotate-[-2.4deg]',
+      'tracking-[0.16em]',
+      'tablet:text-[48px]',
+      'small-laptop:max-w-[1000px]',
+      'large-laptop:max-w-[1200px]'
+    )
     expect(container.firstChild).not.toHaveClass('border', 'bg-base-100', 'shadow-[0_18px_48px_rgba(97,39,0,0.08)]')
-    expect(screen.getByText(config.heroLead)).toBeInTheDocument()
-    expect(secondaryCopy).toHaveClass('hidden', 'tablet:block')
+    expect(secondaryCopy).toHaveClass(
+      'sr-only',
+      'tablet:not-sr-only',
+      'font-oldenburg',
+      'tracking-[1.92px]',
+      'text-primary-800',
+      'tablet:text-[24px]',
+      'tablet:tracking-[0.12em]',
+      'small-laptop:max-w-[1000px]',
+      'large-laptop:max-w-[1200px]'
+    )
     expect(screen.queryByText(config.heroSupportLine ?? '')).not.toBeInTheDocument()
 
     const primaryCta = screen.getByRole('link', { name: config.heroPrimaryAction.label })

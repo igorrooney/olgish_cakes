@@ -15,11 +15,18 @@ jest.mock('@/app/utils/fetchTestimonials', () => ({
 
 
 jest.mock('../DeferredReviewsCarousel', () => ({
-  DeferredReviewsCarousel: ({ testimonials }: { testimonials: HomepageReview[] }) => (
+  DeferredReviewsCarousel: ({
+    testimonials,
+    titleClassName
+  }: {
+    testimonials: HomepageReview[]
+    titleClassName?: string
+  }) => (
     <div
       data-testid="reviews-carousel"
       data-count={testimonials.length}
       data-review-fields={Object.keys(testimonials[0] ?? {}).sort().join(',')}
+      data-title-class-name={titleClassName ?? ''}
     />
   )
 }))
@@ -92,5 +99,19 @@ describe('Reviews', () => {
     render(result as ReactElement)
 
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '8')
+  })
+
+  it('passes an optional title class override to the carousel', async () => {
+    const providedTestimonials = [
+      createTestimonial({ _id: 'testimonial-4', customerName: 'Iryna' })
+    ]
+
+    const result = await Reviews({
+      testimonials: providedTestimonials,
+      titleClassName: 'custom-title-class'
+    })
+    render(result as ReactElement)
+
+    expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-title-class-name', 'custom-title-class')
   })
 })

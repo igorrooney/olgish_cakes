@@ -15,16 +15,10 @@ export function CatalogCategoryHero({ config }: CatalogCategoryHeroProps) {
   return (
     <section className={categoryLandingHeroShellClassName}>
       <div className={`${categoryLandingCenteredIntroBlockClassName} flex flex-col items-center`}>
-        <p className='font-oldenburg text-[11px] uppercase tracking-[0.3em] text-primary-700 tablet:text-xs'>
-          {config.heroEyebrow}
-        </p>
-        <h1 className='mt-3 max-w-[16ch] font-moreSugar text-[28px] uppercase leading-[1.16] tracking-[0.06em] text-primary-700 tablet:max-w-[18ch] tablet:text-[40px] small-laptop:max-w-[20ch] small-laptop:text-[46px]'>
+        <h1 className='sr-only tablet:not-sr-only mt-2 !mb-0 mx-auto font-moreSugar font-normal text-center text-[24px] uppercase tracking-[0.16em] text-primary-700 rotate-[-2.4deg] !leading-[40px] align-middle tablet:!mt-2 tablet:!mx-auto tablet:!mb-[30px] tablet:text-[48px] tablet:!leading-[56px] tablet:font-normal tablet:align-middle small-laptop:!leading-[64px] small-laptop:max-w-[1000px] large-laptop:max-w-[1200px]'>
           {config.heroTitle}
         </h1>
-        <p className='mx-auto mt-4 max-w-[620px] text-[16px] font-semibold leading-7 text-base-content tablet:text-[18px] tablet:leading-8'>
-          {config.heroLead}
-        </p>
-        <p className='mx-auto mt-3 hidden max-w-[680px] font-oldenburg text-[15px] leading-7 tracking-[0.03em] text-base-content/88 tablet:block tablet:text-base tablet:leading-8'>
+        <p className='sr-only tablet:not-sr-only mt-3 mx-auto max-w-[720px] text-center font-oldenburg text-base font-normal leading-[22px] tracking-[1.92px] text-primary-800 tablet:!mt-3 tablet:!mx-auto tablet:text-[24px] tablet:leading-[32px] tablet:tracking-[0.12em] tablet:align-middle small-laptop:max-w-[1000px] small-laptop:text-[20px] large-laptop:max-w-[1200px]'>
           {config.heroBody}
         </p>
         <div className='mt-6 flex w-full flex-col gap-3 tablet:w-auto tablet:flex-row tablet:items-center tablet:justify-center'>
