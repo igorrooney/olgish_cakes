@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import type { CatalogCategoryLandingConfig } from '../../categoryLandingConfig'
 import {
   EditorialCardGrid,
@@ -6,7 +5,8 @@ import {
   EditorialLinkGrid,
   EditorialSection,
   EditorialSplitSection,
-  EditorialStepGrid
+  EditorialStepGrid,
+  EditorialTextBlocks
 } from './shared'
 
 interface AnniversaryLandingEditorialProps {
@@ -30,26 +30,19 @@ export function AnniversaryLandingEditorial({ config }: AnniversaryLandingEditor
         intro={config.flavourSectionIntro}
       />
 
-      <EditorialSplitSection
-        id={`${config.slug}-delivery`}
-        title='Anniversary cake delivery planning in Leeds'
-      >
-        <p>
-          Timing matters more when the cake is heading to a restaurant, venue or carefully staged home celebration where the finish needs to arrive intact.
-        </p>
-        <p className='mt-4'>
-          The{' '}
-          <Link href='/contact' className='link link-hover text-primary'>
-            contact page
-          </Link>{' '}
-          helps you judge whether collection or delivery is the better fit for the setting.
-        </p>
-      </EditorialSplitSection>
+      {config.editorial.delivery ? (
+        <EditorialSplitSection
+          id={`${config.slug}-delivery`}
+          title={config.editorial.delivery.title}
+        >
+          <EditorialTextBlocks blocks={config.editorial.delivery.body} />
+        </EditorialSplitSection>
+      ) : null}
 
       <EditorialSection
         id={`${config.slug}-proof`}
         title={config.proofSectionTitle}
-        intro='Anniversary cakes tend to feel strongest when the personal details stay selective and the practical decisions are settled before the decoration is finalised.'
+        intro={config.editorial.proofIntro}
       >
         <EditorialChecklist items={config.proofPoints} />
       </EditorialSection>
@@ -57,17 +50,19 @@ export function AnniversaryLandingEditorial({ config }: AnniversaryLandingEditor
       <EditorialSection
         id={`${config.slug}-process`}
         title={config.orderingSectionTitle}
-        intro='A more refined anniversary cake usually starts with clarity about the milestone, the setting and how the cake will actually be served.'
+        intro={config.editorial.orderingIntro}
       >
         <EditorialStepGrid steps={config.orderingSteps} />
       </EditorialSection>
 
-      <EditorialSection
-        id={`${config.slug}-next-steps`}
-        title='Useful pages for a more refined anniversary brief'
-      >
-        <EditorialLinkGrid links={config.internalLinks} />
-      </EditorialSection>
+      {config.editorial.nextStepsTitle ? (
+        <EditorialSection
+          id={`${config.slug}-next-steps`}
+          title={config.editorial.nextStepsTitle}
+        >
+          <EditorialLinkGrid links={config.internalLinks} />
+        </EditorialSection>
+      ) : null}
     </>
   )
 }

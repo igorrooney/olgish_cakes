@@ -15,7 +15,9 @@ const categoryLandingEditorialResolvers: Record<
   'wedding-cakes': (config, reviewSection) => (
     <WeddingLandingEditorial config={config} reviewSection={reviewSection} />
   ),
-  'birthday-cakes': (config) => <BirthdayLandingEditorial config={config} />,
+  'birthday-cakes': (config, reviewSection) => (
+    <BirthdayLandingEditorial config={config} reviewSection={reviewSection} />
+  ),
   'anniversary-cakes-leeds': (config) => <AnniversaryLandingEditorial config={config} />,
   'baby-shower-cakes': (config) => <BabyShowerLandingEditorial config={config} />
 }

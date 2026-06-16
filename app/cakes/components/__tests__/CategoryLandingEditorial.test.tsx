@@ -40,16 +40,22 @@ describe('category landing editorial components', () => {
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
 
-  it('renders birthday editorial with milestone-specific sections and ordering steps', () => {
+  it('renders birthday editorial with proof, local delivery guidance and ordering steps', () => {
     const config = getCategoryLandingConfig('birthday-cakes')
-    render(<BirthdayLandingEditorial config={config} />)
+    const { container } = render(
+      <BirthdayLandingEditorial
+        config={config}
+        reviewSection={<section data-testid='homepage-reviews'><h2>Our reviews</h2></section>}
+      />
+    )
+    const sections = container.querySelectorAll('section')
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Birthday cakes work best when the brief fits the person, not just the party theme' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Birthday cake delivery planning in Leeds' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'A better birthday cake brief usually comes together in four simple steps' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: "Children's birthdays need a readable theme" })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'Get a custom quote' }).closest('a')).toHaveAttribute('href', '/get-custom-quote')
-    expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
+    expect(sections[0]?.id).toBe(`${config.slug}-proof`)
+    expect(sections[1]).toHaveAttribute('data-testid', 'homepage-reviews')
+    expect(screen.getByRole('heading', { level: 2, name: config.proofSectionTitle })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: config.editorial.delivery?.title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: config.orderingSectionTitle })).toBeInTheDocument()
+    expect(screen.getByText(config.proofPoints[0])).toBeInTheDocument()
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
 
@@ -57,10 +63,10 @@ describe('category landing editorial components', () => {
     const config = getCategoryLandingConfig('anniversary-cakes-leeds')
     render(<AnniversaryLandingEditorial config={config} />)
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Anniversary cakes should fit the scale of the milestone and the way you are actually celebrating' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Anniversary cake delivery planning in Leeds' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Useful pages for a more refined anniversary brief' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'Intimate anniversary dinners need restraint' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: config.audienceIntroTitle })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: config.editorial.delivery?.title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: config.editorial.nextStepsTitle })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: config.useCases[0].title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: 'Contact' }).closest('a')).toHaveAttribute('href', '/contact')
     expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getByText('Step 1')).toBeInTheDocument()
@@ -70,10 +76,10 @@ describe('category landing editorial components', () => {
     const config = getCategoryLandingConfig('baby-shower-cakes')
     render(<BabyShowerLandingEditorial config={config} />)
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Baby shower cakes should feel warm, personal and easy to place into the celebration' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Baby shower cake delivery planning in Leeds' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'A practical baby shower order usually comes together in four simple steps' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'Baby shower tables need a softer design language' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: config.audienceIntroTitle })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: config.editorial.delivery?.title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: config.orderingSectionTitle })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: config.useCases[0].title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: 'Get a custom quote' }).closest('a')).toHaveAttribute('href', '/get-custom-quote')
     expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getByText('Step 1')).toBeInTheDocument()
@@ -87,19 +93,19 @@ describe('category landing editorial components', () => {
         getCategoryLandingConfig('wedding-cakes').orderingSectionTitle
       ],
       [
-        'Birthday cakes work best when the brief fits the person, not just the party theme',
-        'Birthday cake delivery planning in Leeds',
-        'A better birthday cake brief usually comes together in four simple steps'
+        getCategoryLandingConfig('birthday-cakes').proofSectionTitle,
+        getCategoryLandingConfig('birthday-cakes').editorial.delivery?.title,
+        getCategoryLandingConfig('birthday-cakes').orderingSectionTitle
       ],
       [
-        'Anniversary cakes should fit the scale of the milestone and the way you are actually celebrating',
-        'Anniversary cake delivery planning in Leeds',
-        'Useful pages for a more refined anniversary brief'
+        getCategoryLandingConfig('anniversary-cakes-leeds').audienceIntroTitle,
+        getCategoryLandingConfig('anniversary-cakes-leeds').editorial.delivery?.title,
+        getCategoryLandingConfig('anniversary-cakes-leeds').editorial.nextStepsTitle
       ],
       [
-        'Baby shower cakes should feel warm, personal and easy to place into the celebration',
-        'Baby shower cake delivery planning in Leeds',
-        'Useful pages before you order a baby shower cake'
+        getCategoryLandingConfig('baby-shower-cakes').audienceIntroTitle,
+        getCategoryLandingConfig('baby-shower-cakes').editorial.delivery?.title,
+        getCategoryLandingConfig('baby-shower-cakes').editorial.nextStepsTitle
       ]
     ]
 
