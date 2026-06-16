@@ -279,7 +279,7 @@ describe('category landing pages', () => {
     })
     expect(screen.getByRole('heading', { level: 2, name: weddingConfig.orderingSectionTitle })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: 'Wedding cake FAQs' })).toBeInTheDocument()
-    expect(screen.getByText('How far ahead should I enquire about a wedding cake?')).toBeInTheDocument()
+    expect(screen.getByText(weddingConfig.faqItems[0].question)).toBeInTheDocument()
     expect(screen.queryByRole('navigation', { name: /breadcrumb/i })).not.toBeInTheDocument()
     expect(screen.queryByText('Why customers choose Olgish Cakes')).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Start your enquiry' })).toBeInTheDocument()
@@ -321,7 +321,7 @@ describe('category landing pages', () => {
       '@type': 'FAQPage',
       mainEntity: expect.arrayContaining([
         expect.objectContaining({
-          name: 'How far ahead should I enquire about a wedding cake?'
+          name: weddingConfig.faqItems[0].question
         })
       ])
     })
@@ -375,12 +375,12 @@ describe('category landing pages', () => {
     )
 
     expect(screen.getByRole('heading', { level: 2, name: weddingConfig.audienceIntroTitle })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Birthday cakes work best when the brief fits the person, not just the party theme' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Anniversary cakes should fit the scale of the milestone and the way you are actually celebrating' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: 'Baby shower cakes should feel warm, personal and easy to place into the celebration' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'Children\'s birthdays need a readable theme' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'Intimate anniversary dinners need restraint' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'Baby shower tables need a softer design language' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: birthdayConfig.proofSectionTitle })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: anniversaryConfig.audienceIntroTitle })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: babyShowerConfig.audienceIntroTitle })).toBeInTheDocument()
+    expect(screen.getByText(birthdayConfig.proofPoints[0])).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: anniversaryConfig.useCases[0].title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: babyShowerConfig.useCases[0].title })).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 3, name: 'Get a custom quote' })[0].closest('a')).toHaveAttribute('href', '/get-custom-quote')
     expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getAllByText('Step 1')).toHaveLength(4)

@@ -30,7 +30,7 @@ export function WeddingLandingEditorial({
       <EditorialSection
         id={`${config.slug}-process`}
         title={config.orderingSectionTitle}
-        intro='Ordering your wedding cake is simple. Share your plans, choose your design and flavours, and we will guide you through the rest.'
+        intro={config.editorial.orderingIntro}
       >
         <EditorialStepGrid steps={config.orderingSteps} />
       </EditorialSection>

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
+import type { CategoryLandingEditorialTextBlock } from '../../categoryLandingConfig'
 import {
   categoryLandingCardPaddingClassName,
   categoryLandingCenteredIntroBlockClassName,
@@ -51,6 +52,10 @@ interface EditorialLinkGridProps {
 
 interface EditorialChecklistProps {
   items: string[]
+}
+
+interface EditorialTextBlocksProps {
+  blocks: CategoryLandingEditorialTextBlock[]
 }
 
 const sectionShellClassName = categoryLandingStandardShellClassName
@@ -197,6 +202,31 @@ export function EditorialChecklist({ items }: EditorialChecklistProps) {
         </li>
       ))}
     </ul>
+  )
+}
+
+export function EditorialTextBlocks({ blocks }: EditorialTextBlocksProps) {
+  return (
+    <>
+      {blocks.map((block, index) => (
+        <p
+          key={typeof block === 'string' ? block : `${block.href}-${block.label}-${index}`}
+          className={index > 0 ? 'mt-4' : undefined}
+        >
+          {typeof block === 'string' ? (
+            block
+          ) : (
+            <>
+              {block.before}
+              <Link href={block.href} className='link link-hover text-primary'>
+                {block.label}
+              </Link>
+              {block.after}
+            </>
+          )}
+        </p>
+      ))}
+    </>
   )
 }
 

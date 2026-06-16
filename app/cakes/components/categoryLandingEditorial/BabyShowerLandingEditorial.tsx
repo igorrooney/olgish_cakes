@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import type { CatalogCategoryLandingConfig } from '../../categoryLandingConfig'
 import {
   EditorialCardGrid,
@@ -6,7 +5,8 @@ import {
   EditorialLinkGrid,
   EditorialSection,
   EditorialSplitSection,
-  EditorialStepGrid
+  EditorialStepGrid,
+  EditorialTextBlocks
 } from './shared'
 
 interface BabyShowerLandingEditorialProps {
@@ -30,26 +30,19 @@ export function BabyShowerLandingEditorial({ config }: BabyShowerLandingEditoria
         intro={config.flavourSectionIntro}
       />
 
-      <EditorialSplitSection
-        id={`${config.slug}-delivery`}
-        title='Baby shower cake delivery planning in Leeds'
-      >
-        <p>
-          Shorter notice periods mean the travel plan matters early, especially if the cake is being gifted or timed closely to the shower itself.
-        </p>
-        <p className='mt-4'>
-          The{' '}
-          <Link href='/contact' className='link link-hover text-primary'>
-            contact page
-          </Link>{' '}
-          helps you compare the safer option before the brief gets more specific.
-        </p>
-      </EditorialSplitSection>
+      {config.editorial.delivery ? (
+        <EditorialSplitSection
+          id={`${config.slug}-delivery`}
+          title={config.editorial.delivery.title}
+        >
+          <EditorialTextBlocks blocks={config.editorial.delivery.body} />
+        </EditorialSplitSection>
+      ) : null}
 
       <EditorialSection
         id={`${config.slug}-proof`}
         title={config.proofSectionTitle}
-        intro='Baby shower cakes usually feel best when the styling stays warm and controlled while the practical details remain easy to manage for the event.'
+        intro={config.editorial.proofIntro}
       >
         <EditorialChecklist items={config.proofPoints} />
       </EditorialSection>
@@ -57,17 +50,19 @@ export function BabyShowerLandingEditorial({ config }: BabyShowerLandingEditoria
       <EditorialSection
         id={`${config.slug}-process`}
         title={config.orderingSectionTitle}
-        intro='A calmer process usually leads to a softer, stronger result because the event type, portion plan and finish are settled in the right order.'
+        intro={config.editorial.orderingIntro}
       >
         <EditorialStepGrid steps={config.orderingSteps} />
       </EditorialSection>
 
-      <EditorialSection
-        id={`${config.slug}-next-steps`}
-        title='Useful pages before you order a baby shower cake'
-      >
-        <EditorialLinkGrid links={config.internalLinks} />
-      </EditorialSection>
+      {config.editorial.nextStepsTitle ? (
+        <EditorialSection
+          id={`${config.slug}-next-steps`}
+          title={config.editorial.nextStepsTitle}
+        >
+          <EditorialLinkGrid links={config.internalLinks} />
+        </EditorialSection>
+      ) : null}
     </>
   )
 }

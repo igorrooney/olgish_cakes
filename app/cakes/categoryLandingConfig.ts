@@ -22,6 +22,15 @@ interface CategoryLandingContentLink {
   description: string
 }
 
+interface CategoryLandingInlineLinkText {
+  before: string
+  href: string
+  label: string
+  after: string
+}
+
+export type CategoryLandingEditorialTextBlock = string | CategoryLandingInlineLinkText
+
 export interface CatalogTrustItem {
   title: string
   detail: string
@@ -32,6 +41,16 @@ export interface CatalogCategoryCtaBandContent {
   body: string
   primaryAction: CategoryLandingAction
   secondaryAction: CategoryLandingAction
+}
+
+export interface CatalogCategoryEditorialContent {
+  proofIntro?: string
+  orderingIntro?: string
+  delivery?: {
+    title: string
+    body: CategoryLandingEditorialTextBlock[]
+  }
+  nextStepsTitle?: string
 }
 
 export interface CatalogCategoryLandingConfig {
@@ -62,6 +81,7 @@ export interface CatalogCategoryLandingConfig {
   orderingSectionTitle: string
   orderingSteps: CategoryLandingContentBlock[]
   internalLinks: CategoryLandingContentLink[]
+  editorial: CatalogCategoryEditorialContent
   faqTitle: string
   faqIntro: string
   faqItems: CatalogFaqItem[]
@@ -166,6 +186,9 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
         description: 'Send your date, venue and serving details when you want pricing shaped around your own brief.'
       }
     ],
+    editorial: {
+      orderingIntro: 'Ordering your wedding cake is simple. Share your plans, choose your design and flavours, and we will guide you through the rest.'
+    },
     faqTitle: 'Wedding cake FAQs',
     faqIntro: 'Helpful answers about consultations, design changes, flavours and wedding cake planning in Leeds.',
     faqItems: [
@@ -187,12 +210,12 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
       },
       {
         question: 'Can you make a wedding cake for dietary requirements?',
-        answer: 'Please ask before booking so I can confirm what is realistic for your date, design and ingredient needs. Some dietary requests are more straightforward than others once structure, decoration and flavour are all considered together.'
+        answer: 'Please ask before booking so we can confirm what is realistic for your date, design and ingredient needs. Some dietary requests are more straightforward than others once structure, decoration and flavour are all considered together.'
       }
     ],
     ctaBand: {
       title: 'Ready to plan your wedding cake?',
-      body: 'Share your date, venue and style ideas and I will help you shape the right cake for your celebration.',
+      body: 'Share your date, venue and style ideas and we will help you shape the right cake for your celebration.',
       primaryAction: {
         href: customQuotePagePath,
         label: 'Enquire now'
@@ -216,7 +239,7 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     description: 'Explore birthday cakes in Leeds by Olgish Cakes. Find handmade custom cakes for children, adults and milestone celebrations with flavour and design flexibility.',
     keywords: 'birthday cakes leeds, custom birthday cakes leeds, handmade birthday cake, celebration cakes leeds',
     heroTitle: 'Birthday Cakes in Leeds',
-    heroBody: 'Browse birthday cake styles prepared for playful themes, elegant milestones and family celebrations, with flavour and finish choices tailored to your brief.',
+    heroBody: 'Discover handmade birthday cakes in Leeds, with bespoke designs, signature flavours and finishes tailored to your celebration',
     heroSupportLine: 'Flexible customisation, clear ordering and handmade cakes prepared in Leeds for memorable birthdays.',
     trustEyebrow: defaultTrustEyebrow,
     localBusinessDescription: 'Custom birthday cakes in Leeds made to order with handmade decoration, personal design details and flexible flavour options from Olgish Cakes.',
@@ -230,48 +253,48 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
       label: 'View all cakes'
     },
     trustItems: defaultTrustItems,
-    audienceIntroTitle: 'Birthday cakes work best when the brief fits the person, not just the party theme',
-    audienceIntroBody: 'A birthday cake should still make sense for the person being celebrated. The right brief depends on the age, the style of the event, the guest count and how much visual detail the cake really needs.',
+    audienceIntroTitle: 'Birthday cakes for children, adults and milestone celebrations',
+    audienceIntroBody: 'Browse handmade birthday cakes in Leeds, with bespoke designs, signature flavours and finishes made to order for every age and occasion.',
     useCases: [
       {
-        title: 'Children\'s birthdays need a readable theme',
-        body: 'For younger birthdays, the best results usually come from choosing one clear character, colour direction or activity rather than trying to fit every idea onto a single cake.'
+        title: "Children's birthday cakes in Leeds",
+        body: 'Choose a birthday cake design that fits the child, the theme and the celebration. From favourite characters to simple colour-led designs, each cake is made to order.'
       },
       {
-        title: 'Adult birthdays often need a cleaner finish',
-        body: 'Adult celebration cakes usually feel stronger when the decoration stays more edited. Colour, message and styling should support each other instead of competing for space.'
+        title: 'Adult birthday cakes in Leeds',
+        body: 'Handmade birthday cakes for adults, with elegant finishes, personal messages and flavour choices tailored to your celebration.'
       },
       {
-        title: 'Milestone birthdays need clearer occasion cues',
-        body: 'An 18th, 30th, 40th or 60th birthday should not all look interchangeable. The cake should reflect the tone of the milestone and the person rather than defaulting to generic celebration details.'
+        title: 'Milestone birthday cakes in Leeds',
+        body: 'Celebrate 18th, 30th, 40th, 50th or 60th birthdays with a bespoke cake design made to suit the person and the occasion.'
       }
     ],
-    flavourSectionTitle: 'Size, flavour and decoration should follow the gathering rather than guesswork',
-    flavourSectionIntro: 'Birthday cakes usually work best when the practical choices are settled early. That means matching portions, flavour direction and finish to the people actually attending the celebration.',
-    proofSectionTitle: 'Why a bespoke birthday cake often works better than a generic celebration design',
+    flavourSectionTitle: 'Birthday cakes work best when the brief matches the celebration',
+    flavourSectionIntro: 'The right size, flavour and finish depend on guest numbers, the age group and how the cake will be served on the day.',
+    proofSectionTitle: 'Why customers choose Olgish Cakes',
     proofPoints: [
-      'A design direction shaped around the age, theme and tone of the event',
-      'Portion planning that fits family parties, adult dinners or larger milestones',
-      'Flavour choices that feel right for the people actually eating the cake',
-      'Collection or Leeds delivery plans matched to the finish and timing'
+      'Handmade birthday cakes made to order',
+      'Signature Honey Cake available',
+      'Bespoke designs for children and adults',
+      'Delivery available across Yorkshire and the UK'
     ],
-    orderingSectionTitle: 'A better birthday cake brief usually comes together in four simple steps',
+    orderingSectionTitle: 'How to order your birthday cake',
     orderingSteps: [
       {
-        title: 'Start with the date and likely guest count',
-        body: 'Those two details set the size and help narrow down whether the cake is for a small gathering, a children\'s party or a bigger milestone event.'
+        title: 'Share your celebration date',
+        body: 'Tell us your celebration date, delivery area and approximate guest numbers.'
       },
       {
-        title: 'Choose one clear design direction',
-        body: 'It is usually better to anchor the cake around one theme, hobby, colour palette or message than to overload the design with unrelated ideas.'
+        title: 'Choose your design and flavours',
+        body: 'Send inspiration photos or ideas, then choose your cake flavour, filling and finish.'
       },
       {
-        title: 'Confirm flavours and practical handling',
-        body: 'This is the point to sense-check flavour expectations, toppers, decoration details and whether the cake should be collected or delivered locally.'
+        title: 'Confirm size and personalisation',
+        body: 'Finalise the cake size, colours, message, topper, personalisation and delivery details.'
       },
       {
-        title: 'Finish with a cake that still works for the event itself',
-        body: 'The final brief should make sense once guests arrive, photos are taken and the cake actually needs to be served.'
+        title: 'Receive your bespoke birthday cake',
+        body: 'Your birthday cake is prepared to order and delivered or collected as agreed.'
       }
     ],
     internalLinks: [
@@ -281,6 +304,16 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
         description: 'Send the date, occasion details and design direction for a quote matched to your brief.'
       }
     ],
+    editorial: {
+      proofIntro: 'Birthday cakes usually work better when the person, the party style and the serving plan are all reflected in the brief instead of being guessed later.',
+      orderingIntro: 'A simple sequence usually makes the order more useful because it turns the occasion details into a design that still works on the day.',
+      delivery: {
+        title: 'Birthday cake delivery in Leeds',
+        body: [
+          'Delivery and collection can be arranged across Leeds, Yorkshire and selected nearby areas such as Bradford, York and Skipton, depending on the cake and the date.'
+        ]
+      }
+    },
     faqTitle: 'Birthday cake FAQs',
     faqIntro: 'Helpful answers about themes, timings, flavours and birthday cake delivery in Leeds.',
     faqItems: [
@@ -302,12 +335,12 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
       },
       {
         question: 'Can you advise on birthday cake size and servings?',
-        answer: 'Yes. Portion planning is part of the order process, so once you share the likely guest count and how formal the celebration is, I can help suggest a size that suits the event.'
+        answer: 'Yes. Portion planning is part of the order process, so once you share the likely guest count and how formal the celebration is, we can help suggest a size that suits the event.'
       }
     ],
     ctaBand: {
       title: 'Planning a birthday cake in Leeds?',
-      body: 'Send the occasion details, guest count and design direction and I will help shape a cake that fits the celebration properly.',
+      body: 'Send the occasion details, guest count and design direction and we will help shape a cake that fits the celebration properly.',
       primaryAction: {
         href: customQuotePagePath,
         label: 'Enquire now'
@@ -397,6 +430,23 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
         description: 'Use the contact page if you already know the celebration details and want to discuss the brief directly.'
       }
     ],
+    editorial: {
+      proofIntro: 'Anniversary cakes tend to feel strongest when the personal details stay selective and the practical decisions are settled before the decoration is finalised.',
+      orderingIntro: 'A more refined anniversary cake usually starts with clarity about the milestone, the setting and how the cake will actually be served.',
+      delivery: {
+        title: 'Anniversary cake delivery planning in Leeds',
+        body: [
+          'Timing matters more when the cake is heading to a restaurant, venue or carefully staged home celebration where the finish needs to arrive intact.',
+          {
+            before: 'The ',
+            href: '/contact',
+            label: 'contact page',
+            after: ' helps you judge whether collection or delivery is the better fit for the setting.'
+          }
+        ]
+      },
+      nextStepsTitle: 'Useful pages for a more refined anniversary brief'
+    },
     faqTitle: 'Anniversary cake FAQs',
     faqIntro: 'Helpful answers about sizing, style, delivery and planning an anniversary cake in Leeds.',
     faqItems: [
@@ -423,7 +473,7 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     ],
     ctaBand: {
       title: 'Planning an anniversary cake in Leeds?',
-      body: 'Share the milestone, guest count and style direction and I will help shape a cake that suits the celebration properly.',
+      body: 'Share the milestone, guest count and style direction and we will help shape a cake that suits the celebration properly.',
       primaryAction: {
         href: customQuotePagePath,
         label: 'Enquire now'
@@ -512,6 +562,23 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
         description: 'Send the date, gathering details and design direction for a tailored starting quote.'
       }
     ],
+    editorial: {
+      proofIntro: 'Baby shower cakes usually feel best when the styling stays warm and controlled while the practical details remain easy to manage for the event.',
+      orderingIntro: 'A calmer process usually leads to a softer, stronger result because the event type, portion plan and finish are settled in the right order.',
+      delivery: {
+        title: 'Baby shower cake delivery planning in Leeds',
+        body: [
+          'Shorter notice periods mean the travel plan matters early, especially if the cake is being gifted or timed closely to the shower itself.',
+          {
+            before: 'The ',
+            href: '/contact',
+            label: 'contact page',
+            after: ' helps you compare the safer option before the brief gets more specific.'
+          }
+        ]
+      },
+      nextStepsTitle: 'Useful pages before you order a baby shower cake'
+    },
     faqTitle: 'Baby shower cake FAQs',
     faqIntro: 'Helpful answers about sizing, personalisation and planning a baby shower cake in Leeds.',
     faqItems: [
@@ -521,7 +588,7 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
       },
       {
         question: 'What size cake works best for a baby shower?',
-        answer: 'The best size depends on whether the cake is for the shower itself, a family gathering afterwards or a gift-led order. Share the likely guest count and I can help suggest a sensible scale for the event.'
+        answer: 'The best size depends on whether the cake is for the shower itself, a family gathering afterwards or a gift-led order. Share the likely guest count and we can help suggest a sensible scale for the event.'
       },
       {
         question: 'Do you offer baby shower cake delivery in Leeds?',
@@ -538,7 +605,7 @@ export const categoryLandingConfig: Record<CatalogCategoryLandingSlug, CatalogCa
     ],
     ctaBand: {
       title: 'Need a baby shower cake in Leeds?',
-      body: 'Share the date, gathering details and style direction and I will help you shape a cake that fits the occasion properly.',
+      body: 'Share the date, gathering details and style direction and we will help you shape a cake that fits the occasion properly.',
       primaryAction: {
         href: customQuotePagePath,
         label: 'Enquire now'
