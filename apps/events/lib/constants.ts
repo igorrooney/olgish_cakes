@@ -34,21 +34,21 @@ export const FEATURE_LINKS = [
     href: 'https://olgishcakes.co.uk/',
     title: 'Olgish Cakes',
     description: 'Ukrainian cakes and sweet gifts made in Leeds.',
-    image: '/images/olga-baker.webp',
+    image: '/images/olga.png',
     alt: 'Olga from Olgish Cakes preparing cakes'
   },
   {
     href: 'https://olgishcakes.co.uk/gift-hampers',
     title: 'Gift hampers',
     description: 'Thoughtful Ukrainian cake hampers delivered across the UK.',
-    image: '/images/placeholder-cake.jpg',
+    image: '/images/gift_hamper.png',
     alt: 'Olgish Cakes handmade cake gift'
   },
   {
     href: 'https://olgishcakes.co.uk/cakes',
     title: 'Custom cakes',
     description: 'Order a special celebration cake made for your occasion.',
-    image: '/images/olgish-cakes-logo-bakery-brand.png',
-    alt: 'Olgish Cakes bakery logo'
+    image: '/images/custom_cake.png',
+    alt: 'Olgish Cakes custom strawberry cake'
   }
 ] as const

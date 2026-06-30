@@ -1,6 +1,6 @@
 'use client'
 
-import { ImagePlus, Loader2, MessageCircle, Send } from 'lucide-react'
+import { ImagePlus, Loader2, MessageCircle, Send, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import {
   type FormEvent,
@@ -209,11 +209,33 @@ export function EventPhotoForm() {
     setError(null)
   }
 
+  function setFileInputFiles(files: File[]) {
+    if (!fileInputRef.current) {
+      return
+    }
+
+    if (files.length === 0) {
+      fileInputRef.current.value = ''
+      return
+    }
+
+    const dataTransfer = new DataTransfer()
+    files.forEach((file) => dataTransfer.items.add(file))
+    fileInputRef.current.files = dataTransfer.files
+  }
+
+  function handleRemoveFile(fileIndex: number) {
+    const nextFiles = selectedFiles.filter((_, index) => index !== fileIndex)
+    setSelectedFiles(nextFiles)
+    setFileInputFiles(nextFiles)
+    setError(null)
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
 
-    const files = Array.from(fileInputRef.current?.files ?? [])
+    const files = selectedFiles
     const countError = validateImageCount(files.length, settings.maxImages)
 
     if (countError) {
@@ -325,7 +347,7 @@ export function EventPhotoForm() {
         <p className="text-sm font-semibold uppercase tracking-normal text-primary">
           {settings.eventName}
         </p>
-        <h2 className="mt-1 text-2xl font-bold leading-tight">Send your image</h2>
+        <h1 className="mt-1 text-2xl font-bold leading-tight">Send your image</h1>
       </div>
 
       {error ? (
@@ -397,15 +419,26 @@ export function EventPhotoForm() {
           />
           {selectedFiles.length > 0 ? (
             <ul className="mt-3 grid gap-2 text-sm">
-              {selectedFiles.map((file) => (
+              {selectedFiles.map((file, index) => (
                 <li
                   key={`${file.name}-${file.lastModified}`}
                   className="flex items-center justify-between rounded-md border border-base-300 bg-base-100 px-3 py-2"
                 >
                   <span className="truncate pr-3">{file.name}</span>
-                  <span className="shrink-0 text-base-content/60">
-                    {(file.size / 1024 / 1024).toFixed(1)} MB
-                  </span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="text-base-content/60">
+                      {(file.size / 1024 / 1024).toFixed(1)} MB
+                    </span>
+                    <button
+                      aria-label={`Remove ${file.name}`}
+                      className="btn btn-ghost btn-square btn-xs"
+                      title="Remove image"
+                      type="button"
+                      onClick={() => handleRemoveFile(index)}
+                    >
+                      <X aria-hidden="true" size={16} />
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
