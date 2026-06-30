@@ -31,13 +31,6 @@ export const SITE_URL =
 
 export const FEATURE_LINKS = [
   {
-    href: 'https://olgishcakes.co.uk/',
-    title: 'Olgish Cakes',
-    description: 'Ukrainian cakes and sweet gifts made in Leeds.',
-    image: '/images/olga.png',
-    alt: 'Olga from Olgish Cakes preparing cakes'
-  },
-  {
     href: 'https://olgishcakes.co.uk/gift-hampers',
     title: 'Gift hampers',
     description: 'Thoughtful Ukrainian cake hampers delivered across the UK.',
@@ -50,5 +43,12 @@ export const FEATURE_LINKS = [
     description: 'Order a special celebration cake made for your occasion.',
     image: '/images/custom_cake.png',
     alt: 'Olgish Cakes custom strawberry cake'
-  }
+  },
+    {
+    href: 'https://olgishcakes.co.uk/',
+    title: 'Olgish Cakes',
+    description: 'Ukrainian cakes and sweet gifts made in Leeds.',
+    image: '/images/olga.png',
+    alt: 'Olga from Olgish Cakes preparing cakes'
+  },
 ] as const
