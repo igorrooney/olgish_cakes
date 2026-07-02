@@ -1,8 +1,8 @@
+import type { ReactNode } from 'react'
 import type { CatalogCategoryLandingConfig } from '../../categoryLandingConfig'
 import {
   EditorialCardGrid,
   EditorialChecklist,
-  EditorialLinkGrid,
   EditorialSection,
   EditorialSplitSection,
   EditorialStepGrid,
@@ -11,11 +11,33 @@ import {
 
 interface BabyShowerLandingEditorialProps {
   config: CatalogCategoryLandingConfig
+  reviewSection?: ReactNode
 }
 
-export function BabyShowerLandingEditorial({ config }: BabyShowerLandingEditorialProps) {
+export function BabyShowerLandingEditorial({
+  config,
+  reviewSection
+}: BabyShowerLandingEditorialProps) {
   return (
     <>
+      <EditorialSection
+        id={`${config.slug}-proof`}
+        title={config.proofSectionTitle}
+        intro={config.editorial.proofIntro}
+      >
+        <EditorialChecklist items={config.proofPoints} />
+      </EditorialSection>
+
+      {reviewSection}
+
+      <EditorialSection
+        id={`${config.slug}-process`}
+        title={config.orderingSectionTitle}
+        intro={config.editorial.orderingIntro}
+      >
+        <EditorialStepGrid steps={config.orderingSteps} />
+      </EditorialSection>
+
       <EditorialSection
         id={`${config.slug}-overview`}
         title={config.audienceIntroTitle}
@@ -37,31 +59,6 @@ export function BabyShowerLandingEditorial({ config }: BabyShowerLandingEditoria
         >
           <EditorialTextBlocks blocks={config.editorial.delivery.body} />
         </EditorialSplitSection>
-      ) : null}
-
-      <EditorialSection
-        id={`${config.slug}-proof`}
-        title={config.proofSectionTitle}
-        intro={config.editorial.proofIntro}
-      >
-        <EditorialChecklist items={config.proofPoints} />
-      </EditorialSection>
-
-      <EditorialSection
-        id={`${config.slug}-process`}
-        title={config.orderingSectionTitle}
-        intro={config.editorial.orderingIntro}
-      >
-        <EditorialStepGrid steps={config.orderingSteps} />
-      </EditorialSection>
-
-      {config.editorial.nextStepsTitle ? (
-        <EditorialSection
-          id={`${config.slug}-next-steps`}
-          title={config.editorial.nextStepsTitle}
-        >
-          <EditorialLinkGrid links={config.internalLinks} />
-        </EditorialSection>
       ) : null}
     </>
   )

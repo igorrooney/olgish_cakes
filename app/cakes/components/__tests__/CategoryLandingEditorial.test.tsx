@@ -61,26 +61,41 @@ describe('category landing editorial components', () => {
 
   it('renders anniversary editorial with local delivery guidance and milestone sections', () => {
     const config = getCategoryLandingConfig('anniversary-cakes-leeds')
-    render(<AnniversaryLandingEditorial config={config} />)
+    const { container } = render(
+      <AnniversaryLandingEditorial
+        config={config}
+        reviewSection={<section data-testid='homepage-reviews'><h2>Our reviews</h2></section>}
+      />
+    )
+    const sections = container.querySelectorAll('section')
 
+    expect(sections[0]?.id).toBe(`${config.slug}-proof`)
+    expect(sections[1]).toHaveAttribute('data-testid', 'homepage-reviews')
+    expect(sections[2]?.id).toBe(`${config.slug}-process`)
     expect(screen.getByRole('heading', { level: 2, name: config.audienceIntroTitle })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: config.editorial.delivery?.title })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: config.editorial.nextStepsTitle })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: config.useCases[0].title })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'Contact' }).closest('a')).toHaveAttribute('href', '/contact')
     expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
 
   it('renders baby shower editorial with softer styling and practical planning steps', () => {
     const config = getCategoryLandingConfig('baby-shower-cakes')
-    render(<BabyShowerLandingEditorial config={config} />)
+    const { container } = render(
+      <BabyShowerLandingEditorial
+        config={config}
+        reviewSection={<section data-testid='homepage-reviews'><h2>Our reviews</h2></section>}
+      />
+    )
+    const sections = container.querySelectorAll('section')
 
+    expect(sections[0]?.id).toBe(`${config.slug}-proof`)
+    expect(sections[1]).toHaveAttribute('data-testid', 'homepage-reviews')
+    expect(sections[2]?.id).toBe(`${config.slug}-process`)
     expect(screen.getByRole('heading', { level: 2, name: config.audienceIntroTitle })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: config.editorial.delivery?.title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: config.orderingSectionTitle })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: config.useCases[0].title })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: 'Get a custom quote' }).closest('a')).toHaveAttribute('href', '/get-custom-quote')
     expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
@@ -98,14 +113,14 @@ describe('category landing editorial components', () => {
         getCategoryLandingConfig('birthday-cakes').orderingSectionTitle
       ],
       [
-        getCategoryLandingConfig('anniversary-cakes-leeds').audienceIntroTitle,
+        getCategoryLandingConfig('anniversary-cakes-leeds').proofSectionTitle,
         getCategoryLandingConfig('anniversary-cakes-leeds').editorial.delivery?.title,
-        getCategoryLandingConfig('anniversary-cakes-leeds').editorial.nextStepsTitle
+        getCategoryLandingConfig('anniversary-cakes-leeds').orderingSectionTitle
       ],
       [
-        getCategoryLandingConfig('baby-shower-cakes').audienceIntroTitle,
+        getCategoryLandingConfig('baby-shower-cakes').proofSectionTitle,
         getCategoryLandingConfig('baby-shower-cakes').editorial.delivery?.title,
-        getCategoryLandingConfig('baby-shower-cakes').editorial.nextStepsTitle
+        getCategoryLandingConfig('baby-shower-cakes').orderingSectionTitle
       ]
     ]
 

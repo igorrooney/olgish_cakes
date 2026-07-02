@@ -69,7 +69,7 @@ export async function renderCategoryLandingPage(slug: CatalogCategoryLandingSlug
     collectionOptions: [targetCollection]
   }
   const reviewTitleClassName = 'text-center font-oldenburg text-3xl tracking-[0.08em] text-base-content tablet:text-4xl'
-  const reviewSection = slug === 'wedding-cakes' || slug === 'birthday-cakes'
+  const reviewSection = slug === 'wedding-cakes' || slug === 'birthday-cakes' || slug === 'anniversary-cakes-leeds' || slug === 'baby-shower-cakes'
     ? await Reviews({ titleClassName: reviewTitleClassName })
     : undefined
 

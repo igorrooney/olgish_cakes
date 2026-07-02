@@ -227,7 +227,7 @@ describe('category landing pages', () => {
     const page = await renderCategoryLandingPage('anniversary-cakes-leeds')
     render(page)
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Anniversary Cakes in Leeds' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: anniversaryConfig.heroTitle })).toBeInTheDocument()
     expect(screen.getByTestId('locked-collections')).toHaveTextContent('c-anniversary-cakes')
   })
 
@@ -375,13 +375,12 @@ describe('category landing pages', () => {
     )
 
     expect(screen.getByRole('heading', { level: 2, name: weddingConfig.audienceIntroTitle })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 2, name: birthdayConfig.proofSectionTitle })).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 2, name: birthdayConfig.proofSectionTitle }).length).toBeGreaterThan(0)
     expect(screen.getByRole('heading', { level: 2, name: anniversaryConfig.audienceIntroTitle })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: babyShowerConfig.audienceIntroTitle })).toBeInTheDocument()
     expect(screen.getByText(birthdayConfig.proofPoints[0])).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: anniversaryConfig.useCases[0].title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: babyShowerConfig.useCases[0].title })).toBeInTheDocument()
-    expect(screen.getAllByRole('heading', { level: 3, name: 'Get a custom quote' })[0].closest('a')).toHaveAttribute('href', '/get-custom-quote')
     expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getAllByText('Step 1')).toHaveLength(4)
   })
