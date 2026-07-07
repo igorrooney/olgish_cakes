@@ -18,6 +18,11 @@ jest.mock('next/link', () => {
 describe('category landing editorial components', () => {
   it('renders wedding editorial with specific planning, logistics and proof sections', () => {
     const config = getCategoryLandingConfig('wedding-cakes')
+
+    if (!config.audienceIntroTitle || !config.audienceIntroBody) {
+      throw new Error('Expected wedding overview content')
+    }
+
     const { container } = render(
       <WeddingLandingEditorial
         config={config}
@@ -61,6 +66,12 @@ describe('category landing editorial components', () => {
 
   it('renders anniversary editorial with local delivery guidance and milestone sections', () => {
     const config = getCategoryLandingConfig('anniversary-cakes-leeds')
+    const flavourItems = config.flavourSectionItems
+
+    if (!flavourItems) {
+      throw new Error('Expected anniversary flavour section items')
+    }
+
     const { container } = render(
       <AnniversaryLandingEditorial
         config={config}
@@ -72,15 +83,20 @@ describe('category landing editorial components', () => {
     expect(sections[0]?.id).toBe(`${config.slug}-proof`)
     expect(sections[1]).toHaveAttribute('data-testid', 'homepage-reviews')
     expect(sections[2]?.id).toBe(`${config.slug}-process`)
-    expect(screen.getByRole('heading', { level: 2, name: config.audienceIntroTitle })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: config.flavourSectionTitle })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: config.editorial.delivery?.title })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: config.useCases[0].title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: flavourItems[0].title })).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
 
   it('renders baby shower editorial with softer styling and practical planning steps', () => {
     const config = getCategoryLandingConfig('baby-shower-cakes')
+
+    if (!config.audienceIntroTitle || !config.useCases) {
+      throw new Error('Expected baby shower overview content')
+    }
+
     const { container } = render(
       <BabyShowerLandingEditorial
         config={config}

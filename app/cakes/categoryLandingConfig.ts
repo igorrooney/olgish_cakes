@@ -61,11 +61,12 @@ export interface CatalogCategoryLandingConfig {
   itemListName: string
   heroPrimaryAction: CategoryLandingAction
   heroSecondaryAction: CategoryLandingAction
-  audienceIntroTitle: string
-  audienceIntroBody: string
-  useCases: CategoryLandingContentBlock[]
+  audienceIntroTitle?: string
+  audienceIntroBody?: string
+  useCases?: CategoryLandingContentBlock[]
   flavourSectionTitle: string
   flavourSectionIntro: string
+  flavourSectionItems?: CategoryLandingContentBlock[]
   proofSectionTitle: string
   proofPoints: string[]
   orderingSectionTitle: string
@@ -109,7 +110,7 @@ interface CatalogCategoryLandingSource {
       intro?: string
       steps: CategoryLandingContentBlock[]
     }
-    overview: {
+    overview?: {
       title: string
       intro: string
       items: CategoryLandingContentBlock[]
@@ -117,6 +118,7 @@ interface CatalogCategoryLandingSource {
     flavourPlanning: {
       title: string
       intro: string
+      items?: CategoryLandingContentBlock[]
     }
     delivery?: {
       title: string
@@ -427,38 +429,28 @@ const categoryLandingCopy = {
           }
         ]
       },
-      overview: {
-        title: 'Anniversary cakes made around your celebration',
-        intro: 'Your anniversary cake needs to suit your plans, guests and style. We help you choose the right size, flavour, finish and personal details for the day.',
+      flavourPlanning: {
+        title: 'Anniversary cake flavours and sizes',
+        intro: 'Choose from our signature honey cake, sponge cake, red velvet cake and other flavours. Every personalised anniversary cake is made to order in Leeds. We help you choose the right size, flavour and finish for your celebration.',
         items: [
           {
             title: 'For quiet anniversary dinners',
-            body: 'A smaller cake with soft colours, clean styling and a personal message suits an intimate celebration.'
+            body: 'A smaller personalised anniversary cake suits intimate anniversary celebrations with close family or friends. Add names, dates or a short anniversary message.'
           },
           {
             title: 'For family anniversary gatherings',
-            body: 'A larger cake gives guests neat portions while still looking special on the table.'
+            body: 'Choose a larger personalised anniversary cake with enough portions for family and friends. Multiple flavours and bespoke finishes are available.'
           },
           {
             title: 'For milestone anniversaries',
-            body: 'Add names, dates, flowers, colours or a topper to mark the year in a personal way.'
+            body: 'Celebrate a 10th, 25th, 40th or 50th anniversary with edible flowers, gold details, custom cake toppers and personalised decoration.'
           }
         ]
       },
-      flavourPlanning: {
-        title: 'Flavour and size decisions should support the mood of the anniversary, not compete with it',
-        intro: 'A refined anniversary cake should still be practical. The flavours need to suit the people attending and the scale should make sense for the type of celebration being planned.'
-      },
       delivery: {
-        title: 'Anniversary cake delivery planning in Leeds',
+        title: 'Flavours and sizes chosen for your anniversary',
         body: [
-          'Timing matters more when the cake is heading to a restaurant, venue or carefully staged home celebration where the finish needs to arrive intact.',
-          {
-            before: 'The ',
-            href: '/contact',
-            label: 'contact page',
-            after: ' helps you judge whether collection or delivery is the better fit for the setting.'
-          }
+          'Choose from honey cake, sponge cake, red velvet and other flavours. We help match the cake size to your guest numbers and serving plan.'
         ]
       },
       faq: {
@@ -642,11 +634,12 @@ function createCategoryLandingConfig(
     itemListName: source.metadata.itemListName,
     heroPrimaryAction: source.hero.primaryAction ?? defaultHeroPrimaryAction,
     heroSecondaryAction: source.hero.secondaryAction ?? defaultHeroSecondaryAction,
-    audienceIntroTitle: source.sections.overview.title,
-    audienceIntroBody: source.sections.overview.intro,
-    useCases: source.sections.overview.items,
+    audienceIntroTitle: source.sections.overview?.title,
+    audienceIntroBody: source.sections.overview?.intro,
+    useCases: source.sections.overview?.items,
     flavourSectionTitle: source.sections.flavourPlanning.title,
     flavourSectionIntro: source.sections.flavourPlanning.intro,
+    flavourSectionItems: source.sections.flavourPlanning.items,
     proofSectionTitle: source.sections.proof.title,
     proofPoints: source.sections.proof.points,
     orderingSectionTitle: source.sections.process.title,

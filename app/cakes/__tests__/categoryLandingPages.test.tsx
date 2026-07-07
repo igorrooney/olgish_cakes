@@ -364,6 +364,19 @@ describe('category landing pages', () => {
     const birthdayConfig = getCategoryLandingConfig('birthday-cakes')
     const anniversaryConfig = getCategoryLandingConfig('anniversary-cakes-leeds')
     const babyShowerConfig = getCategoryLandingConfig('baby-shower-cakes')
+    const anniversaryFlavourItems = anniversaryConfig.flavourSectionItems
+
+    if (!weddingConfig.audienceIntroTitle) {
+      throw new Error('Expected wedding audience intro title')
+    }
+
+    if (!babyShowerConfig.audienceIntroTitle || !babyShowerConfig.useCases) {
+      throw new Error('Expected baby shower overview content')
+    }
+
+    if (!anniversaryFlavourItems) {
+      throw new Error('Expected anniversary flavour section items')
+    }
 
     render(
       <>
@@ -376,10 +389,14 @@ describe('category landing pages', () => {
 
     expect(screen.getByRole('heading', { level: 2, name: weddingConfig.audienceIntroTitle })).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 2, name: birthdayConfig.proofSectionTitle }).length).toBeGreaterThan(0)
-    expect(screen.getByRole('heading', { level: 2, name: anniversaryConfig.audienceIntroTitle })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: anniversaryConfig.flavourSectionTitle })).toBeInTheDocument()
+    expect(screen.getByText(anniversaryConfig.flavourSectionIntro)).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: babyShowerConfig.audienceIntroTitle })).toBeInTheDocument()
     expect(screen.getByText(birthdayConfig.proofPoints[0])).toBeInTheDocument()
-    expect(screen.getByRole('heading', { level: 3, name: anniversaryConfig.useCases[0].title })).toBeInTheDocument()
+    expect(anniversaryConfig.audienceIntroTitle).toBeUndefined()
+    expect(anniversaryConfig.useCases).toBeUndefined()
+    expect(screen.getAllByRole('heading', { level: 3, name: anniversaryFlavourItems[0].title })).toHaveLength(1)
+    expect(screen.getByText(anniversaryFlavourItems[0].body)).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: babyShowerConfig.useCases[0].title })).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
     expect(screen.getAllByText('Step 1')).toHaveLength(4)

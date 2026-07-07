@@ -39,18 +39,14 @@ export function AnniversaryLandingEditorial({
       </EditorialSection>
 
       <EditorialSection
-        id={`${config.slug}-overview`}
-        title={config.audienceIntroTitle}
-        intro={config.audienceIntroBody}
-      >
-        <EditorialCardGrid items={config.useCases} />
-      </EditorialSection>
-
-      <EditorialSection
         id={`${config.slug}-flavour-planning`}
         title={config.flavourSectionTitle}
         intro={config.flavourSectionIntro}
-      />
+      >
+        {config.flavourSectionItems ? (
+          <EditorialCardGrid items={config.flavourSectionItems} />
+        ) : null}
+      </EditorialSection>
 
       {config.editorial.delivery ? (
         <EditorialSplitSection
