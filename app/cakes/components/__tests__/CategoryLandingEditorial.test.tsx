@@ -64,7 +64,7 @@ describe('category landing editorial components', () => {
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
 
-  it('renders anniversary editorial with local delivery guidance and milestone sections', () => {
+  it('renders anniversary editorial with flavour guidance and milestone sections', () => {
     const config = getCategoryLandingConfig('anniversary-cakes-leeds')
     const flavourItems = config.flavourSectionItems
 
@@ -86,7 +86,7 @@ describe('category landing editorial components', () => {
     expect(screen.getByRole('heading', { level: 2, name: config.flavourSectionTitle })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 2, name: config.editorial.delivery?.title })).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 3, name: flavourItems[0].title })).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: /contact page/i }).every((element) => element.getAttribute('href') === '/contact')).toBe(true)
+    expect(screen.getByText('Choose from honey cake, sponge cake, red velvet and other flavours. We help match the cake size to your guest numbers and serving plan.')).toBeInTheDocument()
     expect(screen.getByText('Step 1')).toBeInTheDocument()
   })
 
