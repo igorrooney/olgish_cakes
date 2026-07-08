@@ -99,4 +99,51 @@ describe('Telegram notifications', () => {
     expect(body.get('document0')).toBeInstanceOf(Blob)
     expect(body.get('document1')).toBeInstanceOf(Blob)
   })
+
+  it('retries transient Telegram responses', async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({
+        ok: false,
+        description: 'Too many requests'
+      }), {
+        status: 429,
+        headers: {
+          'content-type': 'application/json'
+        }
+      }))
+      .mockResolvedValueOnce(telegramResponse({ message_id: 301 }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    const messageIds = await sendTelegramNotification({
+      requestId: 'request-id',
+      eventName: 'Olgish Cakes event',
+      fullName: 'Anna Smith',
+      email: 'anna@example.com',
+      documents: [makeDocument('photo.jpg')]
+    })
+
+    expect(messageIds).toEqual([301])
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('stores a clear timeout error after Telegram retries are exhausted', async () => {
+    const timeoutError = new DOMException('This operation was aborted', 'AbortError')
+    const fetchMock = vi.fn()
+      .mockRejectedValueOnce(timeoutError)
+      .mockRejectedValueOnce(timeoutError)
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(sendTelegramNotification({
+      requestId: 'request-id',
+      eventName: 'Olgish Cakes event',
+      fullName: 'Anna Smith',
+      email: 'anna@example.com',
+      documents: [makeDocument('photo.jpg')]
+    })).rejects.toMatchObject({
+      message: 'Telegram request timed out after 30 seconds and 2 attempts.',
+      messageIds: []
+    })
+
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
 })

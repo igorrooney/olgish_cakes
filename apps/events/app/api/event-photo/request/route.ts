@@ -33,7 +33,7 @@ import {
   publicRequestSchema
 } from '@/lib/validation'
 
-export const maxDuration = 60
+export const maxDuration = 90
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const body = await readJsonBody(request)

@@ -79,6 +79,35 @@ export interface EventPhotoRequestUpdate extends Record<string, unknown> {
   updated_at?: string
 }
 
+export interface EventPhotoLinkClickRow extends Record<string, unknown> {
+  id: number
+  request_id: string
+  event_name: string
+  link_key: string
+  link_title: string
+  link_href: string
+  clicked_at: string
+}
+
+export interface EventPhotoLinkClickInsert extends Record<string, unknown> {
+  id?: number
+  request_id: string
+  event_name: string
+  link_key: string
+  link_title: string
+  link_href: string
+  clicked_at?: string
+}
+
+export interface EventPhotoLinkClickUpdate extends Record<string, unknown> {
+  request_id?: string
+  event_name?: string
+  link_key?: string
+  link_title?: string
+  link_href?: string
+  clicked_at?: string
+}
+
 export interface AdminLoginAttemptRow extends Record<string, unknown> {
   id: number
   key_hash: string
@@ -140,6 +169,12 @@ export interface Database {
         Row: EventPhotoRequestRow
         Insert: EventPhotoRequestInsert
         Update: EventPhotoRequestUpdate
+        Relationships: []
+      }
+      event_photo_link_clicks: {
+        Row: EventPhotoLinkClickRow
+        Insert: EventPhotoLinkClickInsert
+        Update: EventPhotoLinkClickUpdate
         Relationships: []
       }
       event_photo_rate_limit_attempts: {
