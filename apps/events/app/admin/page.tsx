@@ -1,10 +1,14 @@
-import { Download, Eye, Filter } from 'lucide-react'
+import { Download, ExternalLink, Eye, Filter, MousePointerClick } from 'lucide-react'
 import Link from 'next/link'
 
 import { AdminNav } from '@/components/AdminNav'
 import { StatusBadge } from '@/components/StatusBadge'
 import { formatDateTime } from '@/lib/format'
 import { requireAdmin } from '@/lib/admin-auth'
+import {
+  listEventPhotoLinkClickSummary,
+  listRecentEventPhotoLinkClicks
+} from '@/lib/link-clicks'
 import {
   listEventNames,
   listEventPhotoRequests
@@ -23,9 +27,11 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   const params = await searchParams
   const eventName = params.eventName?.trim() || undefined
-  const [rows, eventNames] = await Promise.all([
+  const [rows, eventNames, linkClickSummary, recentLinkClicks] = await Promise.all([
     listEventPhotoRequests({ eventName }),
-    listEventNames()
+    listEventNames(),
+    listEventPhotoLinkClickSummary({ eventName }),
+    listRecentEventPhotoLinkClicks({ eventName, limit: 10 })
   ])
   const exportHref = eventName
     ? `/api/admin/export?eventName=${encodeURIComponent(eventName)}`
@@ -61,6 +67,91 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               Export CSV
             </a>
           </form>
+        </section>
+
+        <section className="mb-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)]">
+          <div className="rounded-lg border border-base-300 bg-white shadow-sm">
+            <div className="border-b border-base-300 px-4 py-3">
+              <h1 className="flex items-center gap-2 text-xl font-bold">
+                <MousePointerClick aria-hidden="true" size={20} />
+                Link clicks
+              </h1>
+              <p className="text-sm text-base-content/70">
+                {linkClickSummary.reduce((total, row) => total + row.totalClicks, 0)} clicks
+              </p>
+            </div>
+            {linkClickSummary.length === 0 ? (
+              <div className="p-6 text-sm text-base-content/70">No link clicks found.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Link</th>
+                      <th>Clicks</th>
+                      <th aria-label="Open link" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {linkClickSummary.map((row) => (
+                      <tr key={row.linkKey}>
+                        <td>{row.linkTitle}</td>
+                        <td className="font-semibold">{row.totalClicks}</td>
+                        <td className="text-right">
+                          <a
+                            className="btn btn-xs btn-outline gap-1"
+                            href={row.linkHref}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            <ExternalLink aria-hidden="true" size={14} />
+                            Open
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-lg border border-base-300 bg-white shadow-sm">
+            <div className="border-b border-base-300 px-4 py-3">
+              <h2 className="text-xl font-bold">Recent clicks</h2>
+              <p className="text-sm text-base-content/70">{recentLinkClicks.length} latest records</p>
+            </div>
+            {recentLinkClicks.length === 0 ? (
+              <div className="p-6 text-sm text-base-content/70">No recent clicks found.</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Event</th>
+                      <th>Email</th>
+                      <th>Link</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentLinkClicks.map((row) => (
+                      <tr key={row.id}>
+                        <td className="whitespace-nowrap">{formatDateTime(row.clickedAt)}</td>
+                        <td>{row.eventName}</td>
+                        <td>
+                          <Link className="link link-hover break-all" href={`/admin/${row.requestId}`}>
+                            {row.email}
+                          </Link>
+                        </td>
+                        <td>{row.linkTitle}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </section>
 
         <section className="overflow-hidden rounded-lg border border-base-300 bg-white shadow-sm">

@@ -6,6 +6,7 @@ import {
   FEATURE_LINKS,
   SUCCESS_MESSAGE
 } from '@/lib/constants'
+import { buildTrackedFeatureLinkHref } from '@/lib/link-clicks'
 import { getSentEventPhotoRequest } from '@/lib/requests'
 import {
   parseSuccessRequestId,
@@ -49,7 +50,9 @@ export default async function SuccessPage({ searchParams }: SuccessPageProps) {
             <a
               key={item.href}
               className="group rounded-lg border border-base-300 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-              href={item.href}
+              href={buildTrackedFeatureLinkHref(item.key, request.id)}
+              rel="noreferrer"
+              target="_blank"
             >
               <div className="aspect-square overflow-hidden rounded-t-lg bg-base-100">
                 <Image

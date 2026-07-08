@@ -4,7 +4,9 @@ import { SITE_URL } from '@/lib/constants'
 import { getBooleanEnv, getRequiredEnv } from '@/lib/env'
 import type { TempDocument } from '@/lib/storage'
 
-const TELEGRAM_TIMEOUT_MS = 25000
+const TELEGRAM_TIMEOUT_MS = 30000
+const TELEGRAM_MAX_ATTEMPTS = 2
+const TELEGRAM_RETRY_DELAY_MS = 750
 const TELEGRAM_CAPTION_MAX_LENGTH = 1024
 
 const telegramMessageSchema = z.object({
@@ -51,7 +53,21 @@ export interface TelegramNotificationInput {
   documents: TempDocument[]
 }
 
-async function fetchTelegram(endpoint: string, init: RequestInit): Promise<Response> {
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === 'AbortError'
+}
+
+function isRetryableTelegramResponse(response: Response): boolean {
+  return response.status === 429 || response.status >= 500
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+
+async function fetchTelegramOnce(endpoint: string, init: RequestInit): Promise<Response> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), TELEGRAM_TIMEOUT_MS)
 
@@ -63,6 +79,45 @@ async function fetchTelegram(endpoint: string, init: RequestInit): Promise<Respo
   } finally {
     clearTimeout(timeout)
   }
+}
+
+async function fetchTelegram(endpoint: string, init: RequestInit): Promise<Response> {
+  let lastError: unknown = null
+
+  for (let attempt = 1; attempt <= TELEGRAM_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await fetchTelegramOnce(endpoint, init)
+
+      if (
+        attempt < TELEGRAM_MAX_ATTEMPTS &&
+        isRetryableTelegramResponse(response)
+      ) {
+        await wait(TELEGRAM_RETRY_DELAY_MS)
+        continue
+      }
+
+      return response
+    } catch (error) {
+      lastError = error
+
+      if (attempt < TELEGRAM_MAX_ATTEMPTS) {
+        await wait(TELEGRAM_RETRY_DELAY_MS)
+        continue
+      }
+    }
+  }
+
+  if (isAbortError(lastError)) {
+    throw new Error(
+      `Telegram request timed out after ${TELEGRAM_TIMEOUT_MS / 1000} seconds and ${TELEGRAM_MAX_ATTEMPTS} attempts.`
+    )
+  }
+
+  if (lastError instanceof Error) {
+    throw lastError
+  }
+
+  throw new Error('Telegram request failed.')
 }
 
 async function readTelegramJson(response: Response, fallback: string): Promise<unknown> {
