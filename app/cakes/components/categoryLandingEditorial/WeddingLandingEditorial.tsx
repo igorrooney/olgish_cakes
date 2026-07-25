@@ -35,13 +35,15 @@ export function WeddingLandingEditorial({
         <EditorialStepGrid steps={config.orderingSteps} />
       </EditorialSection>
 
-      <EditorialSection
-        id={`${config.slug}-overview`}
-        title={config.audienceIntroTitle}
-        intro={config.audienceIntroBody}
-      >
-        <EditorialCardGrid items={config.useCases} />
-      </EditorialSection>
+      {config.audienceIntroTitle && config.useCases ? (
+        <EditorialSection
+          id={`${config.slug}-overview`}
+          title={config.audienceIntroTitle}
+          intro={config.audienceIntroBody}
+        >
+          <EditorialCardGrid items={config.useCases} />
+        </EditorialSection>
+      ) : null}
 
       <EditorialSection
         id={`${config.slug}-flavour-planning`}

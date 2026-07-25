@@ -47,8 +47,6 @@ describe('CatalogCategoryHero', () => {
       'small-laptop:max-w-[1000px]',
       'large-laptop:max-w-[1200px]'
     )
-    expect(screen.queryByText(config.heroSupportLine ?? '')).not.toBeInTheDocument()
-
     const primaryCta = screen.getByRole('link', { name: config.heroPrimaryAction.label })
     const secondaryCta = screen.getByRole('link', { name: config.heroSecondaryAction.label })
 

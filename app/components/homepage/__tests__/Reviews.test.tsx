@@ -5,33 +5,37 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import type { ReactElement } from 'react'
 import type { Testimonial } from '@/app/types/testimonial'
+import type { PaginatedReviewsResponse } from '@/app/types/testimonial'
 import type { HomepageReview } from '../ReviewsCarousel'
 import { Reviews } from '../Reviews'
-import { getAllTestimonials } from '@/app/utils/fetchTestimonials'
+import { getTestimonialsPage } from '@/app/utils/fetchTestimonials'
 
 jest.mock('@/app/utils/fetchTestimonials', () => ({
-  getAllTestimonials: jest.fn()
+  getTestimonialsPage: jest.fn()
 }))
 
 
 jest.mock('../DeferredReviewsCarousel', () => ({
   DeferredReviewsCarousel: ({
     testimonials,
+    initialPage,
     titleClassName
   }: {
     testimonials: HomepageReview[]
+    initialPage?: PaginatedReviewsResponse
     titleClassName?: string
   }) => (
     <div
       data-testid="reviews-carousel"
       data-count={testimonials.length}
       data-review-fields={Object.keys(testimonials[0] ?? {}).sort().join(',')}
+      data-paginated={initialPage ? 'true' : 'false'}
       data-title-class-name={titleClassName ?? ''}
     />
   )
 }))
 
-const mockGetAllTestimonials = getAllTestimonials as jest.MockedFunction<typeof getAllTestimonials>
+const mockGetTestimonialsPage = getTestimonialsPage as jest.MockedFunction<typeof getTestimonialsPage>
 
 const createTestimonial = (overrides: Partial<Testimonial>): Testimonial => ({
   _id: 'testimonial-1',
@@ -52,24 +56,37 @@ describe('Reviews', () => {
   })
 
   it('returns null when there are no testimonials', async () => {
-    mockGetAllTestimonials.mockResolvedValue([])
+    mockGetTestimonialsPage.mockResolvedValue({
+      reviews: [],
+      nextCursor: null
+    })
 
     const result = await Reviews()
 
     expect(result).toBeNull()
   })
 
-  it('renders the carousel when testimonials exist', async () => {
-    mockGetAllTestimonials.mockResolvedValue([createTestimonial({ _id: 'testimonial-2' })])
+  it('renders the paginated carousel when testimonials exist', async () => {
+    mockGetTestimonialsPage.mockResolvedValue({
+      reviews: [{
+        _id: 'testimonial-2',
+        customerName: 'Olha',
+        rating: 5,
+        date: '2026-01-10',
+        text: 'Beautiful and tasty.'
+      }],
+      nextCursor: 'opaque-cursor'
+    })
 
     const result = await Reviews()
     render(result as ReactElement)
 
     expect(screen.getByTestId('reviews-carousel')).toBeInTheDocument()
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '1')
+    expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-paginated', 'true')
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute(
       'data-review-fields',
-      '_id,customerName,date,text'
+      '_id,customerName,date,rating,text'
     )
   })
 
@@ -81,7 +98,7 @@ describe('Reviews', () => {
     const result = await Reviews({ testimonials: providedTestimonials })
     render(result as ReactElement)
 
-    expect(mockGetAllTestimonials).not.toHaveBeenCalled()
+    expect(mockGetTestimonialsPage).not.toHaveBeenCalled()
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '1')
   })
 
@@ -99,6 +116,37 @@ describe('Reviews', () => {
     render(result as ReactElement)
 
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '8')
+  })
+
+  it('renders a supplied paginated page without fetching static testimonials', async () => {
+    const initialPage: PaginatedReviewsResponse = {
+      reviews: [{
+        _id: 'paged-review',
+        customerName: 'Olha',
+        rating: 4,
+        date: '2026-01-10',
+        text: 'A lovely celebration cake.'
+      }],
+      nextCursor: 'opaque-cursor'
+    }
+
+    const result = await Reviews({ initialPage })
+    render(result as ReactElement)
+
+    expect(mockGetTestimonialsPage).not.toHaveBeenCalled()
+    expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-paginated', 'true')
+    expect(screen.getByTestId('reviews-carousel')).toHaveAttribute(
+      'data-review-fields',
+      '_id,customerName,date,rating,text'
+    )
+  })
+
+  it('fails gracefully when the initial review request fails', async () => {
+    mockGetTestimonialsPage.mockRejectedValue(new Error('Sanity unavailable'))
+
+    const result = await Reviews()
+
+    expect(result).toBeNull()
   })
 
   it('passes an optional title class override to the carousel', async () => {

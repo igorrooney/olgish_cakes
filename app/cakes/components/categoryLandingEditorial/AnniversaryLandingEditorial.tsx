@@ -1,8 +1,8 @@
+import type { ReactNode } from 'react'
 import type { CatalogCategoryLandingConfig } from '../../categoryLandingConfig'
 import {
   EditorialCardGrid,
   EditorialChecklist,
-  EditorialLinkGrid,
   EditorialSection,
   EditorialSplitSection,
   EditorialStepGrid,
@@ -11,34 +11,15 @@ import {
 
 interface AnniversaryLandingEditorialProps {
   config: CatalogCategoryLandingConfig
+  reviewSection?: ReactNode
 }
 
-export function AnniversaryLandingEditorial({ config }: AnniversaryLandingEditorialProps) {
+export function AnniversaryLandingEditorial({
+  config,
+  reviewSection
+}: AnniversaryLandingEditorialProps) {
   return (
     <>
-      <EditorialSection
-        id={`${config.slug}-overview`}
-        title={config.audienceIntroTitle}
-        intro={config.audienceIntroBody}
-      >
-        <EditorialCardGrid items={config.useCases} />
-      </EditorialSection>
-
-      <EditorialSection
-        id={`${config.slug}-flavour-planning`}
-        title={config.flavourSectionTitle}
-        intro={config.flavourSectionIntro}
-      />
-
-      {config.editorial.delivery ? (
-        <EditorialSplitSection
-          id={`${config.slug}-delivery`}
-          title={config.editorial.delivery.title}
-        >
-          <EditorialTextBlocks blocks={config.editorial.delivery.body} />
-        </EditorialSplitSection>
-      ) : null}
-
       <EditorialSection
         id={`${config.slug}-proof`}
         title={config.proofSectionTitle}
@@ -46,6 +27,8 @@ export function AnniversaryLandingEditorial({ config }: AnniversaryLandingEditor
       >
         <EditorialChecklist items={config.proofPoints} />
       </EditorialSection>
+
+      {reviewSection}
 
       <EditorialSection
         id={`${config.slug}-process`}
@@ -55,13 +38,23 @@ export function AnniversaryLandingEditorial({ config }: AnniversaryLandingEditor
         <EditorialStepGrid steps={config.orderingSteps} />
       </EditorialSection>
 
-      {config.editorial.nextStepsTitle ? (
-        <EditorialSection
-          id={`${config.slug}-next-steps`}
-          title={config.editorial.nextStepsTitle}
+      <EditorialSection
+        id={`${config.slug}-flavour-planning`}
+        title={config.flavourSectionTitle}
+        intro={config.flavourSectionIntro}
+      >
+        {config.flavourSectionItems ? (
+          <EditorialCardGrid items={config.flavourSectionItems} />
+        ) : null}
+      </EditorialSection>
+
+      {config.editorial.delivery ? (
+        <EditorialSplitSection
+          id={`${config.slug}-delivery`}
+          title={config.editorial.delivery.title}
         >
-          <EditorialLinkGrid links={config.internalLinks} />
-        </EditorialSection>
+          <EditorialTextBlocks blocks={config.editorial.delivery.body} />
+        </EditorialSplitSection>
       ) : null}
     </>
   )

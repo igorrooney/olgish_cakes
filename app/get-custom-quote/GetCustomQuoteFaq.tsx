@@ -10,19 +10,19 @@ type QuoteFaqItem = {
 export const getCustomQuoteFaqItems: QuoteFaqItem[] = [
   {
     question: 'What should I include in a custom cake quote request?',
-    answer: 'The date, approximate servings and a short design brief are the most helpful starting points. If you already have colours, flavours, dietary notes or inspiration photos, add them, but keep the brief focused on what matters most.'
+    answer: 'Share your event date, approximate servings and your cake ideas. If you have inspiration photos, flavour preferences or dietary requirements, include those too.'
   },
   {
     question: 'Do I need a reference image before I enquire?',
-    answer: 'No. A clear written brief is enough to start. Reference images help when you want to show a finish or mood, but they are optional and should guide the direction rather than lock you into an exact copy.'
+    answer: 'No. A written brief is enough to get started. Reference images are welcome, but they are used for inspiration rather than copied exactly.'
   },
   {
     question: 'Do you offer collection, local delivery or UK delivery?',
-    answer: 'Collection from Leeds is available, local delivery can be discussed when the size, finish and timing of the cake are clear, and UK delivery is possible by agreement. The safest option depends on how delicate the decoration is and when the cake needs to arrive.'
+    answer: 'Yes. Collection from Leeds is available. We also offer local delivery and UK delivery by agreement. We\'ll recommend the best option for your cake when we prepare your quote.'
   },
   {
-    question: 'Can you help if I am not sure about size yet?',
-    answer: 'Yes. An approximate guest count is enough for the first quote. Once we know whether the cake is for a smaller dinner, family party or bigger celebration, we can suggest a more realistic starting size.'
+    question: 'Can you help if I\'m not sure about the cake size yet?',
+    answer: 'You don\'t need to know the exact size. An approximate guest count is enough for us to recommend the best option.'
   }
 ]
 
@@ -30,17 +30,14 @@ export function GetCustomQuoteFaq() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <section className='bg-base-100 px-4 py-10 tablet:px-10 tablet:py-14' aria-labelledby='custom-quote-faq-title'>
+    <section className='content-auto-section bg-base-100 px-4 py-10 tablet:px-10 tablet:py-14' aria-labelledby='custom-quote-faq-title'>
       <div className='homepage-container grid gap-8 small-laptop:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]'>
         <div className='max-w-[420px]'>
-          <p className='font-body text-xs font-semibold uppercase tracking-[0.18em] text-primary-600'>
-            Before you send the form
-          </p>
-          <h2 id='custom-quote-faq-title' className='mt-3 font-moreSugar text-[26px] uppercase leading-[1.18] tracking-[0.08em] text-primary-700 tablet:text-[34px]'>
-            A few practical answers
+          <h2 id='custom-quote-faq-title' className='font-moreSugar text-[26px] uppercase leading-[1.18] tracking-[0.08em] text-primary-700 tablet:text-[34px]'>
+            Need help before requesting your quote?
           </h2>
           <p className='mt-4 font-oldenburg text-[15px] leading-7 tracking-[0.03em] text-base-content/80 tablet:text-base tablet:leading-8'>
-            These are the questions people usually ask before they are ready to send through a proper cake brief.
+            Everything you need before requesting your cake quote.
           </p>
         </div>
 
@@ -70,16 +67,15 @@ export function GetCustomQuoteFaq() {
                     </span>
                   </button>
                 </h3>
-                {isOpen ? (
-                  <div
-                    id={panelId}
-                    role='region'
-                    aria-labelledby={buttonId}
-                    className='mt-4 max-w-[780px] font-oldenburg text-[15px] leading-7 tracking-[0.03em] text-base-content/80 tablet:text-base tablet:leading-8'
-                  >
-                    <p>{item.answer}</p>
-                  </div>
-                ) : null}
+                <div
+                  id={panelId}
+                  role='region'
+                  aria-labelledby={buttonId}
+                  hidden={!isOpen}
+                  className='mt-4 max-w-[780px] font-oldenburg text-[15px] leading-7 tracking-[0.03em] text-base-content/80 tablet:text-base tablet:leading-8'
+                >
+                  <p>{item.answer}</p>
+                </div>
               </div>
             )
           })}

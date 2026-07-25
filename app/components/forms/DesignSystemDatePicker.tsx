@@ -332,7 +332,6 @@ export function DesignSystemDatePicker({
   labelPlacement = 'inside',
   labelLayout,
   error,
-  required = false,
   hintText,
   disabled = false,
   formControlClassName,
@@ -354,8 +353,8 @@ export function DesignSystemDatePicker({
   const calendarTitleId = `${id}-calendar-title`
   const resolvedLabelClassName =
     labelLayout === 'stacked'
-      ? 'label w-full flex flex-col items-start gap-1'
-      : 'label w-full justify-between'
+      ? 'label flex w-full flex-col items-start gap-1'
+      : 'label flex w-full items-start justify-between gap-2'
   const resolvedLabelAltClassName =
     labelLayout === 'stacked'
       ? 'label-text-alt text-xs text-base-content opacity-100 mb-2'
@@ -578,7 +577,6 @@ export function DesignSystemDatePicker({
           aria-controls={calendarId}
           aria-invalid={hasError}
           aria-describedby={getDescribedBy(id, hintText, error)}
-          aria-required={required}
           data-min-date={min}
           data-value={value}
           onClick={() => {
@@ -595,7 +593,7 @@ export function DesignSystemDatePicker({
             <span className='text-base-content opacity-100'>{label}</span>
           ) : null}
           <span
-            className={`min-w-0 flex-1 truncate text-left text-sm ${selectedDate ? 'text-base-content' : 'text-base-content/55'}`}
+            className={`min-w-0 flex-1 truncate text-left text-sm ${selectedDate ? 'text-base-content' : 'text-base-content/70'}`}
           >
             {displayValue}
           </span>

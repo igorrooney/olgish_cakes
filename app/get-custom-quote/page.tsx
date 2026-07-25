@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
-import { getAllTestimonialsStats } from '../utils/fetchTestimonials'
-import { buildAggregateRating } from '../utils/review-stats'
+import { Reviews } from '../components/homepage/Reviews'
+import { getTestimonialsPage } from '../utils/fetchTestimonials'
 import { getHomepageCollections } from '../utils/fetchCollections'
 import { buildOccasionOptionsFromCollections } from '../components/homepage/formOptions'
 import { GetCustomQuoteFaq } from './GetCustomQuoteFaq'
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
         url: `${baseUrl}/homeHero/home-hero-cake-center.png`,
         width: 1200,
         height: 630,
-        alt: 'Bespoke celebration cake by Olgish Cakes in Leeds'
+        alt: 'Celebration cake gift box with a candle card and handwritten note'
       }
     ]
   },
@@ -76,7 +76,7 @@ function buildBreadcrumbStructuredData(): StructuredData {
   }
 }
 
-function buildLocalBusinessStructuredData(aggregateRating?: StructuredData | null): StructuredData {
+function buildLocalBusinessStructuredData(): StructuredData {
   return {
     '@context': 'https://schema.org',
     '@type': 'Bakery',
@@ -107,46 +107,40 @@ function buildLocalBusinessStructuredData(aggregateRating?: StructuredData | nul
       BUSINESS_CONSTANTS.SOCIAL.instagram,
       BUSINESS_CONSTANTS.SOCIAL.facebook
     ],
-    ...(aggregateRating ? { aggregateRating } : {}),
     mainEntityOfPage: pageUrl
   }
 }
 
 export default async function GetCustomQuotePage() {
-  const [reviewStats, collections] = await Promise.all([
-    getAllTestimonialsStats().catch(() => ({
-      count: 0,
-      averageRating: 5
-    })),
-    getHomepageCollections()
+  const [collections, initialReviewsPage] = await Promise.all([
+    getHomepageCollections(),
+    getTestimonialsPage().catch(() => ({
+      reviews: [],
+      nextCursor: null
+    }))
   ])
   const occasionOptions = buildOccasionOptionsFromCollections(collections)
-  const aggregateRating = buildAggregateRating(reviewStats)
+  const reviewsSection = await Reviews({ initialPage: initialReviewsPage })
 
   return (
     <>
       <script
         type='application/ld+json'
-        dangerouslySetInnerHTML={{ __html: toJsonLdScript(buildLocalBusinessStructuredData(aggregateRating)) }}
+        dangerouslySetInnerHTML={{ __html: toJsonLdScript(buildLocalBusinessStructuredData()) }}
       />
       <script
         type='application/ld+json'
         dangerouslySetInnerHTML={{ __html: toJsonLdScript(buildBreadcrumbStructuredData()) }}
       />
 
-      <main className='min-h-screen bg-base-100'>
+      <div className='min-h-screen bg-base-100'>
         <GetCustomQuoteHero />
+        <GetCustomQuoteFormSection occasionOptions={occasionOptions} />
         <GetCustomQuoteProcess />
-        <div data-testid='quote-content-flow' className='flex flex-col'>
-          <div className='order-2 tablet:order-1'>
-            <GetCustomQuoteInspiration />
-          </div>
-          <div className='order-1 tablet:order-2'>
-            <GetCustomQuoteFormSection occasionOptions={occasionOptions} />
-          </div>
-        </div>
+        <GetCustomQuoteInspiration />
+        {reviewsSection}
         <GetCustomQuoteFaq />
-      </main>
+      </div>
     </>
   )
 }

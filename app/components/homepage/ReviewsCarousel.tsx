@@ -1,19 +1,28 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import type { RefObject } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject
+} from 'react'
+import {
+  useInfiniteQuery,
+  type InfiniteData,
+  type QueryFunctionContext
+} from '@tanstack/react-query'
+import type {
+  HomepageReview,
+  PaginatedReviewsResponse
+} from '@/app/types/testimonial'
 import { CarouselNavButton } from './CarouselNavButton'
 
-export type HomepageReview = {
-  _id: string
-  customerName: string
-  date: string
-  text: string
-  title?: string
-}
+export type { HomepageReview } from '@/app/types/testimonial'
 
 interface ReviewProps {
   testimonials: HomepageReview[]
+  initialPage?: PaginatedReviewsResponse
   titleClassName?: string
 }
 
@@ -23,7 +32,21 @@ interface ReviewCardProps {
   className?: string
 }
 
-const disclosureSlotClassName = 'min-h-6'
+interface CarouselControlsProps {
+  className: string
+  carouselRef: RefObject<HTMLDivElement | null>
+  currentIndex: number
+  hasNextPage: boolean
+  idPrefix: string
+  isFetchingNextPage: boolean
+  nextLabel: string
+  onFetchNext: () => void
+  prevLabel: string
+  total: number
+}
+
+const reviewsQueryKey = ['testimonials', 'carousel'] as const
+const disclosureSlotClassName = 'h-6'
 const overflowTolerance = 1
 const collapsedReviewMaxHeight = 66
 const reviewTextBaseClassName = 'font-sans text-sm leading-[22px] text-black'
@@ -55,10 +78,11 @@ const getCurrentViewport = (): ReviewsViewport => {
 }
 
 const useReviewsViewport = () => {
-  const [viewport, setViewport] = useState<ReviewsViewport>('mobile')
+  const [viewport, setViewport] = useState<ReviewsViewport | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      setViewport('mobile')
       return
     }
 
@@ -125,13 +149,15 @@ const getCarouselPaddingLeft = (carousel: HTMLDivElement) => {
   return Number.isNaN(paddingLeft) ? 0 : paddingLeft
 }
 
-const scrollToIndex = (carouselRef: RefObject<HTMLDivElement | null>, index: number) => {
+const scrollToIndex = (
+  carouselRef: RefObject<HTMLDivElement | null>,
+  index: number
+) => {
   const carousel = carouselRef.current
 
   if (!carousel) return
 
-  const items = getCarouselItems(carousel)
-  const target = items[index]
+  const target = getCarouselItems(carousel)[index]
 
   if (!target) return
 
@@ -181,12 +207,12 @@ const useCarouselIndex = (
       let closestIndex = 0
       let minDistance = Math.abs(items[0].offsetLeft - anchor)
 
-      for (let i = 1; i < items.length; i += 1) {
-        const distance = Math.abs(items[i].offsetLeft - anchor)
+      for (let itemIndex = 1; itemIndex < items.length; itemIndex += 1) {
+        const distance = Math.abs(items[itemIndex].offsetLeft - anchor)
 
         if (distance < minDistance) {
           minDistance = distance
-          closestIndex = i
+          closestIndex = itemIndex
         }
       }
 
@@ -206,33 +232,105 @@ const useCarouselIndex = (
   return index
 }
 
-interface CarouselControlsProps {
-  className: string
-  carouselRef: RefObject<HTMLDivElement | null>
-  currentIndex: number
-  idPrefix: string
-  nextLabel: string
-  prevLabel: string
-  total: number
+const isHomepageReview = (value: unknown): value is HomepageReview => {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const review = value as Partial<HomepageReview>
+
+  return typeof review._id === 'string' &&
+    review._id.length > 0 &&
+    typeof review.customerName === 'string' &&
+    typeof review.date === 'string' &&
+    review.date.length > 0 &&
+    typeof review.text === 'string' &&
+    review.text.trim().length > 0 &&
+    typeof review.rating === 'number' &&
+    Number.isFinite(review.rating) &&
+    review.rating >= 1 &&
+    review.rating <= 5 &&
+    (review.title === undefined || typeof review.title === 'string')
+}
+
+const isPaginatedReviewsResponse = (
+  value: unknown
+): value is PaginatedReviewsResponse => {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const response = value as Partial<PaginatedReviewsResponse>
+
+  return Array.isArray(response.reviews) &&
+    response.reviews.every(isHomepageReview) &&
+    (
+      response.nextCursor === null ||
+      (typeof response.nextCursor === 'string' && response.nextCursor.length <= 512)
+    )
+}
+
+export async function fetchTestimonialsPage({
+  pageParam,
+  signal
+}: QueryFunctionContext<typeof reviewsQueryKey, string | null>) {
+  const query = pageParam
+    ? `?cursor=${encodeURIComponent(pageParam)}`
+    : ''
+  const response = await fetch(`/api/testimonials${query}`, {
+    credentials: 'same-origin',
+    headers: {
+      Accept: 'application/json'
+    },
+    signal
+  })
+
+  if (!response.ok) {
+    throw new Error('We could not load more reviews.')
+  }
+
+  const data = await response.json() as unknown
+
+  if (!isPaginatedReviewsResponse(data)) {
+    throw new Error('We could not load more reviews.')
+  }
+
+  return data
 }
 
 function CarouselControls({
   className,
   carouselRef,
   currentIndex,
+  hasNextPage,
   idPrefix,
+  isFetchingNextPage,
   nextLabel,
+  onFetchNext,
   prevLabel,
   total
 }: CarouselControlsProps) {
-  if (total <= 1) return null
+  if (total <= 1 && !hasNextPage) return null
 
   const isFirst = currentIndex <= 0
-  const isLast = currentIndex >= total - 1
+  const isLastLoaded = currentIndex >= total - 1
+  const isTrueEnd = isLastLoaded && !hasNextPage
   const prevIndex = getPrevIndex(currentIndex)
-  const nextIndex = getNextIndex(currentIndex, total)
+  const nextIndex = isLastLoaded && hasNextPage
+    ? currentIndex + 1
+    : getNextIndex(currentIndex, total)
   const prevTargetId = `${idPrefix}-${prevIndex + 1}`
   const nextTargetId = `${idPrefix}-${nextIndex + 1}`
+  const handleNext = () => {
+    if (isLastLoaded && hasNextPage) {
+      if (!isFetchingNextPage) {
+        onFetchNext()
+      }
+      return
+    }
+
+    scrollToIndex(carouselRef, nextIndex)
+  }
 
   return (
     <div className={className}>
@@ -247,8 +345,8 @@ function CarouselControls({
         ariaControls={nextTargetId}
         ariaLabel={nextLabel}
         direction='next'
-        disabled={isLast}
-        onClick={() => scrollToIndex(carouselRef, nextIndex)}
+        disabled={isTrueEnd}
+        onClick={handleNext}
       />
     </div>
   )
@@ -313,7 +411,7 @@ function ReviewCard({ testimonial, reviewTextId, className }: ReviewCardProps) {
     setIsExpanded(false)
   }, [testimonial._id, testimonial.text])
 
-  const shouldClampReviewText = hasOverflow && !isExpanded
+  const shouldClampReviewText = !isExpanded
 
   return (
     <div
@@ -381,61 +479,167 @@ function ReviewCard({ testimonial, reviewTextId, className }: ReviewCardProps) {
 
 const defaultReviewsTitleClassName = 'font-moreSugar text-[24px] uppercase tracking-[0.12em] text-primary-700 rotate-[-2.4deg] leading-[40px] text-center tablet:text-[36px] tablet:leading-[52px]'
 
+const deduplicateReviews = (pages: PaginatedReviewsResponse[]) => {
+  const reviewsById = new Map<string, HomepageReview>()
+
+  pages.forEach((page) => {
+    page.reviews.forEach((review) => {
+      if (!reviewsById.has(review._id)) {
+        reviewsById.set(review._id, review)
+      }
+    })
+  })
+
+  return Array.from(reviewsById.values())
+}
+
 export function ReviewsCarousel({
   testimonials,
+  initialPage,
   titleClassName = defaultReviewsTitleClassName
 }: ReviewProps) {
   const mobileCarouselRef = useRef<HTMLDivElement>(null)
   const tabletCarouselRef = useRef<HTMLDivElement>(null)
   const smallLaptopCarouselRef = useRef<HTMLDivElement>(null)
+  const finalItemRef = useRef<HTMLDivElement | null>(null)
   const viewport = useReviewsViewport()
   const baseId = 'reviews-carousel'
-
-  const mobileSlideCount = testimonials.length
+  const paginationEnabled = Boolean(initialPage)
+  const initialData: InfiniteData<PaginatedReviewsResponse, string | null> | undefined =
+    initialPage
+      ? {
+          pages: [initialPage],
+          pageParams: [null]
+        }
+      : undefined
+  const {
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchNextPageError,
+    isFetchingNextPage
+  } = useInfiniteQuery({
+    queryKey: reviewsQueryKey,
+    queryFn: fetchTestimonialsPage,
+    initialPageParam: null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    initialData,
+    enabled: paginationEnabled,
+    staleTime: 5 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
+  })
+  const reviews = useMemo(
+    () => paginationEnabled
+      ? deduplicateReviews(data?.pages ?? (initialPage ? [initialPage] : []))
+      : testimonials,
+    [data?.pages, initialPage, paginationEnabled, testimonials]
+  )
+  const finalReviewId = reviews.at(-1)?._id
+  const mobileSlideCount = reviews.length
   const tabletSlides = useMemo(() =>
-    Array.from({ length: Math.ceil(testimonials.length / 4) }, (_, slideIndex) =>
-      testimonials.slice(slideIndex * 4, slideIndex * 4 + 4)
-    ), [testimonials]
+    Array.from({ length: Math.ceil(reviews.length / 4) }, (_, slideIndex) =>
+      reviews.slice(slideIndex * 4, slideIndex * 4 + 4)
+    ), [reviews]
   )
   const tabletSlideCount = tabletSlides.length
-
   const smallLaptopSlides = useMemo(() =>
-    Array.from({ length: Math.ceil(testimonials.length / 6) }, (_, slideIndex) =>
-      testimonials.slice(slideIndex * 6, slideIndex * 6 + 6)
-    ), [testimonials]
+    Array.from({ length: Math.ceil(reviews.length / 6) }, (_, slideIndex) =>
+      reviews.slice(slideIndex * 6, slideIndex * 6 + 6)
+    ), [reviews]
   )
   const smallLaptopSlideCount = smallLaptopSlides.length
-
-  const mobileIndex = useCarouselIndex(mobileCarouselRef, mobileSlideCount, viewport === 'mobile')
-  const tabletIndex = useCarouselIndex(tabletCarouselRef, tabletSlideCount, viewport === 'tablet')
+  const mobileIndex = useCarouselIndex(
+    mobileCarouselRef,
+    mobileSlideCount,
+    viewport === 'mobile'
+  )
+  const tabletIndex = useCarouselIndex(
+    tabletCarouselRef,
+    tabletSlideCount,
+    viewport === 'tablet'
+  )
   const smallLaptopIndex = useCarouselIndex(
     smallLaptopCarouselRef,
     smallLaptopSlideCount,
     viewport === 'small-laptop'
   )
+  useEffect(() => {
+    const finalItem = finalItemRef.current
+    const activeCarousel = viewport === 'small-laptop'
+      ? smallLaptopCarouselRef.current
+      : viewport === 'tablet'
+        ? tabletCarouselRef.current
+        : mobileCarouselRef.current
 
-  if (testimonials.length === 0) {
+    if (
+      !viewport ||
+      !paginationEnabled ||
+      !finalItem ||
+      !activeCarousel ||
+      !hasNextPage ||
+      isFetchingNextPage ||
+      typeof IntersectionObserver === 'undefined'
+    ) {
+      return
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) {
+        void fetchNextPage()
+      }
+    }, {
+      root: activeCarousel,
+      threshold: 0.75
+    })
+
+    observer.observe(finalItem)
+
+    return () => observer.disconnect()
+  }, [
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    paginationEnabled,
+    reviews.length,
+    viewport
+  ])
+
+  if (reviews.length === 0) {
     return null
   }
 
+  const loadNextPage = () => {
+    void fetchNextPage()
+  }
+
   return (
-    <section className='bg-base-100 px-4 py-8 tablet:py-12'>
+    <section className='content-auto-section bg-base-100 px-4 py-8 tablet:py-12'>
       <div className='homepage-container flex flex-col gap-6'>
         <h2 className={titleClassName}>
           Our reviews
         </h2>
 
         <div className='relative -mx-4 tablet:mx-0'>
-          {viewport === 'mobile' ? (
-            <>
+          {viewport === null || viewport === 'mobile' ? (
+            <div
+              key='reviews-mobile-layout'
+              className={viewport === null ? 'contents tablet:hidden' : 'contents'}
+            >
               <div
                 ref={mobileCarouselRef}
                 className='carousel carousel-center w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory] px-4 [scroll-padding-left:calc(var(--spacing)*4)] [scroll-padding-right:calc(var(--spacing)*4)] gap-5'
               >
-                {testimonials.map((testimonial, index) => (
+                {reviews.map((testimonial, index) => (
                   <div
                     key={testimonial._id}
                     id={`${baseId}-reviews-mobile-${index + 1}`}
+                    ref={testimonial._id === finalReviewId
+                      ? (element) => {
+                          finalItemRef.current = element
+                        }
+                      : undefined}
                     className='carousel-item flex-shrink-0'
                     style={{
                       width: '342px',
@@ -455,16 +659,24 @@ export function ReviewsCarousel({
                 className='mt-5 flex justify-center gap-3'
                 carouselRef={mobileCarouselRef}
                 currentIndex={mobileIndex}
+                hasNextPage={Boolean(hasNextPage)}
                 idPrefix={`${baseId}-reviews-mobile`}
+                isFetchingNextPage={isFetchingNextPage}
                 nextLabel='Next review'
+                onFetchNext={loadNextPage}
                 prevLabel='Previous review'
                 total={mobileSlideCount}
               />
-            </>
+            </div>
           ) : null}
 
-          {viewport === 'tablet' ? (
-            <div className='relative'>
+          {viewport === null || viewport === 'tablet' ? (
+            <div
+              key='reviews-tablet-layout'
+              className={viewport === null
+                ? 'relative hidden tablet:block small-laptop:hidden'
+                : 'relative'}
+            >
               <div className='relative p-6'>
                 <div
                   ref={tabletCarouselRef}
@@ -479,7 +691,15 @@ export function ReviewsCarousel({
                     >
                       <div className='flex w-full flex-wrap items-stretch justify-center gap-5'>
                         {slide.map((testimonial) => (
-                          <div key={testimonial._id} className='w-full max-w-[342px]'>
+                          <div
+                            key={testimonial._id}
+                            ref={testimonial._id === finalReviewId
+                              ? (element) => {
+                                  finalItemRef.current = element
+                                }
+                              : undefined}
+                            className='w-full max-w-[342px]'
+                          >
                             <ReviewCard
                               testimonial={testimonial}
                               reviewTextId={`${baseId}-tablet-review-text-${slideIndex + 1}-${testimonial._id}`}
@@ -495,16 +715,24 @@ export function ReviewsCarousel({
                 className='mt-5 flex justify-center gap-3'
                 carouselRef={tabletCarouselRef}
                 currentIndex={tabletIndex}
+                hasNextPage={Boolean(hasNextPage)}
                 idPrefix={`${baseId}-reviews-tablet`}
+                isFetchingNextPage={isFetchingNextPage}
                 nextLabel='Next reviews'
+                onFetchNext={loadNextPage}
                 prevLabel='Previous reviews'
                 total={tabletSlideCount}
               />
             </div>
           ) : null}
 
-          {viewport === 'small-laptop' ? (
-            <div className='relative'>
+          {viewport === null || viewport === 'small-laptop' ? (
+            <div
+              key='reviews-small-laptop-layout'
+              className={viewport === null
+                ? 'relative hidden small-laptop:block'
+                : 'relative'}
+            >
               <div className='relative p-6'>
                 <div
                   ref={smallLaptopCarouselRef}
@@ -519,7 +747,15 @@ export function ReviewsCarousel({
                     >
                       <div className='grid w-full grid-cols-[repeat(3,_342px)] justify-start gap-5'>
                         {slide.map((testimonial) => (
-                          <div key={testimonial._id} className='w-full max-w-[342px]'>
+                          <div
+                            key={testimonial._id}
+                            ref={testimonial._id === finalReviewId
+                              ? (element) => {
+                                  finalItemRef.current = element
+                                }
+                              : undefined}
+                            className='w-full max-w-[342px]'
+                          >
                             <ReviewCard
                               testimonial={testimonial}
                               reviewTextId={`${baseId}-small-laptop-review-text-${slideIndex + 1}-${testimonial._id}`}
@@ -535,14 +771,36 @@ export function ReviewsCarousel({
                 className='mt-5 flex justify-center gap-3'
                 carouselRef={smallLaptopCarouselRef}
                 currentIndex={smallLaptopIndex}
+                hasNextPage={Boolean(hasNextPage)}
                 idPrefix={`${baseId}-reviews-small-laptop`}
+                isFetchingNextPage={isFetchingNextPage}
                 nextLabel='Next reviews'
+                onFetchNext={loadNextPage}
                 prevLabel='Previous reviews'
                 total={smallLaptopSlideCount}
               />
             </div>
           ) : null}
         </div>
+
+        {isFetchingNextPage ? (
+          <p className='sr-only' role='status' aria-live='polite'>
+            Loading more reviews
+          </p>
+        ) : null}
+
+        {isFetchNextPageError ? (
+          <div className='alert alert-error mx-auto w-full max-w-xl items-center text-sm' role='alert'>
+            <span>{error instanceof Error ? error.message : 'We could not load more reviews.'}</span>
+            <button
+              type='button'
+              className='btn btn-sm'
+              onClick={() => void fetchNextPage()}
+            >
+              Try again
+            </button>
+          </div>
+        ) : null}
       </div>
     </section>
   )

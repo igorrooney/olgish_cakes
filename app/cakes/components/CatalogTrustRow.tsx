@@ -1,8 +1,11 @@
-import type { CatalogTrustItem } from '../categoryLandingConfig'
-
 interface CatalogTrustRowProps {
   items: CatalogTrustItem[]
   eyebrow?: string
+}
+
+interface CatalogTrustItem {
+  title: string
+  detail: string
 }
 
 export function CatalogTrustRow({ items, eyebrow }: CatalogTrustRowProps) {

@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useMutation, useQuery, useQueryClient, type UseMutationOptions } from '@tanstack/react-query'
+import { useMutation, useQueryClient, type QueryKey, type UseMutationOptions } from '@tanstack/react-query'
 import {
   csrfTokenQueryKey,
-  csrfTokenStaleTimeMs,
   fetchCsrfToken,
   submitCustomCakeEnquiry,
   type SubmissionError
@@ -19,12 +18,8 @@ type UseCustomCakeEnquiryOptions = UseMutationOptions<
 export const useCustomCakeEnquiry = (options?: UseCustomCakeEnquiryOptions) => {
   const queryClient = useQueryClient()
   const [isRefreshingCsrf, setIsRefreshingCsrf] = useState(false)
-  const csrfQuery = useQuery<string, Error>({
-    queryKey: csrfTokenQueryKey,
-    queryFn: ({ signal }) => fetchCsrfToken(signal),
-    staleTime: csrfTokenStaleTimeMs,
-    refetchOnWindowFocus: false
-  })
+  const csrfRequestCounterRef = useRef(0)
+  const activeCsrfQueryKeyRef = useRef<QueryKey | null>(null)
 
   const submitMutation = useMutation<
     Record<string, unknown>,
@@ -54,28 +49,48 @@ export const useCustomCakeEnquiry = (options?: UseCustomCakeEnquiryOptions) => {
   }
 
   useEffect(() => {
-    return () => abortSubmit()
-  }, [])
+    return () => {
+      abortSubmit()
+
+      if (activeCsrfQueryKeyRef.current) {
+        void queryClient.cancelQueries({
+          queryKey: activeCsrfQueryKeyRef.current,
+          exact: true
+        })
+      }
+    }
+  }, [queryClient])
 
   const refreshCsrfToken = async () => {
+    csrfRequestCounterRef.current += 1
+    const queryKey = [
+      ...csrfTokenQueryKey,
+      'submission',
+      csrfRequestCounterRef.current
+    ] as const
+
+    activeCsrfQueryKeyRef.current = queryKey
     setIsRefreshingCsrf(true)
 
     try {
       return await queryClient.fetchQuery({
-        queryKey: csrfTokenQueryKey,
+        queryKey,
         queryFn: ({ signal }) => fetchCsrfToken(signal),
-        staleTime: 0
+        staleTime: 0,
+        gcTime: 0
       })
     } finally {
+      if (activeCsrfQueryKeyRef.current === queryKey) {
+        activeCsrfQueryKeyRef.current = null
+      }
+
       setIsRefreshingCsrf(false)
     }
   }
 
   return {
-    csrfToken: csrfQuery.data,
-    isCsrfLoading: csrfQuery.isLoading || isRefreshingCsrf,
+    isCsrfLoading: isRefreshingCsrf,
     isRefreshingCsrf,
-    csrfError: csrfQuery.error,
     refreshCsrfToken,
     submitMutation,
     submit,

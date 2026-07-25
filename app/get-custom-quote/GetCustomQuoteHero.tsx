@@ -5,6 +5,12 @@ import heroCakeLeft from '@/public/homeHero/home-hero-cake-left.png'
 import heroCakeRight from '@/public/homeHero/home-hero-cake-right.png'
 import { QuoteFormScrollLink } from './QuoteFormScrollLink'
 
+const trustPoints = [
+  'Handmade in Leeds',
+  'Reply within 24 hours',
+  'Local delivery available'
+]
+
 export function GetCustomQuoteHero() {
   return (
     <section className='overflow-hidden bg-base-100 px-4 pb-10 pt-6 tablet:px-10 tablet:pb-14 tablet:pt-8'>
@@ -18,9 +24,17 @@ export function GetCustomQuoteHero() {
               Get a custom cake quote in Leeds
             </h1>
             <p className='mx-auto max-w-[560px] font-oldenburg text-base leading-7 tracking-[0.05em] text-primary-800 tablet:text-[22px] tablet:leading-9 small-laptop:mx-0'>
-              Tell us the date, guest count and the kind of cake you have in mind, and we&apos;ll come back with a quote for your birthday, anniversary, wedding or celebration cake.
+              Tell us your date, guest numbers and cake ideas. We&apos;ll reply with a personalised quote for your celebration.
             </p>
           </div>
+          <ul className='!m-0 flex w-full !list-none flex-col items-center gap-2 !p-0 font-body text-sm font-semibold leading-6 text-primary-800 tablet:flex-row tablet:flex-wrap tablet:justify-center tablet:gap-x-5 small-laptop:items-start small-laptop:justify-start'>
+            {trustPoints.map((trustPoint) => (
+              <li key={trustPoint} className='!flex !list-none items-center gap-2'>
+                <span aria-hidden='true' className='font-bold text-success'>✓</span>
+                {trustPoint}
+              </li>
+            ))}
+          </ul>
           <div className='flex w-full flex-col gap-3 tablet:flex-row tablet:justify-center small-laptop:justify-start'>
             <QuoteFormScrollLink
               className='btn btn-primary h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:min-w-[220px] tablet:text-base'
@@ -34,9 +48,6 @@ export function GetCustomQuoteHero() {
               Browse cake designs
             </Link>
           </div>
-          <p className='max-w-[580px] text-center font-body text-sm leading-6 text-base-content/75 small-laptop:text-left'>
-            Collection from Leeds, local delivery where suitable, and UK delivery by agreement. If you already have reference images, you can add them too.
-          </p>
         </div>
 
         <div className='relative mx-auto flex w-full max-w-[620px] items-end justify-center small-laptop:justify-end'>
@@ -44,7 +55,7 @@ export function GetCustomQuoteHero() {
             <div className='relative top-8 h-[220px] overflow-hidden rounded-[24px] border border-base-200 bg-base-100 shadow-lg tablet:h-[330px]'>
               <Image
                 src={heroCakeLeft}
-                alt='White buttercream celebration cake with black ribbon bows'
+                alt='Black celebration cake with a hand-painted lion and gold crown'
                 sizes='(min-width: 1024px) 176px, 31vw'
                 className='h-full w-full object-cover'
               />
@@ -61,7 +72,7 @@ export function GetCustomQuoteHero() {
             <div className='relative top-10 h-[220px] overflow-hidden rounded-[24px] border border-base-200 bg-base-100 shadow-lg tablet:h-[330px]'>
               <Image
                 src={heroCakeRight}
-                alt='Tall celebration cake with teal icing and gold details'
+                alt='Tall ivory celebration cake decorated with pale flowers and greenery'
                 sizes='(min-width: 1024px) 176px, 31vw'
                 className='h-full w-full object-cover'
               />

@@ -1,5 +1,3 @@
-import { z } from 'zod'
-
 const londonDateFormatter = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Europe/London',
   year: 'numeric',
@@ -29,27 +27,17 @@ export const isDateOnOrAfterToday = (value: string, todayDate = getTodayDateInpu
   return value >= todayDate
 }
 
-export const formSchema = z.object({
-  fullName: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  phone: z.string().trim(),
-  address: z.string().min(5, 'Address must be at least 5 characters'),
-  city: z.string().min(2, 'City must be at least 2 characters'),
-  postcode: z
-    .string()
-    .regex(/^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i, 'Invalid UK postcode'),
-  occasion: z.string().optional(),
-  date: z
-    .string()
-    .min(1, 'Please select a date')
-    .refine((value) => isDateOnOrAfterToday(value), {
-      message: dateMinErrorMessage
-    }),
-  requirements: z.string().optional(),
-  csrfToken: z.string().min(1, 'CSRF token is required')
-})
-
-export type FormValues = Omit<z.infer<typeof formSchema>, 'csrfToken'>
+export type FormValues = {
+  fullName: string
+  email: string
+  phone: string
+  address: string
+  city: string
+  postcode: string
+  occasion?: string
+  date: string
+  requirements?: string
+}
 
 const referenceImageConfig = {
   acceptedTypes: ['image/jpeg', 'image/png', 'image/heic'],

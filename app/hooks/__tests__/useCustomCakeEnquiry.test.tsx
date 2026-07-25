@@ -43,21 +43,18 @@ describe('useCustomCakeEnquiry', () => {
     mockedSubmitCustomCakeEnquiry.mockResolvedValue({ ok: true })
   })
 
-  it('reports csrf loading while a token refresh is in flight', async () => {
+  it('does not request csrf eagerly and reports loading during an explicit refresh', async () => {
     let resolveRefresh: ((value: string) => void) | null = null
-    mockedFetchCsrfToken
-      .mockResolvedValueOnce('csrf-token-123')
-      .mockImplementationOnce(() => new Promise((resolve) => {
-        resolveRefresh = resolve
-      }))
+    mockedFetchCsrfToken.mockImplementationOnce(() => new Promise((resolve) => {
+      resolveRefresh = resolve
+    }))
 
     const { result } = renderHook(() => useCustomCakeEnquiry(), {
       wrapper: createWrapper()
     })
 
-    await waitFor(() => {
-      expect(result.current.csrfToken).toBe('csrf-token-123')
-    })
+    expect(mockedFetchCsrfToken).not.toHaveBeenCalled()
+    expect(result.current.isCsrfLoading).toBe(false)
 
     let refreshPromise: Promise<string> | undefined
 
@@ -68,6 +65,8 @@ describe('useCustomCakeEnquiry', () => {
     await waitFor(() => {
       expect(result.current.isCsrfLoading).toBe(true)
       expect(result.current.isRefreshingCsrf).toBe(true)
+      expect(mockedFetchCsrfToken).toHaveBeenCalledTimes(1)
+      expect(mockedFetchCsrfToken).toHaveBeenCalledWith(expect.any(AbortSignal))
     })
 
     act(() => {

@@ -18,8 +18,12 @@ const categoryLandingEditorialResolvers: Record<
   'birthday-cakes': (config, reviewSection) => (
     <BirthdayLandingEditorial config={config} reviewSection={reviewSection} />
   ),
-  'anniversary-cakes-leeds': (config) => <AnniversaryLandingEditorial config={config} />,
-  'baby-shower-cakes': (config) => <BabyShowerLandingEditorial config={config} />
+  'anniversary-cakes-leeds': (config, reviewSection) => (
+    <AnniversaryLandingEditorial config={config} reviewSection={reviewSection} />
+  ),
+  'baby-shower-cakes': (config, reviewSection) => (
+    <BabyShowerLandingEditorial config={config} reviewSection={reviewSection} />
+  )
 }
 
 export function getCategoryLandingPostCatalogContent(

@@ -3,38 +3,35 @@ import Link from 'next/link'
 const inspirationLinks = [
   {
     href: '/birthday-cakes',
-    title: 'Birthday cakes',
-    body: 'A useful place to start if you know the occasion but want clearer design ideas before asking for a quote.'
+    title: 'Birthday Cakes',
+    body: 'Browse recent birthday cake designs.'
   },
   {
     href: '/wedding-cakes',
-    title: 'Wedding cakes',
-    body: 'Helpful when you need to think about style, servings and delivery before sending your brief.'
+    title: 'Wedding Cakes',
+    body: 'See elegant wedding cakes in different sizes and styles.'
   },
   {
     href: '/anniversary-cakes-leeds',
-    title: 'Anniversary cakes',
-    body: 'A good starting point for a more personal design that still feels simple and considered.'
+    title: 'Anniversary Cakes',
+    body: 'Explore personalised anniversary cake ideas.'
   }
 ]
 
 export function GetCustomQuoteInspiration() {
   return (
-    <section className='bg-base-200/35 px-4 py-10 tablet:px-10 tablet:py-14'>
+    <section className='content-auto-section bg-base-200/35 px-4 py-10 tablet:px-10 tablet:py-14'>
       <div className='homepage-container grid gap-8 small-laptop:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]'>
         <div className='max-w-[420px]'>
-          <p className='font-body text-xs font-semibold uppercase tracking-[0.18em] text-primary-600'>
-            Need visual direction first?
-          </p>
-          <h2 className='mt-3 font-moreSugar text-[26px] uppercase leading-[1.18] tracking-[0.08em] text-primary-700 tablet:text-[34px]'>
-            Browse a few good places to start
+          <h2 className='font-moreSugar text-[26px] uppercase leading-[1.18] tracking-[0.08em] text-primary-700 tablet:text-[34px]'>
+            Looking for cake ideas?
           </h2>
           <p className='mt-4 font-oldenburg text-[15px] leading-7 tracking-[0.03em] text-base-content/80 tablet:text-base tablet:leading-8'>
-            If you know the event but not the exact finish, these pages will help you narrow the brief before you fill in the form.
+            Browse our most popular cake galleries before requesting your quote.
           </p>
         </div>
 
-        <div className='grid gap-4 tablet:grid-cols-3'>
+        <div className='grid self-start gap-4 tablet:grid-cols-3'>
           {inspirationLinks.map((item) => (
             <Link
               key={item.href}
@@ -49,8 +46,11 @@ export function GetCustomQuoteInspiration() {
                   {item.body}
                 </p>
               </div>
-              <span className='mt-6 font-body text-xs font-semibold uppercase tracking-[0.18em] text-primary-600'>
-                View ideas
+              <span className='mt-6 flex items-center gap-2 font-body text-xs font-semibold uppercase tracking-[0.18em] text-primary-600'>
+                View gallery
+                <span aria-hidden='true' className='transition-transform group-hover:translate-x-1'>
+                  →
+                </span>
               </span>
             </Link>
           ))}

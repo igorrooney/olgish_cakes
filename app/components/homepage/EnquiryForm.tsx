@@ -16,7 +16,6 @@ import { ValidatorInput } from './ValidatorInput'
 import { OCCASION_OPTIONS, type OccasionOption } from './formOptions'
 import {
   dateMinErrorMessage,
-  formSchema,
   formFieldOrder,
   getTodayDateInputValue,
   getReferenceImageError,
@@ -24,6 +23,7 @@ import {
   referenceImageAccept,
   type FormValues
 } from './mobileForm.utils'
+import { formSchema } from './mobileForm.schema'
 
 const formInitialState: FormValues = {
   fullName: '',
@@ -143,6 +143,32 @@ export function EnquiryForm({
     setErrors({})
     submitMutation.reset()
 
+    const parsed = formSchema.safeParse({
+      ...formData,
+      csrfToken: 'pending-client-validation'
+    })
+    const fieldErrors: Record<string, string> = {}
+
+    if (!parsed.success) {
+      parsed.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0].toString()] = err.message
+        }
+      })
+    }
+
+    const referenceImageError = getReferenceImageError(referenceImage)
+
+    if (referenceImageError) {
+      fieldErrors.referenceImage = referenceImageError
+    }
+
+    if (!parsed.success || Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors)
+      focusFirstErrorField(fieldErrors)
+      return
+    }
+
     try {
       const nextCsrfToken = await refreshCsrfToken()
 
@@ -150,30 +176,10 @@ export function EnquiryForm({
         throw new Error('CSRF token not loaded. Please refresh the page and try again.')
       }
 
-      const parsed = formSchema.safeParse({ ...formData, csrfToken: nextCsrfToken })
-      const fieldErrors: Record<string, string> = {}
-
-      if (!parsed.success) {
-        parsed.error.errors.forEach((err) => {
-          if (err.path[0]) {
-            fieldErrors[err.path[0].toString()] = err.message
-          }
-        })
+      const validated = {
+        ...parsed.data,
+        csrfToken: nextCsrfToken
       }
-
-      const referenceImageError = getReferenceImageError(referenceImage)
-
-      if (referenceImageError) {
-        fieldErrors.referenceImage = referenceImageError
-      }
-
-      if (!parsed.success || Object.keys(fieldErrors).length > 0) {
-        setErrors(fieldErrors)
-        focusFirstErrorField(fieldErrors)
-        return
-      }
-
-      const validated = parsed.data
       const submissionData = buildCustomCakeEnquiryFormData(validated, referenceImage)
 
       submit(submissionData)
@@ -388,11 +394,11 @@ export function EnquiryForm({
             type='submit'
             className='btn h-12 w-full rounded-full bg-primary-500 text-white shadow-btn hover:bg-primary-700 tablet:h-12'
             disabled={isSubmitting || isCsrfLoading}
-            aria-busy={isSubmitting}
+            aria-busy={isSubmitting || isCsrfLoading}
           >
             <span className='flex items-center justify-center gap-2 font-sans text-sm font-semibold'>
               Send enquiry
-              {isSubmitting ? (
+              {isSubmitting || isCsrfLoading ? (
                 <span className='loading loading-spinner' aria-hidden='true'></span>
               ) : (
                 <svg

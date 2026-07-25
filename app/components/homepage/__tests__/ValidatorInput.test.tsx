@@ -325,6 +325,34 @@ describe('ValidatorInput error card', () => {
     expect(dateTrigger).toHaveAttribute('aria-haspopup', 'dialog')
   })
 
+  it('uses the visible required label without invalid button aria and keeps placeholder contrast', () => {
+    render(
+      <ValidatorInput
+        fieldType='datePicker'
+        id='date'
+        placeholder='Select a date'
+        value=''
+        label='Date needed'
+        labelAlt='(Required)'
+        labelPlacement='outside'
+        required
+        hintText='Select a date'
+        onValueChange={() => {}}
+      />
+    )
+
+    const dateTrigger = screen.getByRole('button', { name: /date needed/i })
+    const placeholder = screen
+      .getAllByText('Select a date')
+      .find((element) => element.tagName === 'SPAN')
+
+    expect(screen.getByText('(Required)')).toBeInTheDocument()
+    expect(dateTrigger).not.toHaveAttribute('aria-required')
+    expect(placeholder).toBeDefined()
+    expect(placeholder).toHaveClass('text-base-content/70')
+    expect(placeholder).not.toHaveClass('text-base-content/55')
+  })
+
   it('renders a custom date picker calendar and selects an enabled date', () => {
     const handleValueChange = jest.fn()
 
