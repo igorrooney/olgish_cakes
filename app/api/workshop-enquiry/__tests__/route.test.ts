@@ -392,10 +392,10 @@ describe('/api/workshop-enquiry', () => {
     }))
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Workshop enquiry notification failed',
-      expect.objectContaining({
-        step: 'admin-email',
-        errorMessage: 'Admin send failed'
-      })
+      {
+        operation: 'workshop-enquiry.notification',
+        step: 'admin-email'
+      }
     )
   })
 
@@ -433,11 +433,17 @@ describe('/api/workshop-enquiry', () => {
     }))
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Workshop enquiry notification failed',
-      expect.objectContaining({
-        step: 'customer-email',
-        errorMessage: 'Customer send failed'
-      })
+      {
+        operation: 'workshop-enquiry.notification',
+        step: 'customer-email'
+      }
     )
+    const serializedLogs = JSON.stringify(consoleErrorSpy.mock.calls)
+
+    expect(serializedLogs).not.toContain('Test User')
+    expect(serializedLogs).not.toContain('test@example.com')
+    expect(serializedLogs).not.toContain('2026-12-25')
+    expect(serializedLogs).not.toContain('Customer send failed')
   })
 
   it('returns 500 when live email is not configured and skips persistence', async () => {
@@ -488,10 +494,10 @@ describe('/api/workshop-enquiry', () => {
     expect(mockSendEmail).toHaveBeenCalledTimes(3)
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Workshop enquiry failure alert failed',
-      expect.objectContaining({
-        errorMessage: 'Failure alert send failed',
+      {
+        operation: 'workshop-enquiry.failure-alert',
         failedSteps: ['admin-email']
-      })
+      }
     )
   })
 
@@ -520,10 +526,10 @@ describe('/api/workshop-enquiry', () => {
     expect(mockSendEmail).toHaveBeenCalledTimes(3)
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Workshop enquiry failure alert failed',
-      expect.objectContaining({
-        errorMessage: 'Failure alert send failed',
+      {
+        operation: 'workshop-enquiry.failure-alert',
         failedSteps: ['admin-email', 'customer-email']
-      })
+      }
     )
   })
 
@@ -576,12 +582,18 @@ describe('/api/workshop-enquiry', () => {
     expect(mockSendEmail).not.toHaveBeenCalled()
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Workshop enquiry insert failed',
-      expect.objectContaining({
+      {
         operation: 'workshop_enquiries.insert',
         table: 'workshop_enquiries',
+        errorName: null,
         errorCode: '23502'
-      })
+      }
     )
+    const serializedLogs = JSON.stringify(consoleErrorSpy.mock.calls)
+
+    expect(serializedLogs).not.toContain('Insert failed')
+    expect(serializedLogs).not.toContain('null value in column')
+    expect(serializedLogs).not.toContain('rawError')
   })
 
   it('rate limits by client ip when requests exceed the limit', async () => {

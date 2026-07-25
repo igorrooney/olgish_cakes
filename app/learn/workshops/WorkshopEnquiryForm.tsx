@@ -228,7 +228,7 @@ export function WorkshopEnquiryForm() {
         <ValidatorInput
           id='location'
           type='text'
-          placeholder='For example: Clerkenwell, London EC1'
+          placeholder='For example: York, YO1'
           value={formData.location}
           label='Location'
           showValidation={hasAttemptedSubmit}

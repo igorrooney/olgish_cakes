@@ -87,7 +87,8 @@ module.exports = {
     '<rootDir>/apps/events/',
     '<rootDir>/\\.tmp-script-run/',
     '<rootDir>/\\.codex-artifacts/',
-    '<rootDir>/\\.playwright-mcp/'
+    '<rootDir>/\\.playwright-mcp/',
+    '<rootDir>/output/playwright/'
   ],
   modulePathIgnorePatterns: [
     '<rootDir>/apps/events/'
@@ -96,7 +97,8 @@ module.exports = {
     '<rootDir>/apps/events/',
     '<rootDir>/\\.tmp-script-run/',
     '<rootDir>/\\.codex-artifacts/',
-    '<rootDir>/\\.playwright-mcp/'
+    '<rootDir>/\\.playwright-mcp/',
+    '<rootDir>/output/playwright/'
   ],
   transformIgnorePatterns: [
     'node_modules/(?!(jose|@babel/runtime)(?:/|$))',

@@ -13,14 +13,6 @@ jest.mock('../WorkshopEnquiryFormSection', () => ({
   ),
 }))
 
-jest.mock('../DeferredViewportImage', () => ({
-  DeferredViewportImage: ({
-    alt
-  }: {
-    alt: string
-  }) => <img alt={alt} src='/images/deferred-workshop-image.jpg' />
-}))
-
 function parseJsonLdScripts(container: HTMLElement) {
   return Array.from(container.querySelectorAll('script[type="application/ld+json"]')).map(
     script => JSON.parse(script.textContent || '{}') as Record<string, unknown>
@@ -29,14 +21,30 @@ function parseJsonLdScripts(container: HTMLElement) {
 
 describe('WorkshopsPage', () => {
   it('exposes indexed canonical metadata for the workshops page', () => {
-    expect(metadata.title).toBe('Mobile Cake Decorating Workshops in London and Across the UK')
+    expect(metadata.title).toEqual({
+      absolute: 'Mobile Cake Decorating Workshops Across the UK',
+    })
     expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/learn/workshops')
     expect(metadata.robots?.index).toBe(true)
-    expect(metadata.description).toContain('Mobile cake decorating workshops')
-    expect(metadata.description).toContain('office teams, birthdays and hen parties')
-    expect(metadata.description).toContain('ready to decorate')
-    expect(metadata.description).toContain('25 per person')
-    expect(metadata.description).toContain('around 1.5 hours')
+    expect(metadata.description).toBe(
+      'Mobile cake decorating workshops for groups of four or more across the UK. From £25 per person, with cakes, tools, boxes and live teaching included. All ages are welcome, with vegan-friendly and gluten-friendly options available by agreement.'
+    )
+    expect(metadata.openGraph?.images).toEqual([
+      expect.objectContaining({
+        url: 'https://olgishcakes.co.uk/images/workshops/workshops-social-card.png',
+        width: 1200,
+        height: 630,
+        alt: 'Olgish Cakes mobile cake decorating workshops across the UK',
+      }),
+    ])
+    expect(metadata.twitter?.images).toEqual([
+      expect.objectContaining({
+        url: 'https://olgishcakes.co.uk/images/workshops/workshops-social-card.png',
+        width: 1200,
+        height: 630,
+        alt: 'Olgish Cakes mobile cake decorating workshops across the UK',
+      }),
+    ])
   })
 
   it('renders the refreshed landing page without a nested main landmark', () => {
@@ -52,7 +60,13 @@ describe('WorkshopsPage', () => {
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
     expect(screen.getByText(/25 per person/i)).toBeInTheDocument()
     expect(screen.getByText('Around 1.5 hours')).toBeInTheDocument()
-    expect(screen.getByText('London and the UK')).toBeInTheDocument()
+    expect(screen.getByText('Across the UK')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'We travel around the UK, with availability and any additional travel costs quoted case by case.'
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText('4 or more')).toBeInTheDocument()
     expect(
       screen.getByText(/we get asked for these workshops by office teams, birthdays and hen parties/i)
     ).toBeInTheDocument()
@@ -110,23 +124,44 @@ describe('WorkshopsPage', () => {
     expect(
       screen.getByRole('heading', {
         level: 2,
-        name: /tell us about the event/i,
+        name: /practical workshop details/i,
       })
     ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 3, name: /group size/i })).toBeInTheDocument()
     expect(
-      screen.getByRole('img', {
-        name: /red birthday cake with a gold crown topper/i,
-      })
+      screen.getByRole('heading', { level: 3, name: /ages and supervision/i })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('img', {
-        name: /white buttercream cake with piped swirls and black ribbon bows/i,
-      })
+      screen.getByRole('heading', { level: 3, name: /dietary and allergen information/i })
     ).toBeInTheDocument()
+    expect(screen.getByText(/groups of four or more participants/i)).toBeInTheDocument()
+    expect(screen.getByText(/children must be supervised/i)).toBeInTheDocument()
+    expect(screen.getByText(/cannot guarantee any product is free from cross-contamination/i))
+      .toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /read our allergen information/i })).toHaveAttribute(
+      'href',
+      '/allergens'
+    )
+    expect(screen.getByText(/confirm any deposit and final-payment schedule/i))
+      .toBeInTheDocument()
+    expect(screen.getByText(/one week away/i)).toBeInTheDocument()
+
+    const mainPortfolioImage = screen.getByRole('img', {
+      name: /red birthday cake with a gold crown topper/i,
+    })
+    const secondaryPortfolioImage = screen.getByRole('img', {
+      name: /white buttercream cake with piped swirls and black ribbon bows/i,
+    })
+    const thirdPortfolioImage = screen.getByRole('img', {
+      name: /blue birthday cake with gold accents and printed photo toppers/i,
+    })
+
+    expect(mainPortfolioImage).not.toHaveAttribute('loading', 'lazy')
+    expect(mainPortfolioImage).toHaveAttribute('fetchpriority', 'high')
+    expect(secondaryPortfolioImage).toHaveAttribute('loading', 'lazy')
+    expect(thirdPortfolioImage).toHaveAttribute('loading', 'lazy')
     expect(
-      screen.getByRole('img', {
-        name: /blue birthday cake with gold accents and printed photo toppers/i,
-      })
+      screen.getByText(/portfolio cake examples — your workshop design will be agreed with your quote/i)
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /ask about your date/i })).toHaveAttribute(
       'href',

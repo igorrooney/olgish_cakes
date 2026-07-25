@@ -2,16 +2,26 @@
  * @jest-environment jsdom
  */
 import { render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { WorkshopEnquiryFormSection } from '../WorkshopEnquiryFormSection'
 
-jest.mock('../DeferredWorkshopEnquiryForm', () => ({
-  DeferredWorkshopEnquiryForm: () => (
-    <div data-testid='deferred-workshop-enquiry-form'>Mock enquiry form</div>
+jest.mock('@/app/providers', () => ({
+  Providers: ({ children }: { children: ReactNode }) => (
+    <div data-testid='query-providers'>{children}</div>
+  )
+}))
+
+jest.mock('../WorkshopEnquiryForm', () => ({
+  WorkshopEnquiryForm: () => (
+    <form aria-label='Workshop enquiry'>
+      <label htmlFor='fullName'>Full name</label>
+      <input id='fullName' />
+    </form>
   )
 }))
 
 describe('WorkshopEnquiryFormSection', () => {
-  it('renders the practical enquiry intro and the form container', () => {
+  it('renders the practical enquiry intro and the form immediately inside its provider', () => {
     render(<WorkshopEnquiryFormSection />)
 
     expect(
@@ -23,6 +33,9 @@ describe('WorkshopEnquiryFormSection', () => {
     expect(
       screen.getByText(/if you already know the colours or style, add that as well/i)
     ).toBeInTheDocument()
-    expect(screen.getByTestId('deferred-workshop-enquiry-form')).toBeInTheDocument()
+    expect(screen.getByTestId('query-providers')).toBeInTheDocument()
+    expect(screen.getByRole('form', { name: /workshop enquiry/i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/^full name$/i)).toBeInTheDocument()
+    expect(screen.queryByTestId('workshop-enquiry-form-placeholder')).not.toBeInTheDocument()
   })
 })
