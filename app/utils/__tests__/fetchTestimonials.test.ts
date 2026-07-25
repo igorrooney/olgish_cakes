@@ -1,4 +1,13 @@
-import { getAllTestimonials, getFeaturedTestimonials, getAllTestimonialsStats } from '../fetchTestimonials'
+import {
+  decodeTestimonialsCursor,
+  encodeTestimonialsCursor,
+  getAllTestimonials,
+  getAllTestimonialsStats,
+  getFeaturedTestimonials,
+  getTestimonialsPage,
+  InvalidTestimonialsCursorError,
+  testimonialsPageSize
+} from '../fetchTestimonials'
 import { Testimonial } from '@/app/types/testimonial'
 
 // Mock unstable_cache to bypass Next.js context requirement
@@ -144,6 +153,107 @@ describe('fetchTestimonials', () => {
 
       const query = mockFetch.mock.calls[0][0]
       expect(query).toContain('title')
+    })
+  })
+
+  describe('getTestimonialsPage', () => {
+    const createPageRecord = (id: string, date: string) => ({
+      _id: id,
+      customerName: `Customer ${id}`,
+      rating: 5,
+      date,
+      text: `Review ${id}`
+    })
+
+    it('returns six reviews and a cursor based on the sixth stable record', async () => {
+      const records = [
+        createPageRecord('a', '2026-01-10'),
+        createPageRecord('b', '2026-01-10'),
+        createPageRecord('c', '2026-01-09'),
+        createPageRecord('d', '2026-01-08'),
+        createPageRecord('e', '2026-01-07'),
+        createPageRecord('f', '2026-01-06'),
+        createPageRecord('g', '2026-01-05')
+      ]
+      mockFetch.mockResolvedValue(records)
+
+      const result = await getTestimonialsPage()
+
+      expect(result.reviews).toHaveLength(testimonialsPageSize)
+      expect(result.reviews.at(-1)?._id).toBe('f')
+      expect(result.nextCursor).not.toBeNull()
+      expect(decodeTestimonialsCursor(result.nextCursor ?? '')).toEqual({
+        date: '2026-01-06',
+        id: 'f',
+        version: 1
+      })
+
+      const [query, params] = mockFetch.mock.calls[0]
+      expect(query).toContain('order(date desc, _id asc)')
+      expect(params).toEqual({
+        hasCursor: false,
+        cursorDate: '',
+        cursorId: '',
+        limit: 7
+      })
+    })
+
+    it('uses decoded cursor values as query parameters', async () => {
+      const cursor = encodeTestimonialsCursor({
+        _id: 'same-date-id',
+        date: '2026-01-10'
+      })
+      mockFetch.mockResolvedValue([])
+
+      await getTestimonialsPage(cursor)
+
+      expect(mockFetch.mock.calls[0][1]).toEqual({
+        hasCursor: true,
+        cursorDate: '2026-01-10',
+        cursorId: 'same-date-id',
+        limit: 7
+      })
+    })
+
+    it('returns a terminal null cursor when no seventh record exists', async () => {
+      mockFetch.mockResolvedValue(
+        Array.from({ length: 6 }, (_, index) =>
+          createPageRecord(`terminal-${index}`, `2026-01-${String(20 - index).padStart(2, '0')}`)
+        )
+      )
+
+      const result = await getTestimonialsPage()
+
+      expect(result.reviews).toHaveLength(6)
+      expect(result.nextCursor).toBeNull()
+    })
+
+    it.each([
+      '',
+      'not-base64!',
+      Buffer.from('{}').toString('base64url'),
+      Buffer.from(JSON.stringify({
+        version: 1,
+        date: 'not-a-date',
+        id: 'review-id'
+      })).toString('base64url')
+    ])('rejects malformed cursors', async (cursor) => {
+      await expect(getTestimonialsPage(cursor)).rejects.toBeInstanceOf(
+        InvalidTestimonialsCursorError
+      )
+      expect(mockFetch).not.toHaveBeenCalled()
+    })
+
+    it('rejects oversized cursors', async () => {
+      await expect(getTestimonialsPage('a'.repeat(513))).rejects.toBeInstanceOf(
+        InvalidTestimonialsCursorError
+      )
+    })
+
+    it('propagates Sanity failures for route-level handling', async () => {
+      mockFetch.mockRejectedValue(new Error('Sanity unavailable'))
+
+      await expect(getTestimonialsPage()).rejects.toThrow('Sanity unavailable')
     })
   })
 

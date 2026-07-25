@@ -5,7 +5,10 @@ import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import React from 'react'
 import HomePage, { generateMetadata } from '../page'
-import { getAllTestimonials } from '../utils/fetchTestimonials'
+import {
+  getAllTestimonialsStats,
+  getTestimonialsPage
+} from '../utils/fetchTestimonials'
 
 // Type definitions for test mocks
 interface AnimatedComponentProps {
@@ -59,7 +62,10 @@ jest.mock('../utils/fetchGiftHampers', () => ({
 jest.mock('../utils/fetchTestimonials', () => ({
   getFeaturedTestimonials: jest.fn(() => Promise.resolve([])),
   getAllTestimonialsStats: jest.fn(() => Promise.resolve({ count: 127, averageRating: 5.0 })),
-  getAllTestimonials: jest.fn(() => Promise.resolve([]))
+  getTestimonialsPage: jest.fn(() => Promise.resolve({
+    reviews: [],
+    nextCursor: null
+  }))
 }))
 
 jest.mock('../utils/fetchCollections', () => ({
@@ -223,15 +229,21 @@ jest.mock('@/lib/constants', () => ({
   }
 }))
 
-const mockGetAllTestimonials = getAllTestimonials as jest.MockedFunction<typeof getAllTestimonials>
+const mockGetTestimonialsPage = getTestimonialsPage as jest.MockedFunction<typeof getTestimonialsPage>
+const mockGetAllTestimonialsStats = getAllTestimonialsStats as jest.MockedFunction<typeof getAllTestimonialsStats>
 const { getHomepageCollections: mockGetHomepageCollections } = jest.requireMock('../utils/fetchCollections')
 
 describe('HomePage', () => {
   beforeEach(() => {
+    jest.clearAllMocks()
     capturedOccasionsProps = null
     capturedEnquiryFormProps = null
     capturedReviewsProps = null
-    mockGetAllTestimonials.mockResolvedValue([])
+    mockGetTestimonialsPage.mockResolvedValue({
+      reviews: [],
+      nextCursor: null
+    })
+    mockGetAllTestimonialsStats.mockResolvedValue({ count: 127, averageRating: 5 })
     mockGetHomepageCollections.mockResolvedValue([])
   })
 
@@ -299,66 +311,43 @@ describe('HomePage', () => {
       expect(document.querySelectorAll('[data-testid="query-providers"]')).toHaveLength(1)
     })
 
-    it('passes all eligible testimonials to the homepage reviews section', async () => {
-      mockGetAllTestimonials.mockResolvedValue([
-        {
-          _id: 'testimonial-empty',
-          _type: 'testimonial',
-          _createdAt: '2026-01-01T00:00:00Z',
-          _updatedAt: '2026-01-01T00:00:00Z',
-          customerName: 'Empty',
-          cakeType: 'Honey cake',
-          rating: 5,
-          date: '2026-01-10',
-          text: ' ',
-          source: 'google'
-        },
-        ...Array.from({ length: 7 }, (_, index) => ({
+    it('passes the six-review initial page to the homepage reviews section', async () => {
+      const reviews = Array.from({ length: 6 }, (_, index) => ({
           _id: `testimonial-${index}`,
-          _type: 'testimonial' as const,
-          _createdAt: '2026-01-01T00:00:00Z',
-          _updatedAt: '2026-01-01T00:00:00Z',
           customerName: `Customer ${index}`,
-          cakeType: 'Honey cake',
           rating: 5,
           date: '2026-01-10',
-          text: `Helpful review ${index}.`,
-          source: 'google' as const
+          text: `Helpful review ${index}.`
         }))
-      ])
+      mockGetTestimonialsPage.mockResolvedValue({
+        reviews,
+        nextCursor: 'opaque-cursor'
+      })
 
       const page = await HomePage()
       render(page)
 
-      expect(capturedReviewsProps?.testimonials).toHaveLength(7)
-      expect(capturedReviewsProps?.testimonials).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ _id: 'testimonial-0' }),
-          expect.objectContaining({ _id: 'testimonial-6' })
-        ])
-      )
-      expect(capturedReviewsProps?.testimonials).not.toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ _id: 'testimonial-empty' })
-        ])
-      )
+      expect(capturedReviewsProps).toEqual({
+        initialPage: {
+          reviews,
+          nextCursor: 'opaque-cursor'
+        }
+      })
+      expect(mockGetTestimonialsPage).toHaveBeenCalledTimes(1)
+      expect(mockGetAllTestimonialsStats).toHaveBeenCalledTimes(1)
     })
 
     it('should include structured data scripts when testimonials exist', async () => {
-      mockGetAllTestimonials.mockResolvedValue([
-        {
+      mockGetTestimonialsPage.mockResolvedValue({
+        reviews: [{
           _id: 'testimonial-1',
-          _type: 'testimonial',
-          _createdAt: '2026-01-01T00:00:00Z',
-          _updatedAt: '2026-01-01T00:00:00Z',
           customerName: 'Olha',
-          cakeType: 'Honey cake',
           rating: 5,
           date: '2026-01-10',
-          text: 'Absolutely delicious.',
-          source: 'google'
-        }
-      ])
+          text: 'Absolutely delicious.'
+        }],
+        nextCursor: null
+      })
 
       const page = await HomePage()
       const { container } = render(page)
@@ -392,20 +381,16 @@ describe('HomePage', () => {
     })
 
     it('should render review schema from testimonials', async () => {
-      mockGetAllTestimonials.mockResolvedValue([
-        {
+      mockGetTestimonialsPage.mockResolvedValue({
+        reviews: [{
           _id: 'testimonial-1',
-          _type: 'testimonial',
-          _createdAt: '2026-01-01T00:00:00Z',
-          _updatedAt: '2026-01-01T00:00:00Z',
           customerName: 'Olha',
-          cakeType: 'Honey cake',
           rating: 5,
           date: '2026-01-10',
-          text: 'Absolutely delicious.',
-          source: 'google'
-        }
-      ])
+          text: 'Absolutely delicious.'
+        }],
+        nextCursor: null
+      })
 
       const page = await HomePage()
       const { container } = render(page)
@@ -442,7 +427,10 @@ describe('HomePage', () => {
     })
 
     it('should not render review schema when testimonials are empty', async () => {
-      mockGetAllTestimonials.mockResolvedValue([])
+      mockGetTestimonialsPage.mockResolvedValue({
+        reviews: [],
+        nextCursor: null
+      })
 
       const page = await HomePage()
       const { container } = render(page)
@@ -524,20 +512,16 @@ describe('HomePage', () => {
 
   describe('Structured Data - Price Validation', () => {
     it('should have numeric price in product schema offers', async () => {
-      mockGetAllTestimonials.mockResolvedValue([
-        {
+      mockGetTestimonialsPage.mockResolvedValue({
+        reviews: [{
           _id: 'testimonial-1',
-          _type: 'testimonial',
-          _createdAt: '2026-01-01T00:00:00Z',
-          _updatedAt: '2026-01-01T00:00:00Z',
           customerName: 'Olha',
-          cakeType: 'Honey cake',
           rating: 5,
           date: '2026-01-10',
-          text: 'Absolutely delicious.',
-          source: 'google'
-        }
-      ])
+          text: 'Absolutely delicious.'
+        }],
+        nextCursor: null
+      })
 
       const page = await HomePage()
       const { container } = render(page)

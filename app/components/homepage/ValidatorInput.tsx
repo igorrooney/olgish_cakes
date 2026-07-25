@@ -118,6 +118,16 @@ const selectOptionBaseClassName =
   'w-full rounded-[18px] px-4 py-3 text-left text-sm leading-6 transition-colors duration-150'
 const hintTextClassName = 'mt-2 text-xs leading-5 text-base-content/70'
 
+const getLabelClassName = (layout?: 'between' | 'stacked') =>
+  layout === 'stacked'
+    ? 'label flex w-full flex-col items-start gap-1'
+    : 'label flex w-full items-start justify-between gap-2'
+
+const getLabelAltClassName = (layout?: 'between' | 'stacked') =>
+  layout === 'stacked'
+    ? 'label-text-alt mb-2 text-xs text-base-content opacity-100'
+    : 'label-text-alt ml-auto shrink-0 text-xs text-base-content opacity-100'
+
 function getEnabledOptionIndexes(options: SelectOption[]) {
   return options.reduce<number[]>((indexes, option, index) => {
     if (!option.disabled) {
@@ -201,14 +211,8 @@ function SelectField({
   )
   const displayLabel = selectedOption?.label ?? options[0]?.label ?? ''
   const enabledOptionIndexes = useMemo(() => getEnabledOptionIndexes(options), [options])
-  const resolvedLabelClassName =
-    labelLayout === 'stacked'
-      ? 'label w-full flex flex-col items-start gap-1'
-      : 'label w-full justify-between'
-  const resolvedLabelAltClassName =
-    labelLayout === 'stacked'
-      ? 'label-text-alt text-xs text-base-content opacity-100 mb-2'
-      : 'label-text-alt text-xs text-base-content opacity-100 ml-auto'
+  const resolvedLabelClassName = getLabelClassName(labelLayout)
+  const resolvedLabelAltClassName = getLabelAltClassName(labelLayout)
   const resolvedSelectClassName =
     `input w-full cursor-pointer bg-white text-base-content opacity-100 relative justify-between ${hasError ? '' : 'focus-visible:ring-1 focus-visible:ring-primary/30'} ${selectClassName ?? ''}`.trim()
   const activeOptionId =
@@ -490,14 +494,8 @@ export function ValidatorInput(props: ValidatorInputProps) {
   const hasError = Boolean(props.error)
   const labelLayout = props.labelLayout ?? 'between'
   const labelTextClassName = 'label-text font-sans text-sm text-base-content opacity-100'
-  const labelClassName =
-    labelLayout === 'stacked'
-      ? 'label w-full flex flex-col items-start gap-1'
-      : 'label w-full justify-between'
-  const labelAltClassName =
-    labelLayout === 'stacked'
-      ? 'label-text-alt text-xs text-base-content opacity-100 mb-2'
-      : 'label-text-alt text-xs text-base-content opacity-100 ml-auto'
+  const labelClassName = getLabelClassName(labelLayout)
+  const labelAltClassName = getLabelAltClassName(labelLayout)
 
   if (props.fieldType === 'select') {
     return <SelectField {...props} />
@@ -523,14 +521,10 @@ export function ValidatorInput(props: ValidatorInputProps) {
       onValueChange,
     } = props
     const resolvedLabelClassName = textAreaLabelLayout
-      ? textAreaLabelLayout === 'stacked'
-        ? 'label w-full flex flex-col items-start gap-1'
-        : 'label w-full justify-between'
+      ? getLabelClassName(textAreaLabelLayout)
       : labelClassName
     const resolvedLabelAltClassName = textAreaLabelLayout
-      ? textAreaLabelLayout === 'stacked'
-        ? 'label-text-alt text-xs text-base-content opacity-100 mb-2'
-        : 'label-text-alt text-xs text-base-content opacity-100 ml-auto'
+      ? getLabelAltClassName(textAreaLabelLayout)
       : labelAltClassName
     const baseTextAreaClassName =
       'textarea w-full bg-white text-base-content opacity-100 min-h-32 outline-none focus:!outline-none focus:!outline-offset-0 focus:ring-1 focus:ring-primary/30'
@@ -578,14 +572,10 @@ export function ValidatorInput(props: ValidatorInputProps) {
       onFileChange,
     } = props
     const resolvedLabelClassName = uploadLabelLayout
-      ? uploadLabelLayout === 'stacked'
-        ? 'label w-full flex flex-col items-start gap-1'
-        : 'label w-full justify-between'
+      ? getLabelClassName(uploadLabelLayout)
       : labelClassName
     const resolvedLabelAltClassName = uploadLabelLayout
-      ? uploadLabelLayout === 'stacked'
-        ? 'label-text-alt text-xs text-base-content opacity-100 mb-2'
-        : 'label-text-alt text-xs text-base-content opacity-100 ml-auto'
+      ? getLabelAltClassName(uploadLabelLayout)
       : labelAltClassName
 
     return (
@@ -662,14 +652,10 @@ export function ValidatorInput(props: ValidatorInputProps) {
     onValueChange,
   } = props
   const resolvedLabelClassName = inputLabelLayout
-    ? inputLabelLayout === 'stacked'
-      ? 'label w-full flex flex-col items-start gap-1'
-      : 'label w-full justify-between'
+    ? getLabelClassName(inputLabelLayout)
     : labelClassName
   const resolvedLabelAltClassName = inputLabelLayout
-    ? inputLabelLayout === 'stacked'
-      ? 'label-text-alt text-xs text-base-content opacity-100 mb-2'
-      : 'label-text-alt text-xs text-base-content opacity-100 ml-auto'
+    ? getLabelAltClassName(inputLabelLayout)
     : labelAltClassName
   const baseInputClassName =
     'flex-1 bg-transparent text-base-content opacity-100 outline-none !outline-none !outline-offset-0 focus:!outline-none focus:!outline-offset-0'

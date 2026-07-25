@@ -18,3 +18,17 @@ export interface Testimonial {
   };
   source?: "google" | "facebook" | "instagram" | "trustpilot" | "direct";
 }
+
+export type HomepageReview = {
+  _id: string
+  customerName: string
+  rating: number
+  date: string
+  text: string
+  title?: string
+}
+
+export type PaginatedReviewsResponse = {
+  reviews: HomepageReview[]
+  nextCursor: string | null
+}

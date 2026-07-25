@@ -163,33 +163,36 @@ export function GetCustomQuoteForm({
     setErrors({})
     submitMutation.reset()
 
+    const parsed = quoteFormSchema.safeParse({
+      ...formData,
+      csrfToken: 'pending-client-validation'
+    })
+    const fieldErrors: Record<string, string> = {}
+
+    if (!parsed.success) {
+      parsed.error.errors.forEach((error) => {
+        if (error.path[0]) {
+          fieldErrors[error.path[0].toString()] = error.message
+        }
+      })
+    }
+
+    const referenceImageError = getReferenceImageError(referenceImage)
+    if (referenceImageError) {
+      fieldErrors.referenceImage = referenceImageError
+    }
+
+    if (!parsed.success || Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors)
+      focusFirstErrorField(fieldErrors)
+      return
+    }
+
     try {
       const nextCsrfToken = await refreshCsrfToken()
 
       if (!nextCsrfToken) {
         throw new Error('CSRF token not loaded. Please refresh the page and try again.')
-      }
-
-      const parsed = quoteFormSchema.safeParse({ ...formData, csrfToken: nextCsrfToken })
-      const fieldErrors: Record<string, string> = {}
-
-      if (!parsed.success) {
-        parsed.error.errors.forEach((error) => {
-          if (error.path[0]) {
-            fieldErrors[error.path[0].toString()] = error.message
-          }
-        })
-      }
-
-      const referenceImageError = getReferenceImageError(referenceImage)
-      if (referenceImageError) {
-        fieldErrors.referenceImage = referenceImageError
-      }
-
-      if (!parsed.success || Object.keys(fieldErrors).length > 0) {
-        setErrors(fieldErrors)
-        focusFirstErrorField(fieldErrors)
-        return
       }
 
       const submission = buildGetCustomQuoteSubmission(parsed.data, nextCsrfToken)
@@ -221,7 +224,7 @@ export function GetCustomQuoteForm({
 
   const normalizedOccasionOptions = optionalFieldOptions(normalizeOccasionOptions(occasionOptions))
   const isSubmitDisabled = isSubmitting || isCsrfLoading
-  const submitButtonLabel = isSubmitting ? 'Sending...' : 'Send quote request'
+  const submitButtonLabel = isSubmitting || isCsrfLoading ? 'Sending...' : 'Send quote request'
 
   return (
     <form
@@ -237,6 +240,8 @@ export function GetCustomQuoteForm({
           placeholder='Enter your full name'
           value={formData.fullName}
           label='Full name'
+          labelAlt='(Required)'
+          labelPlacement='outside'
           showValidation={hasAttemptedSubmit}
           error={errors.fullName}
           required
@@ -250,6 +255,7 @@ export function GetCustomQuoteForm({
           value={formData.email}
           label='Email address'
           labelAlt='(Optional)'
+          labelPlacement='outside'
           showValidation={hasAttemptedSubmit}
           error={errors.email}
           hintText='Add an email address or leave this blank if you prefer a phone reply'
@@ -262,6 +268,7 @@ export function GetCustomQuoteForm({
           value={formData.phone}
           label='Phone number'
           labelAlt='(Optional)'
+          labelPlacement='outside'
           showValidation={hasAttemptedSubmit}
           error={errors.phone}
           hintText='Add a phone number or leave this blank if email is enough'
@@ -273,6 +280,8 @@ export function GetCustomQuoteForm({
           placeholder='For example: 20 guests'
           value={formData.servings}
           label='Approximate servings'
+          labelAlt='(Required)'
+          labelPlacement='outside'
           showValidation={hasAttemptedSubmit}
           error={errors.servings}
           required
@@ -286,6 +295,7 @@ export function GetCustomQuoteForm({
           placeholder='Select a date'
           value={formData.date}
           label='Date needed'
+          labelAlt='(Required)'
           labelPlacement='outside'
           error={errors.date}
           required

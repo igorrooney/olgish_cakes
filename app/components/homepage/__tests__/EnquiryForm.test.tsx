@@ -65,13 +65,6 @@ describe('EnquiryForm', () => {
     })
 
     await waitFor(() => {
-      const csrfCall = (global.fetch as jest.Mock).mock.calls.find(
-        (call: unknown[]) => Array.isArray(call) && call[0] === '/api/csrf-token'
-      )
-      expect(csrfCall).toBeTruthy()
-    })
-
-    await waitFor(() => {
       expect(screen.getByRole('button', { name: /send enquiry/i })).toBeEnabled()
     })
   }
@@ -101,6 +94,7 @@ describe('EnquiryForm', () => {
   it('renders all form fields', async () => {
     await renderWithCsrf()
 
+    expect(global.fetch).not.toHaveBeenCalled()
     expect(screen.getByLabelText(/full name:/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/email address:/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/phone number:/i)).toBeInTheDocument()
@@ -249,6 +243,8 @@ describe('EnquiryForm', () => {
       expect(screen.getByText(/name must be at least 2 characters/i)).toBeInTheDocument()
       expect(screen.getByText(/invalid email address/i)).toBeInTheDocument()
     })
+
+    expect(global.fetch).not.toHaveBeenCalled()
   })
 
   it('focuses the first invalid field after submit', async () => {

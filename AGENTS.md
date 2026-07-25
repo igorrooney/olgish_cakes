@@ -41,6 +41,7 @@
 - Use the homepage enquiry form success message styling for all new or updated success messages: `alert alert-success w-full items-start text-sm` with the same check-circle icon and compact text layout, unless the user explicitly asks for a different design
 - Use "We"/"we'll" wording in all new or updated public-facing website copy, not "I"/"I'll"
 - Cookie consent UI must appear immediately on initial page load; do not defer or delay the banner for performance optimization
+- Use 1024px as the tablet breakpoint for responsive design, implementation, and audits; do not use or report a 768px tablet viewport
 
 ## React Best Practices
 - Function components

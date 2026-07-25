@@ -74,10 +74,6 @@ describe('GetCustomQuoteForm', () => {
       await Promise.resolve()
       await Promise.resolve()
     })
-
-    await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('/api/csrf-token', expect.anything())
-    })
   }
 
   const fillRequiredFields = ({
@@ -85,11 +81,11 @@ describe('GetCustomQuoteForm', () => {
     phone = '+44 7123 456 789',
     occasion = 'birthday'
   }: { email?: string, phone?: string, occasion?: string } = {}) => {
-    fireEvent.change(screen.getByLabelText(/^Full name$/i), { target: { value: 'Jane Doe' } })
-    fireEvent.change(screen.getByLabelText(/^Email address$/i), { target: { value: email } })
-    fireEvent.change(screen.getByLabelText(/^Phone number$/i), { target: { value: phone } })
+    fireEvent.change(screen.getByLabelText(/^Full name/i), { target: { value: 'Jane Doe' } })
+    fireEvent.change(screen.getByLabelText(/^Email address/i), { target: { value: email } })
+    fireEvent.change(screen.getByLabelText(/^Phone number/i), { target: { value: phone } })
     selectDateNeeded(getDateInputValue(5))
-    fireEvent.change(screen.getByLabelText(/^Approximate servings$/i), { target: { value: '24 guests' } })
+    fireEvent.change(screen.getByLabelText(/^Approximate servings/i), { target: { value: '24 guests' } })
     if (occasion) {
       fireEvent.click(screen.getByLabelText(/^Occasion/i))
       fireEvent.click(screen.getByRole('option', { name: optionLabelsByValue[occasion] ?? occasion }))
@@ -121,14 +117,16 @@ describe('GetCustomQuoteForm', () => {
   it('renders only the simplified visible fields', async () => {
     await renderForm()
 
-    expect(screen.getByLabelText(/^Full name$/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^Email address$/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^Phone number$/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^Full name/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^Email address/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^Phone number/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /date needed/i })).toBeInTheDocument()
-    expect(screen.getByLabelText(/^Approximate servings$/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^Approximate servings/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Occasion/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Cake brief/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/^Reference image/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /send quote request/i })).toBeEnabled()
+    expect(global.fetch).not.toHaveBeenCalled()
     expect(screen.getByText(/please add either an email address or a phone number so we can get back to you/i)).toBeInTheDocument()
     expect(screen.queryByText(/optional section 1/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/add design, budget and dietary detail/i)).not.toBeInTheDocument()
@@ -162,8 +160,8 @@ describe('GetCustomQuoteForm', () => {
   it('shows validation errors and focuses the first invalid field', async () => {
     await renderForm()
 
-    fireEvent.change(screen.getByLabelText(/^Full name$/i), { target: { value: 'A' } })
-    fireEvent.change(screen.getByLabelText(/^Email address$/i), { target: { value: 'wrong' } })
+    fireEvent.change(screen.getByLabelText(/^Full name/i), { target: { value: 'A' } })
+    fireEvent.change(screen.getByLabelText(/^Email address/i), { target: { value: 'wrong' } })
     fireEvent.click(screen.getByRole('button', { name: /send quote request/i }))
 
     await waitFor(() => {
@@ -172,8 +170,10 @@ describe('GetCustomQuoteForm', () => {
     })
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/^Full name$/i)).toHaveFocus()
+      expect(screen.getByLabelText(/^Full name/i)).toHaveFocus()
     })
+
+    expect(global.fetch).not.toHaveBeenCalled()
   })
 
   it('requires at least one contact method', async () => {
@@ -187,6 +187,7 @@ describe('GetCustomQuoteForm', () => {
     })
 
     expect(global.fetch).not.toHaveBeenCalledWith('/api/custom-cake-enquiry', expect.anything())
+    expect(global.fetch).not.toHaveBeenCalledWith('/api/csrf-token', expect.anything())
   })
 
   it('accepts a short cake brief when it has at least 8 characters', async () => {

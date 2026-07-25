@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { preload } from 'react-dom'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { DEFAULT_AGGREGATE_RATING, DEFAULT_REVIEWS } from '@/lib/structured-data-defaults'
-import type { Testimonial } from './types/testimonial'
+import type { HomepageReview, PaginatedReviewsResponse } from './types/testimonial'
 import { OlgishCakesFounder } from './components/homepage/OlgishCakesFounder'
 import { faqItems, HomeFaq } from './components/homepage/HomeFaq'
 import { HomeHero } from './components/homepage/HomeHero'
@@ -15,19 +15,21 @@ import {
   DeferredOccasions,
   DeferredReviews
 } from './components/homepage/deferredSections'
-import { getAllTestimonials } from './utils/fetchTestimonials'
+import {
+  getAllTestimonialsStats,
+  getTestimonialsPage
+} from './utils/fetchTestimonials'
 import { getHomepageCollections } from './utils/fetchCollections'
 import { buildOccasionOptionsFromCollections } from './components/homepage/formOptions'
 import { getMarketSchedule } from './utils/fetchMarketSchedule'
 import { generateEventSEOMetadata } from './utils/generateEventStructuredData'
 import { getMerchantReturnPolicy, getPriceValidUntil } from './utils/seo'
-import { buildAggregateRating, type ReviewStats } from './utils/review-stats'
+import { buildAggregateRating } from './utils/review-stats'
 
 const organizationId = 'https://olgishcakes.co.uk/#organization'
 const bakeryId = 'https://olgishcakes.co.uk/#bakery'
 const productId = 'https://olgishcakes.co.uk/#product'
 export const revalidate = 3600
-const maxReviewSchemas = 6
 const pageTitle = 'Ukrainian cakes in Leeds | Medovik & custom cakes by post'
 const pageDescription = 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.'
 const eventDescriptionBase = 'Order Ukrainian cakes in Leeds: Medovik, Napoleon, and custom birthday or wedding cakes. Handmade, 5-star rated, UK delivery.'
@@ -131,28 +133,6 @@ const normalizeReviewDate = (dateValue?: string | null) => {
   return parsedDate.toISOString()
 }
 
-const hasVisibleReviewText = (testimonial: Testimonial) =>
-  Boolean(testimonial.text && testimonial.text.trim().length > 0)
-
-const hasValidReviewRating = (testimonial: Testimonial) =>
-  Number.isFinite(testimonial.rating) && testimonial.rating > 0
-
-const calculateReviewStats = (testimonials: Testimonial[]): ReviewStats => {
-  const ratings = testimonials
-    .map((testimonial) => testimonial.rating)
-    .filter((rating): rating is number => Number.isFinite(rating) && rating > 0)
-
-  if (ratings.length === 0) {
-    return { count: 0, averageRating: 0 }
-  }
-
-  const total = ratings.reduce((sum, rating) => sum + rating, 0)
-  return {
-    count: ratings.length,
-    averageRating: total / ratings.length
-  }
-}
-
 const buildMetaDescription = (eventSEO: EventSEOMetadata) => {
   if (eventSEO.nextEventLocation && eventSEO.nextEventDate) {
     const eventSnippet = `Find us at ${eventSEO.nextEventLocation} on ${eventSEO.nextEventDate}.`
@@ -197,7 +177,7 @@ const buildEventMetadata = (eventSEO: EventSEOMetadata): OtherMetadata => {
   return metadata
 }
 
-const mapTestimonialReview = (testimonial: Testimonial): ReviewSchema => {
+const mapTestimonialReview = (testimonial: HomepageReview): ReviewSchema => {
   const authorName = testimonial.customerName?.trim() ? testimonial.customerName : 'Anonymous'
   const ratingValue = testimonial.rating
   const reviewBody = testimonial.text?.trim() ?? ''
@@ -211,7 +191,7 @@ const mapTestimonialReview = (testimonial: Testimonial): ReviewSchema => {
   })
 }
 
-const mapProductReview = (testimonial: Testimonial): ReviewSchema => {
+const mapProductReview = (testimonial: HomepageReview): ReviewSchema => {
   const authorName = testimonial.customerName?.trim() ? testimonial.customerName : 'Anonymous'
   const ratingValue = testimonial.rating
   const reviewBody = testimonial.text?.trim() ?? ''
@@ -274,17 +254,18 @@ export default async function Home() {
     type: 'image/avif'
   })
 
-  const [testimonials, collections] = await Promise.all([
-    getAllTestimonials(),
+  const [initialReviewsPage, reviewStats, collections] = await Promise.all([
+    getTestimonialsPage().catch((): PaginatedReviewsResponse => ({
+      reviews: [],
+      nextCursor: null
+    })),
+    getAllTestimonialsStats(),
     getHomepageCollections()
   ])
-  const eligibleTestimonials = testimonials.filter((testimonial) =>
-    hasVisibleReviewText(testimonial) && hasValidReviewRating(testimonial)
-  )
+  const eligibleTestimonials = initialReviewsPage.reviews
   const occasionOptions = buildOccasionOptionsFromCollections(collections)
-  const reviewSchemas = eligibleTestimonials.slice(0, maxReviewSchemas).map(mapTestimonialReview)
-  const productReviewSchemas = eligibleTestimonials.slice(0, maxReviewSchemas).map(mapProductReview)
-  const reviewStats = calculateReviewStats(testimonials)
+  const reviewSchemas = eligibleTestimonials.map(mapTestimonialReview)
+  const productReviewSchemas = eligibleTestimonials.map(mapProductReview)
   const aggregateRating = buildAggregateRating(reviewStats) ?? DEFAULT_AGGREGATE_RATING
 
   const reviewsStructuredData = reviewSchemas.length > 0
@@ -491,7 +472,7 @@ export default async function Home() {
             <DeferredMarkets />
           </div>
           <div className={belowFoldSectionClassName}>
-            <DeferredReviews testimonials={eligibleTestimonials} />
+            <DeferredReviews initialPage={initialReviewsPage} />
           </div>
           <div className={`homepage-divider relative h-auto ${belowFoldSectionClassName}`}>
             <Image
