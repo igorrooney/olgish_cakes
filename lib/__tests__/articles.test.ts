@@ -49,7 +49,7 @@ describe("lib/articles", () => {
   });
 
   it("fetches a paginated article archive slice and total count with automatic revalidation enabled", async () => {
-    mockCachedSanityFetch.mockResolvedValueOnce([{ _id: "article-1" }]).mockResolvedValueOnce(14);
+    mockCachedSanityFetch.mockResolvedValueOnce(14).mockResolvedValueOnce([{ _id: "article-1" }]);
 
     const { getPaginatedArchiveArticles } = await import("../articles");
     const result = await getPaginatedArchiveArticles("cake-by-post", 2);
@@ -57,6 +57,18 @@ describe("lib/articles", () => {
     expect(mockGetCacheConfig).toHaveBeenCalledWith("articles");
     expect(mockCachedSanityFetch).toHaveBeenNthCalledWith(
       1,
+      expect.stringContaining("count(*["),
+      { topic: "cake-by-post" },
+      {
+        tags: ["articles"],
+        revalidate: 300,
+      }
+    );
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain("count(*[");
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('slug.current != "test"');
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('!(slug.current match "test-*")');
+    expect(mockCachedSanityFetch).toHaveBeenNthCalledWith(
+      2,
       expect.stringContaining("$start...$end"),
       { topic: "cake-by-post", start: 12, end: 24 },
       {
@@ -64,19 +76,8 @@ describe("lib/articles", () => {
         revalidate: 300,
       }
     );
-    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain(
+    expect(mockCachedSanityFetch.mock.calls[1][0]).toContain(
       "order(publishedAt desc, _createdAt desc)[$start...$end]"
-    );
-    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('slug.current != "test"');
-    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain('!(slug.current match "test-*")');
-    expect(mockCachedSanityFetch).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining("count(*["),
-      { topic: "cake-by-post" },
-      {
-        tags: ["articles"],
-        revalidate: 300,
-      }
     );
     expect(mockCachedSanityFetch.mock.calls[1][0]).toContain('slug.current != "test"');
     expect(mockCachedSanityFetch.mock.calls[1][0]).toContain('!(slug.current match "test-*")');
@@ -87,6 +88,52 @@ describe("lib/articles", () => {
       currentPage: 2,
       pageSize: 12,
     });
+  });
+
+  it("does not issue a paginated query when the requested page is out of range", async () => {
+    mockCachedSanityFetch.mockResolvedValueOnce(14);
+
+    const { getPaginatedArchiveArticles } = await import("../articles");
+    const result = await getPaginatedArchiveArticles("cake-by-post", 3);
+
+    expect(mockCachedSanityFetch).toHaveBeenCalledTimes(1);
+    expect(mockCachedSanityFetch.mock.calls[0][0]).toContain("count(*[");
+    expect(result).toEqual({
+      articles: [],
+      totalCount: 14,
+      totalPages: 2,
+      currentPage: 3,
+      pageSize: 12,
+    });
+  });
+
+  it("forwards the request AbortSignal through count and page queries", async () => {
+    const signal = new AbortController().signal;
+    mockCachedSanityFetch.mockResolvedValueOnce(14).mockResolvedValueOnce([]);
+
+    const { getPaginatedArchiveArticles } = await import("../articles");
+    await getPaginatedArchiveArticles("cake-by-post", 1, 12, { signal });
+
+    expect(mockCachedSanityFetch).toHaveBeenNthCalledWith(
+      1,
+      expect.any(String),
+      { topic: "cake-by-post" },
+      {
+        tags: ["articles"],
+        revalidate: 300,
+        signal,
+      }
+    );
+    expect(mockCachedSanityFetch).toHaveBeenNthCalledWith(
+      2,
+      expect.any(String),
+      { topic: "cake-by-post", start: 0, end: 12 },
+      {
+        tags: ["articles"],
+        revalidate: 300,
+        signal,
+      }
+    );
   });
 
   it("fetches an article by slug through the article query", async () => {
@@ -398,6 +445,25 @@ describe("lib/articles", () => {
         page: ["2", "3"],
       })
     ).toBeNull();
+
+    for (const page of [
+      "",
+      " ",
+      "0",
+      "-1",
+      "1.5",
+      "1e3",
+      "9007199254740992",
+      "9".repeat(309),
+    ]) {
+      expect(resolveBlogArchiveSearchParams({ page })).toBeNull();
+    }
+
+    expect(resolveBlogArchiveSearchParams({ topic: ["cake-by-post", "custom-cakes"] })).toBeNull();
+    expect(resolveBlogArchiveSearchParams({ topic: "  cake-by-post  " })).toEqual({
+      topic: "cake-by-post",
+      page: 1,
+    });
   });
 
   it("builds canonical blog archive hrefs with topic before page and omits page=1", async () => {

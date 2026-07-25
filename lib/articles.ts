@@ -10,6 +10,13 @@ import {
 } from "@/lib/queries/articles";
 import { createArticleHeadingIdResolver } from '@/lib/article-heading-ids'
 
+export {
+  getBlogArchiveHref,
+  resolveBlogArchiveSearchParams,
+  type BlogArchiveQueryState,
+  type BlogArchiveSearchParams
+} from '@/lib/blog-archive-search-params'
+
 export interface PortableTextMarkDefinition {
   _key: string;
   _type: string;
@@ -113,13 +120,6 @@ export interface ArticleTableOfContentsItem {
   title: string;
 }
 
-type SearchParamValue = string | string[] | undefined;
-
-export interface BlogArchiveQueryState {
-  topic?: string;
-  page: number;
-}
-
 export interface PaginatedArticleArchive {
   articles: ArticleCard[];
   totalCount: number;
@@ -128,13 +128,16 @@ export interface PaginatedArticleArchive {
   pageSize: number;
 }
 
+interface ArticleFetchOptions {
+  signal?: AbortSignal
+}
+
 export type ArticlePaginationToken = number | "ellipsis-leading" | "ellipsis-trailing";
 
 const DEFAULT_ARTICLE_PUBLISH_REVALIDATE_SECONDS = 300;
 const MIN_ARTICLE_PUBLISH_REVALIDATE_SECONDS = 60;
 export const BLOG_ARCHIVE_PAGE_SIZE = 12;
 const TRUNCATED_PAGINATION_THRESHOLD = 7;
-const positiveIntegerPattern = /^[1-9]\d*$/;
 const productFeatureBreakPattern =
   /\s+(?=(?:Pack of\b|Letterbox-friendly\b|Free\b|Serves\b|Dispatch\b|Nationwide\b|Collection\b|Storage\b|Vacuum-packed\b|Fits\b))/g;
 
@@ -184,22 +187,6 @@ function truncateText(value: string, limit: number) {
 
 export function getArticleHref(slug: string) {
   return `/blog/${slug}`;
-}
-
-export function getBlogArchiveHref({ topic, page = 1 }: Partial<BlogArchiveQueryState>) {
-  const searchParams = new URLSearchParams();
-
-  if (topic) {
-    searchParams.set("topic", topic);
-  }
-
-  if (page > 1) {
-    searchParams.set("page", String(page));
-  }
-
-  const queryString = searchParams.toString();
-
-  return queryString.length > 0 ? `/blog?${queryString}` : "/blog";
 }
 
 export function getProductHref(product: ArticleProduct) {
@@ -459,41 +446,6 @@ export function hasMaterialArticleUpdate(publishedAt: string, modifiedAt?: strin
   );
 }
 
-export function resolveBlogArchiveSearchParams(
-  searchParams: Record<string, SearchParamValue>
-): BlogArchiveQueryState | null {
-  const rawTopic = searchParams.topic;
-  const rawPage = searchParams.page;
-
-  if (Array.isArray(rawTopic) || Array.isArray(rawPage)) {
-    return null;
-  }
-
-  const topic = typeof rawTopic === "string" ? rawTopic.trim() : undefined;
-
-  if (rawTopic !== undefined && (!topic || topic.length === 0)) {
-    return null;
-  }
-
-  if (rawPage === undefined) {
-    return {
-      topic,
-      page: 1,
-    };
-  }
-
-  const normalizedPage = rawPage.trim();
-
-  if (!positiveIntegerPattern.test(normalizedPage)) {
-    return null;
-  }
-
-  return {
-    topic,
-    page: Number(normalizedPage),
-  };
-}
-
 export function getArticlePaginationTokens(
   currentPage: number,
   totalPages: number
@@ -562,40 +514,73 @@ export function extractArticleTableOfContents(body: ArticleBodyNode[]) {
     .filter((item): item is ArticleTableOfContentsItem => item !== null);
 }
 
-export const getArticleTopics = cache(async () => {
+export async function getArticleTopics({ signal }: ArticleFetchOptions = {}) {
   const config = getCacheConfig("articles");
-  return cachedSanityFetch<ArticleTopic[]>(ARTICLE_TOPICS_QUERY, {}, config);
-});
+  const fetchOptions = signal ? { ...config, signal } : config
+
+  return cachedSanityFetch<ArticleTopic[]>(ARTICLE_TOPICS_QUERY, {}, fetchOptions);
+}
 
 export const getArchiveArticles = cache(async () => {
   const config = getScheduledArticleCacheConfig("articles");
   return cachedSanityFetch<ArticleCard[]>(ARTICLE_ARCHIVE_QUERY, {}, config);
 });
 
-export const getPaginatedArchiveArticles = cache(
-  async (
-    topic: string | null,
-    page: number,
-    pageSize = BLOG_ARCHIVE_PAGE_SIZE
-  ): Promise<PaginatedArticleArchive> => {
-    const config = getScheduledArticleCacheConfig("articles");
-    const start = (page - 1) * pageSize;
-    const end = start + pageSize;
-
-    const [articles, totalCount] = await Promise.all([
-      cachedSanityFetch<ArticleCard[]>(ARTICLE_ARCHIVE_PAGE_QUERY, { topic, start, end }, config),
-      cachedSanityFetch<number>(ARTICLE_ARCHIVE_COUNT_QUERY, { topic }, config),
-    ]);
-
-    return {
-      articles,
-      totalCount,
-      totalPages: Math.ceil(totalCount / pageSize),
-      currentPage: page,
-      pageSize,
-    };
+export async function getPaginatedArchiveArticles(
+  topic: string | null,
+  page: number,
+  pageSize = BLOG_ARCHIVE_PAGE_SIZE,
+  { signal }: ArticleFetchOptions = {}
+): Promise<PaginatedArticleArchive> {
+  if (
+    Number.isSafeInteger(page) === false ||
+    page < 1 ||
+    Number.isSafeInteger(pageSize) === false ||
+    pageSize < 1
+  ) {
+    throw new RangeError('Blog archive pagination must use positive safe integers')
   }
-);
+
+  const config = getScheduledArticleCacheConfig("articles");
+  const fetchOptions = signal ? { ...config, signal } : config
+  const totalCount = await cachedSanityFetch<number>(
+    ARTICLE_ARCHIVE_COUNT_QUERY,
+    { topic },
+    fetchOptions
+  );
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  if (isBlogArchivePageOutOfRange(page, totalPages) || totalCount === 0) {
+    return {
+      articles: [],
+      totalCount,
+      totalPages,
+      currentPage: page,
+      pageSize
+    }
+  }
+
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize;
+
+  if (Number.isSafeInteger(start) === false || Number.isSafeInteger(end) === false) {
+    throw new RangeError('Blog archive pagination offset exceeds the safe integer range')
+  }
+
+  const articles = await cachedSanityFetch<ArticleCard[]>(
+    ARTICLE_ARCHIVE_PAGE_QUERY,
+    { topic, start, end },
+    fetchOptions
+  );
+
+  return {
+    articles,
+    totalCount,
+    totalPages,
+    currentPage: page,
+    pageSize
+  };
+}
 
 export const getArticleBySlug = cache(async (slug: string) => {
   const config = getScheduledArticleCacheConfig("article");

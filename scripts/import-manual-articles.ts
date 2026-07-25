@@ -505,7 +505,7 @@ function createSeasonalDraft(config: SeasonalDraftConfig): SeedArticleDraft {
     sections: [
       ...config.sections,
       {
-        heading: 'My rule for seasonal orders',
+        heading: 'Our rule for seasonal orders',
         paragraphs: [
           config.closingRule
         ]
@@ -524,40 +524,40 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Ukrainian cakes: what makes them different and which one to order first',
     slug: 'ukrainian-cakes-guide',
     summary: 'A plain-English guide to the Ukrainian cakes customers ask for most often, from Medovik to Kyiv cake, with honest advice on where to start.',
-    dek: 'If you are curious about Ukrainian cakes but do not want a history lecture, start here. I explain how Medovik, Napoleon, Kyiv cake, and Korovai differ in flavour, texture, and occasion so you can order the right one first time.',
+    dek: 'If you are curious about Ukrainian cakes but do not want a history lecture, start here. We explain how Medovik, Napoleon, Kyiv cake, and Korovai differ in flavour, texture, and occasion so you can order the right one first time.',
     topicSlug: 'ukrainian-cake-guides',
     imageProductSlug: 'honey-cake-medovik',
     relatedProductSlugs: ['honey-cake-medovik', 'napoleon-cake', 'kyiv-cake', 'ukrainian-wedding-bread-korovai'],
     intro: [
       'When people search for Ukrainian cakes, they are usually not asking for a museum answer. They want to know what these cakes actually taste like, which one feels right for a birthday or gift, and whether they will suit British tastes as well as Ukrainian ones.',
-      'I keep the answer simple. Ukrainian cakes tend to lean on texture, layered fillings, and a more deliberate flavour balance. They are memorable because they feel distinct, not because they are overloaded with sugar.'
+      'We keep the answer simple. Ukrainian cakes tend to lean on texture, layered fillings, and a more deliberate flavour balance. They are memorable because they feel distinct, not because they are overloaded with sugar.'
     ],
     sections: [
       {
         heading: 'What makes Ukrainian cakes feel different',
         paragraphs: [
           'The biggest difference is structure. Medovik gives you many soft honey layers, Napoleon gives you thin flaky pastry with cream between each sheet, and Kyiv cake is built around airy nut meringue with cream. They do not eat like one standard sponge in three colours.',
-          'I also find that people notice the sweetness differently. A good Ukrainian cake still feels indulgent, but the best versions rely on contrast, not just sugar.'
+          'We also find that people notice the sweetness differently. A good Ukrainian cake still feels indulgent, but the best versions rely on contrast, not just sugar.'
         ]
       },
       {
         heading: 'For a calm first choice, start with Medovik',
         paragraphs: [
-          'Honey Cake Medovik is the one I recommend when someone says they want to try a Ukrainian cake but would rather not start with anything too heavy. The layers are soft, the honey is present without shouting, and the condensed milk cream rounds everything together.',
+          'Honey Cake Medovik is the one we recommend when someone says they want to try a Ukrainian cake but would rather not start with anything too heavy. The layers are soft, the honey is present without shouting, and the condensed milk cream rounds everything together.',
           'It is also the easiest bridge for customers who normally order celebration sponge cakes but want something with more character.'
         ]
       },
       {
         heading: 'Napoleon and Kyiv cake suit different moods',
         paragraphs: [
-          'Napoleon cake is for people who care about texture. The seven thin puff pastry layers and diplomat-style cream give it that delicate crackle and softness together. I often suggest it when someone wants something elegant rather than dramatic.',
-          'Kyiv cake is the one I bring up when a customer wants contrast. It has airy meringue, cashew nuts, custard cream, buttercream, and a thin chocolate cream layer, so the bite is richer and more playful.'
+          'Napoleon cake is for people who care about texture. The seven thin puff pastry layers and diplomat-style cream give it that delicate crackle and softness together. We often suggest it when someone wants something elegant rather than dramatic.',
+          'Kyiv cake is the one we bring up when a customer wants contrast. It has airy meringue, cashew nuts, custard cream, buttercream, and a thin chocolate cream layer, so the bite is richer and more playful.'
         ]
       },
       {
         heading: 'Where Korovai belongs',
         paragraphs: [
-          'Korovai is not an everyday dessert choice in the same way. Ukrainian wedding bread has a ceremonial role, and I treat it with that respect. It belongs around weddings and family symbolism more than casual cake browsing.',
+          'Korovai is not an everyday dessert choice in the same way. Ukrainian wedding bread has a ceremonial role, and we treat it with that respect. It belongs around weddings and family symbolism more than casual cake browsing.',
           'For a first cake to eat and compare, choose Medovik, Napoleon, or Kyiv cake. For meaning on a wedding table, Korovai deserves its own place.'
         ]
       }
@@ -580,7 +580,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Napoleon cake: what it tastes like, how it compares, and when to order it',
     slug: 'napoleon-cake-guide',
     summary: 'A practical guide to Napoleon cake for first-time buyers who want to understand the flavour, texture, and when it is the right choice.',
-    dek: 'Napoleon cake is often described too vaguely. I explain what the pastry actually feels like, why the cream matters, and when I would recommend Napoleon over Medovik or Kyiv cake.',
+    dek: 'Napoleon cake is often described too vaguely. We explain what the pastry actually feels like, why the cream matters, and when we would recommend Napoleon over Medovik or Kyiv cake.',
     topicSlug: 'ukrainian-cake-guides',
     primaryProductSlug: 'napoleon-cake',
     relatedProductSlugs: ['honey-cake-medovik', 'kyiv-cake', 'fruit-cake-svit-berry-or-light-berry-cake-with-cream'],
@@ -592,7 +592,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
       {
         heading: 'What Napoleon cake actually tastes like',
         paragraphs: [
-          'The version I make uses seven thin flaky puff pastry layers with a diplomat-style cream, so the bite moves between slight crackle and soft cream rather than one even texture.',
+          'The version we make uses seven thin flaky puff pastry layers with a diplomat-style cream, so the bite moves between slight crackle and soft cream rather than one even texture.',
           'Napoleon feels elegant on the plate because it has detail. You notice layers, not just sweetness.'
         ]
       },
@@ -604,9 +604,9 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         ]
       },
       {
-        heading: 'When I recommend Napoleon',
+        heading: 'When we recommend Napoleon',
         paragraphs: [
-          'I suggest Napoleon for smaller celebrations, thoughtful dinners, and customers who say they want a cake that looks calm when sliced. The layers do a lot of the work visually without needing heavy decoration.',
+          'We suggest Napoleon for smaller celebrations, thoughtful dinners, and customers who say they want a cake that looks calm when sliced. The layers do a lot of the work visually without needing heavy decoration.',
           'It is also a strong choice when someone wants a conversation piece for people who have not tried Ukrainian cakes before.'
         ]
       },
@@ -615,14 +615,14 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         numbers: [
           'Ask how large the cake needs to be for the way you will serve it.',
           'Decide whether you want a classic finish or a more decorative celebration brief.',
-          'If delivery matters, tell me the route and timing early so I can advise honestly.'
+          'If delivery matters, tell us the route and timing early so we can advise honestly.'
         ]
       }
     ],
     faqItems: createFaqItems([
       ['Is Napoleon cake the same as mille-feuille?', 'They are related in structure, but the celebration version people order as a whole cake feels fuller and softer than a plated pastry.'],
       ['Is Napoleon cake very sweet?', 'Not if the cream is balanced properly. The pastry and cream should work together rather than feel sugary for the sake of it.'],
-      ['When is Napoleon better than Medovik?', 'I would choose Napoleon when you want flaky pastry texture and a neater, more elegant slice.']
+      ['When is Napoleon better than Medovik?', 'We would choose Napoleon when you want flaky pastry texture and a neater, more elegant slice.']
     ]),
     seo: {
       metaTitle: 'Napoleon cake guide | taste, texture and when to order',
@@ -643,28 +643,28 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     relatedProductSlugs: ['honey-cake-by-post', 'cake-by-post', 'napoleon-cake', 'kyiv-cake'],
     intro: [
       'When someone types honey cake near me or Medovik near me, they are usually already half-decided. The real hesitation is about flavour, sweetness, and whether the cake will suit the occasion once it arrives.',
-      'My answer is that Medovik is one of the easiest Ukrainian cakes to enjoy first time because it is layered, fragrant, and generous without feeling clumsy.'
+      'Our answer is that Medovik is one of the easiest Ukrainian cakes to enjoy first time because it is layered, fragrant, and generous without feeling clumsy.'
     ],
     sections: [
       {
         heading: 'What Medovik tastes like in real life',
         paragraphs: [
-          'The flavour is led by honey rather than by a synthetic sweetness. In my Medovik, five light sponge layers are filled with condensed milk cream, so the cake feels soft, settled, and comforting rather than flashy.',
+          'The flavour is led by honey rather than by a synthetic sweetness. In our Medovik, five light sponge layers are filled with condensed milk cream, so the cake feels soft, settled, and comforting rather than flashy.',
           'That balance matters. If honey cake is made badly, it can taste flat. When it is made properly, it tastes round and warm.'
         ]
       },
       {
         heading: 'Who usually likes it most',
         paragraphs: [
-          'I recommend Medovik to customers who want a celebration cake that feels special without becoming too rich too quickly. It works well for birthdays, family lunches, and gifts where you want something recognisable but not ordinary.',
+          'We recommend Medovik to customers who want a celebration cake that feels special without becoming too rich too quickly. It works well for birthdays, family lunches, and gifts where you want something recognisable but not ordinary.',
           'It also suits people who say they want less sweetness than a typical supermarket-style sponge.'
         ]
       },
       {
         heading: 'Local delivery and by-post are different questions',
         paragraphs: [
-          'A full Medovik for local delivery is not the same thing as a postal gift. I keep separate formats in mind for that reason. A local cake can prioritise generous slicing and presentation, while Honey Cake by Post is packed specifically for travel.',
-          'Those are two different jobs, and I keep them separate instead of pretending one format covers every situation well.'
+          'A full Medovik for local delivery is not the same thing as a postal gift. We keep separate formats in mind for that reason. A local cake can prioritise generous slicing and presentation, while Honey Cake by Post is packed specifically for travel.',
+          'Those are two different jobs, and we keep them separate instead of pretending one format covers every situation well.'
         ]
       },
       {
@@ -693,7 +693,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Kyiv cake: what makes it different and when it is the right choice',
     slug: 'kyiv-cake-guide',
     summary: 'A clear guide to Kyiv cake for customers who want to know what makes it different, how rich it feels, and when it is worth ordering.',
-    dek: 'Kyiv cake stands out for texture more than size. I explain the meringue, cashew nuts, creams, and chocolate notes so you can tell whether it suits your table better than Napoleon cake or Medovik.',
+    dek: 'Kyiv cake stands out for texture more than size. We explain the meringue, cashew nuts, creams, and chocolate notes so you can tell whether it suits your table better than Napoleon cake or Medovik.',
     topicSlug: 'ukrainian-cake-guides',
     primaryProductSlug: 'kyiv-cake',
     relatedProductSlugs: ['napoleon-cake', 'honey-cake-medovik', 'ukrainian-wedding-bread-korovai'],
@@ -710,16 +710,16 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         ]
       },
       {
-        heading: 'When I suggest Kyiv cake over other options',
+        heading: 'When we suggest Kyiv cake over other options',
         paragraphs: [
-          'I bring it up when customers want a stronger flavour contrast than Medovik and something more playful than Napoleon. It works especially well when the table has people who enjoy nutty, creamy desserts rather than plain sponge.',
-          'I would not push it on someone asking for the least rich option. That would be the wrong fit.'
+          'We bring it up when customers want a stronger flavour contrast than Medovik and something more playful than Napoleon. It works especially well when the table has people who enjoy nutty, creamy desserts rather than plain sponge.',
+          'We would not push it on someone asking for the least rich option. That would be the wrong fit.'
         ]
       },
       {
         heading: 'What to know before buying Kyiv cake',
         paragraphs: [
-          'Because Kyiv cake includes cashew nuts, I say that clearly at the start rather than letting anyone assume it can be adapted into a nut-free option.',
+          'Because Kyiv cake includes cashew nuts, we say that clearly at the start rather than letting anyone assume it can be adapted into a nut-free option.',
           'It also helps to think about the audience. A family that loves layered desserts and texture will remember it. A crowd expecting standard sponge may need more explanation.'
         ]
       },
@@ -733,7 +733,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     ],
     faqItems: createFaqItems([
       ['What is Kyiv cake made of?', 'The core elements are airy meringue, cashew nuts, custard cream, buttercream, and a thin chocolate cream layer.'],
-      ['Is Kyiv cake suitable for nut allergies?', 'No. It includes cashew nuts, so I would not describe it as suitable for anyone avoiding nuts.'],
+      ['Is Kyiv cake suitable for nut allergies?', 'No. It includes cashew nuts, so we would not describe it as suitable for anyone avoiding nuts.'],
       ['When is Kyiv cake the right choice?', 'Choose it when you want a richer, more textured Ukrainian cake with a clear identity.']
     ]),
     seo: {
@@ -753,42 +753,42 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     imageProductSlug: 'vanilla-delicia-birthday-cake',
     relatedProductSlugs: ['vanilla-delicia-birthday-cake', 'honey-cake-medovik', 'napoleon-cake', 'fruit-cake-svit-berry-or-light-berry-cake-with-cream'],
     intro: [
-      'Cake delivery in Leeds is the easiest work for me to judge honestly because I know how these orders behave once they leave the bakery.',
+      'Cake delivery in Leeds is the easiest work for us to judge honestly because we know how these orders behave once they leave the bakery.',
       'Some Leeds deliveries are wonderfully straightforward. Others only look easy until the customer asks for a tall finish, a narrow time slot, and a long venue setup all in the same sentence.'
     ],
     sections: [
       {
         heading: 'What changes when the address is in Leeds',
         paragraphs: [
-          'A Leeds run gives me more freedom than a longer journey, so I can support slightly more decorative briefs here than I would for York or Huddersfield. Even so, I still want the cake to open well, slice cleanly, and look settled rather than tense.',
+          'A Leeds run gives us more freedom than a longer journey, so we can support slightly more decorative briefs here than we would for York or Huddersfield. Even so, we still want the cake to open well, slice cleanly, and look settled rather than tense.',
           'That is most obvious on birthdays where the box is opened in front of people. Nobody enjoys a design that looked ambitious in theory and tired in practice.'
         ]
       },
       {
-        heading: 'The Leeds orders I ask people to book early',
+        heading: 'The Leeds orders we ask people to book early',
         paragraphs: [
           'Friday and Saturday celebration cakes move first, especially when there is a venue involved or the finish is more custom than standard.',
           'Very exact arrival times need sorting early instead of being improvised the day before.'
         ]
       },
       {
-        heading: 'What I tend to suggest most often',
+        heading: 'What we tend to suggest most often',
         paragraphs: [
-          'Vanilla Delicia is useful when the customer wants design flexibility. Medovik is the quiet recommendation when someone wants flavour and elegance without a heavy finish. Napoleon is my pick when the person ordering cares about how the slice will look on a plate.',
+          'Vanilla Delicia is useful when the customer wants design flexibility. Medovik is the quiet recommendation when someone wants flavour and elegance without a heavy finish. Napoleon is our pick when the person ordering cares about how the slice will look on a plate.',
           'Those three solve very different Leeds orders, which is why "birthday cake" is too broad a label on its own.'
         ]
       },
       {
         heading: 'The details that save the order',
         bullets: [
-          'Tell me whether the cake will be cut as dessert or as smaller party slices.',
+          'Tell us whether the cake will be cut as dessert or as smaller party slices.',
           'Say whether delivery is to a home, workplace, or venue.',
           'Mention allergen requirements before we talk about decoration.'
         ]
       }
     ],
     faqItems: createFaqItems([
-      ['Can I order a cake in Leeds at short notice?', 'Sometimes, but it depends on the week and on how simple the brief is. If I cannot do it properly, I say so early.'],
+      ['Can I order a cake in Leeds at short notice?', 'Sometimes, but it depends on the week and on how simple the brief is. If we cannot do it properly, we say so early.'],
       ['Which cakes travel best across Leeds?', 'Cakes with stable structure and balanced decoration usually travel best. Medovik, Napoleon, and neatly finished celebration cakes are strong options.'],
       ['Is collection ever better than delivery?', 'Yes. If timing is tight or you want more flexibility, collection can be the cleaner option.']
     ]),
@@ -811,14 +811,14 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     relatedProductSlugs: [],
     intro: [
       'Nut free cakes in Leeds deserve straight answers. Customers managing allergies need precision, not warm wording that blurs the risk.',
-      'So I separate three things every time: whether nuts are in the recipe, whether nuts are used elsewhere in the kitchen, and whether the final decoration changes the risk.'
+      'So we separate three things every time: whether nuts are in the recipe, whether nuts are used elsewhere in the kitchen, and whether the final decoration changes the risk.'
     ],
     sections: [
       {
         heading: 'Start with the recipe, then ask about the kitchen',
         paragraphs: [
           'A cake can be nut-free in recipe terms and still sit in a bakery where other nut-containing products exist. Those are not the same statement.',
-          'So I tell customers to ask both questions clearly before they decide.'
+          'So we tell customers to ask both questions clearly before they decide.'
         ]
       },
       {
@@ -832,11 +832,11 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'Decoration can change the answer',
         paragraphs: [
           'A plain celebration cake and a heavily customised cake are not identical from an allergen-management point of view. Decorations, toppers, fillings, and shared tools all matter.',
-          'I ask for the allergen requirement before we spend time on colours and styling.'
+          'We ask for the allergen requirement before we spend time on colours and styling.'
         ]
       },
       {
-        heading: 'What I want customers to say up front',
+        heading: 'What we want customers to say up front',
         bullets: [
           'Is this a preference, an intolerance, or a diagnosed nut allergy?',
           'Do you need the full order, including decoration, handled to the same standard?',
@@ -865,26 +865,26 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Best cakes you can send by post in the UK',
     slug: 'best-cakes-you-can-send-by-post-uk',
     summary: 'A practical look at which cakes make sense by post, which ones do not, and why format matters more than marketing language.',
-    dek: 'The best cakes you can send by post are not always the most decorated ones. I explain where standard honey cake by post, honey cake slices in gift hampers, and caramel biscuits make sense, and when a whole cake needs local delivery or UK delivery by agreement.',
+    dek: 'The best cakes you can send by post are not always the most decorated ones. We explain where standard honey cake by post, honey cake slices in gift hampers, and caramel biscuits make sense, and when a whole cake needs local delivery or UK delivery by agreement.',
     topicSlug: 'cake-by-post',
     primaryProductSlug: 'cake-by-post',
     relatedProductSlugs: ['honey-cake-by-post', 'birthday-gift-by-post', 'happy-birthday-cake-card', 'xmas-gift-boxes-cake-with-card'],
     intro: [
       'Cake by post only works well when the cake has been designed for the post. That sounds obvious, but a lot of customers still assume any pretty cake can simply be boxed and sent.',
-      'I separate postal formats from local celebration cakes because they solve different problems. Selling a risky idea helps nobody.'
+      'We separate postal formats from local celebration cakes because they solve different problems. Selling a risky idea helps nobody.'
     ],
     sections: [
       {
         heading: 'What travels best',
         paragraphs: [
           'Smaller portions, flatter formats, and products packed specifically for delivery usually travel best. Standard honey cake by post, honey cake slices inside gift hampers, and caramel biscuits all make sense because they are built around transport rather than around a tall display moment.',
-          'That is different from a larger celebration cake, which usually needs local delivery or collection unless I have agreed a wider UK delivery plan in advance.'
+          'That is different from a larger celebration cake, which usually needs local delivery or collection unless we have agreed a wider UK delivery plan in advance.'
         ]
       },
       {
         heading: 'Why honey cake works so well by post',
         paragraphs: [
-          'Honey cake holds its character well once the format is chosen properly. That is why I trust standard honey cake by post and honey cake slices in compact gifts more than I trust a random whole cake packed at the last minute.',
+          'Honey cake holds its character well once the format is chosen properly. That is why we trust standard honey cake by post and honey cake slices in compact gifts more than we trust a random whole cake packed at the last minute.',
           'The flavour also helps. A honey-led cake still feels thoughtful when it arrives as a vacuum-packed postal parcel or as slices inside a hamper.'
         ]
       },
@@ -892,11 +892,11 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'When a full cake is the wrong postal choice',
         paragraphs: [
           'If the point of the cake is a highly detailed finish, a venue reveal, or a precise celebration setup, the conversation usually needs to move back to local delivery or collection instead.',
-          'If someone still needs a whole cake to travel further across the UK, I treat that as delivery by agreement, not as standard cake-by-post fulfilment.'
+          'If someone still needs a whole cake to travel further across the UK, we treat that as delivery by agreement, not as standard cake-by-post fulfilment.'
         ]
       },
       {
-        heading: 'My rule for choosing the format',
+        heading: 'Our rule for choosing the format',
         bullets: [
           'Choose a cake card, slice gift, or hamper when the gift is personal and easy handover matters.',
           'Choose standard honey cake by post or caramel biscuits when you need a straightforward postal parcel.',
@@ -922,12 +922,12 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Cake by post in the UK: a complete guide to choosing the right format',
     slug: 'cake-by-post-uk-complete-guide',
     summary: 'A fuller guide to postal cake orders in the UK, from choosing the right format to avoiding the mistakes that make delivery feel risky.',
-    dek: 'When people ask about cake by post in the UK, I usually have to sort four different things: standard honey cake by post, slices in a gift hamper, caramel biscuits, and the point where a whole cake is better handled by local delivery or UK delivery by agreement.',
+    dek: 'When people ask about cake by post in the UK, we usually have to sort four different things: standard honey cake by post, slices in a gift hamper, caramel biscuits, and the point where a whole cake is better handled by local delivery or UK delivery by agreement.',
     topicSlug: 'cake-by-post',
     primaryProductSlug: 'cake-by-post',
     relatedProductSlugs: ['honey-cake-by-post', 'birthday-gift-by-post', 'wedding-anniversary-gift-or-personalised-honey-cake'],
     intro: [
-      'Cake by post can be brilliant, but only when the format matches the purpose. I see the trouble start when customers think in terms of one keyword and not in terms of the actual handover.',
+      'Cake by post can be brilliant, but only when the format matches the purpose. We see the trouble start when customers think in terms of one keyword and not in terms of the actual handover.',
       'The better question is simple: what does the recipient need this parcel to do when it lands at the door?'
     ],
     sections: [
@@ -936,7 +936,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         paragraphs: [
           'If the parcel needs to slide easily into someone\'s week, a compact cake card, hamper-style slice gift, or caramel biscuit parcel is often stronger than anything bigger.',
           'If it needs to feel more substantial, standard honey cake by post is the next step before you start discussing a whole celebration cake.',
-          'I start there before I get pulled into anything else.'
+          'We start there before we get pulled into anything else.'
         ]
       },
       {
@@ -949,12 +949,12 @@ const seedArticleDrafts: SeedArticleDraft[] = [
       {
         heading: 'Where people make the wrong assumption',
         paragraphs: [
-          'The mistake is assuming that because a cake looks lovely on a page, it should automatically be posted. I keep display cakes and posted gifts separate for that reason, and sometimes I send people straight back to local delivery instead.',
+          'The mistake is assuming that because a cake looks lovely on a page, it should automatically be posted. We keep display cakes and posted gifts separate for that reason, and sometimes we send people straight back to local delivery instead.',
           'If they still need the cake to travel further across the UK, we can discuss delivery by agreement, but that is a different logistics decision from standard postal fulfilment.'
         ]
       },
       {
-        heading: 'My practical shortlist',
+        heading: 'Our practical shortlist',
         bullets: [
           'Choose a cake card, slice gift, or hamper when easy receiving matters most.',
           'Choose standard honey cake by post when you want a proper postal cake format rather than just a token bite.',
@@ -965,7 +965,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     faqItems: createFaqItems([
       ['What does cake by post mean in practice?', 'It means a proper postal format such as standard honey cake by post, cake slices in a compact gift, or caramel biscuits packed specifically for delivery, not simply a local cake put in a box.'],
       ['What is the easiest postal cake format to receive?', 'Usually a smaller, well-packed gift such as a cake card, a slice gift, or a hamper with honey cake slices.'],
-      ['When should I avoid cake by post?', 'Avoid it when the cake needs to act as a large visual centrepiece or when a precise setup matters more than convenience. In those cases I would steer you towards local delivery, collection, or UK delivery by agreement.']
+      ['When should I avoid cake by post?', 'Avoid it when the cake needs to act as a large visual centrepiece or when a precise setup matters more than convenience. In those cases we would steer you towards local delivery, collection, or UK delivery by agreement.']
     ]),
     seo: {
       metaTitle: 'Cake by post UK guide | how to choose the right format',
@@ -986,7 +986,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     relatedProductSlugs: ['happy-birthday-cake-card', '50th-birthday-cake-slice-card', 'xmas-gift-boxes-cake-with-card', 'cake-by-post'],
     intro: [
       'Gift cakes by post work best when the size of the gesture matches the relationship. It sounds emotional, but it usually comes down to a practical buying decision.',
-      'I would not send the same format to a close family birthday, a colleague, and a customer thank-you. The cake should fit the message.'
+      'We would not send the same format to a close family birthday, a colleague, and a customer thank-you. The cake should fit the message.'
     ],
     sections: [
       {
@@ -1000,18 +1000,18 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'When to move up to a fuller gift box',
         paragraphs: [
           'Birthday Gift by Post makes more sense when you want a proper gift rather than a light touch. It still posts well, but it feels more generous when it arrives.',
-          'I use that format when the occasion deserves a clearer statement.'
+          'We use that format when the occasion deserves a clearer statement.'
         ]
       },
       {
         heading: 'When standard honey cake by post is the better step',
         paragraphs: [
           'Standard honey cake by post is best when the cake itself is the present, not just the message around it. It suits a recipient who will genuinely sit down and enjoy a proper postal cake rather than just open the parcel and smile at the idea.',
-          'If the brief really needs a bigger whole cake, I would move the conversation towards local delivery, collection, or UK delivery by agreement.'
+          'If the brief really needs a bigger whole cake, we would move the conversation towards local delivery, collection, or UK delivery by agreement.'
         ]
       },
       {
-        heading: 'How I decide for customers',
+        heading: 'How we decide for customers',
         bullets: [
           'Cake card: small, personal, and easy to send.',
           'Slice gift box: stronger birthday or anniversary gesture without becoming oversized.',
@@ -1063,12 +1063,12 @@ const seedArticleDrafts: SeedArticleDraft[] = [
       {
         heading: 'They keep the product honest',
         paragraphs: [
-          'A smaller format forces a bakery to think properly about packing, slicing, and what the customer sees when the parcel opens. I actually like that discipline.',
+          'A smaller format forces a bakery to think properly about packing, slicing, and what the customer sees when the parcel opens. We actually like that discipline.',
           'It separates a thought-through product from a decorative promise.'
         ]
       },
       {
-        heading: 'My practical view',
+        heading: 'Our practical view',
         bullets: [
           'Use a cake card for the lightest gesture.',
           'Use a slice gift when you want more substance.',
@@ -1094,7 +1094,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Birthday gifts by post that feel personal without sending a whole cake',
     slug: 'birthday-gifts-by-post',
     summary: 'A practical guide to choosing birthday cake gifts by post when you want them to feel personal, generous, and easy to receive.',
-    dek: 'Birthday gifts by post work best when the parcel feels intentional rather than oversized. I explain when I would send a personalised honey cake gift, when a cake card is enough, when standard honey cake by post makes sense, and when a bigger cake should move to local delivery or UK delivery by agreement.',
+    dek: 'Birthday gifts by post work best when the parcel feels intentional rather than oversized. We explain when we would send a personalised honey cake gift, when a cake card is enough, when standard honey cake by post makes sense, and when a bigger cake should move to local delivery or UK delivery by agreement.',
     topicSlug: 'gift-ideas',
     primaryProductSlug: 'birthday-gift-by-post',
     relatedProductSlugs: ['happy-birthday-cake-card', '50th-birthday-cake-slice-card', 'cake-by-post', 'wedding-anniversary-gift-or-personalised-honey-cake'],
@@ -1107,27 +1107,27 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'When a personalised honey cake gift is the right size',
         paragraphs: [
           'Birthday Gift by Post works well because it has enough presence to feel generous while still arriving as a tidy, manageable parcel.',
-          'It is the format I suggest when the cake should feel like a real present rather than a novelty extra.'
+          'It is the format we suggest when the cake should feel like a real present rather than a novelty extra.'
         ]
       },
       {
         heading: 'When a cake card is better',
         paragraphs: [
           'Sometimes the sweeter decision is the smaller one. A Happy Birthday Cake Card or 50th Birthday Cake Slice Card can land perfectly when you want a smile, not a full event.',
-          'I use those when simplicity helps more than size.'
+          'We use those when simplicity helps more than size.'
         ]
       },
       {
         heading: 'When to move up to standard honey cake by post',
         paragraphs: [
           'If the recipient genuinely loves cake and will share it or make a moment of it, standard honey cake by post becomes more attractive. That is when the cake is the gift, not just the message carrier.',
-          'If the brief needs a larger decorated cake, I would treat that as local delivery, collection, or UK delivery by agreement instead.'
+          'If the brief needs a larger decorated cake, we would treat that as local delivery, collection, or UK delivery by agreement instead.'
         ]
       },
       {
-        heading: 'My birthday-gift rule',
+        heading: 'Our birthday-gift rule',
         paragraphs: [
-          'I ask myself one question: should this parcel feel light and thoughtful, or substantial and celebratory? Once that is clear, the right product is usually obvious.'
+          'We ask myself one question: should this parcel feel light and thoughtful, or substantial and celebratory? Once that is clear, the right product is usually obvious.'
         ]
       }
     ],
@@ -1149,7 +1149,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Cake cards and cake slice gifts: when a smaller postal gift makes more sense',
     slug: 'cake-cards-and-cake-slice-gifts',
     summary: 'An honest guide to cake cards and cake slice gifts for buyers who want something personal, neat, and well judged.',
-    dek: 'Cake cards and slice gifts are often more useful than a larger parcel. I explain when that smaller format feels smarter, who it suits, and why compact gifting should not be treated as a lesser option.',
+    dek: 'Cake cards and slice gifts are often more useful than a larger parcel. We explain when that smaller format feels smarter, who it suits, and why compact gifting should not be treated as a lesser option.',
     topicSlug: 'gift-ideas',
     primaryProductSlug: 'happy-birthday-cake-card',
     relatedProductSlugs: ['50th-birthday-cake-slice-card', 'birthday-gift-by-post', 'wedding-anniversary-gift-or-personalised-honey-cake', 'valentine-s-day-honey-cake-slice'],
@@ -1169,7 +1169,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'What makes a strong cake slice gift',
         paragraphs: [
           'The product needs to be tidy, stable, and genuinely good to eat. Two slices of handmade honey cake in a neat presentation can do more than a bigger gift that feels clumsy.',
-          'So I keep coming back to slice-based gifting.'
+          'So we keep coming back to slice-based gifting.'
         ]
       },
       {
@@ -1180,7 +1180,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         ]
       },
       {
-        heading: 'The compact options I trust most',
+        heading: 'The compact options we trust most',
         bullets: [
           'Happy Birthday Cake Card for a clean, cheerful birthday gesture.',
           '50th Birthday Cake Slice Card for a milestone with a little more presence.',
@@ -1206,24 +1206,24 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Wedding cake flavours for couples who want something personal, not too sweet, and actually memorable',
     slug: 'wedding-cake-flavours-guide',
     summary: 'A flavour-first wedding cake guide for couples who want the cake to be remembered for taste as well as appearance.',
-    dek: 'Wedding cake flavour should not be an afterthought. I explain how I help couples choose between softer, richer, and more textured options so the cake suits the day and not just the photos.',
+    dek: 'Wedding cake flavour should not be an afterthought. We explain how we help couples choose between softer, richer, and more textured options so the cake suits the day and not just the photos.',
     topicSlug: 'custom-cakes',
     primaryProductSlug: 'ukrainian-wedding-bread-korovai',
     relatedProductSlugs: ['honey-cake-medovik', 'napoleon-cake', 'kyiv-cake'],
     intro: [
       'Wedding cake flavour decisions go wrong when couples choose only by appearance. The cake still has to be eaten, and people remember that part.',
-      'I always bring the conversation back to balance, portion style, and the mood of the wedding rather than just the finish on the outside.'
+      'We always bring the conversation back to balance, portion style, and the mood of the wedding rather than just the finish on the outside.'
     ],
     sections: [
       {
         heading: 'Start with the way the cake will be served',
         paragraphs: [
           'A formal plated dessert asks for something different from relaxed party slices in the evening. The same flavour can land very differently depending on how guests meet it.',
-          'I never start with colours. I start with service, because that decision changes the flavour choice as well.'
+          'We never start with colours. We start with service, because that decision changes the flavour choice as well.'
         ]
       },
       {
-        heading: 'The flavour routes I return to most often',
+        heading: 'The flavour routes we return to most often',
         paragraphs: [
           'Medovik is a strong wedding choice when a couple wants something distinctive but gentle. Napoleon works when they want elegance and refined texture. Kyiv cake suits couples who want a richer, more contrasting bite.',
           'There is no single right answer. The flavour has to match the feel of the day.'
@@ -1233,11 +1233,11 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'Where Korovai fits in',
         paragraphs: [
           'Korovai is different from a standard wedding cake flavour discussion because Ukrainian wedding bread carries symbolism as well as flavour. When a couple wants that tradition on the table, it changes the brief completely.',
-          'I treat it as a meaningful wedding element, not as a decorative extra.'
+          'We treat it as a meaningful wedding element, not as a decorative extra.'
         ]
       },
       {
-        heading: 'My strongest advice to couples',
+        heading: 'Our strongest advice to couples',
         paragraphs: [
           'Do not pick a wedding flavour only because it sounds safe. Choose the one that still feels like you when the first slice is cut. That is the moment guests remember.'
         ]
@@ -1259,20 +1259,20 @@ const seedArticleDrafts: SeedArticleDraft[] = [
   },
   createLocalDeliveryDraft({
     slug: 'cake-delivery-wakefield-guide',
-    title: 'Cake delivery in Wakefield: how I help customers choose a cake that still feels right on arrival',
+    title: 'Cake delivery in Wakefield: how we help customers choose a cake that still feels right on arrival',
     summary: 'A Wakefield cake delivery guide focused on sensible booking, stable cake choices, and avoiding decorative decisions that do not travel well.',
-    dek: 'Customers asking for cake delivery in Wakefield usually want reassurance. I think clarity is more useful: which cakes travel calmly, what to book early, and when a simpler finish gives you a better result.',
+    dek: 'Customers asking for cake delivery in Wakefield usually want reassurance. We think clarity is more useful: which cakes travel calmly, what to book early, and when a simpler finish gives you a better result.',
     imageProductSlug: 'fruit-cake-svit-berry-or-light-berry-cake-with-cream',
     relatedProductSlugs: ['fruit-cake-svit-berry-or-light-berry-cake-with-cream', 'honey-cake-medovik', 'napoleon-cake', 'vanilla-delicia-birthday-cake'],
     intro: [
       'Wakefield orders often come with a family feel. It might be a birthday at home, a garden gathering, or one of those celebrations where the cake is passed around quickly and judged by how happily people eat it, not by how long they stare at it.',
-      'That changes what I suggest. In Wakefield, I care a lot about ease of serving and how relaxed the cake still looks once the box is open.'
+      'That changes what we suggest. In Wakefield, we care a lot about ease of serving and how relaxed the cake still looks once the box is open.'
     ],
     sections: [
       {
         heading: 'Wakefield is often more about the table than the photograph',
         paragraphs: [
-          'A lot of Wakefield orders are meant to be enjoyed straight away by family and friends rather than unveiled at a venue under perfect lighting. Because of that, I often steer people towards cakes that cut generously and still look composed without delicate fuss.',
+          'A lot of Wakefield orders are meant to be enjoyed straight away by family and friends rather than unveiled at a venue under perfect lighting. Because of that, we often steer people towards cakes that cut generously and still look composed without delicate fuss.',
           'That usually means flavour-led choices and a finish that can cope with real handling instead of one dramatic detail that only works in the studio.'
         ]
       },
@@ -1280,18 +1280,18 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'Where Fruit, Medovik, and Napoleon each make sense',
         paragraphs: [
           'Fruit-led celebration cakes work well when the brief is cheerful and easy to serve. Medovik is often better when the customer wants something less obvious and less sugary than a standard birthday sponge. Napoleon comes in when the person ordering cares about texture and wants the slices to feel a little more elegant.',
-          'Those are three different moods, which is why decoration is not my starting point in Wakefield. I start with how the group is actually going to eat.'
+          'Those are three different moods, which is why decoration is not our starting point in Wakefield. We start with how the group is actually going to eat.'
         ]
       },
       {
-        heading: 'The Wakefield details I want settled early',
+        heading: 'The Wakefield details we want settled early',
         paragraphs: [
-          'If there is a venue handover, a short service window, or a taller custom design, I want that pinned down early.',
+          'If there is a venue handover, a short service window, or a taller custom design, we want that pinned down early.',
           'Wakefield can be flexible, but only until the timing and setup start pushing the cake into something more fragile than it needs to be.'
         ]
       },
       {
-        heading: 'What I ask before I price the order',
+        heading: 'What we ask before we price the order',
         numbers: [
           'How many people are likely to eat it?',
           'Will the cake be cut after a meal or as part of an open party table?',
@@ -1317,37 +1317,37 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     slug: 'cake-delivery-huddersfield-guide',
     title: 'Cake delivery in Huddersfield: choosing a cake that is worth the journey',
     summary: 'A practical Huddersfield cake delivery guide focused on flavour, travel, and realistic expectations for celebration orders.',
-    dek: 'Cake delivery in Huddersfield is easiest when the cake and the route are considered together. I explain which cakes I trust most for the journey and when I tell customers to simplify the brief.',
+    dek: 'Cake delivery in Huddersfield is easiest when the cake and the route are considered together. We explain which cakes we trust most for the journey and when we tell customers to simplify the brief.',
     imageProductSlug: 'napoleon-cake',
     relatedProductSlugs: ['napoleon-cake', 'honey-cake-medovik', 'vanilla-delicia-birthday-cake', 'fruit-cake-svit-berry-or-light-berry-cake-with-cream'],
     intro: [
       'Huddersfield is where weak briefs start to show themselves. The route is not extreme, but it is long enough to expose a cake that was designed for attention rather than for travel.',
-      'So I talk more bluntly about trade-offs on Huddersfield orders. The journey will tell the truth anyway.'
+      'So we talk more bluntly about trade-offs on Huddersfield orders. The journey will tell the truth anyway.'
     ],
     sections: [
       {
-        heading: 'The first thing I trim back for Huddersfield',
+        heading: 'The first thing we trim back for Huddersfield',
         paragraphs: [
-          'I question sharply finished celebration cakes much harder for Huddersfield than I would for a short Leeds handover. If the design depends on precision more than flavour, it usually needs simplifying.',
-          'That is not caution for its own sake. It is how I stop the customer paying for a look the journey may undo.'
+          'We question sharply finished celebration cakes much harder for Huddersfield than we would for a short Leeds handover. If the design depends on precision more than flavour, it usually needs simplifying.',
+          'That is not caution for its own sake. It is how we stop the customer paying for a look the journey may undo.'
         ]
       },
       {
         heading: 'Why Napoleon often leads the conversation here',
         paragraphs: [
-          'Napoleon is often my first Huddersfield suggestion because it already looks refined without needing a lot of extra decoration. Medovik also travels beautifully when layered flavour is the priority.',
-          'Vanilla Delicia still has a place when the customer wants a more classic celebration look, but I keep the finish sensible for the route.'
+          'Napoleon is often our first Huddersfield suggestion because it already looks refined without needing a lot of extra decoration. Medovik also travels beautifully when layered flavour is the priority.',
+          'Vanilla Delicia still has a place when the customer wants a more classic celebration look, but we keep the finish sensible for the route.'
         ]
       },
       {
-        heading: 'When I tell customers collection may be the cleaner answer',
+        heading: 'When we tell customers collection may be the cleaner answer',
         paragraphs: [
-          'If the event timing is narrow, the topper is custom, or the visual brief matters more than the eating side, I sometimes tell customers that collection may be the cleaner answer.',
-          'Huddersfield is not the route where I enjoy last-minute complexity.'
+          'If the event timing is narrow, the topper is custom, or the visual brief matters more than the eating side, we sometimes tell customers that collection may be the cleaner answer.',
+          'Huddersfield is not the route where we enjoy last-minute complexity.'
         ]
       },
       {
-        heading: 'The trade-offs to decide before I confirm it',
+        heading: 'The trade-offs to decide before we confirm it',
         bullets: [
           'Whether delivery is essential or collection would reduce stress.',
           'Whether the cake is expected to look polished or dramatic.',
@@ -1373,32 +1373,32 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     slug: 'cake-delivery-bradford-guide',
     title: 'Cake delivery in Bradford: how to order without choosing the wrong style of cake',
     summary: 'A Bradford delivery guide that helps customers choose a cake style that still works once it arrives, not just one that looks good in a photo.',
-    dek: 'If you need cake delivery in Bradford, choose the cake for the real handover, not just the Instagram idea. I explain what I recommend most often, what to book early, and where customers make the wrong assumptions.',
+    dek: 'If you need cake delivery in Bradford, choose the cake for the real handover, not just the Instagram idea. We explain what we recommend most often, what to book early, and where customers make the wrong assumptions.',
     imageProductSlug: 'honey-cake-medovik',
     relatedProductSlugs: ['honey-cake-medovik', 'vanilla-delicia-birthday-cake', 'napoleon-cake', 'kyiv-cake'],
     intro: [
-      'Bradford orders often come down to audience. I need to know whether the cake is for a mixed family table, a birthday crowd that wants something easy and cheerful, or a group that will genuinely notice a more unusual flavour.',
-      'Once I know that, Bradford becomes simpler. The wrong cake usually starts with the wrong assumption about who is actually going to eat it.'
+      'Bradford orders often come down to audience. We need to know whether the cake is for a mixed family table, a birthday crowd that wants something easy and cheerful, or a group that will genuinely notice a more unusual flavour.',
+      'Once we know that, Bradford becomes simpler. The wrong cake usually starts with the wrong assumption about who is actually going to eat it.'
     ],
     sections: [
       {
         heading: 'The main Bradford decision is flavour before finish',
         paragraphs: [
           'The first Bradford question is usually whether to go for something adaptable or something more distinctive. Those are not the same brief.',
-          'If the event is large and the cake will be cut quickly, I lean towards cakes that keep their character even when the serving gets a little less careful.'
+          'If the event is large and the cake will be cut quickly, we lean towards cakes that keep their character even when the serving gets a little less careful.'
         ]
       },
       {
         heading: 'Where Medovik, Vanilla Delicia, and Kyiv cake each belong',
         paragraphs: [
-          'Medovik suits Bradford orders where people want something balanced and a little different without frightening the room. Vanilla Delicia gives me room when the brief needs more visual customisation and a more familiar party feel.',
-          'Kyiv cake only belongs in the conversation when the group genuinely likes a richer, nut-led dessert. It is not a universal answer, and I treat it that way.'
+          'Medovik suits Bradford orders where people want something balanced and a little different without frightening the room. Vanilla Delicia gives us room when the brief needs more visual customisation and a more familiar party feel.',
+          'Kyiv cake only belongs in the conversation when the group genuinely likes a richer, nut-led dessert. It is not a universal answer, and we treat it that way.'
         ]
       },
       {
-        heading: 'What I insist on settling before I say yes',
+        heading: 'What we insist on settling before we say yes',
         paragraphs: [
-          'Large numbers, a narrow handover slot, or a heavily customised design all need clear decisions before I confirm anything.',
+          'Large numbers, a narrow handover slot, or a heavily customised design all need clear decisions before we confirm anything.',
           'If too much is still moving at the last minute, the cake ends up carrying the uncertainty instead of just doing its job.'
         ]
       },
@@ -1427,53 +1427,53 @@ const seedArticleDrafts: SeedArticleDraft[] = [
   }),
   createLocalDeliveryDraft({
     slug: 'cake-delivery-york-guide',
-    title: 'Cake delivery in York: what I recommend when the cake needs to travel further',
-    summary: 'A York cake delivery guide that focuses on planning, travel distance, and the cake styles I trust most for a longer local journey.',
-    dek: 'York orders need a little more planning than a short Leeds drop. I explain which cakes I trust most for the trip, when I advise earlier booking, and how to decide between delivery and collection.',
+    title: 'Cake delivery in York: what we recommend when the cake needs to travel further',
+    summary: 'A York cake delivery guide that focuses on planning, travel distance, and the cake styles we trust most for a longer local journey.',
+    dek: 'York orders need a little more planning than a short Leeds drop. We explain which cakes we trust most for the trip, when we advise earlier booking, and how to decide between delivery and collection.',
     imageProductSlug: 'honey-cake-medovik',
     relatedProductSlugs: ['honey-cake-medovik', 'napoleon-cake', 'vanilla-delicia-birthday-cake', 'fruit-cake-svit-berry-or-light-berry-cake-with-cream'],
     intro: [
       'York orders ask more of the plan because the journey is longer and the margin for a sloppy choice is smaller.',
-      'For York, I care less about the idea on paper and more about whether the cake will still look calm, slice well, and feel worth the drive once the box is opened.'
+      'For York, we care less about the idea on paper and more about whether the cake will still look calm, slice well, and feel worth the drive once the box is opened.'
     ],
     sections: [
       {
-        heading: 'York is where I strip the brief back first',
+        heading: 'York is where we strip the brief back first',
         paragraphs: [
-          'A longer drive changes the kind of cake I am comfortable sending. Stronger structure, calmer decoration, and a clear serving plan matter more here than on a short local handover.',
-          'That does not make York orders dull. It just means I filter the options more carefully before saying yes.'
+          'A longer drive changes the kind of cake we are comfortable sending. Stronger structure, calmer decoration, and a clear serving plan matter more here than on a short local handover.',
+          'That does not make York orders dull. It just means we filter the options more carefully before saying yes.'
         ]
       },
       {
-        heading: 'The cakes I trust most for York',
+        heading: 'The cakes we trust most for York',
         paragraphs: [
-          'Medovik is often my first York suggestion because it keeps its character beautifully. Napoleon is excellent when the customer wants elegance without a lot of extra structure riding on the outside. Fruit and vanilla celebration cakes can also work very well, but I keep the finish realistic for the route.',
+          'Medovik is often our first York suggestion because it keeps its character beautifully. Napoleon is excellent when the customer wants elegance without a lot of extra structure riding on the outside. Fruit and vanilla celebration cakes can also work very well, but we keep the finish realistic for the route.',
           'The cake needs to arrive looking intentional, not like a compromise made halfway through the drive.'
         ]
       },
       {
-        heading: 'The York orders where I mention collection early',
+        heading: 'The York orders where we mention collection early',
         paragraphs: [
-          'If the design is delicate, the timing is narrow, or the order matters in a very exact visual way, I may say plainly that collection is the better option.',
-          'That is not me being awkward. It is me protecting the moment the cake is finally seen.'
+          'If the design is delicate, the timing is narrow, or the order matters in a very exact visual way, we may say plainly that collection is the better option.',
+          'That is not us being awkward. It is us protecting the moment the cake is finally seen.'
         ]
       },
       {
-        heading: 'What I need to know before I send a cake that far',
+        heading: 'What we need to know before we send a cake that far',
         numbers: [
-          'Tell me how formal the occasion is.',
-          'Tell me whether the cake is dessert, party food, or a photo moment.',
-          'Tell me if you would accept collection if it gives the cleaner result.'
+          'Tell us how formal the occasion is.',
+          'Tell us whether the cake is dessert, party food, or a photo moment.',
+          'Tell us if you would accept collection if it gives the cleaner result.'
         ]
       }
     ],
     faqItems: createFaqItems([
       ['What is the safest cake style for a longer York delivery?', 'Usually a cake with steady layering and moderate decoration rather than a fragile showpiece finish.'],
       ['Should I collect instead of using delivery for York?', 'Sometimes, yes. If the design is delicate or the timing is very tight, collection can be the stronger option.'],
-      ['Is Medovik a good York delivery cake?', 'Yes. It is one of the cakes I trust most when flavour and steady structure both matter.']
+      ['Is Medovik a good York delivery cake?', 'Yes. It is one of the cakes we trust most when flavour and steady structure both matter.']
     ]),
     seo: {
-      metaTitle: 'Cake delivery York guide | what I recommend most',
+      metaTitle: 'Cake delivery York guide | what we recommend most',
       metaDescription: 'Read practical advice on cake delivery in York, including which cakes travel best, when to book earlier, and when collection is smarter.',
       keywords: ['cake delivery york', 'cakes york', 'birthday cake york']
     },
@@ -1485,20 +1485,20 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Nut free birthday cakes: how to plan one without guessing',
     slug: 'nut-free-birthday-cakes-guide',
     summary: 'A focused birthday-cake guide for customers who need nut-free planning handled carefully and honestly.',
-    dek: 'Nut free birthday cakes need more than a quick flavour pick. I explain how I think through recipe, decoration, fillings, and cross-contact questions so the order starts with the right conversation.',
+    dek: 'Nut free birthday cakes need more than a quick flavour pick. We explain how we think through recipe, decoration, fillings, and cross-contact questions so the order starts with the right conversation.',
     topicSlug: 'celebration-planning',
     imageProductSlug: 'vanilla-delicia-birthday-cake',
     relatedProductSlugs: [],
     intro: [
       'Nut free birthday cakes bring more pressure because the cake is often the centrepiece. If nuts are part of the brief, that pressure should lead to better questions, not vaguer assumptions.',
-      'I treat the allergen conversation as the first design step, not as a note to add at the end.'
+      'We treat the allergen conversation as the first design step, not as a note to add at the end.'
     ],
     sections: [
       {
         heading: 'Why birthdays change the conversation',
         paragraphs: [
           'Birthday cakes often include more decoration, more filling choices, and more serving pressure than smaller celebration orders. That can affect how a nut-free brief is planned and what is sensible to promise.',
-          'I want families to know that before they commit to a style.'
+          'We want families to know that before they commit to a style.'
         ]
       },
       {
@@ -1511,12 +1511,12 @@ const seedArticleDrafts: SeedArticleDraft[] = [
       {
         heading: 'Decoration matters as much as the sponge',
         paragraphs: [
-          'A nut-free sponge does not solve the whole brief if the final decoration, topper, or shared handling changes the risk picture. So I always talk through the whole order.',
-          'It is not me being difficult. It is me being accurate.'
+          'A nut-free sponge does not solve the whole brief if the final decoration, topper, or shared handling changes the risk picture. So we always talk through the whole order.',
+          'It is not us being difficult. It is us being accurate.'
         ]
       },
       {
-        heading: 'What I ask before I quote',
+        heading: 'What we ask before we quote',
         numbers: [
           'Who is the cake for and how strict does the allergen management need to be?',
           'Do you need a simple finish, or are you asking for a decorated centrepiece?',
@@ -1539,10 +1539,10 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     requiredAnchors: ['nut free birthday cakes', 'Vanilla Delicia', 'Kyiv cake', 'Snickers Cake']
   },
   {
-    title: 'Cake storage and preservation: what I tell customers once the cake gets home',
+    title: 'Cake storage and preservation: what we tell customers once the cake gets home',
     slug: 'cake-storage-and-preservation-guide',
     summary: 'A practical cake storage guide based on the real differences between layered honey cake, pastry cakes, and decorated celebration cakes.',
-    dek: 'Cake storage advice only helps when it matches the cake in front of you. I explain how I think about Medovik, Napoleon, and decorated celebration cakes once they leave the bakery, without pretending one rule covers everything.',
+    dek: 'Cake storage advice only helps when it matches the cake in front of you. We explain how we think about Medovik, Napoleon, and decorated celebration cakes once they leave the bakery, without pretending one rule covers everything.',
     topicSlug: 'cake-care-and-sizing',
     primaryProductSlug: 'honey-cake-medovik',
     relatedProductSlugs: ['napoleon-cake', 'vanilla-delicia-birthday-cake', 'cake-by-post'],
@@ -1555,15 +1555,15 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'Medovik, Napoleon, and sponge cakes do not behave the same way',
         paragraphs: [
           'Medovik settles beautifully because the layers soften into each other. Napoleon depends more on preserving that pastry-and-cream contrast. A decorated sponge cake has its own needs again, especially if the finish matters visually.',
-          'So I never give one blanket answer for every cake.'
+          'So we never give one blanket answer for every cake.'
         ]
       },
       {
-        heading: 'What I tell customers first',
+        heading: 'What we tell customers first',
         bullets: [
           'Keep the cake boxed until you need it so it is protected and does not dry unnecessarily.',
           'Follow the storage note that fits the actual cake, not a generic online rule.',
-          'Give the cake time to come into its best eating condition before serving if I have advised that.'
+          'Give the cake time to come into its best eating condition before serving if we have advised that.'
         ],
         paragraphs: [
           'Most storage mistakes come from moving too quickly and improvising.'
@@ -1573,11 +1573,11 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'Why preservation is not just about freshness',
         paragraphs: [
           'Customers often think storage is only about safety, but texture matters just as much. A cake can be perfectly edible and still be served in a way that hides its best qualities.',
-          'I care about the eating moment, not just the survival of the cake.'
+          'We care about the eating moment, not just the survival of the cake.'
         ]
       },
       {
-        heading: 'My simple rule',
+        heading: 'Our simple rule',
         paragraphs: [
           'If you are unsure, ask the bakery that made the cake and ask before serving time arrives. Accurate product-specific advice will always beat a generic search result.'
         ]
@@ -1598,10 +1598,10 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     requiredAnchors: ['cake storage', 'Medovik', 'Napoleon', 'decorated sponge cake']
   },
   {
-    title: 'Cake size and portions: how I help customers order enough without going too big',
+    title: 'Cake size and portions: how we help customers order enough without going too big',
     slug: 'cake-size-and-portions-guide',
     summary: 'A practical portion guide for customers choosing cake size for birthdays, parties, and more formal celebrations.',
-    dek: 'Cake size only becomes clear when you know how the cake will be served. I explain how I think about dessert portions, party slices, and why bigger is not always better when you want the cake to be enjoyed properly.',
+    dek: 'Cake size only becomes clear when you know how the cake will be served. We explain how we think about dessert portions, party slices, and why bigger is not always better when you want the cake to be enjoyed properly.',
     topicSlug: 'cake-care-and-sizing',
     imageProductSlug: 'vanilla-delicia-birthday-cake',
     relatedProductSlugs: ['vanilla-delicia-birthday-cake', 'chocolate-delicia-sponge-cake-for-parties', 'honey-cake-medovik', 'napoleon-cake'],
@@ -1614,7 +1614,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'Serving style changes everything',
         paragraphs: [
           'If the cake is one part of a large dessert table, portions will be smaller. If it is the headline dessert after a meal, the slices need more substance.',
-          'So I ask about the event, not just the headcount.'
+          'So we ask about the event, not just the headcount.'
         ]
       },
       {
@@ -1625,14 +1625,14 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         ]
       },
       {
-        heading: 'The mistake I see most often',
+        heading: 'The mistake we see most often',
         paragraphs: [
           'People either overbuy because they are worried about running short, or underbuy because they imagine every guest will take a tiny slice. Both problems come from guessing rather than planning.',
-          'I anchor the answer in the event format.'
+          'We anchor the answer in the event format.'
         ]
       },
       {
-        heading: 'What to tell me for a better size recommendation',
+        heading: 'What to tell us for a better size recommendation',
         numbers: [
           'How many people are likely to eat the cake, not just attend.',
           'Whether it will be dessert, party slices, or part of a wider table.',
@@ -1658,7 +1658,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'How to surprise someone with cake delivery by post without making it feel generic',
     slug: 'how-surprise-someone-cake-delivery-post',
     summary: 'A practical guide to sending cake as a surprise so it feels thoughtful, not random, when it arrives.',
-    dek: 'A surprise cake gift works because the parcel feels personal, not because it is huge. I explain how I think about timing, format, and message so the delivery lands as a real gesture rather than just another box.',
+    dek: 'A surprise cake gift works because the parcel feels personal, not because it is huge. We explain how we think about timing, format, and message so the delivery lands as a real gesture rather than just another box.',
     topicSlug: 'gift-ideas',
     primaryProductSlug: 'birthday-gift-by-post',
     relatedProductSlugs: ['happy-birthday-cake-card', 'cake-by-post', 'wedding-anniversary-gift-or-personalised-honey-cake', 'honey-cake-by-post'],
@@ -1677,19 +1677,19 @@ const seedArticleDrafts: SeedArticleDraft[] = [
       {
         heading: 'Timing matters more than scale',
         paragraphs: [
-          'A smaller parcel arriving on the right day usually beats a larger one arriving awkwardly. I would always choose timing over unnecessary size.',
+          'A smaller parcel arriving on the right day usually beats a larger one arriving awkwardly. We would always choose timing over unnecessary size.',
           'That is especially true for posted cake gifts.'
         ]
       },
       {
         heading: 'Make the message do some of the work',
         paragraphs: [
-          'A gift note or personalised front message turns a cake parcel into something warmer and more memorable, which is why I lean towards formats that leave room for the message as well as the cake.',
+          'A gift note or personalised front message turns a cake parcel into something warmer and more memorable, which is why we lean towards formats that leave room for the message as well as the cake.',
           'It is a small detail that changes the whole tone.'
         ]
       },
       {
-        heading: 'My best surprise formats',
+        heading: 'Our best surprise formats',
         bullets: [
           'Birthday Gift by Post for a stronger birthday statement.',
           'Happy Birthday Cake Card for a lighter, neater surprise.',
@@ -1715,7 +1715,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Valentine\'s cake delivery: what to choose when you want romance without the cliche',
     slug: 'valentines-cake-delivery-guide',
     summary: 'A Valentine\'s cake guide for customers deciding between a full romantic cake, a posted honey cake slice, or a smaller gift box.',
-    dek: 'Valentine\'s cake delivery lands best when the gift feels affectionate but not forced. I explain when a full celebration cake is right, when a posted honey cake slice or biscuit gift makes more sense, and when a cake further across the UK needs to be discussed by agreement rather than treated as standard post.',
+    dek: 'Valentine\'s cake delivery lands best when the gift feels affectionate but not forced. We explain when a full celebration cake is right, when a posted honey cake slice or biscuit gift makes more sense, and when a cake further across the UK needs to be discussed by agreement rather than treated as standard post.',
     primaryProductSlug: 'a-valentine-s-day-cake',
     imageProductSlug: 'a-valentine-s-day-cake',
     relatedProductSlugs: ['valentine-s-day-honey-cake-slice', 'valentine-s-biscuit-gift-box', 'cake-by-post'],
@@ -1728,7 +1728,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         heading: 'When a full Valentine\'s cake earns its place',
         paragraphs: [
           'A full Valentine\'s Day cake works when you are actually sharing the moment together or marking something bigger than a token gift. The flower-pot style cake is strongest when the recipient will enjoy the visual detail as much as the flavour itself.',
-          'It suits dinners, planned evenings, and occasions where the cake is part of the setting rather than a parcel left at the door. If it needs to travel further across the UK, I would discuss that by agreement instead of promising standard post.'
+          'It suits dinners, planned evenings, and occasions where the cake is part of the setting rather than a parcel left at the door. If it needs to travel further across the UK, we would discuss that by agreement instead of promising standard post.'
         ]
       },
       {
@@ -1741,15 +1741,15 @@ const seedArticleDrafts: SeedArticleDraft[] = [
       {
         heading: 'Where a biscuit box fits',
         paragraphs: [
-          'A biscuit gift box is lighter again. I use it when the gesture should feel affectionate but low pressure.',
+          'A biscuit gift box is lighter again. We use it when the gesture should feel affectionate but low pressure.',
           'Too much fuss can spoil it. The right format is the one that feels natural for the relationship.'
         ]
       }
     ],
-    closingRule: 'For Valentine\'s, I want the gift to feel like you picked it for that person, not for the calendar. If that part is right, the cake does the rest.',
+    closingRule: 'For Valentine\'s, we want the gift to feel like you picked it for that person, not for the calendar. If that part is right, the cake does the rest.',
     faqItems: createFaqItems([
       ['What is the best Valentine\'s cake gift to post?', 'A honey cake slice or a smaller gift box is usually the easiest choice when you need a clean postal surprise.'],
-      ['When should I order a full Valentine\'s Day cake?', 'Order the full cake when you are sharing the occasion in person or want the cake to be the centre of the moment. If it needs wider UK delivery, ask first so I can confirm whether delivery by agreement is realistic.'],
+      ['When should I order a full Valentine\'s Day cake?', 'Order the full cake when you are sharing the occasion in person or want the cake to be the centre of the moment. If it needs wider UK delivery, ask first so we can confirm whether delivery by agreement is realistic.'],
       ['Do romantic cake gifts need to be large?', 'No. A well-judged smaller gift often feels more personal than a larger generic one.']
     ]),
     seo: {
@@ -1762,16 +1762,16 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     cardImageAlt: 'Close crop of a Valentine\'s Day cake with floral detail'
   }),
   createSeasonalDraft({
-    title: 'Easter cakes to order: what I recommend when you want tradition and something people will actually eat',
+    title: 'Easter cakes to order: what we recommend when you want tradition and something people will actually eat',
     slug: 'easter-cakes-to-order-guide',
     summary: 'A practical Easter cake guide covering Paska, smaller Easter gifts, and how to choose a format that suits the table.',
-    dek: 'Easter cake should feel meaningful and good to eat, not just seasonal for the sake of it. I explain where Paska fits, when smaller Easter gifts make sense, and how I think about Easter orders in a real household.',
+    dek: 'Easter cake should feel meaningful and good to eat, not just seasonal for the sake of it. We explain where Paska fits, when smaller Easter gifts make sense, and how we think about Easter orders in a real household.',
     primaryProductSlug: 'easter-cake-paska',
     imageProductSlug: 'easter-cake-paska',
     relatedProductSlugs: ['easter-gifts-gorishky-caramel-biscuits', 'honey-cake-medovik', 'cake-by-post'],
     intro: [
       'Easter orders often sit between tradition and gifting. Some customers want a proper table cake, while others want something smaller to send or share.',
-      'I try to keep those jobs separate so the order stays useful.'
+      'We try to keep those jobs separate so the order stays useful.'
     ],
     sections: [
       {
@@ -1789,18 +1789,18 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         ]
       },
       {
-        heading: 'What I ask before recommending Easter cake',
+        heading: 'What we ask before recommending Easter cake',
         paragraphs: [
-          'I still ask how the order will be used. A family table, a host gift, and a postal parcel all ask for different decisions.',
+          'We still ask how the order will be used. A family table, a host gift, and a postal parcel all ask for different decisions.',
           'Once that part is clear, the format becomes much easier to choose.'
         ]
       }
     ],
-    closingRule: 'At Easter, I want the cake to feel rooted rather than trendy. If it can sit naturally on the table and still be happily eaten, it belongs there.',
+    closingRule: 'At Easter, we want the cake to feel rooted rather than trendy. If it can sit naturally on the table and still be happily eaten, it belongs there.',
     faqItems: createFaqItems([
       ['What cake do you recommend for Easter?', 'Paska is the clearest Easter cake choice when you want tradition on the table.'],
       ['Can I send a smaller Easter cake gift?', 'Yes. Smaller Easter gifts can work very well when you want something easy to send or share.'],
-      ['Should Easter cake be traditional or decorative?', 'For me, meaning should come first and decoration should support it rather than lead it.']
+      ['Should Easter cake be traditional or decorative?', 'For us, meaning should come first and decoration should support it rather than lead it.']
     ]),
     seo: {
       metaTitle: 'Easter cakes to order | Paska and Easter gift ideas',
@@ -1815,12 +1815,12 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     title: 'Halloween cakes delivery: what works for a party and what is better kept simple',
     slug: 'halloween-cakes-delivery-guide',
     summary: 'A practical Halloween cake guide that focuses on dramatic flavour and realistic delivery rather than overworked novelty.',
-    dek: 'Halloween cake can be fun without turning into a gimmick. I explain which cake directions suit parties, when to keep the design simple, and why richer flavours often work better than overcomplicated decoration.',
+    dek: 'Halloween cake can be fun without turning into a gimmick. We explain which cake directions suit parties, when to keep the design simple, and why richer flavours often work better than overcomplicated decoration.',
     primaryProductSlug: 'chocolate-delicia-sponge-cake-for-parties',
     imageProductSlug: 'chocolate-delicia-sponge-cake-for-parties',
     relatedProductSlugs: ['cake-by-post', 'happy-birthday-cake-card', 'vanilla-delicia-birthday-cake'],
     intro: [
-      'Halloween cakes should look playful, but I still want them to taste like proper cake rather than a prop.',
+      'Halloween cakes should look playful, but we still want them to taste like proper cake rather than a prop.',
       'That usually means leaning into mood, colour, and flavour contrast instead of making the structure itself unnecessarily difficult.'
     ],
     sections: [
@@ -1832,9 +1832,9 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         ]
       },
       {
-        heading: 'The party designs I simplify on purpose',
+        heading: 'The party designs we simplify on purpose',
         paragraphs: [
-          'For party cakes, I keep the design sharp and manageable rather than overbuild it with fragile novelty details.',
+          'For party cakes, we keep the design sharp and manageable rather than overbuild it with fragile novelty details.',
           'People remember whether the cake sliced well and tasted good. They rarely miss the extra gimmick once the party has started.'
         ]
       },
@@ -1846,7 +1846,7 @@ const seedArticleDrafts: SeedArticleDraft[] = [
         ]
       }
     ],
-    closingRule: 'For Halloween, I would rather make one good party cake than chase a fussy novelty idea that nobody really wants to eat.',
+    closingRule: 'For Halloween, we would rather make one good party cake than chase a fussy novelty idea that nobody really wants to eat.',
     faqItems: createFaqItems([
       ['What cake flavour works well for Halloween?', 'Darker chocolate-led cakes often suit the mood best, especially for parties.'],
       ['Should a Halloween cake be highly detailed?', 'Only if the timing and setup support it. Simpler, sharper design often travels and serves better.'],
@@ -1862,20 +1862,20 @@ const seedArticleDrafts: SeedArticleDraft[] = [
     cardImageAlt: 'Close crop of a chocolate cake suitable for Halloween styling'
   }),
   createSeasonalDraft({
-    title: 'Ukrainian Christmas cakes and desserts: what I actually recommend for gifting and the table',
+    title: 'Ukrainian Christmas cakes and desserts: what we actually recommend for gifting and the table',
     slug: 'ukrainian-christmas-cakes-and-desserts-guide',
     summary: 'A Christmas guide to the Ukrainian-inspired cakes and sweet gifts that work best for seasonal tables and posted parcels.',
-    dek: 'Christmas orders split into two clear jobs: something generous for the table and something warm to send by post. I explain which Ukrainian-style cakes and festive gifts I recommend for each, and when a larger cake needs local delivery or UK delivery by agreement instead.',
+    dek: 'Christmas orders split into two clear jobs: something generous for the table and something warm to send by post. We explain which Ukrainian-style cakes and festive gifts we recommend for each, and when a larger cake needs local delivery or UK delivery by agreement instead.',
     primaryProductSlug: 'christmas-food-hamper-with-authentic-honey-cake',
     imageProductSlug: 'christmas-food-hamper-with-authentic-honey-cake',
     relatedProductSlugs: ['xmas-gift-boxes-cake-with-card', 'xmas-honey-cake-slice-in-festive-bag', 'honey-cake-medovik', 'christmas-cake-design-bespoke-cakes-made-just-for-you'],
     intro: [
       'Christmas orders get muddled when every cake is treated as if it is doing the same job. A family table wants one thing, a posted gift wants another, and a host or corporate order wants something else again.',
-      'I separate those jobs clearly and then choose the cake or dessert that suits each one.'
+      'We separate those jobs clearly and then choose the cake or dessert that suits each one.'
     ],
     sections: [
       {
-        heading: 'What I send by post at Christmas',
+        heading: 'What we send by post at Christmas',
         paragraphs: [
           'For posted gifts, the Christmas Food Hamper with Honey Cake and the Xmas Gift Boxes with Cake and Card make immediate sense because they have both substance and presentation.',
           'They feel generous without making the parcel awkward to receive.'
@@ -1884,27 +1884,27 @@ const seedArticleDrafts: SeedArticleDraft[] = [
       {
         heading: 'What belongs on the Christmas table',
         paragraphs: [
-          'For a Christmas table, I still think first about what people genuinely enjoy eating, which is why honey cake keeps returning to the conversation.',
-          'If the cake feels festive but nobody really wants the second slice, it has missed the point. For a larger decorated Christmas cake, I would usually keep the handover local or discuss UK delivery by agreement.'
+          'For a Christmas table, we still think first about what people genuinely enjoy eating, which is why honey cake keeps returning to the conversation.',
+          'If the cake feels festive but nobody really wants the second slice, it has missed the point. For a larger decorated Christmas cake, we would usually keep the handover local or discuss UK delivery by agreement.'
         ]
       },
       {
         heading: 'Where smaller festive gifts fit',
         paragraphs: [
           'For smaller gestures, the Xmas Honey Cake Slice in Festive Bag is tidy, easy to hand over, and still rooted in real flavour rather than seasonal packaging alone.',
-          'That is the option I use when the gift should feel warm and thoughtful without turning into a big hamper.'
+          'That is the option we use when the gift should feel warm and thoughtful without turning into a big hamper.'
         ]
       }
     ],
-    closingRule: 'At Christmas, I would rather send one cake people genuinely want to eat than a box that only looks festive for five minutes.',
+    closingRule: 'At Christmas, we would rather send one cake people genuinely want to eat than a box that only looks festive for five minutes.',
     faqItems: createFaqItems([
       ['What is a good Ukrainian-style Christmas cake gift?', 'A festive honey cake hamper or a cake-with-card box works well because it feels generous and still posts cleanly.'],
       ['What if I only need a small Christmas cake gift?', 'A festive honey cake slice gift is often enough for a smaller seasonal gesture.'],
-      ['Do you recommend one cake for every Christmas order?', 'No. I separate table cakes, gift boxes, and smaller posted treats because they do different jobs.']
+      ['Do you recommend one cake for every Christmas order?', 'No. We separate table cakes, gift boxes, and smaller posted treats because they do different jobs.']
     ]),
     seo: {
       metaTitle: 'Ukrainian Christmas cakes and desserts | what to order',
-      metaDescription: 'See which Ukrainian Christmas cakes and desserts I recommend for the table, for gifting, and for posted festive parcels across the UK.',
+      metaDescription: 'See which Ukrainian Christmas cakes and desserts we recommend for the table, for gifting, and for posted festive parcels across the UK.',
       keywords: ['ukrainian christmas cakes', 'christmas cake gifts uk', 'honey cake christmas hamper']
     },
     requiredAnchors: ['Christmas', 'Christmas Food Hamper with Honey Cake', 'Xmas Gift Boxes', 'Xmas Honey Cake Slice'],
@@ -1948,8 +1948,43 @@ function countH2Sections(body: PortableTextBlock[]) {
   return body.filter((block) => block.style === 'h2').length
 }
 
-function hasFirstPersonLanguage(value: string) {
-  return /\b(i|i'm|i'd|i'll|my|me)\b/i.test(value)
+const singularNarratorPattern = /\b(i|i'm|i've|i'd|i'll|me|my|mine)\b/i
+const collectiveNarratorPattern = /\b(we|we're|we've|we'd|we'll|us|our|ours)\b/i
+
+export function hasSingularNarratorVoice(value: string) {
+  const withoutAllowedQueriesAndQuotes = value
+    .replace(/\bnear me\b/gi, 'near')
+    .replace(/\bI am thinking of you\b/g, 'thinking of you')
+
+  return singularNarratorPattern.test(withoutAllowedQueriesAndQuotes)
+}
+
+function hasCollectiveNarratorVoice(value: string) {
+  return collectiveNarratorPattern.test(value)
+}
+
+function assertCollectiveNarratorVoice(article: SeedArticle, bodyText: string) {
+  const narrativeFields = [
+    ['title', article.title],
+    ['summary', article.summary],
+    ['dek', article.dek],
+    ['body', bodyText],
+    ['seo.metaTitle', article.seo.metaTitle],
+    ['seo.metaDescription', article.seo.metaDescription],
+    ...(article.faqItems ?? []).map(
+      (item, index) => [`faqItems[${index}].answer`, item.answer]
+    )
+  ] as const
+
+  for (const [fieldName, value] of narrativeFields) {
+    if (hasSingularNarratorVoice(value)) {
+      throw new Error(`Singular narrator voice found in ${fieldName} for ${article.slug}`)
+    }
+  }
+
+  if (!hasCollectiveNarratorVoice(bodyText)) {
+    throw new Error(`Missing collective narrator voice for ${article.slug}`)
+  }
 }
 
 function assertNoBannedPhrases(value: string, slug: string, fieldName: string) {
@@ -2106,9 +2141,7 @@ export function validateSeedConfiguration(seedArticlesInput = seedArticles) {
     assertNoBannedPhrases(article.seo.metaTitle, article.slug, 'seo.metaTitle')
     assertNoBannedPhrases(article.seo.metaDescription, article.slug, 'seo.metaDescription')
 
-    if (!hasFirstPersonLanguage(bodyText)) {
-      throw new Error(`Missing first-person language for ${article.slug}`)
-    }
+    assertCollectiveNarratorVoice(article, bodyText)
 
     for (const anchor of article.requiredAnchors) {
       if (!normalizeForComparison(bodyText).includes(normalizeForComparison(anchor))) {

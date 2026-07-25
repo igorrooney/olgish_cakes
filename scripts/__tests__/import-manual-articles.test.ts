@@ -6,6 +6,7 @@ import {
   applyImageAlt,
   collectProductSlugsFromSeeds,
   manualArticleScheduleBaseline,
+  hasSingularNarratorVoice,
   pickProductImage,
   retiredArticleSlugs,
   seedArticles,
@@ -67,6 +68,26 @@ describe('import-manual-articles', () => {
     expect(() => validateSeedConfiguration()).not.toThrow()
   })
 
+  it('rejects singular narrator voice while allowing reader queries and near-me keywords', () => {
+    expect(hasSingularNarratorVoice('We explain how our cakes travel.')).toBe(false)
+    expect(hasSingularNarratorVoice('Searching for honey cake near me?')).toBe(false)
+    expect(hasSingularNarratorVoice('I am thinking of you')).toBe(false)
+    expect(hasSingularNarratorVoice('I explain how my cakes travel.')).toBe(true)
+
+    const updatedArticles = seedArticles.map((article, index) => (
+      index === 0
+        ? {
+            ...article,
+            dek: 'I explain how these cakes travel.'
+          }
+        : article
+    ))
+
+    expect(() => validateSeedConfiguration(updatedArticles)).toThrow(
+      'Singular narrator voice found in dek'
+    )
+  })
+
   it('allows explicit by-post wording when it is tied to standard honey cake, slice gifts, or delivery by agreement', () => {
     const targetIndex = seedArticles.findIndex((article) => article.slug === 'best-cakes-you-can-send-by-post-uk')
     const updatedArticles = seedArticles.map((article, index) => {
@@ -88,7 +109,7 @@ describe('import-manual-articles', () => {
                 _key: 'policy-span',
                 _type: 'span',
                 marks: [],
-                text: 'Standard honey cake by post, gift hampers with honey cake slices, and caramel biscuits can go across the UK. If a whole celebration cake needs to travel further, I only offer that by agreement.'
+                text: 'Standard honey cake by post, gift hampers with honey cake slices, and caramel biscuits can go across the UK. If a whole celebration cake needs to travel further, we only offer that by agreement.'
               }
             ]
           }

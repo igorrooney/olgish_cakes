@@ -20,6 +20,8 @@
 import { generateAllProductSchemas } from "../lib/product-schemas.js";
 import { batchValidateProductSchemas, validateMPNUniqueness } from "../lib/schema-validation.js";
 import { MAX_PRODUCTS_FOR_SCHEMA } from "../lib/schema-constants.js";
+import { createBlogArchiveBreadcrumbStructuredData } from '../lib/blog-archive-structured-data.js'
+import { validateSchema } from './validate-structured-data.js'
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -171,6 +173,22 @@ async function validateAllSchemas() {
       console.error('❌ Duplicate MPNs found:', mpnCheck.duplicates);
     }
 
+    console.log('\n🔗 Validating blog archive structured data...')
+    const blogArchiveSchema = createBlogArchiveBreadcrumbStructuredData()
+    const blogArchiveValidation = validateSchema(blogArchiveSchema, 'BreadcrumbList')
+    const includesUnsupportedItemList =
+      JSON.stringify(blogArchiveSchema).includes('"@type":"ItemList"')
+
+    if (blogArchiveValidation.errors.length > 0 || includesUnsupportedItemList) {
+      throw new Error(
+        `Blog archive schema is invalid: ${[
+          ...blogArchiveValidation.errors,
+          ...(includesUnsupportedItemList ? ['Unsupported archive ItemList found'] : [])
+        ].join(', ')}`
+      )
+    }
+    console.log('✅ Blog archive BreadcrumbList is valid')
+
     // Summary
     console.log('\n' + '='.repeat(60));
     console.log('📋 VALIDATION SUMMARY');
@@ -181,6 +199,7 @@ async function validateAllSchemas() {
     console.log(`Valid schemas:           ${validCount}`);
     console.log(`Invalid schemas:         ${schemas.length - validCount}`);
     console.log(`MPN uniqueness:          ${mpnCheck.isValid ? '✅ Pass' : '❌ Fail'}`);
+    console.log('Blog archive schema:     ✅ Pass');
     console.log(`Total time:              ${(performance.now() - startTime).toFixed(2)}ms`);
     console.log('='.repeat(60));
 

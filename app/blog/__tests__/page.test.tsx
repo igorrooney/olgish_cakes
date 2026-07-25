@@ -88,6 +88,25 @@ jest.mock("@/lib/articles", () => ({
   }) => {
     return article.coverImage?.asset?.url || article.cardImage?.asset?.url;
   },
+  getSanityCdnImageUrl: (
+    imageUrl: string,
+    {
+      width,
+      height,
+      fit,
+      quality,
+    }: { width?: number; height?: number; fit?: string; quality?: number }
+  ) => {
+    const transformedUrl = new URL(imageUrl);
+
+    if (width) transformedUrl.searchParams.set("w", String(width));
+    if (height) transformedUrl.searchParams.set("h", String(height));
+    if (fit) transformedUrl.searchParams.set("fit", fit);
+    if (quality) transformedUrl.searchParams.set("q", String(quality));
+    transformedUrl.searchParams.set("auto", "format");
+
+    return transformedUrl.toString();
+  },
   getArticlePaginationTokens: (currentPage: number, totalPages: number) =>
     Array.from({ length: totalPages }, (_, index) => index + 1).filter(
       page => Math.abs(page - currentPage) <= totalPages
@@ -143,9 +162,15 @@ jest.mock("@/lib/articles", () => ({
       return null;
     }
 
+    const page = Number(rawPage);
+
+    if (!Number.isSafeInteger(page)) {
+      return null;
+    }
+
     return {
       topic,
-      page: Number(rawPage),
+      page,
     };
   },
   toJsonLdScript: (value: unknown) => JSON.stringify(value),
@@ -319,9 +344,10 @@ describe("BlogPage", () => {
     const leadHeading = screen.getByRole("heading", { name: /^latest article$/i });
 
     expect(leadHeading).toBeInTheDocument();
-    expect(archiveHeading.className).not.toContain("text-[38px]");
-    expect(leadHeading.className).toContain("text-[1.9rem]");
-    expect(leadHeading.className).toContain("tablet:text-[2.8rem]");
+    expect(archiveHeading.className).toContain("text-3xl");
+    expect(archiveHeading.className).toContain("tablet:text-5xl");
+    expect(leadHeading.className).toContain("text-3xl");
+    expect(leadHeading.className).toContain("tablet:text-5xl");
     expect(screen.getByText(/more from olga/i)).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
@@ -340,10 +366,7 @@ describe("BlogPage", () => {
     expect(supportingSection?.className).toContain("pt-6");
     expect(screen.queryByText(/what you will get here/i)).not.toBeInTheDocument();
     expect(screen.getAllByRole("link", { name: /custom cake planning/i })).toHaveLength(1);
-    expect(secondaryCard).toHaveAttribute(
-      "href",
-      "/blog/custom-cake-planning?from=%2Fblog"
-    );
+    expect(secondaryCard).toHaveAttribute("href", "/blog/custom-cake-planning");
     expect(within(secondaryCard).queryByRole("img")).not.toBeInTheDocument();
     expect(screen.getByText(/active topic: all/i)).toBeInTheDocument();
     expect(screen.queryByText("Browse by topic")).not.toBeInTheDocument();
@@ -366,15 +389,17 @@ describe("BlogPage", () => {
     expect(screen.queryByText(/latest story/i)).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: /older article/i })).toHaveAttribute(
       "href",
-      "/blog/older-article?from=%2Fblog"
+      "/blog/older-article"
     );
     expect(summary.className).toContain("font-body");
 
     const leadImage = screen.getByAltText("Latest");
     const supportingImage = screen.getByAltText("Packed cake slices card crop");
     const commerceImage = screen.getByAltText("Postal Medovik");
-    expect(leadImage).toHaveAttribute("loading", "lazy");
-    expect(leadImage).not.toHaveAttribute("fetchpriority");
+    expect(leadImage).toHaveAttribute("loading", "eager");
+    expect(leadImage).toHaveAttribute("fetchpriority", "high");
+    expect(leadImage).toHaveAttribute("width", "1200");
+    expect(leadImage).toHaveAttribute("height", "900");
     expect(leadImage).toHaveAttribute("sizes", "(min-width: 1280px) 600px, (min-width: 1024px) 48vw, calc(100vw - 4rem)");
     expect(leadImage.getAttribute("src")).toContain("w=1200");
     expect(leadImage.getAttribute("src")).toContain("h=900");
@@ -382,7 +407,7 @@ describe("BlogPage", () => {
     expect(leadImage.getAttribute("src")).toContain("auto=format");
     expect(supportingImage).toHaveAttribute(
       "sizes",
-      "(min-width: 1280px) 360px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, calc(100vw - 3rem)"
+      "(min-width: 1280px) 360px, (min-width: 1024px) 33vw, calc(100vw - 3rem)"
     );
     expect(supportingImage.getAttribute("src")).toContain("packing-card.jpg");
     expect(supportingImage.getAttribute("src")).not.toContain("packing-cover.jpg");
@@ -401,8 +426,8 @@ describe("BlogPage", () => {
       "small-laptop:grid-cols-[minmax(280px,360px)_minmax(0,1fr)]"
     );
 
-    const main = container.querySelector("main");
-    expect(main?.className).toContain("[font-family:var(--font-inter)]");
+    expect(container.querySelectorAll("main")).toHaveLength(0);
+    expect(container.firstElementChild?.className).toContain("[font-family:var(--font-inter)]");
   });
 
   it("renders page 2 as a grid-only archive and offsets item list positions", async () => {
@@ -446,7 +471,7 @@ describe("BlogPage", () => {
     expect(paginatedArchiveSection?.className).toContain("pt-6");
     expect(screen.getByRole("link", { name: /page two article/i })).toHaveAttribute(
       "href",
-      "/blog/page-two-article?from=%2Fblog%3Ftopic%3Dcake-by-post%26page%3D2"
+      "/blog/page-two-article"
     );
     expect(
       within(screen.getByRole("link", { name: /page two article/i })).queryByRole("img")
@@ -458,7 +483,9 @@ describe("BlogPage", () => {
     expect(screen.getByRole("link", { name: /previous/i }).className).toContain("min-h-11");
 
     const scripts = Array.from(container.querySelectorAll('script[type="application/ld+json"]'));
-    expect(scripts[0]?.textContent).toContain('"position":13');
+    expect(scripts).toHaveLength(1);
+    expect(scripts[0]?.textContent).toContain('"@type":"BreadcrumbList"');
+    expect(scripts[0]?.textContent).not.toContain('"@type":"ItemList"');
   });
 
   it("keeps custom-cakes archive commerce copy aligned with the custom cakes hub", async () => {
@@ -551,12 +578,19 @@ describe("BlogPage", () => {
     expect(metadata.alternates?.canonical).toBe("https://olgishcakes.co.uk/blog");
     expect(metadata.openGraph?.images).toEqual([
       {
-        url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
-        alt: "Olgish Cakes bakery notes and articles",
+        url: "https://cdn.sanity.io/images/project/production/latest.jpg?w=1200&h=630&fit=crop&q=80&auto=format",
+        alt: "Latest",
+        width: 1200,
+        height: 630,
       },
     ]);
     expect(metadata.twitter?.images).toEqual([
-      "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
+      {
+        url: "https://cdn.sanity.io/images/project/production/latest.jpg?w=1200&h=630&fit=crop&q=80&auto=format",
+        alt: "Latest",
+        width: 1200,
+        height: 630,
+      },
     ]);
   });
 
@@ -595,6 +629,16 @@ describe("BlogPage", () => {
     ).rejects.toThrow("NEXT_NOT_FOUND");
 
     expect(notFound).toHaveBeenCalled();
+  });
+
+  it("returns 404 for an unsafe page before requesting archive data", async () => {
+    await expect(
+      BlogPage({
+        searchParams: Promise.resolve({ page: "9".repeat(309) }),
+      })
+    ).rejects.toThrow("NEXT_NOT_FOUND");
+
+    expect(mockGetPaginatedArchiveArticles).not.toHaveBeenCalled();
   });
 
   it("calls notFound when the topic does not exist", async () => {
@@ -655,12 +699,19 @@ describe("BlogPage", () => {
     );
     expect(metadata.openGraph?.images).toEqual([
       {
-        url: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
-        alt: "Olgish Cakes bakery notes and articles",
+        url: "https://olgishcakes.co.uk/images/honey-cake-medovik.jpg",
+        alt: "Traditional Ukrainian honey cake from Olgish Cakes",
+        width: 1200,
+        height: 630,
       },
     ]);
     expect(metadata.twitter?.images).toEqual([
-      "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
+      {
+        url: "https://olgishcakes.co.uk/images/honey-cake-medovik.jpg",
+        alt: "Traditional Ukrainian honey cake from Olgish Cakes",
+        width: 1200,
+        height: 630,
+      },
     ]);
   });
 
@@ -675,6 +726,27 @@ describe("BlogPage", () => {
 
     const metadata = await generateMetadata({
       searchParams: Promise.resolve({ topic: "cake-by-post", page: "1" }),
+    });
+
+    expect(metadata.alternates?.canonical).toBe(
+      "https://olgishcakes.co.uk/blog?topic=cake-by-post"
+    );
+  });
+
+  it("ignores unrelated tracking parameters in canonical metadata URLs", async () => {
+    mockGetPaginatedArchiveArticles.mockResolvedValue({
+      articles: [latestArticle],
+      totalCount: 1,
+      totalPages: 1,
+      currentPage: 1,
+      pageSize: 12,
+    });
+
+    const metadata = await generateMetadata({
+      searchParams: Promise.resolve({
+        topic: "cake-by-post",
+        utm_source: "newsletter",
+      }),
     });
 
     expect(metadata.alternates?.canonical).toBe(

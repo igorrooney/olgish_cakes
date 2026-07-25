@@ -424,15 +424,17 @@ describe("BlogArticlePage", () => {
       screen.getAllByRole("link", { name: /see custom cakes/i })[1].className
     ).toContain("w-full");
 
-    const main = container.querySelector("main");
-    expect(main?.className).toContain("[font-family:var(--font-inter)]");
+    expect(container.querySelectorAll("main")).toHaveLength(0);
+    expect(container.firstElementChild?.className).toContain(
+      "[font-family:var(--font-inter)]"
+    );
 
     const scripts = Array.from(container.querySelectorAll('script[type="application/ld+json"]'));
     expect(scripts[0]?.textContent).toContain('"dateModified":"2025-04-05T09:00:00.000Z"');
     expect(scripts[0]?.textContent).toContain('"url":"https://olgishcakes.co.uk"');
   });
 
-  it("uses the sanitized archive return path for the back link", async () => {
+  it("does not generate a navigation-only query parameter for the back link", async () => {
     const view = await BlogArticlePage({
       params: Promise.resolve({ slug: "how-to-order-cake-by-post" }),
       searchParams: Promise.resolve({
@@ -442,10 +444,7 @@ describe("BlogArticlePage", () => {
 
     render(view);
 
-    expect(screen.getByTestId("blog-back-link")).toHaveAttribute(
-      "href",
-      "/blog?topic=cake-by-post&page=2"
-    );
+    expect(screen.getByTestId("blog-back-link")).toHaveAttribute("href", "/blog");
   });
 
   it("switches the article commerce cta label for custom cake products", async () => {

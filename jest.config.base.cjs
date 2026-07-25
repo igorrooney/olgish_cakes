@@ -2,6 +2,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^nuqs/server$': '<rootDir>/test/mocks/nuqs-server.cjs',
     // Mock server-only modules
     'server-only': '<rootDir>/__mocks__/empty.js',
     // Mock Next.js fonts

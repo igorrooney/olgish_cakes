@@ -82,20 +82,12 @@ export function buildBlogBackHref({
 }
 
 export function buildBlogArticleHref({
-  fromHref,
   href
 }: {
   fromHref: string
   href: string
 }) {
-  if (href.startsWith('/') === false) {
-    return href
-  }
-
-  const resolvedHref = new URL(href, blogBaseUrl)
-  resolvedHref.searchParams.set('from', fromHref)
-
-  return `${resolvedHref.pathname}${resolvedHref.search}${resolvedHref.hash}`
+  return href
 }
 
 export function readStoredBlogArchiveHref() {
@@ -120,7 +112,12 @@ export function writeStoredBlogArchiveHref(archiveHref: string) {
   }
 
   try {
-    window.sessionStorage.setItem(BLOG_ARCHIVE_RETURN_HREF_STORAGE_KEY, archiveHref)
+    const safeArchiveHref = buildBlogBackHref({
+      fallbackHref: '/blog',
+      fromParam: archiveHref
+    })
+
+    window.sessionStorage.setItem(BLOG_ARCHIVE_RETURN_HREF_STORAGE_KEY, safeArchiveHref)
   } catch {
     // Ignore sessionStorage failures in restricted browser contexts.
   }

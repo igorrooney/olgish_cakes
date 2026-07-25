@@ -31,14 +31,12 @@ import {
 } from "../copy";
 import { ArticlePortableText } from "../ArticlePortableText";
 import { ArticleHeroImage } from "../ArticleHeroImage";
-import { BlogBackLinkBase } from "../BlogBackLinkBase";
-import { buildBlogBackHref } from "../navigation";
+import { BlogBackLink } from '../BlogBackLink'
 
 interface BlogArticlePageProps {
   params: Promise<{
     slug: string;
   }>;
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
 function ArticlePageLink(props: ComponentProps<"a">) {
@@ -246,9 +244,8 @@ export async function generateMetadata({ params }: BlogArticlePageProps): Promis
   };
 }
 
-export default async function BlogArticlePage({ params, searchParams }: BlogArticlePageProps) {
+export default async function BlogArticlePage({ params }: BlogArticlePageProps) {
   const { slug } = await params;
-  const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const data = await getArticlePageData(slug);
 
   if (!data) {
@@ -283,10 +280,6 @@ export default async function BlogArticlePage({ params, searchParams }: BlogArti
     article.seo?.canonicalUrl || `${BUSINESS_CONSTANTS.BASE_URL}${getArticleHref(article.slug)}`;
   const modifiedAt = article.editorialUpdatedAt;
   const showVisibleUpdatedDate = hasMaterialArticleUpdate(article.publishedAt, modifiedAt);
-  const backHref = buildBlogBackHref({
-    fallbackHref: "/blog",
-    fromParam: resolvedSearchParams?.from,
-  });
   const articleStructuredData = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -355,7 +348,7 @@ export default async function BlogArticlePage({ params, searchParams }: BlogArti
       : null;
 
   return (
-    <main className="min-h-screen bg-base-100 text-base-content [font-family:var(--font-inter)]">
+    <div className="min-h-screen bg-base-100 text-base-content [font-family:var(--font-inter)]">
       <section className="mx-auto flex w-full max-w-[1180px] flex-col gap-8 px-4 pb-20 pt-8 tablet:px-10 tablet:pt-12">
         <script
           type="application/ld+json"
@@ -372,7 +365,7 @@ export default async function BlogArticlePage({ params, searchParams }: BlogArti
           />
         ) : null}
 
-        <BlogBackLinkBase href={backHref} />
+        <BlogBackLink />
 
         <section className="relative space-y-4 overflow-visible tablet:space-y-5">
           <div className="relative">
@@ -600,6 +593,6 @@ export default async function BlogArticlePage({ params, searchParams }: BlogArti
           </div>
         </section>
       </section>
-    </main>
+    </div>
   );
 }
