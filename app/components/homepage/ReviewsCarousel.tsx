@@ -46,7 +46,7 @@ interface CarouselControlsProps {
 }
 
 const reviewsQueryKey = ['testimonials', 'carousel'] as const
-const disclosureSlotClassName = 'min-h-6'
+const disclosureSlotClassName = 'h-6'
 const overflowTolerance = 1
 const collapsedReviewMaxHeight = 66
 const reviewTextBaseClassName = 'font-sans text-sm leading-[22px] text-black'
@@ -78,10 +78,11 @@ const getCurrentViewport = (): ReviewsViewport => {
 }
 
 const useReviewsViewport = () => {
-  const [viewport, setViewport] = useState<ReviewsViewport>('mobile')
+  const [viewport, setViewport] = useState<ReviewsViewport | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      setViewport('mobile')
       return
     }
 
@@ -410,7 +411,7 @@ function ReviewCard({ testimonial, reviewTextId, className }: ReviewCardProps) {
     setIsExpanded(false)
   }, [testimonial._id, testimonial.text])
 
-  const shouldClampReviewText = hasOverflow && !isExpanded
+  const shouldClampReviewText = !isExpanded
 
   return (
     <div
@@ -573,6 +574,7 @@ export function ReviewsCarousel({
         : mobileCarouselRef.current
 
     if (
+      !viewport ||
       !paginationEnabled ||
       !finalItem ||
       !activeCarousel ||
@@ -613,15 +615,18 @@ export function ReviewsCarousel({
   }
 
   return (
-    <section className='bg-base-100 px-4 py-8 tablet:py-12'>
+    <section className='content-auto-section bg-base-100 px-4 py-8 tablet:py-12'>
       <div className='homepage-container flex flex-col gap-6'>
         <h2 className={titleClassName}>
           Our reviews
         </h2>
 
         <div className='relative -mx-4 tablet:mx-0'>
-          {viewport === 'mobile' ? (
-            <>
+          {viewport === null || viewport === 'mobile' ? (
+            <div
+              key='reviews-mobile-layout'
+              className={viewport === null ? 'contents tablet:hidden' : 'contents'}
+            >
               <div
                 ref={mobileCarouselRef}
                 className='carousel carousel-center w-full overflow-x-auto scroll-smooth [scroll-snap-type:x_mandatory] px-4 [scroll-padding-left:calc(var(--spacing)*4)] [scroll-padding-right:calc(var(--spacing)*4)] gap-5'
@@ -662,11 +667,16 @@ export function ReviewsCarousel({
                 prevLabel='Previous review'
                 total={mobileSlideCount}
               />
-            </>
+            </div>
           ) : null}
 
-          {viewport === 'tablet' ? (
-            <div className='relative'>
+          {viewport === null || viewport === 'tablet' ? (
+            <div
+              key='reviews-tablet-layout'
+              className={viewport === null
+                ? 'relative hidden tablet:block small-laptop:hidden'
+                : 'relative'}
+            >
               <div className='relative p-6'>
                 <div
                   ref={tabletCarouselRef}
@@ -716,8 +726,13 @@ export function ReviewsCarousel({
             </div>
           ) : null}
 
-          {viewport === 'small-laptop' ? (
-            <div className='relative'>
+          {viewport === null || viewport === 'small-laptop' ? (
+            <div
+              key='reviews-small-laptop-layout'
+              className={viewport === null
+                ? 'relative hidden small-laptop:block'
+                : 'relative'}
+            >
               <div className='relative p-6'>
                 <div
                   ref={smallLaptopCarouselRef}
@@ -769,8 +784,8 @@ export function ReviewsCarousel({
         </div>
 
         {isFetchingNextPage ? (
-          <p className='text-center text-sm text-base-content/70' role='status'>
-            Loading more reviews...
+          <p className='sr-only' role='status' aria-live='polite'>
+            Loading more reviews
           </p>
         ) : null}
 

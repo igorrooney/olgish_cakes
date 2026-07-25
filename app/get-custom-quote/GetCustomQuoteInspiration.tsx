@@ -20,7 +20,7 @@ const inspirationLinks = [
 
 export function GetCustomQuoteInspiration() {
   return (
-    <section className='bg-base-200/35 px-4 py-10 tablet:px-10 tablet:py-14'>
+    <section className='content-auto-section bg-base-200/35 px-4 py-10 tablet:px-10 tablet:py-14'>
       <div className='homepage-container grid gap-8 small-laptop:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]'>
         <div className='max-w-[420px]'>
           <h2 className='font-moreSugar text-[26px] uppercase leading-[1.18] tracking-[0.08em] text-primary-700 tablet:text-[34px]'>

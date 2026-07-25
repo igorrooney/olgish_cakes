@@ -30,7 +30,7 @@ export function GetCustomQuoteFaq() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <section className='bg-base-100 px-4 py-10 tablet:px-10 tablet:py-14' aria-labelledby='custom-quote-faq-title'>
+    <section className='content-auto-section bg-base-100 px-4 py-10 tablet:px-10 tablet:py-14' aria-labelledby='custom-quote-faq-title'>
       <div className='homepage-container grid gap-8 small-laptop:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]'>
         <div className='max-w-[420px]'>
           <h2 id='custom-quote-faq-title' className='font-moreSugar text-[26px] uppercase leading-[1.18] tracking-[0.08em] text-primary-700 tablet:text-[34px]'>

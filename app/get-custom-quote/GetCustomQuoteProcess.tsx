@@ -21,7 +21,7 @@ const quoteSteps = [
 
 export function GetCustomQuoteProcess() {
   return (
-    <section className='bg-base-100 px-4 py-10 tablet:px-10 tablet:py-14'>
+    <section className='content-auto-section bg-base-100 px-4 py-10 tablet:px-10 tablet:py-14'>
       <div className='homepage-container grid gap-8 border-y border-base-300 py-8 tablet:py-10 small-laptop:grid-cols-[minmax(280px,0.7fr)_minmax(0,1.3fr)]'>
         <div className='max-w-[420px]'>
           <p className='font-body text-xs font-semibold uppercase tracking-[0.18em] text-primary-600'>

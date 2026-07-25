@@ -119,6 +119,7 @@ describe('ReviewsCarousel', () => {
       maxWidth: '342px',
       scrollSnapAlign: 'start'
     })
+    expect(screen.getAllByTestId('review-disclosure-slot')[0]).toHaveClass('h-6')
     expect(screen.getByText('Anonymous')).toBeInTheDocument()
     expect(screen.getByText('1 January 2026')).toBeInTheDocument()
     expect(screen.getByText('2 January 2026')).toBeInTheDocument()

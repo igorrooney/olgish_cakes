@@ -16,7 +16,6 @@ import { ValidatorInput } from './ValidatorInput'
 import { OCCASION_OPTIONS, type OccasionOption } from './formOptions'
 import {
   dateMinErrorMessage,
-  formSchema,
   formFieldOrder,
   getTodayDateInputValue,
   getReferenceImageError,
@@ -24,6 +23,7 @@ import {
   referenceImageAccept,
   type FormValues
 } from './mobileForm.utils'
+import { formSchema } from './mobileForm.schema'
 
 const formInitialState: FormValues = {
   fullName: '',

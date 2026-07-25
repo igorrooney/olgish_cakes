@@ -17,7 +17,7 @@ const alice = localFont({
   ],
   variable: '--font-alice',
   display: 'swap',
-  preload: true,
+  preload: false,
   fallback: ['Georgia', 'serif'],
   adjustFontFallback: 'Times New Roman'
 })
@@ -32,7 +32,7 @@ const inter = localFont({
   ],
   variable: '--font-inter',
   display: 'swap',
-  preload: true,
+  preload: false,
   fallback: ['system-ui', 'sans-serif'],
   adjustFontFallback: 'Arial'
 })

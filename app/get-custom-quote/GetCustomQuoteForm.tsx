@@ -25,7 +25,6 @@ import {
   buildGetCustomQuoteSubmission,
   getCustomQuoteFieldOrder,
   getCustomQuoteInitialValues,
-  quoteFormSchema,
   type GetCustomQuoteFormValues
 } from './getCustomQuoteForm.utils'
 
@@ -36,6 +35,8 @@ const optionalFieldOptions = (
     ? [...options]
     : [{ label: 'Select from list', value: '', disabled: true }, ...options]
 )
+
+const loadQuoteFormSchema = () => import('./getCustomQuoteForm.schema')
 
 type GetCustomQuoteFormProps = {
   occasionOptions?: OccasionOption[]
@@ -163,6 +164,7 @@ export function GetCustomQuoteForm({
     setErrors({})
     submitMutation.reset()
 
+    const { quoteFormSchema } = await loadQuoteFormSchema()
     const parsed = quoteFormSchema.safeParse({
       ...formData,
       csrfToken: 'pending-client-validation'
@@ -229,6 +231,9 @@ export function GetCustomQuoteForm({
   return (
     <form
       onSubmit={handleSubmit}
+      onFocusCapture={() => {
+        void loadQuoteFormSchema()
+      }}
       noValidate
       className='flex flex-col gap-5'
       aria-describedby={errors.submit ? 'quote-form-submit-error' : undefined}

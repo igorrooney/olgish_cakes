@@ -213,6 +213,31 @@ describe('RootLayout', () => {
     expect(markup).not.toContain('MoreSugar-Regular.ttf')
   })
 
+  it('avoids eager next/font preloads in the root layout', async () => {
+    await renderRootLayout()
+
+    expect(mockLocalFontCalls).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          variable: '--font-alice',
+          preload: false
+        }),
+        expect.objectContaining({
+          variable: '--font-inter',
+          preload: false
+        }),
+        expect.objectContaining({
+          variable: '--font-oldenburg',
+          preload: true
+        }),
+        expect.objectContaining({
+          variable: '--font-more-sugar',
+          preload: true
+        })
+      ])
+    )
+  })
+
   it('keeps the root shell free of global public providers', async () => {
     const markup = await renderRootLayout()
 

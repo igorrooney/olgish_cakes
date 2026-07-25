@@ -10,7 +10,7 @@ export function GetCustomQuoteFormSection({
   occasionOptions
 }: GetCustomQuoteFormSectionProps) {
   return (
-    <section id='quote-form' className='relative z-10 scroll-mt-24 bg-base-100 px-4 py-10 tablet:px-10 tablet:py-14'>
+    <section id='quote-form' className='content-auto-section relative z-10 scroll-mt-24 bg-base-100 px-4 py-10 tablet:px-10 tablet:py-14'>
       <div className='homepage-container'>
         <div className='grid gap-8 small-laptop:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)]'>
           <div className='max-w-[420px]'>

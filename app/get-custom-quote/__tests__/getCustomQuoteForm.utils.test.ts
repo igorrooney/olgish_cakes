@@ -1,9 +1,9 @@
 import {
   buildGetCustomQuoteSubmission,
   buildQuoteRequirements,
-  getCustomQuoteInitialValues,
-  quoteFormSchema
+  getCustomQuoteInitialValues
 } from '../getCustomQuoteForm.utils'
+import { quoteFormSchema } from '../getCustomQuoteForm.schema'
 
 describe('getCustomQuoteForm.utils', () => {
   it('builds a structured quote requirements summary with the remaining supported fields', () => {
