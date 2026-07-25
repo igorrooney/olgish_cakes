@@ -1,20 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  applyEnquiryRateLimitHeaders,
+  getEnquiryRateLimitIdentifier,
+  takeEnquiryRateLimit,
+  type EnquiryRateLimitResult,
+  type EnquiryRateLimitScope
+} from './enquiry-rate-limit'
+import { logger } from './logger'
+import { getSupabaseAdminClient } from './supabase-admin-client'
 
-// Simple in-memory rate limiter
-// WARNING: In-memory storage only works for single-instance deployments.
-// For production with multiple serverless instances on Vercel, use Vercel KV or Redis.
-// See: https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting-sdk
-// Alternative: Use @vercel/firewall SDK for IP-based rate limiting
-//
-// Production Scale Considerations:
-// - This implementation uses a Map for in-memory storage
-// - In serverless environments with multiple instances, each instance has its own Map
-// - For production scale, consider migrating to:
-//   1. Vercel KV (recommended for Vercel deployments): https://vercel.com/docs/storage/vercel-kv
-//   2. Redis (for other platforms or custom infrastructure)
-//   3. Vercel Firewall (for IP-based rate limiting at edge)
-// - The cleanup interval runs every 5 minutes to prevent memory leaks
-// - For high-traffic scenarios, consider implementing a maximum Map size limit
+// The in-memory store is a development fallback. Public production endpoints opt
+// into the atomic Supabase limiter with distributedScope.
 interface RateLimitStore {
   count: number
   resetTime: number
@@ -38,12 +34,90 @@ if (typeof setInterval !== 'undefined' && process.env.NODE_ENV !== 'test' && !pr
 interface RateLimitOptions {
   windowMs?: number // Time window in milliseconds
   maxRequests?: number // Maximum requests per window
+  distributedScope?: EnquiryRateLimitScope
 }
 
 interface RateLimitResult {
   rateLimited: boolean
   remaining: number
   resetTime: number
+}
+
+const isSupabaseRateLimitConfigured = () =>
+  Boolean(
+    process.env.SUPABASE_URL?.trim() &&
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
+  )
+
+const createRateLimitExceededResponse = (
+  result: EnquiryRateLimitResult
+) => applyEnquiryRateLimitHeaders(
+  NextResponse.json(
+    {
+      error: 'Too many requests',
+      message: 'Rate limit exceeded. Please try again later.',
+      resetTime: result.retryAfterSeconds
+    },
+    { status: 429 }
+  ),
+  result
+)
+
+const createRateLimitUnavailableResponse = () => NextResponse.json(
+  {
+    error: 'Service temporarily unavailable',
+    message: 'We could not safely process this request. Please try again shortly.'
+  },
+  {
+    status: 503,
+    headers: {
+      'Retry-After': '60'
+    }
+  }
+)
+
+const checkDistributedRateLimit = async (
+  request: NextRequest,
+  options: RateLimitOptions
+) => {
+  const maxRequests = options.maxRequests || 10
+  const windowMs = options.windowMs || 60 * 1000
+
+  if (!options.distributedScope) {
+    return null
+  }
+
+  if (!isSupabaseRateLimitConfigured()) {
+    if (process.env.NODE_ENV === 'production') {
+      logger.error('Distributed rate limiter is not configured', {
+        scope: options.distributedScope
+      })
+      return createRateLimitUnavailableResponse()
+    }
+
+    return null
+  }
+
+  try {
+    const result = await takeEnquiryRateLimit(getSupabaseAdminClient(), {
+      scope: options.distributedScope,
+      identifier: getEnquiryRateLimitIdentifier(request),
+      maxRequests,
+      windowMs
+    })
+
+    if (result.rateLimited) {
+      return createRateLimitExceededResponse(result)
+    }
+
+    return result
+  } catch (error) {
+    logger.error('Distributed rate limiter failed', {
+      error,
+      scope: options.distributedScope
+    })
+    return createRateLimitUnavailableResponse()
+  }
 }
 
 /**
@@ -109,6 +183,17 @@ export function withRateLimit(
     // Skip rate limiting in test environment
     if (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID !== undefined) {
       return await handler(request)
+    }
+
+    const distributedResult = await checkDistributedRateLimit(request, options)
+
+    if (distributedResult instanceof NextResponse) {
+      return distributedResult
+    }
+
+    if (distributedResult) {
+      const response = await handler(request)
+      return applyEnquiryRateLimitHeaders(response, distributedResult)
     }
 
     const { rateLimited, remaining, resetTime } = await checkRateLimit(request, options)

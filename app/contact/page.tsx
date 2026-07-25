@@ -18,7 +18,7 @@ type ContactChannel = {
 
 const baseUrl = BUSINESS_CONSTANTS.BASE_URL
 const pageUrl = `${baseUrl}/contact`
-const socialImageUrl = `${baseUrl}/images/olgish-cakes-logo-bakery-brand.png`
+const socialImageUrl = `${baseUrl}/images/honey-cake-medovik.jpg`
 const title = 'Contact Olga in Leeds | Cake Quotes, Delivery and Workshop Help'
 const description =
   'Get in touch with Olga in Leeds about cakes, delivery, postal bakes or workshops. Share what you need, where it is going and any date you already have in mind.'
@@ -39,7 +39,7 @@ const contactChannels: ContactChannel[] = [
   },
   {
     title: 'Phone',
-    detail: 'If talking it through is easier, give me a ring.',
+    detail: 'If talking it through is easier, give us a ring.',
     href: PHONE_UTILS.telLink,
     value: PHONE_UTILS.displayPhone
   }
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
         url: socialImageUrl,
         width: 1200,
         height: 630,
-        alt: 'Olgish Cakes logo and bakery branding'
+        alt: 'Handmade Olgish Cakes honey cake from Leeds'
       }
     ]
   },
@@ -103,26 +103,6 @@ function buildBreadcrumbStructuredData(): StructuredData {
   }
 }
 
-function buildContactPageStructuredData(): StructuredData {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'ContactPage',
-    '@id': `${pageUrl}#webpage`,
-    name: 'Contact Olga about cake quotes, delivery, workshops or general questions',
-    description,
-    url: pageUrl,
-    isPartOf: {
-      '@id': `${baseUrl}/#website`
-    },
-    about: {
-      '@id': `${baseUrl}/#organization`
-    },
-    mainEntity: {
-      '@id': `${baseUrl}/#organization`
-    }
-  }
-}
-
 function buildLocalBusinessStructuredData(): StructuredData {
   return {
     '@context': 'https://schema.org',
@@ -137,7 +117,9 @@ function buildLocalBusinessStructuredData(): StructuredData {
       'Handmade cakes from Leeds, with delivery for suitable bakes and workshops for groups, venues and events.',
     address: {
       '@type': 'PostalAddress',
+      streetAddress: 'Allerton Grange',
       addressLocality: 'Leeds',
+      postalCode: 'LS17',
       addressCountry: 'GB'
     },
     areaServed: [
@@ -216,7 +198,7 @@ function DirectContactCard({
         </p>
         <p className='mt-3 hidden font-body text-[15px] leading-7 tracking-[0.01em] text-base-content/80 md:block md:text-base md:leading-8'>
           If you want to check delivery, collection, timing or whether a workshop idea is workable,
-          send me a message or give me a ring first and I&apos;ll tell you straight.
+          send us a message or give us a ring first and we&apos;ll give you a clear answer.
         </p>
 
         <dl className='mt-4 grid gap-0 tablet:mt-6'>
@@ -254,10 +236,6 @@ export default function ContactPage() {
     <>
       <script
         type='application/ld+json'
-        dangerouslySetInnerHTML={{ __html: toJsonLdScript(buildContactPageStructuredData()) }}
-      />
-      <script
-        type='application/ld+json'
         dangerouslySetInnerHTML={{ __html: toJsonLdScript(buildLocalBusinessStructuredData()) }}
       />
       <script
@@ -282,7 +260,7 @@ export default function ContactPage() {
                     Need a cake, delivery help or workshop details?
                   </h1>
                   <p className='max-w-[560px] font-body text-[14px] leading-6 tracking-[0.01em] text-primary-800 md:text-[15px] tablet:text-[18px] tablet:leading-8'>
-                    Tell me what you are planning, where it needs to go and when you need it. If
+                    Tell us what you are planning, where it needs to go and when you need it. If
                     you are asking for a cake price, the quote form is still the quickest way to
                     start.
                   </p>
@@ -350,18 +328,21 @@ export default function ContactPage() {
               <p className='font-body text-xs font-semibold uppercase tracking-[0.18em] text-primary-600'>
                 General contact form
               </p>
-              <h2 className='mt-3 font-oldenburg text-[2rem] leading-[1.02] tracking-[0.02em] text-primary-800 tablet:text-[2.8rem]'>
-                Send me a message
+              <h2
+                id='contact-form-heading'
+                className='mt-3 font-oldenburg text-[2rem] leading-[1.02] tracking-[0.02em] text-primary-800 tablet:text-[2.8rem]'
+              >
+                Send us a message
               </h2>
               <p className='mt-3 font-body text-[15px] leading-7 tracking-[0.01em] text-base-content/80 tablet:text-base tablet:leading-8'>
-                A few basics are enough. I can tell you quickly what makes sense next.
+                A few basics are enough. We can quickly tell you what makes sense next.
               </p>
               <div className={`${styles.formPromptCard} mt-4 rounded-[28px] border border-primary-100 bg-base-100/85 p-4 shadow-sm md:p-5 tablet:mt-5`}>
                 <h3 className='font-sans text-lg font-semibold leading-7 text-base-content'>
-                  What helps me answer quickly?
+                  What helps us answer quickly?
                 </h3>
                 <p className='mt-2 font-body text-[15px] leading-7 tracking-[0.01em] text-base-content/80'>
-                  A short note is fine. These details usually save a follow-up message before I can
+                  A short note is fine. These details usually save a follow-up message before we can
                   answer properly.
                 </p>
                 <div className='mt-4'>
@@ -378,12 +359,14 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div
+            <section
               id='contact-form-card'
-              className={`${styles.formCard} scroll-mt-24 mx-auto w-full max-w-[760px] rounded-[32px] border border-primary-100 bg-base-100 px-5 py-6 shadow-[0_14px_36px_color-mix(in_srgb,var(--color-primary-500)_8%,transparent)] md:px-7 md:py-7 tablet:px-8 tablet:py-8`}
+              aria-labelledby='contact-form-heading'
+              tabIndex={-1}
+              className={`${styles.formCard} scroll-mt-24 mx-auto w-full max-w-[760px] rounded-[32px] border border-primary-100 bg-base-100 px-5 py-6 shadow-[0_14px_36px_color-mix(in_srgb,var(--color-primary-500)_8%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 md:px-7 md:py-7 tablet:px-8 tablet:py-8`}
             >
               <DeferredContactPageForm />
-            </div>
+            </section>
           </div>
         </section>
       </div>

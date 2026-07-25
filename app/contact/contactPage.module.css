@@ -28,6 +28,10 @@
   gap: 1rem;
 }
 
+.formDateField {
+  grid-column: auto;
+}
+
 .deferredSection {
   content-visibility: auto;
   contain-intrinsic-size: 720px;
@@ -164,7 +168,7 @@
 
   .formPromptCard {
     background: color-mix(in srgb, var(--color-base-100) 85%, transparent);
-    box-shadow: var(--tw-shadow, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--color-base-content) 5%, transparent);
     border: 1px solid color-mix(in srgb, var(--color-primary-100) 100%, transparent);
     border-radius: 1.75rem;
     padding-inline: 1.25rem;
@@ -175,6 +179,10 @@
 @media (min-width: 1380px) {
   .formFieldGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .formDateField {
+    grid-column: span 2 / span 2;
   }
 }
 

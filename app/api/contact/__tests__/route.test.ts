@@ -346,6 +346,33 @@ describe('/api/contact', () => {
       expect(json.details).toContain('phone')
     })
 
+    it.each([
+      ['address', 'a'.repeat(501)],
+      ['city', 'a'.repeat(101)],
+      ['postcode', 'a'.repeat(21)],
+      ['cakeInterest', 'a'.repeat(161)],
+      ['note', 'a'.repeat(2001)],
+      ['giftNote', 'a'.repeat(501)],
+      ['referrer', 'a'.repeat(501)],
+      ['dateNeeded', '2026-02-30']
+    ])('should reject an invalid or oversized %s value', async (field, value) => {
+      const formData = new FormData()
+      formData.append('name', 'John')
+      formData.append('email', 'john@example.com')
+      formData.append('message', 'Test message with enough characters')
+      formData.append(field, value)
+
+      const request = createRequest(formData)
+      const response = await POST(request)
+      const json = await response.json()
+
+      expect(response.status).toBe(400)
+      expect(json.error).toBe('Validation failed')
+      expect(json.details).toContain(field)
+      expect(mockSupabaseInsert).not.toHaveBeenCalled()
+      expect(mockSend).not.toHaveBeenCalled()
+    })
+
     it('should accept a legacy order enquiry without a phone number', async () => {
       const formData = new FormData()
       formData.append('name', 'John')

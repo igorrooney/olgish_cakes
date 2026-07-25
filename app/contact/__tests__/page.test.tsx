@@ -39,6 +39,13 @@ describe('ContactPage', () => {
     expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/contact')
     expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/contact')
     expect(metadata.twitter?.card).toBe('summary_large_image')
+    expect(metadata.openGraph?.images).toEqual([
+      expect.objectContaining({
+        url: 'https://olgishcakes.co.uk/images/honey-cake-medovik.jpg',
+        width: 1200,
+        height: 630
+      })
+    ])
     expect(metadata.keywords).toBeUndefined()
   })
 
@@ -63,7 +70,7 @@ describe('ContactPage', () => {
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
     expect(
       screen.getByText(
-        /tell me what you are planning, where it needs to go and when you need it\./i
+        /tell us what you are planning, where it needs to go and when you need it\./i
       )
     ).toBeInTheDocument()
     expect(
@@ -116,7 +123,7 @@ describe('ContactPage', () => {
     ).toHaveLength(1)
     expect(
       within(desktopContactCard).getByText(
-        /if you want to check delivery, collection, timing or whether a workshop idea is workable, send me a message or give me a ring first and i'll tell you straight\./i
+        /if you want to check delivery, collection, timing or whether a workshop idea is workable, send us a message or give us a ring first and we'll give you a clear answer\./i
       )
     ).toBeInTheDocument()
     expect(
@@ -127,13 +134,13 @@ describe('ContactPage', () => {
     expect(
       screen.getByRole('heading', {
         level: 2,
-        name: 'Send me a message',
+        name: 'Send us a message',
       })
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', {
         level: 3,
-        name: 'What helps me answer quickly?',
+        name: 'What helps us answer quickly?',
       })
     ).toBeInTheDocument()
     expect(
@@ -150,16 +157,16 @@ describe('ContactPage', () => {
       screen.getByText(/if there is a date in the diary, add it\. if not, say what is flexible\./i)
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/tell me whether this is for collection, local delivery or post\./i)
+      screen.getByText(/tell us whether this is for collection, local delivery or post\./i)
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        /a few basics are enough\. i can tell you quickly what makes sense next\./i
+        /a few basics are enough\. we can quickly tell you what makes sense next\./i
       )
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        /a short note is fine\. these details usually save a follow-up message before i can answer properly\./i
+        /a short note is fine\. these details usually save a follow-up message before we can answer properly\./i
       )
     ).toBeInTheDocument()
     expect(
@@ -178,6 +185,8 @@ describe('ContactPage', () => {
     expect(heroLayout.className).toContain(styles.heroLayout)
     expect(formSection).not.toBeNull()
     expect(formCard).not.toBeNull()
+    expect(formCard).toHaveAttribute('aria-labelledby', 'contact-form-heading')
+    expect(formCard).toHaveAttribute('tabindex', '-1')
     expect(
       heroContainer.compareDocumentPosition(formSection as Element) &
         Node.DOCUMENT_POSITION_FOLLOWING
@@ -205,18 +214,21 @@ describe('ContactPage', () => {
     const { container } = render(<ContactPage />)
     const blocks = parseJsonLdScripts(container)
     const breadcrumbBlock = blocks.find(block => block['@type'] === 'BreadcrumbList')
-    const contactPageBlock = blocks.find(block => block['@type'] === 'ContactPage')
     const bakeryBlock = blocks.find(block => block['@type'] === 'Bakery')
 
-    expect(blocks).toHaveLength(3)
-    expect(contactPageBlock).toBeDefined()
+    expect(blocks).toHaveLength(2)
+    expect(blocks.find(block => block['@type'] === 'ContactPage')).toBeUndefined()
     expect(bakeryBlock).toBeDefined()
     expect(breadcrumbBlock).toBeDefined()
     expect(blocks.find(block => block['@type'] === 'Product')).toBeUndefined()
-    expect(contactPageBlock?.name).toBe(
-      'Contact Olga about cake quotes, delivery, workshops or general questions'
-    )
     expect(bakeryBlock?.telephone).toBe('+44 786 721 8194')
+    expect(bakeryBlock?.address).toEqual({
+      '@type': 'PostalAddress',
+      streetAddress: 'Allerton Grange',
+      addressLocality: 'Leeds',
+      postalCode: 'LS17',
+      addressCountry: 'GB'
+    })
     expect((breadcrumbBlock?.itemListElement as Array<Record<string, unknown>>)[1]?.name).toBe(
       'Contact'
     )

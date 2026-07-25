@@ -158,6 +158,14 @@ describe('ContactPageForm', () => {
     expect(screen.getByText(/pick the closest match/i)).toBeInTheDocument()
     expect(screen.getByText(/leave this blank if the date is still up in the air/i)).toBeInTheDocument()
     expect(fieldGrid).toHaveClass(styles.formFieldGrid)
+    expect(document.querySelector(`.${styles.formDateField}`)).not.toBeNull()
+    expect(
+      screen.getByText(/we'll use your details only to reply to this enquiry/i)
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /privacy policy/i })).toHaveAttribute(
+      'href',
+      '/privacy'
+    )
     expect(
       screen.queryByText(/the most helpful next step/i)
     ).not.toBeInTheDocument()

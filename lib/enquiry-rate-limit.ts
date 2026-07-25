@@ -2,7 +2,10 @@ import 'server-only'
 import type { NextRequest, NextResponse } from 'next/server'
 import type { SupabaseAdminClient } from './supabase-admin-client'
 
-export type EnquiryRateLimitScope = 'workshop-enquiry' | 'custom-cake-enquiry'
+export type EnquiryRateLimitScope =
+  | 'contact-enquiry'
+  | 'workshop-enquiry'
+  | 'custom-cake-enquiry'
 
 type EnquiryRateLimitRpcRow = {
   allowed: boolean
