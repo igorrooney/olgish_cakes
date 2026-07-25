@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import type { CSSProperties } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -10,12 +9,14 @@ import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import workshopDecoratingImage from '@/public/images/workshops/workshop-decorating.png'
 import workshopFinishedCakesImage from '@/public/images/workshops/workshop-finished-cakes.png'
 import workshopSetupImage from '@/public/images/workshops/workshop-setup.png'
-import { DeferredViewportImage } from './DeferredViewportImage'
 import { WorkshopEnquiryFormSection } from './WorkshopEnquiryFormSection'
 
-const title = 'Mobile Cake Decorating Workshops in London and Across the UK'
+const title = 'Mobile Cake Decorating Workshops Across the UK'
 const description =
-  'Mobile cake decorating workshops for office teams, birthdays and hen parties in London and across the UK. Each session includes cakes ready to decorate, tools, boxes and live teaching, with prices from \u00A325 per person and most workshops running for around 1.5 hours.'
+  'Mobile cake decorating workshops for groups of four or more across the UK. From \u00A325 per person, with cakes, tools, boxes and live teaching included. All ages are welcome, with vegan-friendly and gluten-friendly options available by agreement.'
+const socialImageUrl = `${BUSINESS_CONSTANTS.BASE_URL}/images/workshops/workshops-social-card.png`
+const portfolioCaption =
+  'Portfolio cake examples \u2014 your workshop design will be agreed with your quote.'
 
 type StructuredData = Record<string, unknown>
 
@@ -36,6 +37,15 @@ type WorkshopPhoto = {
   alt: string
 }
 
+type PracticalDetail = {
+  title: string
+  body: string
+  link?: {
+    href: string
+    label: string
+  }
+}
+
 const workshopFacts: WorkshopFact[] = [
   {
     label: 'From',
@@ -49,8 +59,13 @@ const workshopFacts: WorkshopFact[] = [
   },
   {
     label: 'Coverage',
-    value: 'London and the UK',
-    detail: 'London is the starting point, then nearby counties and wider UK travel are quoted case by case.',
+    value: 'Across the UK',
+    detail: 'We travel around the UK, with availability and any additional travel costs quoted case by case.',
+  },
+  {
+    label: 'Groups',
+    value: '4 or more',
+    detail: 'Larger groups are welcome. Send us your numbers so we can plan the room properly.',
   },
 ]
 
@@ -105,25 +120,51 @@ const heroPhotos: WorkshopPhoto[] = [
     src: workshopSetupImage,
     alt: 'White buttercream cake with piped swirls and black ribbon bows',
   },
+  {
+    src: workshopFinishedCakesImage,
+    alt: 'Blue birthday cake with gold accents and printed photo toppers',
+  },
 ]
 
-const logisticsPhoto: WorkshopPhoto = {
-  src: workshopFinishedCakesImage,
-  alt: 'Blue birthday cake with gold accents and printed photo toppers',
-}
-
-const deferredSectionStyle: CSSProperties = {
-  contentVisibility: 'auto',
-  containIntrinsicSize: '900px',
-}
-
-const deferredHeroDetailStyle: CSSProperties = {
-  contentVisibility: 'auto',
-  containIntrinsicSize: '360px',
-}
+const practicalDetails: PracticalDetail[] = [
+  {
+    title: 'Group size',
+    body: 'Workshops are available for groups of four or more participants. Larger groups are welcome. Please send us your numbers and venue details so we can plan the setup.',
+  },
+  {
+    title: 'Ages and supervision',
+    body: 'Workshops are suitable for all ages. Children must be supervised by a responsible adult throughout the workshop.',
+  },
+  {
+    title: 'Dietary and allergen information',
+    body: 'Gluten-friendly and vegan-friendly workshop options are available. Our products are prepared in a kitchen where milk, eggs, wheat, gluten, nuts, peanuts, soya and other allergens are handled. Although we take care during preparation, we cannot guarantee any product is free from cross-contamination.',
+    link: {
+      href: '/allergens',
+      label: 'Read our allergen information',
+    },
+  },
+  {
+    title: 'Payment terms',
+    body: 'We confirm any deposit and final-payment schedule with your quote before you book.',
+  },
+  {
+    title: 'Changes to your booking',
+    body: 'Please contact us as soon as possible if you need to change your booking. We consider rescheduling requests depending on availability.',
+  },
+  {
+    title: 'Travel costs',
+    body: 'Travel outside our standard area is available by prior agreement. We discuss and confirm any additional travel costs before accepting your booking.',
+  },
+  {
+    title: 'How early to enquire',
+    body: 'We recommend enquiring as early as possible to secure your preferred date. If your workshop is only one week away, please still get in touch. We will always do our best to accommodate your booking.',
+  },
+]
 
 export const metadata: Metadata = {
-  title,
+  title: {
+    absolute: title,
+  },
   description,
   metadataBase: new URL(BUSINESS_CONSTANTS.BASE_URL),
   alternates: {
@@ -136,11 +177,28 @@ export const metadata: Metadata = {
     siteName: BUSINESS_CONSTANTS.NAME,
     locale: 'en_GB',
     type: 'website',
+    images: [
+      {
+        url: socialImageUrl,
+        width: 1200,
+        height: 630,
+        alt: 'Olgish Cakes mobile cake decorating workshops across the UK',
+        type: 'image/png',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title,
     description,
+    images: [
+      {
+        url: socialImageUrl,
+        width: 1200,
+        height: 630,
+        alt: 'Olgish Cakes mobile cake decorating workshops across the UK',
+      },
+    ],
   },
   robots: {
     index: true,
@@ -217,9 +275,9 @@ export default function WorkshopsPage() {
                 Cake decorating workshops at your venue
               </h1>
               <p className='max-w-[35rem] text-[15px] leading-7 text-base-content/84 tablet:text-[18px] tablet:leading-8'>
-                We get asked for these workshops by office teams, birthdays and hen parties. Most
-                of them are in London, but we do travel elsewhere in the UK when the numbers, venue
-                and timings make sense. Some briefs are an easy yes. Some are not.
+                We get asked for these workshops by office teams, birthdays and hen parties. We run
+                them around the UK when the numbers, venue and timings make sense. Some briefs are
+                an easy yes. Some are not.
               </p>
               <p className='max-w-[35rem] text-[15px] leading-7 text-base-content/76 tablet:text-[17px] tablet:leading-8'>
                 We prep the cakes before we arrive, so each guest sits down to one ready to
@@ -246,57 +304,64 @@ export default function WorkshopsPage() {
 
           </div>
 
-          <div className='grid gap-3 tablet:gap-4'>
+          <div className='mx-auto grid w-full max-w-[300px] gap-3 tablet:max-w-[460px] tablet:grid-cols-[minmax(0,300px)_144px] tablet:items-start tablet:gap-4 small-laptop:mx-0'>
             <figure className='overflow-hidden rounded-[30px] border border-base-200 bg-base-100 shadow-sm'>
-              <div className='relative h-[250px] w-full tablet:h-[420px] small-laptop:h-[500px]'>
+              <div className='relative aspect-square w-full'>
                 <Image
                   src={heroPhotos[0].src}
                   alt={heroPhotos[0].alt}
                   preload
+                  fetchPriority='high'
                   decoding='async'
                   fill
                   className='object-cover'
-                  sizes='(min-width: 1280px) 560px, (min-width: 1024px) 46vw, calc(100vw - 2rem)'
+                  sizes='300px'
                 />
               </div>
             </figure>
 
-            <div
-              className='grid gap-3 tablet:grid-cols-[0.92fr_1.08fr] tablet:items-start tablet:gap-4'
-              style={deferredHeroDetailStyle}
-            >
-              <figure className='overflow-hidden rounded-[24px] border border-base-200 bg-base-100 shadow-sm'>
-                <div className='relative h-[220px] w-full tablet:h-[220px]'>
-                  <DeferredViewportImage
-                    src={heroPhotos[1].src}
-                    alt={heroPhotos[1].alt}
-                    fill
-                    fetchPriority='low'
-                    className='object-cover'
-                    sizes='(min-width: 1280px) 240px, (min-width: 1024px) 20vw, calc((100vw - 3rem) * 0.4)'
-                  />
-                </div>
-              </figure>
+            <div className='grid grid-cols-2 gap-3 tablet:grid-cols-1 tablet:gap-4'>
+              {heroPhotos.slice(1).map(photo => (
+                <figure
+                  key={photo.alt}
+                  className='overflow-hidden rounded-[24px] border border-base-200 bg-base-100 shadow-sm'
+                >
+                  <div className='relative aspect-square w-full'>
+                    <Image
+                      src={photo.src}
+                      alt={photo.alt}
+                      fill
+                      loading='lazy'
+                      fetchPriority='low'
+                      className='object-cover'
+                      sizes='144px'
+                    />
+                  </div>
+                </figure>
+              ))}
+            </div>
 
-              <div className='rounded-[24px] border border-primary/10 bg-base-100/90 p-3 shadow-sm tablet:p-5'>
-                <h2 className='font-oldenburg text-[1.3rem] leading-[1.08] tracking-[0.02em] text-primary-800 tablet:text-[1.7rem]'>
-                  Included in every session
-                </h2>
-                <div className='mt-3 tablet:mt-4'>
-                  <WorkshopBulletList items={heroFeaturePoints} compact />
-                </div>
+            <p className='text-xs leading-5 text-base-content/70 tablet:col-span-2'>
+              {portfolioCaption}
+            </p>
+
+            <div className='rounded-[24px] border border-primary/10 bg-base-100/90 p-4 shadow-sm tablet:col-span-2 tablet:p-5'>
+              <h2 className='font-oldenburg text-[1.3rem] leading-[1.08] tracking-[0.02em] text-primary-800 tablet:text-[1.7rem]'>
+                Included in every session
+              </h2>
+              <div className='mt-3 tablet:mt-4'>
+                <WorkshopBulletList items={heroFeaturePoints} compact />
               </div>
             </div>
           </div>
 
           <dl
-            className='grid grid-cols-2 gap-3 border-t border-primary/12 pt-4 tablet:grid-cols-3 tablet:gap-4 tablet:pt-6 small-laptop:max-w-[35rem]'
-            style={deferredHeroDetailStyle}
+            className='grid grid-cols-2 gap-3 border-t border-primary/12 pt-4 tablet:gap-4 tablet:pt-6 small-laptop:max-w-[35rem]'
           >
-            {workshopFacts.map((fact, index) => (
+            {workshopFacts.map(fact => (
               <div
                 key={fact.label}
-                className={`rounded-[22px] border border-primary/10 bg-base-100/90 p-3 shadow-sm tablet:p-4 ${index === workshopFacts.length - 1 ? 'col-span-2 tablet:col-span-1' : ''}`}
+                className='rounded-[22px] border border-primary/10 bg-base-100/90 p-3 shadow-sm tablet:p-4'
               >
                 <dt className='text-[0.78rem] font-semibold uppercase tracking-[0.18em] text-primary-700'>
                   {fact.label}
@@ -313,7 +378,7 @@ export default function WorkshopsPage() {
         </div>
       </section>
 
-      <section className={categoryLandingStandardShellClassName} style={deferredSectionStyle}>
+      <section className={categoryLandingStandardShellClassName}>
         <div className='grid gap-5 small-laptop:grid-cols-[minmax(0,0.84fr)_minmax(0,1.16fr)] small-laptop:items-start small-laptop:gap-8'>
           <div className='max-w-[35rem]'>
             <h2 className='font-oldenburg text-3xl tracking-[0.08em] text-base-content tablet:text-4xl'>
@@ -353,34 +418,17 @@ export default function WorkshopsPage() {
 
       <section
         className={`${categoryLandingStandardShellClassName} pt-0`}
-        style={deferredSectionStyle}
       >
         <div className='grid gap-5 small-laptop:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)] small-laptop:items-start small-laptop:gap-8'>
-          <div className='space-y-5 tablet:space-y-6'>
-            <div className='max-w-[38rem]'>
-              <h2 className='font-oldenburg text-3xl tracking-[0.08em] text-base-content tablet:text-4xl'>
-                Before you book
-              </h2>
-              <p className='mt-4 text-base leading-6 text-base-content/80 tablet:text-lg tablet:leading-7'>
-                These workshops are not right for every room or every schedule. They go best when
-                people are there to sit down, decorate and stay with it, and when we can get in and
-                set up properly before everyone arrives.
-              </p>
-            </div>
-
-            <figure className='overflow-hidden rounded-[28px] border border-base-200 bg-base-100 shadow-sm'>
-              <div className='relative h-[280px] w-full tablet:h-[360px]'>
-                <Image
-                  src={logisticsPhoto.src}
-                  alt={logisticsPhoto.alt}
-                  fill
-                  loading='lazy'
-                  fetchPriority='low'
-                  className='object-cover'
-                  sizes='(min-width: 1280px) 560px, (min-width: 1024px) 46vw, calc(100vw - 2rem)'
-                />
-              </div>
-            </figure>
+          <div className='max-w-[38rem]'>
+            <h2 className='font-oldenburg text-3xl tracking-[0.08em] text-base-content tablet:text-4xl'>
+              Before you book
+            </h2>
+            <p className='mt-4 text-base leading-6 text-base-content/80 tablet:text-lg tablet:leading-7'>
+              These workshops are not right for every room or every schedule. They go best when
+              people are there to sit down, decorate and stay with it, and when we can get in and
+              set up properly before everyone arrives.
+            </p>
           </div>
 
           <div className='grid content-start gap-4 small-laptop:gap-8 small-laptop:pl-4'>
@@ -426,6 +474,43 @@ export default function WorkshopsPage() {
               </div>
             </article>
           </div>
+        </div>
+      </section>
+
+      <section className={`${categoryLandingStandardShellClassName} pt-0`}>
+        <div className='max-w-[760px]'>
+          <h2 className='font-oldenburg text-3xl tracking-[0.08em] text-base-content tablet:text-4xl'>
+            Practical workshop details
+          </h2>
+          <p className='mt-4 text-base leading-7 text-base-content/80 tablet:text-lg'>
+            These are the details people usually need before sending an enquiry. We confirm the
+            final format, payment schedule and travel cost with your quote.
+          </p>
+        </div>
+
+        <div className='mt-6 grid gap-4 tablet:grid-cols-2 small-laptop:grid-cols-3'>
+          {practicalDetails.map(detail => (
+            <article
+              key={detail.title}
+              className='rounded-[24px] border border-base-300/70 bg-base-100 p-5 shadow-sm tablet:p-6'
+            >
+              <h3 className='font-oldenburg text-[1.4rem] leading-[1.08] tracking-[0.02em] text-primary-800'>
+                {detail.title}
+              </h3>
+              <p className='mt-3 text-sm leading-6 text-base-content/78 tablet:text-base tablet:leading-7'>
+                {detail.body}
+              </p>
+              {detail.link ? (
+                <Link
+                  href={detail.link.href}
+                  prefetch={false}
+                  className='link mt-4 inline-flex font-semibold text-primary-700'
+                >
+                  {detail.link.label}
+                </Link>
+              ) : null}
+            </article>
+          ))}
         </div>
       </section>
 

@@ -64,4 +64,23 @@ describe('csrf helpers', () => {
 
     expect(validateCsrfToken(token, 'different-token')).toBe(false)
   })
+
+  it('returns false for same-length token and signature tampering', async () => {
+    process.env.CSRF_SECRET = 'a'.repeat(32)
+
+    const { generateCsrfToken, validateCsrfToken } = await import('../csrf')
+    const token = generateCsrfToken()
+    const [secret, tokenPart, signature] = token.split(':')
+    const changedTokenPart = `${tokenPart.slice(0, -1)}${tokenPart.endsWith('a') ? 'b' : 'a'}`
+    const changedSignature = `${signature.slice(0, -1)}${signature.endsWith('a') ? 'b' : 'a'}`
+
+    expect(validateCsrfToken(
+      `${secret}:${changedTokenPart}:${signature}`,
+      `${secret}:${changedTokenPart}:${signature}`
+    )).toBe(false)
+    expect(validateCsrfToken(
+      `${secret}:${tokenPart}:${changedSignature}`,
+      `${secret}:${tokenPart}:${changedSignature}`
+    )).toBe(false)
+  })
 })

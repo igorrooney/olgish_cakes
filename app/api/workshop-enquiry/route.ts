@@ -52,29 +52,14 @@ const logSupabaseInsertFailure = (error: unknown) => {
     operation: 'workshop_enquiries.insert',
     table: 'workshop_enquiries',
     errorName: errorRecord?.name ?? null,
-    errorCode: errorRecord?.code ?? null,
-    errorMessage: errorRecord?.message ?? null,
-    errorDetails: errorRecord?.details ?? null,
-    errorHint: errorRecord?.hint ?? null,
-    rawError: errorRecord ?? error
+    errorCode: errorRecord?.code ?? null
   })
 }
 
-const logNotificationFailure = (
-  step: NotificationError['step'],
-  errorMessage: string,
-  context: {
-    customerName: string
-    customerEmail: string
-    preferredDate: string
-  }
-) => {
+const logNotificationFailure = (step: NotificationError['step']) => {
   console.error('Workshop enquiry notification failed', {
-    step,
-    errorMessage,
-    customerName: context.customerName,
-    customerEmail: context.customerEmail,
-    preferredDate: context.preferredDate
+    operation: 'workshop-enquiry.notification',
+    step
   })
 }
 
@@ -83,21 +68,23 @@ type NotificationError = {
   message: string
 }
 
-const logFailureAlertFailure = (
-  errorMessage: string,
-  context: {
-    customerName: string
-    customerEmail: string
-    preferredDate: string
-    notificationErrors: NotificationError[]
-  }
-) => {
+const logFailureAlertFailure = (notificationErrors: NotificationError[]) => {
   console.error('Workshop enquiry failure alert failed', {
-    errorMessage,
-    customerName: context.customerName,
-    customerEmail: context.customerEmail,
-    preferredDate: context.preferredDate,
-    failedSteps: context.notificationErrors.map((entry) => entry.step)
+    operation: 'workshop-enquiry.failure-alert',
+    failedSteps: notificationErrors.map((entry) => entry.step)
+  })
+}
+
+const logWorkshopProcessingFailure = (error: unknown) => {
+  const errorRecord =
+    typeof error === 'object' && error !== null
+      ? error as Record<string, unknown>
+      : null
+
+  console.error('Workshop enquiry processing failed', {
+    operation: 'workshop-enquiry.process',
+    errorName: errorRecord?.name ?? null,
+    errorCode: errorRecord?.code ?? null
   })
 }
 
@@ -268,11 +255,6 @@ export async function POST(request: NextRequest) {
       adminPath: '/admin'
     })
 
-    const notificationContext = {
-      customerName: validated.fullName,
-      customerEmail: validated.email,
-      preferredDate: validated.preferredDate
-    }
     const notificationErrors: NotificationError[] = []
     let adminEmailSent = false
     let customerEmailSent = false
@@ -365,7 +347,7 @@ export async function POST(request: NextRequest) {
 
     if (notificationErrors.length > 0) {
       notificationErrors.forEach((entry) => {
-        logNotificationFailure(entry.step, entry.message, notificationContext)
+        logNotificationFailure(entry.step)
       })
 
       const failureAlertResult = await sendFailureAlertEmail({
@@ -385,10 +367,7 @@ export async function POST(request: NextRequest) {
       failureAlertSent = failureAlertResult.sent
 
       if (!failureAlertResult.sent) {
-        logFailureAlertFailure(failureAlertResult.errorMessage, {
-          ...notificationContext,
-          notificationErrors
-        })
+        logFailureAlertFailure(notificationErrors)
       }
     }
 
@@ -427,7 +406,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Error processing workshop enquiry:', error)
+    logWorkshopProcessingFailure(error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

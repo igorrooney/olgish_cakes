@@ -1,7 +1,14 @@
-import { createHmac, randomBytes } from 'crypto'
+import { createHmac, randomBytes, timingSafeEqual } from 'crypto'
 
 const CSRF_TOKEN_COOKIE = 'csrf-token'
 const CSRF_SECRET_MIN_LENGTH = 32
+
+function constantTimeEqual(left: string, right: string): boolean {
+  const leftBuffer = Buffer.from(left)
+  const rightBuffer = Buffer.from(right)
+
+  return leftBuffer.length === rightBuffer.length && timingSafeEqual(leftBuffer, rightBuffer)
+}
 
 function getCsrfSecret(): string {
   const csrfSecret = process.env.CSRF_SECRET?.trim()
@@ -40,7 +47,7 @@ export function validateCsrfToken(token: string, cookieToken: string): boolean {
   }
 
   // Tokens must match
-  if (token !== cookieToken) {
+  if (!constantTimeEqual(token, cookieToken)) {
     return false
   }
 
@@ -57,7 +64,7 @@ export function validateCsrfToken(token: string, cookieToken: string): boolean {
   hmac.update(secret + tokenPart)
   const expectedSignature = hmac.digest('hex')
 
-  return signature === expectedSignature
+  return constantTimeEqual(signature, expectedSignature)
 }
 
 /**

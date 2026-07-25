@@ -1,16 +1,11 @@
-import { DeferredWorkshopEnquiryForm } from './DeferredWorkshopEnquiryForm'
-
-const deferredSectionStyle = {
-  contentVisibility: 'auto',
-  containIntrinsicSize: '960px',
-} as const
+import { Providers } from '@/app/providers'
+import { WorkshopEnquiryForm } from './WorkshopEnquiryForm'
 
 export function WorkshopEnquiryFormSection() {
   return (
     <section
       id='workshop-enquiry-form'
       className='relative z-10 scroll-mt-24 bg-base-100 px-4 py-6 tablet:px-10 tablet:py-12'
-      style={deferredSectionStyle}
     >
       <div className='homepage-container'>
         <div className='grid gap-4 rounded-[24px] border border-primary/10 bg-base-100 p-4 shadow-sm small-laptop:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] tablet:gap-8 tablet:rounded-[28px] tablet:p-8'>
@@ -29,7 +24,9 @@ export function WorkshopEnquiryFormSection() {
           </div>
 
           <div className='mx-auto w-full max-w-[760px] rounded-[20px] border border-base-200 bg-base-100 px-4 py-4 shadow-sm tablet:rounded-[24px] tablet:px-8 tablet:py-8'>
-            <DeferredWorkshopEnquiryForm />
+            <Providers>
+              <WorkshopEnquiryForm />
+            </Providers>
           </div>
         </div>
       </div>
