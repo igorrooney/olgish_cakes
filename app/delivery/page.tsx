@@ -184,20 +184,9 @@ export default function DeliveryPage() {
       <div className='min-h-screen bg-base-100 text-base-content'>
         <section aria-labelledby='delivery-page-title' className={`border-b border-base-200 ${sectionClassName}`}>
           <div className={containerClassName}>
-            <nav aria-label='Breadcrumb' className='breadcrumbs text-sm text-base-content/70'>
-              <ul>
-                <li>
-                  <Link href='/'>Home</Link>
-                </li>
-                <li>
-                  <span aria-current='page'>Delivery and returns</span>
-                </li>
-              </ul>
-            </nav>
-
             <h1
               id='delivery-page-title'
-              className='mt-6 font-oldenburg text-4xl leading-tight text-primary-800 tablet:text-5xl'
+              className='font-oldenburg text-4xl leading-tight text-primary-800 tablet:text-5xl'
             >
               Delivery and returns
             </h1>
@@ -233,8 +222,9 @@ export default function DeliveryPage() {
             safely. Free standard UK delivery is included for suitable postal products.
           </p>
           <p>
-            We confirm preparation, dispatch and expected delivery timing for your product and date
-            before you buy. Standard delivery is an estimate rather than a guaranteed arrival date.
+            Before you buy, we&apos;ll confirm the preparation time, dispatch timing and expected
+            delivery window for your chosen product and requested date. Standard delivery is an
+            estimate rather than a guaranteed arrival date.
           </p>
           <p>
             If you need a fixed date, ask before ordering. We&apos;ll confirm whether a suitable
@@ -267,7 +257,8 @@ export default function DeliveryPage() {
         <PageSection id='arranging-delivery' title='Arrange delivery or collection'>
           <p>
             Send us the date, postcode and cake you have in mind. We&apos;ll confirm whether it
-            should go by post, stay local or be collected, together with the timing and cost.
+            should go by post, be delivered locally or be collected, together with the timing and
+            cost.
           </p>
           <div className='flex flex-col gap-3 pt-2 tablet:flex-row tablet:flex-wrap'>
             <Link href='/get-custom-quote' prefetch={false} className={primaryButtonClassName}>

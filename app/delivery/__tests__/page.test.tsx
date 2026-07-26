@@ -56,7 +56,7 @@ describe('DeliveryPage', () => {
     const { container } = render(<DeliveryPage />)
 
     expect(container.querySelector('main')).toBeNull()
-    expect(screen.getByRole('navigation', { name: 'Breadcrumb' })).toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1, name: 'Delivery and returns' })).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
     expect(screen.getByRole('heading', { level: 2, name: 'Quick summary' })).toBeInTheDocument()
@@ -89,8 +89,9 @@ describe('DeliveryPage', () => {
       screen.getByText(/free standard uk delivery is included for suitable postal products/i)
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/we confirm preparation, dispatch and expected delivery timing/i)
+      screen.getByText(/we'll confirm the preparation time, dispatch timing and expected delivery window/i)
     ).toBeInTheDocument()
+    expect(screen.getByText(/be delivered locally or be collected/i)).toBeInTheDocument()
     expect(
       screen.getByText(/standard delivery is an estimate rather than a guaranteed arrival date/i)
     ).toBeInTheDocument()
