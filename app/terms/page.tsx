@@ -2,10 +2,10 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
   DEPOSIT_AND_FINAL_PAYMENT_POLICY,
-  GIFT_HAMPER_REFUND_POLICY,
   PAYMENT_METHODS,
   REFUND_AFTER_WORK_POLICY,
-  REFUND_BEFORE_WORK_POLICY
+  REFUND_BEFORE_WORK_POLICY,
+  STATUTORY_RIGHTS_POLICY
 } from '@/lib/public-policies'
 
 const lastUpdated = '6 February 2026'
@@ -56,8 +56,8 @@ const refundItems: DetailItem[] = [
     description: REFUND_AFTER_WORK_POLICY
   },
   {
-    title: 'Gift hampers',
-    description: GIFT_HAMPER_REFUND_POLICY
+    title: 'Your statutory rights',
+    description: STATUTORY_RIGHTS_POLICY
   }
 ]
 
@@ -329,8 +329,10 @@ export default function TermsOfServicePage() {
               <section>
                 <h2 className={sectionTitleClassName}>5. Cancellations and refunds</h2>
                 <p className={sectionTextClassName}>
-                  Our products are made to order and are perishable. We can only offer refunds when we have not
-                  started work on your order. Please contact us as early as possible if you need to cancel.
+                  Our products are made to order and are perishable, so the usual 14-day
+                  change-of-mind cancellation right does not normally apply. We still offer the
+                  cancellation policy below. Please contact us as early as possible if you need to
+                  cancel.
                 </p>
                 <ul className={listClassName}>
                   {refundItems.map(item => (

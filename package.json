@@ -8,6 +8,7 @@
     "icons:all": "tsx scripts/generate-icons.ts",
     "social:workshops": "tsx scripts/generate-workshops-social-card.ts",
     "social:faqs": "tsx scripts/generate-faqs-social-card.ts",
+    "social:delivery": "tsx scripts/generate-delivery-social-card.ts",
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",

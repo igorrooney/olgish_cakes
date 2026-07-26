@@ -1,27 +1,48 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 import { BUSINESS_CONSTANTS, EMAIL_UTILS, PHONE_UTILS } from '@/lib/constants'
+import {
+  REFUND_AFTER_WORK_POLICY,
+  REFUND_BEFORE_WORK_POLICY,
+  STATUTORY_RIGHTS_POLICY
+} from '@/lib/public-policies'
 
 type StructuredData = Record<string, unknown>
 
+type PageSectionProps = {
+  children: ReactNode
+  id: string
+  muted?: boolean
+  title: string
+}
+
 const baseUrl = BUSINESS_CONSTANTS.BASE_URL
 const pageUrl = `${baseUrl}/delivery`
-const socialImageUrl = `${baseUrl}/images/olgish-cakes-logo-bakery-brand.png`
-const title = 'Delivery and Returns | Olgish Cakes'
+const breadcrumbId = `${pageUrl}#breadcrumb`
+const socialImageUrl = `${baseUrl}/images/delivery/delivery-social-card.png`
+const pageTitle = 'Delivery and Returns'
+const socialTitle = `${pageTitle} | Olgish Cakes`
 const description =
-  'Delivery information for Olgish Cakes, including cakes by post across the UK, collection from Leeds, local cake delivery by arrangement, and what to do if there is a problem with the order.'
+  'Delivery and returns information for Olgish Cakes, including free UK delivery for suitable postal cakes, collection from Leeds, local delivery by arrangement, cancellations, and damaged orders.'
 
 const collectionDiscountLabel = '\u00A32'
+const containerClassName = 'mx-auto w-full max-w-5xl'
+const contentClassName = 'max-w-3xl space-y-4 text-base leading-7 text-base-content/80 tablet:text-lg tablet:leading-8'
+const sectionClassName = 'px-4 py-8 tablet:px-10 tablet:py-12'
+const sectionTitleClassName = 'font-oldenburg text-2xl leading-tight text-primary-800 tablet:text-3xl'
+const primaryButtonClassName = 'btn btn-primary min-h-11 px-5 font-semibold normal-case'
+const secondaryButtonClassName = 'btn btn-outline min-h-11 border-primary-300 px-5 font-semibold normal-case text-primary-800'
 
 export const metadata: Metadata = {
-  title,
+  title: pageTitle,
   description,
   metadataBase: new URL(baseUrl),
   alternates: {
     canonical: pageUrl
   },
   openGraph: {
-    title,
+    title: socialTitle,
     description,
     url: pageUrl,
     siteName: BUSINESS_CONSTANTS.NAME,
@@ -32,13 +53,13 @@ export const metadata: Metadata = {
         url: socialImageUrl,
         width: 1200,
         height: 630,
-        alt: 'Olgish Cakes branding for delivery and returns page'
+        alt: 'Olgish Cakes delivery and returns information'
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title,
+    title: socialTitle,
     description,
     images: [socialImageUrl]
   },
@@ -54,6 +75,7 @@ function buildBreadcrumbStructuredData(): StructuredData {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
+    '@id': breadcrumbId,
     itemListElement: [
       {
         '@type': 'ListItem',
@@ -76,7 +98,7 @@ function buildWebPageStructuredData(): StructuredData {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     '@id': `${pageUrl}#webpage`,
-    name: title,
+    name: pageTitle,
     description,
     url: pageUrl,
     isPartOf: {
@@ -84,10 +106,10 @@ function buildWebPageStructuredData(): StructuredData {
     },
     about: {
       '@type': 'Thing',
-      name: 'Cake delivery, cake collection and returns guidance'
+      name: 'Cake delivery, cake collection, cancellations and returns guidance'
     },
     breadcrumb: {
-      '@id': `${pageUrl}#breadcrumb`
+      '@id': breadcrumbId
     }
   }
 }
@@ -124,6 +146,25 @@ function buildOrganizationStructuredData(): StructuredData {
   }
 }
 
+function PageSection({ children, id, muted = false, title }: PageSectionProps) {
+  const backgroundClassName = muted
+    ? 'border-y border-base-200 bg-base-200/30'
+    : ''
+
+  return (
+    <section aria-labelledby={id} className={`${backgroundClassName} ${sectionClassName}`.trim()}>
+      <div className={containerClassName}>
+        <h2 id={id} className={sectionTitleClassName}>
+          {title}
+        </h2>
+        <div className={`mt-5 ${contentClassName}`}>
+          {children}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function DeliveryPage() {
   return (
     <>
@@ -140,136 +181,135 @@ export default function DeliveryPage() {
         dangerouslySetInnerHTML={{ __html: toJsonLdScript(buildOrganizationStructuredData()) }}
       />
 
-      <main className='min-h-screen bg-base-100 text-base-content'>
-        <section className='border-b border-base-200 px-4 py-8 tablet:px-10 tablet:py-12'>
-          <div className='mx-auto max-w-[980px]'>
-            <h1 className='font-oldenburg text-[2.2rem] leading-[0.98] tracking-[0.02em] text-primary-800 tablet:text-[3.2rem]'>
+      <div className='min-h-screen bg-base-100 text-base-content'>
+        <section aria-labelledby='delivery-page-title' className={`border-b border-base-200 ${sectionClassName}`}>
+          <div className={containerClassName}>
+            <nav aria-label='Breadcrumb' className='breadcrumbs text-sm text-base-content/70'>
+              <ul>
+                <li>
+                  <Link href='/'>Home</Link>
+                </li>
+                <li>
+                  <span aria-current='page'>Delivery and returns</span>
+                </li>
+              </ul>
+            </nav>
+
+            <h1
+              id='delivery-page-title'
+              className='mt-6 font-oldenburg text-4xl leading-tight text-primary-800 tablet:text-5xl'
+            >
               Delivery and returns
             </h1>
-            <div className='mt-5 max-w-[70ch] space-y-4 text-[15px] leading-7 text-base-content/80 tablet:text-[17px] tablet:leading-8'>
+            <div className={`mt-5 ${contentClassName}`}>
               <p>
-                Some cakes post well and some do not.
+                Some cakes are made to travel across the UK. Tall celebration cakes and detailed
+                finishes are usually better for collection or local delivery.
               </p>
               <p>
-                For post, I usually send slices and other bakes made for travel. Full celebration
-                cakes are usually collection or local delivery.
+                Send us the date, postcode and cake you have in mind. We&apos;ll confirm the safest
+                delivery method, timing and any extra cost before you book.
               </p>
             </div>
-            <p className='mt-6 max-w-[720px] text-sm leading-7 text-base-content/80 tablet:text-[15px]'>
-              Send me the date, postcode and the cake you want. I can usually tell you quickly
-              what will work.
-            </p>
+
+            <div className='card mt-8 max-w-3xl border border-base-300 bg-base-200/40 shadow-sm'>
+              <div className='card-body gap-3 p-5 tablet:p-6'>
+                <h2 className='card-title font-oldenburg text-xl text-primary-800'>
+                  Quick summary
+                </h2>
+                <ul className='list-disc space-y-2 pl-5 text-sm leading-6 text-base-content/80 tablet:text-base'>
+                  <li>Selected postal cakes include free standard UK delivery.</li>
+                  <li>Celebration cakes can be collected in Leeds or delivered locally by arrangement.</li>
+                  <li>We confirm preparation, dispatch, delivery timing and charges before purchase.</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className='px-4 py-8 tablet:px-10 tablet:py-10'>
-          <div className='mx-auto max-w-[980px]'>
-            <div className='mt-4 max-w-[66ch] space-y-4 text-[15px] leading-7 text-base-content/80 tablet:text-[17px] tablet:leading-8'>
-              <p>
-                By post means slices and other bakes made to travel.
-              </p>
-              <p>
-                Free UK delivery is included for suitable postal cakes. Most postal orders arrive
-                on the next working day, but standard post is still a delivery window rather than
-                a promise.
-              </p>
-              <p>
-                If the date is fixed, ask first. If the timing is too tight, I will say so. For a
-                guaranteed day, Special Delivery is usually the safer route.
-              </p>
-            </div>
-            <Link
-              href='/cakes-by-post'
-              prefetch={false}
-              className='mt-6 inline-flex text-sm font-semibold text-primary-800 underline decoration-primary-200 underline-offset-4'
-            >
+        <PageSection id='postal-delivery' title='Cakes by post across the UK'>
+          <p>
+            Our cakes-by-post range includes slices and other bakes chosen and packed to travel
+            safely. Free standard UK delivery is included for suitable postal products.
+          </p>
+          <p>
+            We confirm preparation, dispatch and expected delivery timing for your product and date
+            before you buy. Standard delivery is an estimate rather than a guaranteed arrival date.
+          </p>
+          <p>
+            If you need a fixed date, ask before ordering. We&apos;ll confirm whether a suitable
+            guaranteed service is available and tell you about any extra charge.
+          </p>
+          <div className='pt-2'>
+            <Link href='/cakes-by-post' prefetch={false} className={secondaryButtonClassName}>
               See cakes by post
             </Link>
           </div>
-        </section>
+        </PageSection>
 
-        <section className='border-y border-base-200 bg-base-200/25 px-4 py-8 tablet:px-10 tablet:py-10'>
-          <div className='mx-auto max-w-[980px]'>
-            <div className='mt-4 max-w-[66ch] space-y-4 text-[15px] leading-7 text-base-content/80 tablet:text-[17px] tablet:leading-8'>
-              <p>
-                Not every cake belongs in the post. Tall celebration cakes, tiered cakes and
-                anything with a polished finish usually need collection or local delivery instead.
-              </p>
-              <p>
-                I work in Leeds and across Yorkshire. If something is going further afield, I will
-                tell you straight if it is workable.
-              </p>
-              <p>
-                Delivery for celebration cakes and larger orders is quoted individually because it
-                depends on size, finish and destination. I regularly deliver around Leeds,
-                Wakefield, Huddersfield, Bradford and York.
-              </p>
-              <p>
-                I confirm the delivery cost before you book. You can also collect from Leeds and
-                save {collectionDiscountLabel}.
-              </p>
-            </div>
-          </div>
-        </section>
+        <PageSection id='local-delivery-collection' title='Local delivery and Leeds collection' muted>
+          <p>
+            Tall celebration cakes, tiered cakes and cakes with detailed finishes usually need
+            collection or local delivery rather than a parcel service.
+          </p>
+          <p>
+            We work in Leeds and across Yorkshire, with regular deliveries around Leeds, Wakefield,
+            Huddersfield, Bradford and York. We&apos;ll tell you honestly if a longer journey is not
+            suitable for the cake.
+          </p>
+          <p>
+            Local delivery is quoted individually because the cost depends on the cake, finish and
+            destination. We confirm the price before you book. You can also collect from Leeds and
+            save {collectionDiscountLabel}.
+          </p>
+        </PageSection>
 
-        <section className='px-4 py-8 tablet:px-10 tablet:py-10'>
-          <div className='mx-auto max-w-[980px]'>
-            <div className='mt-4 max-w-[66ch] space-y-4 text-[15px] leading-7 text-base-content/80 tablet:text-[17px] tablet:leading-8'>
-              <p>
-                If the date matters, send the date, postcode and the cake you have in mind.
-              </p>
-              <p>
-                I will tell you whether it should go by post, stay local, or be collected. If it
-                needs to stay local, I will say so before you book.
-              </p>
-            </div>
-            <div className='mt-6 max-w-[66ch] space-y-3 text-sm leading-6 text-base-content/80'>
-              <a
-                href={PHONE_UTILS.whatsappLink}
-                className='block text-primary-800 underline decoration-primary-200 underline-offset-4'
-                target='_blank'
-                rel='noreferrer noopener'
-              >
-                Message on WhatsApp
-              </a>
-              <a
-                href={EMAIL_UTILS.mailtoLink}
-                className='block text-primary-800 underline decoration-primary-200 underline-offset-4'
-              >
-                {BUSINESS_CONSTANTS.EMAIL}
-              </a>
-              <a
-                href={PHONE_UTILS.telLink}
-                className='block text-primary-800 underline decoration-primary-200 underline-offset-4'
-              >
-                {PHONE_UTILS.displayPhone}
-              </a>
-            </div>
-            <Link
-              href='/get-custom-quote'
-              prefetch={false}
-              className='mt-6 inline-flex text-sm font-semibold text-primary-800 underline decoration-primary-200 underline-offset-4'
-            >
+        <PageSection id='arranging-delivery' title='Arrange delivery or collection'>
+          <p>
+            Send us the date, postcode and cake you have in mind. We&apos;ll confirm whether it
+            should go by post, stay local or be collected, together with the timing and cost.
+          </p>
+          <div className='flex flex-col gap-3 pt-2 tablet:flex-row tablet:flex-wrap'>
+            <Link href='/get-custom-quote' prefetch={false} className={primaryButtonClassName}>
               Ask about delivery
             </Link>
+            <a
+              href={PHONE_UTILS.whatsappLink}
+              className={secondaryButtonClassName}
+              target='_blank'
+              rel='noreferrer noopener'
+            >
+              Message on WhatsApp
+            </a>
+            <a href={EMAIL_UTILS.mailtoLink} className={secondaryButtonClassName}>
+              Email us
+            </a>
+            <a href={PHONE_UTILS.telLink} className={secondaryButtonClassName}>
+              Call {PHONE_UTILS.displayPhone}
+            </a>
           </div>
-        </section>
+        </PageSection>
 
-        <section className='border-t border-base-200 px-4 py-8 tablet:px-10 tablet:py-10'>
-          <div className='mx-auto max-w-[980px]'>
-            <div className='mt-4 max-w-[70ch] space-y-4 text-[15px] leading-7 text-base-content/80 tablet:text-[17px] tablet:leading-8'>
-              <p>
-                If the order arrives damaged or there is a delivery issue, contact me as soon as
-                you can with your order details and photos.
-              </p>
-              <p>
-                Cakes are made to order and food cannot be resold, so returns do not work in the
-                same way as ordinary retail parcels. Message me directly and I will check it.
-              </p>
-            </div>
+        <PageSection id='damaged-orders-returns' title='Damaged orders, cancellations and returns' muted>
+          <p>
+            If an order arrives damaged or there is a delivery problem, contact us as soon as you
+            reasonably can with your order details and photos. We&apos;ll investigate the issue and
+            explain the next step.
+          </p>
+          <p>
+            {REFUND_BEFORE_WORK_POLICY} {REFUND_AFTER_WORK_POLICY}
+          </p>
+          <p>
+            {STATUTORY_RIGHTS_POLICY}{' '}
+            We&apos;ll provide the remedy required by law, which may include a replacement or refund.
+          </p>
+          <div className='pt-2'>
+            <Link href='/terms' prefetch={false} className={secondaryButtonClassName}>
+              Read our terms
+            </Link>
           </div>
-        </section>
-      </main>
+        </PageSection>
+      </div>
     </>
   )
 }

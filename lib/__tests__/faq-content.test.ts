@@ -4,9 +4,9 @@ import { CANONICAL_FAQS } from '../faq-content'
 import {
   ALLERGEN_CROSS_CONTACT_POLICY,
   DEPOSIT_AND_FINAL_PAYMENT_POLICY,
-  GIFT_HAMPER_REFUND_POLICY,
   REFUND_AFTER_WORK_POLICY,
-  REFUND_BEFORE_WORK_POLICY
+  REFUND_BEFORE_WORK_POLICY,
+  STATUTORY_RIGHTS_POLICY
 } from '../public-policies'
 
 describe('canonical FAQ content', () => {
@@ -37,7 +37,7 @@ describe('canonical FAQ content', () => {
     expect(paymentAnswer).toContain(DEPOSIT_AND_FINAL_PAYMENT_POLICY)
     expect(cancellationAnswer).toContain(REFUND_BEFORE_WORK_POLICY)
     expect(cancellationAnswer).toContain(REFUND_AFTER_WORK_POLICY)
-    expect(cancellationAnswer).toContain(GIFT_HAMPER_REFUND_POLICY)
+    expect(cancellationAnswer).toContain(STATUTORY_RIGHTS_POLICY)
     expect(paymentAnswer).not.toMatch(/GBP200|50%|seven days/i)
     expect(cancellationAnswer).not.toMatch(/more than 14 days|refund half|inside 7 days/i)
   })

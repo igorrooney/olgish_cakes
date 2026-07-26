@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { CatalogFaqAccordion } from '../cakes/components/CatalogFaqAccordion'
 import type { TabletCake } from '../cakes/components/types'
 import { CatalogPageTemplate } from '../cakes/CatalogPageTemplate'
@@ -178,13 +179,32 @@ export default async function CakesByPostPage() {
       lazyCustomCakesPriceCeilingHint={customCakesPriceCeilingHint}
       lazyByPostCakesEndpoint='/api/catalog/by-post-cakes'
       postCatalogContent={(
-        <CatalogFaqAccordion
-          sectionId='cakes-by-post-faq-title'
-          title='Cakes by post FAQs'
-          intro='Quick answers about UK delivery, gifting options, and what to expect from cakes by post.'
-          mobileIntro='UK delivery and gifting FAQs for cakes by post.'
-          items={giftHampersCatalogFaqItems}
-        />
+        <>
+          <CatalogFaqAccordion
+            sectionId='cakes-by-post-faq-title'
+            title='Cakes by post FAQs'
+            intro='Quick answers about UK delivery, gifting options, and what to expect from cakes by post.'
+            mobileIntro='UK delivery and gifting FAQs for cakes by post.'
+            items={giftHampersCatalogFaqItems}
+          />
+          <aside
+            aria-label='Delivery and returns information'
+            className='mx-auto w-full max-w-5xl px-4 pb-16 tablet:px-0'
+          >
+            <div className='alert border border-base-300 bg-base-100 text-base-content shadow-sm'>
+              <div>
+                <p className='font-semibold'>Need delivery or returns details?</p>
+                <p className='mt-1 text-sm leading-6 text-base-content/75'>
+                  Read how UK post, local delivery, Leeds collection, cancellations and damaged
+                  orders are handled.
+                </p>
+              </div>
+              <Link href='/delivery' className='btn btn-outline min-h-11 font-semibold normal-case'>
+                Delivery and returns
+              </Link>
+            </div>
+          </aside>
+        </>
       )}
       localBusinessData={localBusinessData}
       additionalStructuredData={[

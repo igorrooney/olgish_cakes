@@ -11,10 +11,10 @@ export const DEPOSIT_AND_FINAL_PAYMENT_POLICY =
   'If your order needs a deposit or final-payment deadline, we’ll confirm both in your quote before you book.'
 
 export const REFUND_BEFORE_WORK_POLICY =
-  'If we have not started work on your order, we can refund your payment.'
+  'If we have not started preparing your order, we can cancel it and refund your payment.'
 
 export const REFUND_AFTER_WORK_POLICY =
-  'Once preparation or baking has begun, deposits are non-refundable.'
+  'Once preparation or baking has begun, made-to-order and perishable products are not eligible for a change-of-mind cancellation or refund.'
 
-export const GIFT_HAMPER_REFUND_POLICY =
-  'Gift hamper orders can be refunded any time before delivery.'
+export const STATUTORY_RIGHTS_POLICY =
+  'This does not affect your statutory rights if an order is faulty, damaged, not as described or not fit for purpose.'

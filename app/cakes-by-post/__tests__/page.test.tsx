@@ -274,6 +274,13 @@ describe('CakesByPostPage', () => {
     expect(
       screen.getByText('For corporate orders, branded cake slices and larger hamper orders are available by request.')
     ).toBeInTheDocument()
+    expect(
+      screen.getByText(/read how uk post, local delivery, leeds collection, cancellations and damaged orders/i)
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Delivery and returns' })).toHaveAttribute(
+      'href',
+      '/delivery'
+    )
   })
 
   it('renders catalog suspense fallback during catalog suspension', async () => {
