@@ -37,7 +37,7 @@ export function SiteFooter() {
       <footer className='bg-base-100 text-base-content' style={deferredFooterStyle}>
         <div className='footer w-full px-6 py-6 tablet:px-20 tablet:py-8'>
           <div className='grid grid-cols-2 gap-x-6 gap-y-6 text-left tablet:grid-cols-3 tablet:items-start tablet:justify-items-start tablet:justify-start tablet:gap-x-10 tablet:gap-y-8'>
-            <nav className='flex flex-col gap-2'>
+            <nav aria-label='Footer navigation' className='flex flex-col gap-2'>
               <p className={footerSectionHeadingClassName}>
                 Navigation
               </p>
@@ -57,7 +57,7 @@ export function SiteFooter() {
                 Contact
               </a>
             </nav>
-            <nav className='flex flex-col gap-2'>
+            <nav aria-label='Contact details' className='flex flex-col gap-2'>
               <p className={footerSectionHeadingClassName}>
                 Contact
               </p>
@@ -74,7 +74,7 @@ export function SiteFooter() {
                 Leeds, LS17
               </span>
             </nav>
-            <nav className='col-span-2 flex flex-col gap-2 tablet:col-span-1'>
+            <nav aria-label='Legal and site information' className='col-span-2 flex flex-col gap-2 tablet:col-span-1'>
               <p className={footerSectionHeadingClassName}>
                 Footer
               </p>
@@ -101,7 +101,7 @@ export function SiteFooter() {
         </div>
         <div className='border-t border-base-300'>
           <div className='footer place-items-start px-6 py-5 text-left tablet:!grid-flow-col tablet:flex-start tablet:items-center tablet:py-6 lg:px-20'>
-            <aside className='flex items-center gap-3'>
+            <div className='flex items-center gap-3'>
               <div className='relative h-12 w-12 tablet:h-16 tablet:w-16'>
                 <img
                   src='/images/olgish-cakes-logo-bakery-brand-128.webp'
@@ -122,8 +122,8 @@ export function SiteFooter() {
                   Ukrainian heart, Yorkshire soul
                 </p>
               </div>
-            </aside>
-            <nav className='mt-3 w-full tablet:mt-0 tablet:w-auto'>
+            </div>
+            <nav aria-label='Social media' className='mt-3 w-full tablet:mt-0 tablet:w-auto'>
               <div className='mx-auto flex items-center justify-center gap-4'>
                 <a
                   href='https://www.facebook.com/p/Olgish-Cakes-61557043820222'

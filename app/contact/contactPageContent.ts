@@ -4,5 +4,5 @@ export const contactMessageExample =
 export const quickQuestionPrompts = [
   `Example: ${contactMessageExample}`,
   'If there is a date in the diary, add it. If not, say what is flexible.',
-  'Tell me whether this is for collection, local delivery or post.'
+  'Tell us whether this is for collection, local delivery or post.'
 ]

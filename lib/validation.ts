@@ -99,17 +99,46 @@ const optionalUkPhoneSchema = z
     }
   })
 
+const optionalContactText = (maxLength: number, fieldName: string) => z
+  .string()
+  .trim()
+  .max(maxLength, `${fieldName} must be ${maxLength} characters or fewer`)
+  .optional()
+
+const isIsoCalendarDate = (value: string) => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return false
+  }
+
+  const parsedDate = new Date(`${value}T00:00:00.000Z`)
+  return !Number.isNaN(parsedDate.getTime()) &&
+    parsedDate.toISOString().slice(0, 10) === value
+}
+
+const optionalContactDateSchema = z
+  .string()
+  .trim()
+  .max(10, 'Date must use YYYY-MM-DD format')
+  .refine(
+    (value) => value.length === 0 || isIsoCalendarDate(value),
+    'Date must use YYYY-MM-DD format'
+  )
+  .optional()
+
 // Contact form validation
 export const contactFormSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters').max(100),
-  email: z.string().email('Invalid email address'),
+  name: z.string().trim().min(2, 'Name must be at least 2 characters').max(100),
+  email: z.string().trim().email('Invalid email address').max(254),
   phone: optionalUkPhoneSchema,
-  message: z.string().max(2000).optional(), // Optional when order form, required otherwise
-  address: z.string().optional(),
-  city: z.string().optional(),
-  postcode: z.string().optional(),
-  dateNeeded: z.string().optional(),
-  cakeInterest: z.string().optional(),
+  message: optionalContactText(2000, 'Message'),
+  address: optionalContactText(500, 'Address'),
+  city: optionalContactText(100, 'City'),
+  postcode: optionalContactText(20, 'Postcode'),
+  dateNeeded: optionalContactDateSchema,
+  cakeInterest: optionalContactText(160, 'Cake interest'),
+  note: optionalContactText(2000, 'Note'),
+  giftNote: optionalContactText(500, 'Gift note'),
+  referrer: optionalContactText(500, 'Referrer'),
   isOrderForm: z.boolean().optional()
 }).refine((data) => {
   // Message is required if not an order form

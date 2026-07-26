@@ -46,7 +46,7 @@ describe("ArticleTopicFilter", () => {
     const mobileRegion = getMobileDisclosure();
     const links = within(mobileRegion).getAllByRole("link", { name: "Cake by post" });
 
-    expect(links).toHaveLength(2);
+    expect(links).toHaveLength(1);
     links.forEach(link => expect(link).toHaveAttribute("aria-current", "page"));
     expect(
       within(mobileRegion).getByRole("link", { name: "All stories" })
@@ -75,6 +75,7 @@ describe("ArticleTopicFilter", () => {
 
     expect(trigger).toHaveAttribute("aria-controls", "blog-topic-filter-panel");
     expect(summary).toBeInTheDocument();
+    expect(summary?.className).toContain("focus-visible:outline");
     expect(summary?.parentElement).toBe(mobileRegion);
     expect(mobileRegion.open).toBe(false);
     expect(within(mobileRegion).getByRole("link", { name: "All stories" })).toBeInTheDocument();

@@ -277,37 +277,6 @@ class AdvancedSEOAutomation {
         },
       },
 
-      faqPage: {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "@id": `${this.domain}/faq#faqpage`,
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: "Do you deliver cakes throughout Leeds?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Yes, we offer cake delivery throughout Leeds and West Yorkshire, including York, Bradford, Halifax, and Huddersfield. Same-day delivery is available for orders placed before 2 PM.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "What makes Ukrainian honey cake special?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Ukrainian honey cake (medovik) features thin, delicate layers made with authentic honey and traditional techniques, filled with tangy sour cream frosting. This creates a unique texture and flavor profile different from other honey cakes.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "How far in advance should I order a wedding cake?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "For custom wedding cakes, we recommend 3-4 weeks advance notice to ensure proper planning and design execution. Simple designs may require less time, while elaborate multi-tier cakes may need additional planning.",
-            },
-          },
-        ],
-      },
     };
 
     return schemas;

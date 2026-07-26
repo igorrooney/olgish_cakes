@@ -317,14 +317,10 @@ describe('category landing pages', () => {
         expect.objectContaining({ name: 'Wedding Cakes in Leeds' })
       ]
     })
-    expect(templateProps.additionalStructuredData?.[1]).toMatchObject({
-      '@type': 'FAQPage',
-      mainEntity: expect.arrayContaining([
-        expect.objectContaining({
-          name: weddingConfig.faqItems[0].question
-        })
-      ])
-    })
+    expect(templateProps.additionalStructuredData).toHaveLength(1)
+    expect(templateProps.additionalStructuredData?.some(
+      (block) => block['@type'] === 'FAQPage'
+    )).toBe(false)
 
     const itemListGraphEntry = templateProps.additionalStructuredData?.[0]
 

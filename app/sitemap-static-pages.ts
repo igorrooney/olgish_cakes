@@ -13,14 +13,14 @@ export type StaticSitemapChangeFrequency =
 
 export interface StaticSitemapEntry {
   url: StaticSitemapPath
-  lastModified: string
+  lastModified?: string
   changeFrequency: StaticSitemapChangeFrequency
   priority: number
 }
 
 function createStaticSitemapEntry(
   url: StaticSitemapPath,
-  lastModified: string,
+  lastModified: string | undefined,
   changeFrequency: StaticSitemapChangeFrequency,
   priority: number
 ): StaticSitemapEntry {
@@ -37,8 +37,8 @@ export const coreStaticSitemapPages: StaticSitemapEntry[] = [
   createStaticSitemapEntry('/cakes', '2026-03-17', 'daily', 0.9),
   createStaticSitemapEntry('/cakes-by-post', '2026-03-12', 'daily', 0.88),
   createStaticSitemapEntry('/get-custom-quote', '2026-03-17', 'weekly', 0.9),
-  createStaticSitemapEntry('/contact', '2026-02-09', 'monthly', 0.8),
-  createStaticSitemapEntry('/faqs', '2026-04-17', 'monthly', 0.72),
+  createStaticSitemapEntry('/contact', '2026-07-25', 'monthly', 0.8),
+  createStaticSitemapEntry('/faqs', undefined, 'monthly', 0.72),
   createStaticSitemapEntry('/blog', '2025-10-04', 'weekly', 0.7)
 ]
 
@@ -98,6 +98,10 @@ export function getStaticSitemapLastModified(url: StaticSitemapPath) {
     throw new Error(`Missing static sitemap entry for ${url}`)
   }
 
+  if (!entry.lastModified) {
+    throw new Error(`Static sitemap entry for ${url} does not define lastModified`)
+  }
+
   return new Date(entry.lastModified)
 }
 
@@ -105,10 +109,15 @@ export function toStaticSitemapEntry(
   baseUrl: string,
   entry: StaticSitemapEntry
 ): MetadataRoute.Sitemap[number] {
-  return {
+  const sitemapEntry: MetadataRoute.Sitemap[number] = {
     url: entry.url === '/' ? baseUrl : `${baseUrl}${entry.url}`,
-    lastModified: new Date(entry.lastModified),
     changeFrequency: entry.changeFrequency,
     priority: entry.priority
   }
+
+  if (entry.lastModified) {
+    sitemapEntry.lastModified = new Date(entry.lastModified)
+  }
+
+  return sitemapEntry
 }

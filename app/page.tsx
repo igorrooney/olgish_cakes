@@ -5,7 +5,7 @@ import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { DEFAULT_AGGREGATE_RATING, DEFAULT_REVIEWS } from '@/lib/structured-data-defaults'
 import type { HomepageReview, PaginatedReviewsResponse } from './types/testimonial'
 import { OlgishCakesFounder } from './components/homepage/OlgishCakesFounder'
-import { faqItems, HomeFaq } from './components/homepage/HomeFaq'
+import { HomeFaq } from './components/homepage/HomeFaq'
 import { HomeHero } from './components/homepage/HomeHero'
 import {
   DeferredBestsellers,
@@ -274,19 +274,6 @@ export default async function Home() {
         '@graph': reviewSchemas
       }
     : null
-  const faqStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqItems.map((item) => ({
-      '@type': 'Question',
-      name: item.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: item.answer
-      }
-    }))
-  }
-  const hasFaqStructuredData = faqItems.length > 0
   const webPageStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -538,12 +525,6 @@ export default async function Home() {
               dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewsStructuredData) }}
             />
           ) : null}
-          {hasFaqStructuredData && (
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
-            />
-          )}
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}

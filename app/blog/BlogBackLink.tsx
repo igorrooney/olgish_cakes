@@ -1,8 +1,7 @@
 'use client'
 
 import type { MouseEvent } from 'react'
-import { useCallback, useMemo } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
 import { normalizePathname, readPreviousPathnameFromHistoryState } from '@/app/utils/history-state'
 import { BlogBackLinkBase } from './BlogBackLinkBase'
 import { buildBlogBackHref, readStoredBlogArchiveHref } from './navigation'
@@ -26,9 +25,10 @@ function resolveNormalizedPathname(value: string, origin: string) {
 }
 
 export function BlogBackLink() {
-  const searchParams = useSearchParams()
+  const [backHref, setBackHref] = useState('/blog')
 
-  const backHref = useMemo(() => {
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
     const fromParamValues = searchParams.getAll('from')
     const fromParam = fromParamValues.length > 0
       ? fromParamValues.length === 1
@@ -36,11 +36,11 @@ export function BlogBackLink() {
         : fromParamValues
       : readStoredBlogArchiveHref()
 
-    return buildBlogBackHref({
+    setBackHref(buildBlogBackHref({
       fallbackHref: '/blog',
       fromParam
-    })
-  }, [searchParams])
+    }))
+  }, [])
 
   const handleClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
     if (!isPlainLeftClick(event)) {

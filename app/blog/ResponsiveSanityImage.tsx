@@ -1,3 +1,4 @@
+import { preload } from 'react-dom'
 import { getSanityCdnImageUrl, isSanityCdnImageUrl } from '@/lib/utils/image-url'
 
 interface ResponsiveSanityImageProps {
@@ -7,10 +8,11 @@ interface ResponsiveSanityImageProps {
   fetchPriority?: 'auto' | 'high' | 'low'
   sizes?: string
   containerClassName?: string
-  width?: number
-  height?: number
+  width: number
+  height: number
   fit?: 'clip' | 'crop' | 'fill' | 'fillmax' | 'max' | 'min' | 'scale'
   quality?: number
+  preloadImage?: boolean
 }
 
 const srcSetWidths = [384, 480, 576, 640, 750, 828, 1080, 1200]
@@ -20,13 +22,11 @@ function getProportionalHeight({
   baseWidth,
   requestedWidth,
 }: {
-  baseHeight?: number
-  baseWidth?: number
+  baseHeight: number
+  baseWidth: number
   requestedWidth: number
 }) {
-  return baseWidth && baseHeight
-    ? Math.max(1, Math.round((requestedWidth / baseWidth) * baseHeight))
-    : undefined
+  return Math.max(1, Math.round((requestedWidth / baseWidth) * baseHeight))
 }
 
 function getSanitySrcSet({
@@ -37,17 +37,17 @@ function getSanitySrcSet({
   width,
 }: {
   fit?: ResponsiveSanityImageProps['fit']
-  height?: number
+  height: number
   imageUrl: string
   quality?: number
-  width?: number
+  width: number
 }) {
   if (!isSanityCdnImageUrl(imageUrl)) {
     return undefined
   }
 
   return srcSetWidths
-    .filter(srcSetWidth => !width || srcSetWidth <= width)
+    .filter(srcSetWidth => srcSetWidth <= width)
     .map(srcSetWidth => {
       const srcSetUrl = getSanityCdnImageUrl(imageUrl, {
         width: srcSetWidth,
@@ -77,6 +77,7 @@ export function ResponsiveSanityImage({
   height,
   fit,
   quality,
+  preloadImage = false,
 }: ResponsiveSanityImageProps) {
   if (!imageUrl) {
     return null
@@ -96,14 +97,25 @@ export function ResponsiveSanityImage({
     width,
   })
 
+  if (preloadImage) {
+    preload(src, {
+      as: 'image',
+      fetchPriority: 'high',
+      imageSizes: sizes,
+      imageSrcSet: srcSet,
+    })
+  }
+
   return (
     <div
-      className={`relative h-full overflow-hidden rounded-[24px] bg-base-200 ${containerClassName}`}
+      className={`relative h-full overflow-hidden rounded-box bg-base-200 ${containerClassName}`}
     >
       <img
         src={src}
         srcSet={srcSet}
         alt={imageAlt || 'Article image'}
+        width={width}
+        height={height}
         loading={loading}
         fetchPriority={fetchPriority}
         sizes={sizes}

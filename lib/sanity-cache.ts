@@ -5,6 +5,7 @@ import { SANITY_CACHE_CONFIG } from './sanity-cache-config'
 interface CacheOptions {
   revalidate?: number | false
   tags?: readonly string[]
+  signal?: AbortSignal
 }
 
 /**
@@ -21,12 +22,17 @@ export async function cachedSanityFetch<T>(
   params: Record<string, unknown> = {},
   options: CacheOptions = {}
 ): Promise<T> {
+  const { revalidate = false, signal, tags = [] } = options
+
   // If real-time data is enabled, skip caching
   if (USE_REAL_TIME_DATA) {
-    return client.fetch<T>(query, params, sanityFetchOptions)
+    return signal
+      ? client.fetch<T>(query, params, {
+          ...sanityFetchOptions,
+          signal
+        })
+      : client.fetch<T>(query, params, sanityFetchOptions)
   }
-
-  const { revalidate = false, tags = [] } = options
 
   // Create cache key from query and params
   const cacheKey = JSON.stringify({ query, params })
@@ -39,7 +45,9 @@ export async function cachedSanityFetch<T>(
 
   const cachedFetch = unstable_cache(
     async () => {
-      return client.fetch<T>(query, params)
+      return signal
+        ? client.fetch<T>(query, params, { signal })
+        : client.fetch<T>(query, params)
     },
     [cacheKey],
     cacheOptions

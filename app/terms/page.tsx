@@ -1,5 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import {
+  DEPOSIT_AND_FINAL_PAYMENT_POLICY,
+  GIFT_HAMPER_REFUND_POLICY,
+  PAYMENT_METHODS,
+  REFUND_AFTER_WORK_POLICY,
+  REFUND_BEFORE_WORK_POLICY
+} from '@/lib/public-policies'
 
 const lastUpdated = '6 February 2026'
 const lastUpdatedIso = '2026-02-06'
@@ -25,7 +32,7 @@ type DetailItem = {
 const orderingItems: DetailItem[] = [
   {
     title: 'Order confirmation',
-    description: 'Orders are confirmed by email or phone. A deposit may be required for certain orders.'
+    description: `Orders are confirmed by email or phone. ${DEPOSIT_AND_FINAL_PAYMENT_POLICY}`
   },
   {
     title: 'Custom orders',
@@ -37,24 +44,20 @@ const orderingItems: DetailItem[] = [
   }
 ]
 
-const paymentItems = [
-  'Bank transfer',
-  'Credit/debit card',
-  'Cash on collection'
-]
+const paymentItems = PAYMENT_METHODS
 
 const refundItems: DetailItem[] = [
   {
     title: 'Before work starts',
-    description: 'If we have not started work on your order, we can refund your payment.'
+    description: REFUND_BEFORE_WORK_POLICY
   },
   {
     title: 'After work starts',
-    description: 'Once we begin preparation or baking, deposits become non-refundable.'
+    description: REFUND_AFTER_WORK_POLICY
   },
   {
     title: 'Gift hampers',
-    description: 'Gift hamper orders can be refunded any time before delivery.'
+    description: GIFT_HAMPER_REFUND_POLICY
   }
 ]
 
@@ -292,7 +295,7 @@ export default function TermsOfServicePage() {
               <section>
                 <h2 className={sectionTitleClassName}>3. Payment terms</h2>
                 <p className={sectionTextClassName}>
-                  Prices are in GBP and include VAT where applicable. A deposit may be required for custom orders.
+                  Prices are in GBP and include VAT where applicable. {DEPOSIT_AND_FINAL_PAYMENT_POLICY}{' '}
                   We currently accept:
                 </p>
                 <ul className={listClassName}>

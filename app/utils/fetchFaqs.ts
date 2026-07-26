@@ -1,5 +1,5 @@
-import { groq } from 'next-sanity'
 import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
+import { faqsQuery } from '@/lib/queries/faqs'
 
 export interface FAQ {
   _id: string
@@ -62,17 +62,21 @@ function sanitizeFaqs(faqs: RawFaq[]) {
   })
 }
 
-export async function getFaqs(): Promise<FAQ[]> {
-  try {
-    const query = groq`*[_type == "faq"] | order(order asc) {
-      _id,
-      question,
-      answer,
-      order
-    }`
+type GetFaqsOptions = {
+  signal?: AbortSignal
+}
 
+export async function getFaqs({ signal }: GetFaqsOptions = {}): Promise<FAQ[]> {
+  try {
     const config = getCacheConfig('faqs')
-    const result = await cachedSanityFetch<FAQ[]>(query, {}, config)
+    const result = await cachedSanityFetch<FAQ[]>(
+      faqsQuery,
+      {},
+      {
+        ...config,
+        signal
+      }
+    )
 
     if (!Array.isArray(result)) {
       console.error('Unexpected result format:', result)

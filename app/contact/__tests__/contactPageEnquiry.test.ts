@@ -48,7 +48,7 @@ describe('contactPageEnquiry service', () => {
     await expect(
       submitContactPageEnquiry(new FormData())
     ).rejects.toThrow(
-      'Something went wrong while sending your message. Please try again, or contact me directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
+      'Something went wrong while sending your message. Please try again, or contact us directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
     )
   })
 

@@ -1,7 +1,10 @@
 import {
   getFaqAnswerToneWarning,
+  getFaqAnswerVoiceError,
+  getFaqPolicyConsistencyError,
   getFaqQuestionToneWarning
 } from '../faqTone'
+import { CANONICAL_FAQS } from '../../../lib/faq-content'
 
 describe('faq schema tone validation', () => {
   it('allows direct customer-style questions', () => {
@@ -43,5 +46,27 @@ describe('faq schema tone validation', () => {
     expect(
       getFaqAnswerToneWarning('It depends on the order. There are different options available. Contact us to discuss the best option for your requirements.')
     ).toMatch(/circles around the point|still sounds generic/i)
+  })
+
+  it('blocks first-person singular public answers', () => {
+    expect(getFaqAnswerVoiceError('Tell me the date and I’ll prepare a quote.')).toMatch(
+      /use “we”/i
+    )
+    expect(getFaqAnswerVoiceError('Tell us the date and we’ll prepare a quote.')).toBe(true)
+  })
+
+  it('locks policy-sensitive answers to the approved wording', () => {
+    const paymentFaq = CANONICAL_FAQS.find((faq) => faq.question === 'How do I pay?')
+
+    expect(paymentFaq).toBeDefined()
+    expect(
+      getFaqPolicyConsistencyError(paymentFaq?.answer, paymentFaq?.question)
+    ).toBe(true)
+    expect(
+      getFaqPolicyConsistencyError(
+        'Orders over GBP200 need a 50% deposit.',
+        paymentFaq?.question
+      )
+    ).toMatch(/approved website wording/i)
   })
 })

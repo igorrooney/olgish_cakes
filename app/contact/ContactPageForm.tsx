@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { ValidatorInput } from '../components/homepage/ValidatorInput'
 import {
   buildContactPageEnquiryFormData,
@@ -183,7 +184,7 @@ export function ContactPageForm() {
           autoComplete='email'
           showValidation={hasAttemptedSubmit}
           error={errors.email}
-          hintText='Best email for my reply'
+          hintText='Best email for our reply'
           required
           onValueChange={(value) => updateField('email', value, true)}
         />
@@ -211,7 +212,7 @@ export function ContactPageForm() {
           required
           onValueChange={(value) => updateField('enquiryType', value, true)}
         />
-        <div className='md:col-span-2'>
+        <div className={styles.formDateField}>
           <ValidatorInput
             fieldType='datePicker'
             id='dateNeeded'
@@ -238,7 +239,7 @@ export function ContactPageForm() {
         placeholder={`For example: ${contactMessageExample}`}
         inputClassName='min-h-40'
         error={errors.message}
-        hintText='A short note is fine. Include the main details so I can answer properly first time.'
+        hintText='A short note is fine. Include the main details so we can answer properly first time.'
         required
         onValueChange={(value) => updateField('message', value, true)}
       />
@@ -284,14 +285,24 @@ export function ContactPageForm() {
 
       <div>
         {hasSubmittedSuccessfully ? null : (
-          <button
-            type='submit'
-            className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'
-            disabled={isSubmitting || isCsrfLoading}
-            aria-busy={isSubmitting || isCsrfLoading}
-          >
-            {isSubmitting ? 'Sending...' : 'Send your message'}
-          </button>
+          <>
+            <p className='mb-3 text-sm leading-6 text-base-content/75'>
+              We&apos;ll use your details only to reply to this enquiry and provide the help you
+              requested. Read our{' '}
+              <Link href='/privacy' className='link link-primary font-semibold'>
+                privacy policy
+              </Link>
+              .
+            </p>
+            <button
+              type='submit'
+              className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'
+              disabled={isSubmitting || isCsrfLoading}
+              aria-busy={isSubmitting || isCsrfLoading}
+            >
+              {isSubmitting ? 'Sending...' : 'Send your message'}
+            </button>
+          </>
         )}
       </div>
     </form>

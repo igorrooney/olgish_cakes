@@ -525,6 +525,9 @@ async function handlePOST(request: NextRequest) {
       postcode: postcode || undefined,
       dateNeeded: dateNeeded || undefined,
       cakeInterest: cakeInterest || undefined,
+      note: note || undefined,
+      giftNote: giftNote || undefined,
+      referrer: referrer || undefined,
       isOrderForm: isOrderInquiry
     })
 
@@ -1173,6 +1176,7 @@ async function handlePOST(request: NextRequest) {
 }
 
 export const POST = withRateLimit(handlePOST, {
+  distributedScope: 'contact-enquiry',
   windowMs: 60 * 1000,
   maxRequests: 10
 })

@@ -47,7 +47,14 @@ export function ContactFormScrollLink ({
 
     event.preventDefault()
     updateContactFormHash()
-    contactFormSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const prefersReducedMotion =
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+
+    contactFormSection.focus({ preventScroll: true })
+    contactFormSection.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      block: 'start'
+    })
   }
 
   return (

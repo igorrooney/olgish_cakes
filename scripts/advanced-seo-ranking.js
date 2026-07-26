@@ -260,69 +260,6 @@ Order your honey cake near me today and discover why we're Yorkshire's premier U
     return baseStructuredData;
   }
 
-  // Generate FAQ schema for featured snippets
-  generateFAQSchema(keyword) {
-    const faqTemplates = {
-      'cake postal delivery': [
-        {
-          question: 'How does cake postal delivery work?',
-          answer: 'Our cake postal delivery service uses specially designed letterbox-friendly packaging. Cakes are baked fresh, carefully packaged, and sent via Royal Mail or courier service to arrive safely at any UK address.'
-        },
-        {
-          question: 'How long do postal cakes stay fresh?',
-          answer: 'Our postal cakes stay fresh for 5-7 days when properly stored. Each cake comes with detailed storage instructions and best-by dates to ensure optimal quality.'
-        },
-        {
-          question: 'What if the recipient isn\'t home for cake delivery?',
-          answer: 'Perfect! Our letterbox-friendly packaging means the cake can be delivered even when no one is home. The packaging fits through standard letterboxes, making it ideal for surprise deliveries.'
-        }
-      ],
-      'wakefield wedding cakes': [
-        {
-          question: 'How far in advance should I book my Wakefield wedding cake?',
-          answer: 'We recommend booking 6-12 months in advance, especially for peak wedding season. This ensures we can accommodate your date and create your perfect custom design.'
-        },
-        {
-          question: 'Do you deliver wedding cakes to venues in Wakefield?',
-          answer: 'Yes! We deliver and set up wedding cakes at all major Wakefield venues including Sandal Castle, Chateau Impney Hotel, and Wakefield Cathedral. Professional delivery and setup included.'
-        },
-        {
-          question: 'What makes Ukrainian wedding cakes special?',
-          answer: 'Ukrainian wedding cakes feature traditional honey cake layers, authentic recipes passed down through generations, and cultural significance that adds meaning to your celebration.'
-        }
-      ],
-      'honey cake near me': [
-        {
-          question: 'What is Medovik honey cake?',
-          answer: 'Medovik is a traditional Ukrainian honey cake made with thin layers of honey-flavored cake and sweet cream. It\'s a beloved dessert that\'s been enjoyed in Ukraine for centuries.'
-        },
-        {
-          question: 'Do you offer same-day honey cake delivery?',
-          answer: 'Yes! Order by 2pm for same-day delivery in Leeds and surrounding areas. We also offer next-day delivery to York and other nearby cities across Yorkshire.'
-        },
-        {
-          question: 'Can I find authentic Ukrainian honey cake near me?',
-          answer: 'Absolutely! We\'re based in Leeds and serve Yorkshire with authentic Ukrainian Medovik honey cake. Same-day delivery available to Leeds, Bradford, Wakefield, and surrounding areas.'
-        }
-      ]
-    };
-
-    const faqs = faqTemplates[keyword] || faqTemplates['honey cake near me'];
-    
-    return {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: faqs.map(faq => ({
-        '@type': 'Question',
-        name: faq.question,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: faq.answer
-        }
-      }))
-    };
-  }
-
   // Generate local SEO optimization strategy
   generateLocalSEOStrategy() {
     return {
@@ -441,7 +378,7 @@ Order your honey cake near me today and discover why we're Yorkshire's premier U
           ]
         },
         structuredData: {
-          implemented: ['LocalBusiness', 'Product', 'FAQ', 'Organization'],
+          implemented: ['LocalBusiness', 'Product', 'Organization'],
           missing: ['Review', 'Event', 'Recipe'],
           priority: 'High'
         }
@@ -495,7 +432,6 @@ Order your honey cake near me today and discover why we're Yorkshire's premier U
         contentOptimization: this.generateKeywordOptimizedContent('honey cake near me'),
         internalLinking: this.generateInternalLinkingStrategy(),
         structuredData: this.generateAdvancedStructuredData('honey cake near me'),
-        faqSchema: this.generateFAQSchema('honey cake near me'),
         localSEO: this.generateLocalSEOStrategy(),
         contentCalendar: this.generateContentCalendar(),
         performanceMetrics: this.generatePerformanceMetrics()

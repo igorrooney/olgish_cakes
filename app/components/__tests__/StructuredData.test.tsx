@@ -11,7 +11,6 @@ import {
   WebPageStructuredData,
   BreadcrumbStructuredData,
   ProductStructuredData,
-  FAQStructuredData,
   AggregateRatingStructuredData,
   ReviewStructuredData,
   ImageObjectStructuredData,
@@ -33,7 +32,6 @@ jest.mock('@/app/utils/seo', () => ({
   generateWebPageSchema: jest.fn((data) => ({ '@type': 'WebPage', ...data })),
   generateBreadcrumbData: jest.fn((data) => ({ '@type': 'BreadcrumbList', itemListElement: data })),
   generateProductSchema: jest.fn((data) => ({ '@type': 'Product', ...data })),
-  generateFAQSchema: jest.fn((data) => ({ '@type': 'FAQPage', mainEntity: data })),
   generateAggregateRatingSchema: jest.fn((rating, count) => ({ '@type': 'AggregateRating', ratingValue: rating })),
   generateReviewSchema: jest.fn((data) => ({ '@type': 'Review', ...data })),
   generateImageObjectSchema: jest.fn((data) => ({ '@type': 'ImageObject', ...data })),
@@ -108,7 +106,6 @@ describe('StructuredData', () => {
       'webpage',
       'breadcrumb',
       'product',
-      'faq',
       'aggregateRating',
       'review',
       'imageObject',
@@ -175,13 +172,6 @@ describe('StructuredData', () => {
 
     it('should render ProductStructuredData', () => {
       render(<ProductStructuredData product={{ name: 'Test' }} />)
-
-      const script = document.head.querySelector('script')
-      expect(script).toBeTruthy()
-    })
-
-    it('should render FAQStructuredData', () => {
-      render(<FAQStructuredData questions={[{ question: 'Q?', answer: 'A' }]} />)
 
       const script = document.head.querySelector('script')
       expect(script).toBeTruthy()

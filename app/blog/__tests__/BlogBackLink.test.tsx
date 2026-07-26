@@ -6,18 +6,11 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { BlogBackLink } from '../BlogBackLink'
 import { BLOG_ARCHIVE_RETURN_HREF_STORAGE_KEY } from '../navigation'
 
-const mockUseSearchParams = jest.fn()
-
-jest.mock('next/navigation', () => ({
-  useSearchParams: () => mockUseSearchParams()
-}))
-
 describe('BlogBackLink', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     window.sessionStorage.clear()
     window.history.replaceState({}, '', 'http://localhost/blog/how-to-order-cake-by-post')
-    mockUseSearchParams.mockReturnValue(new URLSearchParams())
   })
 
   it('renders the cakes-style back link label', () => {
@@ -27,8 +20,10 @@ describe('BlogBackLink', () => {
   })
 
   it('uses the safe archive href from the current from param', () => {
-    mockUseSearchParams.mockReturnValue(
-      new URLSearchParams('from=%2Fblog%3Ftopic%3Dcake-by-post%26page%3D2')
+    window.history.replaceState(
+      {},
+      '',
+      '/blog/how-to-order-cake-by-post?from=%2Fblog%3Ftopic%3Dcake-by-post%26page%3D2'
     )
     window.sessionStorage.setItem(
       BLOG_ARCHIVE_RETURN_HREF_STORAGE_KEY,
@@ -52,8 +47,10 @@ describe('BlogBackLink', () => {
   })
 
   it('falls back to /blog when the from param is unsafe', () => {
-    mockUseSearchParams.mockReturnValue(
-      new URLSearchParams('from=https%3A%2F%2Fevil.example%2Fblog')
+    window.history.replaceState(
+      {},
+      '',
+      '/blog/how-to-order-cake-by-post?from=https%3A%2F%2Fevil.example%2Fblog'
     )
     window.sessionStorage.setItem(
       BLOG_ARCHIVE_RETURN_HREF_STORAGE_KEY,

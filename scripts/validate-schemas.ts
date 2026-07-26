@@ -20,8 +20,47 @@
 import { generateAllProductSchemas } from "../lib/product-schemas.js";
 import { batchValidateProductSchemas, validateMPNUniqueness } from "../lib/schema-validation.js";
 import { MAX_PRODUCTS_FOR_SCHEMA } from "../lib/schema-constants.js";
+import { createBlogArchiveBreadcrumbStructuredData } from '../lib/blog-archive-structured-data.js'
+import { validateSchema } from './validate-structured-data.js'
 import * as fs from 'fs';
 import * as path from 'path';
+
+const productionSourceRoots = ['app', 'lib', 'scripts']
+const productionSourceExtensions = new Set(['.js', '.jsx', '.ts', '.tsx'])
+const unsupportedFaqSchemaPattern = /['"]@type['"]\s*:\s*['"]FAQPage['"]/
+
+function findUnsupportedFaqSchemaEmitters() {
+  const matches: string[] = []
+
+  function scanDirectory(directoryPath: string) {
+    for (const entry of fs.readdirSync(directoryPath, { withFileTypes: true })) {
+      const entryPath = path.join(directoryPath, entry.name)
+
+      if (entry.isDirectory()) {
+        if (entry.name !== '__tests__') {
+          scanDirectory(entryPath)
+        }
+        continue
+      }
+
+      const extension = path.extname(entry.name)
+      const isTestFile = /\.(?:test|spec)\.[jt]sx?$/.test(entry.name)
+
+      if (!productionSourceExtensions.has(extension) || isTestFile) {
+        continue
+      }
+
+      const source = fs.readFileSync(entryPath, 'utf8')
+
+      if (unsupportedFaqSchemaPattern.test(source)) {
+        matches.push(path.relative(process.cwd(), entryPath))
+      }
+    }
+  }
+
+  productionSourceRoots.forEach((root) => scanDirectory(path.join(process.cwd(), root)))
+  return matches
+}
 
 // Check for --real flag
 const useRealData = process.argv.includes('--real');
@@ -132,6 +171,14 @@ async function validateAllSchemas() {
   
   try {
     const startTime = performance.now();
+    const unsupportedFaqSchemaEmitters = findUnsupportedFaqSchemaEmitters()
+
+    if (unsupportedFaqSchemaEmitters.length > 0) {
+      throw new Error(
+        `Unsupported FAQPage structured data emitter(s): ${unsupportedFaqSchemaEmitters.join(', ')}`
+      )
+    }
+    console.log('PASS: No unsupported FAQPage structured data emitters found\n')
     
     let cakes, stats;
     
@@ -171,6 +218,22 @@ async function validateAllSchemas() {
       console.error('❌ Duplicate MPNs found:', mpnCheck.duplicates);
     }
 
+    console.log('\n🔗 Validating blog archive structured data...')
+    const blogArchiveSchema = createBlogArchiveBreadcrumbStructuredData()
+    const blogArchiveValidation = validateSchema(blogArchiveSchema, 'BreadcrumbList')
+    const includesUnsupportedItemList =
+      JSON.stringify(blogArchiveSchema).includes('"@type":"ItemList"')
+
+    if (blogArchiveValidation.errors.length > 0 || includesUnsupportedItemList) {
+      throw new Error(
+        `Blog archive schema is invalid: ${[
+          ...blogArchiveValidation.errors,
+          ...(includesUnsupportedItemList ? ['Unsupported archive ItemList found'] : [])
+        ].join(', ')}`
+      )
+    }
+    console.log('✅ Blog archive BreadcrumbList is valid')
+
     // Summary
     console.log('\n' + '='.repeat(60));
     console.log('📋 VALIDATION SUMMARY');
@@ -181,6 +244,7 @@ async function validateAllSchemas() {
     console.log(`Valid schemas:           ${validCount}`);
     console.log(`Invalid schemas:         ${schemas.length - validCount}`);
     console.log(`MPN uniqueness:          ${mpnCheck.isValid ? '✅ Pass' : '❌ Fail'}`);
+    console.log('Blog archive schema:     ✅ Pass');
     console.log(`Total time:              ${(performance.now() - startTime).toFixed(2)}ms`);
     console.log('='.repeat(60));
 

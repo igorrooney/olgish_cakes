@@ -8,7 +8,6 @@ import {
   generateWebPageSchema,
   generateBreadcrumbData,
   generateProductSchema,
-  generateFAQSchema,
   generateAggregateRatingSchema,
   generateReviewSchema,
   generateImageObjectSchema,
@@ -28,7 +27,6 @@ interface StructuredDataProps {
     | "webpage"
     | "breadcrumb"
     | "product"
-    | "faq"
     | "aggregateRating"
     | "review"
     | "imageObject"
@@ -44,7 +42,6 @@ interface StructuredDataProps {
 type WebPageData = Parameters<typeof generateWebPageSchema>[0];
 type BreadcrumbData = Parameters<typeof generateBreadcrumbData>[0];
 type ProductData = Parameters<typeof generateProductSchema>[0];
-type FAQData = Parameters<typeof generateFAQSchema>[0];
 type ReviewData = Parameters<typeof generateReviewSchema>[0];
 type ImageObjectData = Parameters<typeof generateImageObjectSchema>[0];
 type ServiceData = Parameters<typeof generateServiceSchema>[0];
@@ -77,9 +74,6 @@ export function StructuredData({ type, data, id }: StructuredDataProps) {
         break;
       case "product":
         structuredData = generateProductSchema(data as ProductData);
-        break;
-      case "faq":
-        structuredData = generateFAQSchema(data as FAQData);
         break;
       case "aggregateRating":
         structuredData = generateAggregateRatingSchema(
@@ -180,14 +174,6 @@ export function BreadcrumbStructuredData({
 
 export function ProductStructuredData({ product }: { product: ProductData }) {
   return <StructuredData type="product" data={product} />;
-}
-
-export function FAQStructuredData({
-  questions,
-}: {
-  questions: Array<{ question: string; answer: string }>;
-}) {
-  return <StructuredData type="faq" data={questions} />;
 }
 
 export function AggregateRatingStructuredData({

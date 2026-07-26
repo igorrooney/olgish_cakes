@@ -169,5 +169,10 @@ describe('SiteFooter', () => {
     render(<SiteFooter />)
 
     expect(screen.getAllByRole('contentinfo')).toHaveLength(1)
+    expect(screen.getByRole('navigation', { name: 'Footer navigation' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'Contact details' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'Legal and site information' })).toBeInTheDocument()
+    expect(screen.getByRole('navigation', { name: 'Social media' })).toBeInTheDocument()
+    expect(screen.queryByRole('complementary')).not.toBeInTheDocument()
   })
 })

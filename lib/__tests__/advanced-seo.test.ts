@@ -238,12 +238,11 @@ describe('advanced-seo', () => {
       expect(bakery.name).toContain('Olgish Cakes')
     })
 
-    it('should include FAQPage schema', () => {
+    it('should omit unsupported FAQPage schema', () => {
       const result = generateAdvancedStructuredData(productData)
       const faq = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'FAQPage')
 
-      expect(faq).toBeDefined()
-      expect(faq.mainEntity).toBeInstanceOf(Array)
+      expect(faq).toBeUndefined()
     })
 
     it('should include HowTo schema', () => {

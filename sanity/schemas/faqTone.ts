@@ -1,3 +1,5 @@
+import { getCanonicalFaqForQuestion } from '../../lib/faq-content'
+
 const syntheticQuestionPhrases = [
   'everything you need to know',
   'ultimate guide',
@@ -87,6 +89,10 @@ const concreteDetailPattern =
 
 function normaliseCopy(value: string) {
   return value.trim().toLowerCase().replace(/\s+/g, ' ')
+}
+
+function normalisePolicyCopy(value: string) {
+  return value.trim().replace(/\s+/g, ' ')
 }
 
 function findSyntheticPhrase(value: string, phrases: string[]) {
@@ -183,6 +189,42 @@ export function getFaqAnswerToneWarning(value: string | undefined) {
 
   if (sentenceCount >= 2 && concreteDetailCount === 0) {
     return 'This still sounds generic. Add practical details such as area, notice, cake type, servings, delivery or what the customer needs to send.'
+  }
+
+  return true
+}
+
+export function getFaqAnswerVoiceError(value: string | undefined) {
+  if (typeof value !== 'string' || value.trim() === '') {
+    return true
+  }
+
+  const firstPersonSingularPattern =
+    /\b(?:i|me|my|mine|myself)\b|\bi['’](?:d|ll|m|ve)\b/i
+
+  if (firstPersonSingularPattern.test(value)) {
+    return 'Use “we”, “us” or “we’ll” in public answers instead of first-person singular wording.'
+  }
+
+  return true
+}
+
+export function getFaqPolicyConsistencyError(
+  value: string | undefined,
+  question: string | undefined
+) {
+  if (typeof value !== 'string' || value.trim() === '') {
+    return true
+  }
+
+  const canonicalFaq = getCanonicalFaqForQuestion(question)
+
+  if (!canonicalFaq?.policySensitive) {
+    return true
+  }
+
+  if (normalisePolicyCopy(value) !== normalisePolicyCopy(canonicalFaq.answer)) {
+    return 'This policy-sensitive answer must match the approved website wording. Update it through the source-controlled FAQ content.'
   }
 
   return true
