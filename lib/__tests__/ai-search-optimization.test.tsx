@@ -253,12 +253,11 @@ describe('ai-search-optimization', () => {
       expect(bakery.name).toBe('Olgish Cakes')
     })
 
-    it('should include FAQPage schema', () => {
+    it('should omit unsupported FAQPage schema', () => {
       const result = generateAIStructuredData(mockBusinessInfo)
       const faq = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'FAQPage')
 
-      expect(faq).toBeDefined()
-      expect(faq.mainEntity).toBeInstanceOf(Array)
+      expect(faq).toBeUndefined()
     })
 
     it('should include HowTo schema', () => {
@@ -269,12 +268,6 @@ describe('ai-search-optimization', () => {
       expect(howTo.step).toBeInstanceOf(Array)
     })
 
-    it('should map AI_CONTENT_OPTIMIZATION QA pairs to FAQ', () => {
-      const result = generateAIStructuredData(mockBusinessInfo)
-      const faq = result['@graph'].find((item: UnknownRecord) => item['@type'] === 'FAQPage')
-
-      expect(faq.mainEntity.length).toBe(AI_CONTENT_OPTIMIZATION.qaPairs.length)
-    })
   })
 
   describe('AI_CONTENT_GUIDELINES', () => {
@@ -515,7 +508,7 @@ describe('ai-search-optimization', () => {
       const types = result['@graph'].map((item: UnknownRecord) => item['@type'])
 
       expect(types).toContain('Bakery')
-      expect(types).toContain('FAQPage')
+      expect(types).not.toContain('FAQPage')
       expect(types).toContain('HowTo')
     })
 

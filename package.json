@@ -7,6 +7,7 @@
     "icons:maskable": "tsx scripts/generate-maskable-icons.ts",
     "icons:all": "tsx scripts/generate-icons.ts",
     "social:workshops": "tsx scripts/generate-workshops-social-card.ts",
+    "social:faqs": "tsx scripts/generate-faqs-social-card.ts",
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",

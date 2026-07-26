@@ -111,24 +111,22 @@ describe('AllergensPage', () => {
     expect(screen.getByRole('link', { name: /browse cakes by post/i })).toHaveAttribute('href', '/cakes-by-post')
   })
 
-  it('outputs breadcrumb, page, bakery and faq structured data blocks', async () => {
+  it('outputs supported breadcrumb, page and bakery structured data blocks', async () => {
     const { container } = render(await AllergensPage())
     const blocks = parseJsonLdScripts(container)
     const breadcrumbBlock = blocks.find((block) => block['@type'] === 'BreadcrumbList')
     const pageBlock = blocks.find((block) => block['@type'] === 'WebPage')
     const bakeryBlock = blocks.find((block) => block['@type'] === 'Bakery')
-    const faqBlock = blocks.find((block) => block['@type'] === 'FAQPage')
 
-    expect(blocks).toHaveLength(4)
+    expect(blocks).toHaveLength(3)
     expect(breadcrumbBlock).toBeDefined()
     expect(pageBlock).toBeDefined()
     expect(bakeryBlock).toBeDefined()
-    expect(faqBlock).toBeDefined()
     expect((breadcrumbBlock?.itemListElement as Array<Record<string, unknown>>)[1]?.name).toBe(
       'Allergens'
     )
     expect(pageBlock?.name).toBe('Allergens | Olgish Cakes')
     expect(bakeryBlock?.telephone).toBe('+44 786 721 8194')
-    expect((faqBlock?.mainEntity as Array<Record<string, unknown>>)).toHaveLength(3)
+    expect(blocks.some((block) => block['@type'] === 'FAQPage')).toBe(false)
   })
 })

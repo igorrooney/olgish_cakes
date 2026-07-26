@@ -6,7 +6,6 @@ import {
   isIndexablePageOnlyPagination
 } from '@/lib/utils/catalog-listing-query-seo'
 import { getMerchantReturnPolicy, getPriceValidUntil } from '../utils/seo'
-import type { CatalogFaqItem } from './catalogFaqItems'
 
 const baseUrl = 'https://olgishcakes.co.uk'
 const brandId = `${baseUrl}/#brand`
@@ -168,17 +167,4 @@ export function createCatalogItemListStructuredData({
   }
 }
 
-export function createCatalogFaqStructuredData(items: CatalogFaqItem[]): StructuredData {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: items.map((item) => ({
-      '@type': 'Question',
-      name: item.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: item.answer
-      }
-    }))
-  }
-}
+// Category FAQ copy remains visible on the page without FAQ structured data.

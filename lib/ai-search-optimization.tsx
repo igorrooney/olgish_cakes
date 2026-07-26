@@ -235,18 +235,6 @@ export function generateAIStructuredData(businessInfo: AIBusinessInfo) {
         hasCredential: businessInfo.credentials,
       },
       {
-        "@type": "FAQPage",
-        mainEntity: AI_CONTENT_OPTIMIZATION.qaPairs.map(qa => ({
-          "@type": "Question",
-          name: qa.question,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: qa.answer,
-            about: qa.context,
-          },
-        })),
-      },
-      {
         "@type": "HowTo",
         name: "How to Order Custom Ukrainian Cake",
         description: "Step-by-step process for ordering authentic Ukrainian cakes",

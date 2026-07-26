@@ -1,5 +1,10 @@
 import { defineField, defineType } from 'sanity'
-import { getFaqAnswerToneWarning, getFaqQuestionToneWarning } from './faqTone'
+import {
+  getFaqAnswerToneWarning,
+  getFaqAnswerVoiceError,
+  getFaqPolicyConsistencyError,
+  getFaqQuestionToneWarning
+} from './faqTone'
 
 export default defineType({
   name: 'faq',
@@ -22,9 +27,23 @@ export default defineType({
       name: 'answer',
       title: 'Answer',
       type: 'text',
-      description: 'Reply like the owner answering a customer directly. Use plain English, mention real limits or next steps, and prefer Leeds / delivery / posted-cake specifics over polished filler.',
+      description: 'Reply to the customer directly using “we” wording. Use plain English, mention real limits or next steps, and prefer Leeds / delivery / posted-cake specifics over polished filler.',
       validation: (rule) => [
         rule.required(),
+        rule.custom((value) => getFaqAnswerVoiceError(
+          typeof value === 'string' ? value : undefined
+        )),
+        rule.custom((value, context) => {
+          const parent = context.parent as { question?: unknown } | undefined
+          const question = typeof parent?.question === 'string'
+            ? parent.question
+            : undefined
+
+          return getFaqPolicyConsistencyError(
+            typeof value === 'string' ? value : undefined,
+            question
+          )
+        }),
         rule
           .custom((value) => getFaqAnswerToneWarning(typeof value === 'string' ? value : undefined))
           .warning()

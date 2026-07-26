@@ -81,7 +81,6 @@ This guide documents the comprehensive SEO improvements implemented across the O
 - `OrganizationStructuredData`: Business information
 - `LocalBusinessStructuredData`: Bakery-specific information
 - `ProductStructuredData`: Product information
-- `FAQStructuredData`: FAQ content
 - `BreadcrumbStructuredData`: Navigation breadcrumbs
 - And many more specialized components
 
@@ -116,8 +115,11 @@ This guide documents the comprehensive SEO improvements implemented across the O
 // For product pages
 <ProductStructuredData product={productData} />
 
-// For FAQ sections
-<FAQStructuredData questions={faqData} />
+// Keep FAQ sections visible and semantic, without FAQPage JSON-LD
+<details>
+  <summary>{faq.question}</summary>
+  <p>{faq.answer}</p>
+</details>
 
 // For breadcrumbs
 <BreadcrumbStructuredData items={breadcrumbItems} />

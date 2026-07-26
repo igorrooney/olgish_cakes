@@ -591,21 +591,6 @@ export function generateProductSchema(product: {
   };
 }
 
-export function generateFAQSchema(questions: Array<{ question: string; answer: string }>) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: questions.map(q => ({
-      "@type": "Question",
-      name: q.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: q.answer,
-      },
-    })),
-  };
-}
-
 export function generateAggregateRatingSchema(rating: number, reviewCount: number) {
   return {
     "@context": "https://schema.org",

@@ -42,6 +42,23 @@ describe('fetchFaqs', () => {
       )
     })
 
+    it('forwards the request cancellation signal to Sanity', async () => {
+      const controller = new AbortController()
+      mockCachedSanityFetch.mockResolvedValue([mockFaq])
+
+      await getFaqs({ signal: controller.signal })
+
+      expect(mockCachedSanityFetch).toHaveBeenCalledWith(
+        expect.stringContaining('*[_type == "faq"] | order(order asc)'),
+        {},
+        {
+          revalidate: 3600,
+          tags: ['faqs'],
+          signal: controller.signal
+        }
+      )
+    })
+
     it('returns empty array for invalid result format', async () => {
       mockCachedSanityFetch.mockResolvedValue({ notAnArray: true } as never)
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()

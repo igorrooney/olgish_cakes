@@ -340,37 +340,6 @@ export function generateAdvancedStructuredData(data: {
         ],
       },
 
-      // FAQ Schema for featured snippets
-      {
-        "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: "Do you deliver cakes in Leeds?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Yes, we offer same-day and next-day cake delivery throughout Leeds, West Yorkshire, and surrounding areas including York, Bradford, Halifax, and Huddersfield.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "How far in advance should I order a custom cake?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "For custom wedding cakes, we recommend 2-4 weeks notice. Birthday and celebration cakes can often be made with 3-7 days notice, depending on complexity.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "What makes Ukrainian honey cake special?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Ukrainian honey cake (medovik) features delicate honey-infused layers with rich sour cream filling, creating a unique texture and flavor profile passed down through generations of traditional baking.",
-            },
-          },
-        ],
-      },
-
       // How-To Schema for cake ordering process
       {
         "@type": "HowTo",

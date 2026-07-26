@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BUSINESS_CONSTANTS, EMAIL_UTILS, PHONE_UTILS } from '@/lib/constants'
 import { getAllergensPageData } from '@/lib/allergens-page-data'
+import { ALLERGEN_CROSS_CONTACT_POLICY } from '@/lib/public-policies'
 
 type StructuredData = Record<string, unknown>
 
@@ -24,7 +25,7 @@ const allergenFaqs: FaqItem[] = [
   },
   {
     question: 'Can any product be guaranteed completely free from cross-contact?',
-    answer: 'No. Products are made in a kitchen that handles allergens, so no item can be guaranteed completely free from cross-contact.'
+    answer: `No. ${ALLERGEN_CROSS_CONTACT_POLICY}`
   },
   {
     question: 'Is a posted cake easier to check than a bespoke cake?',
@@ -133,21 +134,6 @@ function buildOrganizationStructuredData(): StructuredData {
   }
 }
 
-function buildFaqStructuredData(faqs: FaqItem[]): StructuredData {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map((faq) => ({
-      '@type': 'Question',
-      name: faq.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: faq.answer
-      }
-    }))
-  }
-}
-
 function BulletList({ items }: { items: string[] }) {
   return (
     <ul className='space-y-3'>
@@ -182,11 +168,6 @@ export default async function AllergensPage() {
         type='application/ld+json'
         dangerouslySetInnerHTML={{ __html: toJsonLdScript(buildOrganizationStructuredData()) }}
       />
-      <script
-        type='application/ld+json'
-        dangerouslySetInnerHTML={{ __html: toJsonLdScript(buildFaqStructuredData(allergenFaqs)) }}
-      />
-
       <main className='min-h-screen bg-base-100 text-base-content'>
         <section className='border-b border-base-200 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-primary-50)_24%,var(--color-base-100)_76%),var(--color-base-100))] px-4 py-8 tablet:px-10 tablet:py-12'>
           <div className='homepage-container'>
@@ -202,8 +183,7 @@ export default async function AllergensPage() {
                   Milk, eggs and wheat are common across both celebration cakes and cakes by post.
                 </p>
                 <p>
-                  Products are made in a kitchen that handles allergens, so no item can be
-                  guaranteed completely free from cross-contact.
+                  {ALLERGEN_CROSS_CONTACT_POLICY}
                 </p>
                 <p>
                   If you have an allergy, intolerance or coeliac disease, please ask before

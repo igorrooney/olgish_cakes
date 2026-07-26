@@ -151,6 +151,10 @@ describe('sitemap', () => {
       expect(quoteUrl).toBeDefined()
       expect(contactUrl).toBeDefined()
       expect(faqsUrl).toBeDefined()
+      expect(faqsUrl?.lastModified).toBeUndefined()
+      expect(() => getStaticSitemapLastModified('/faqs')).toThrow(
+        'does not define lastModified'
+      )
       expect(deliveryUrl).toBeDefined()
       expect(allergensUrl).toBeDefined()
     })

@@ -10,7 +10,6 @@ import type { CatalogCategoryLandingSlug } from './categoryLandingConfig'
 import { getCategoryLandingConfig } from './categoryLandingConfig'
 import { getCatalogPageData } from './catalogPageData'
 import {
-  createCatalogFaqStructuredData,
   createCatalogItemListStructuredData,
   createCatalogMetadata,
   type ResolvedSearchParams
@@ -99,8 +98,7 @@ export async function renderCategoryLandingPage(slug: CatalogCategoryLandingSlug
         createCatalogItemListStructuredData({
           listName: config.itemListName,
           items: filteredCakes
-        }),
-        createCatalogFaqStructuredData(config.faqItems)
+        })
       ]}
       includeBreadcrumbStructuredData
       breadcrumbItems={[

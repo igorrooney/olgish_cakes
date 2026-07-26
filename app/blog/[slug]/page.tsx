@@ -331,22 +331,6 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
       },
     ],
   };
-  const faqStructuredData =
-    faqItems.length > 0
-      ? {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqItems.map(item => ({
-            "@type": "Question",
-            name: item.question,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: item.answer,
-            },
-          })),
-        }
-      : null;
-
   return (
     <div className="min-h-screen bg-base-100 text-base-content [font-family:var(--font-inter)]">
       <section className="mx-auto flex w-full max-w-[1180px] flex-col gap-8 px-4 pb-20 pt-8 tablet:px-10 tablet:pt-12">
@@ -358,13 +342,6 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: toJsonLdScript(breadcrumbStructuredData) }}
         />
-        {faqStructuredData ? (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: toJsonLdScript(faqStructuredData) }}
-          />
-        ) : null}
-
         <BlogBackLink />
 
         <section className="relative space-y-4 overflow-visible tablet:space-y-5">
