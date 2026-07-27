@@ -310,6 +310,11 @@ const nextConfig = {
         destination: "/order",
         permanent: true,
       },
+      {
+        source: "/nut-free-cakes-leeds",
+        destination: "/",
+        permanent: true,
+      },
     ];
   },
   // Note: rely on Next.js app/sitemap.ts for /sitemap.xml

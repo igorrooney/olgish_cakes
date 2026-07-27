@@ -101,7 +101,6 @@ const navigationBase = [
             // { name: "Gluten-Friendly Cakes", href: "/gluten-friendly-ukrainian-cakes" },
             { name: "Gluten-Friendly Wedding Cakes", href: "/gluten-friendly-wedding-cakes-leeds" },
             // { name: "Dairy-Free Cakes", href: "/dairy-free-cakes-leeds" },
-            { name: "Nut-Free Cakes", href: "/nut-free-cakes-leeds" },
             { name: "Egg-Free Cakes", href: "/egg-free-cakes-leeds" },
           ],
         },

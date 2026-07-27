@@ -377,7 +377,6 @@ export default async function CakesBradfordPage() {
                 { name: "Birthday Cakes", href: "/birthday-cakes" },
                 { name: "Anniversary Cakes", href: "/anniversary-cakes-leeds" },
                 { name: "Vegan Cakes", href: "/vegan-cakes-leeds" },
-                { name: "Nut-Free Cakes", href: "/nut-free-cakes-leeds" },
                 { name: "Custom Design", href: "/custom-cake-design" },
               ].map((service, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>

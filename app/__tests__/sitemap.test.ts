@@ -107,6 +107,15 @@ describe('sitemap', () => {
       expect(deliveryUrl?.priority).toBe(0.9)
     })
 
+    it('should exclude the removed nut-free cakes Leeds page', async () => {
+      mockFetch.mockResolvedValue([])
+
+      const result = await sitemap()
+
+      const removedUrl = result.find(entry => entry.url === 'https://olgishcakes.co.uk/nut-free-cakes-leeds')
+      expect(removedUrl).toBeUndefined()
+    })
+
     it('should use _id as fallback for hampers without slug', async () => {
       mockFetch
         .mockResolvedValueOnce([])

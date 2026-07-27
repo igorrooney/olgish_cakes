@@ -602,7 +602,6 @@ export default async function CakesLeedsPage() {
                 { name: "Celebration Cakes", href: "/celebration-cakes", description: "Anniversary, graduation, and special occasion cakes" },
                 { name: "Custom Cake Design", href: "/custom-cake-design", description: "Personalized cake design service with free consultation" },
                 { name: "Vegan Cakes Leeds", href: "/vegan-cakes-leeds", description: "100% plant-based Ukrainian cakes" },
-                { name: "Nut-Free Cakes Leeds", href: "/nut-free-cakes-leeds", description: "Safe allergen-free cakes for nut allergies" },
               ].map((service, index) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
                   <Link href={service.href} style={{ textDecoration: 'none', display: 'block' }}>

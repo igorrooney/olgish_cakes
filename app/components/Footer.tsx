@@ -40,7 +40,6 @@ const footerLinksBase = {
     { name: "Vegan Cakes", href: "/vegan-cakes-leeds" },
     { name: "Gluten-Friendly Cakes", href: "/gluten-friendly-ukrainian-cakes" },
     { name: "Egg-Free Cakes", href: "/egg-free-cakes-leeds" },
-    { name: "Nut-Free Cakes", href: "/nut-free-cakes-leeds" },
     { name: "Easter Cakes", href: "/easter-cakes-leeds" },
     { name: "Christmas Cakes", href: "/christmas-cakes-leeds" },
     { name: "Valentine's Cakes", href: "/valentines-cakes-leeds" },
