@@ -238,11 +238,11 @@ describe('sitemap', () => {
       expect(cakesUrl?.lastModified).toEqual(new Date('2026-03-17'))
       expect(hampersUrl?.lastModified).toEqual(new Date('2026-03-12'))
       expect(deliveryUrl?.lastModified).toEqual(new Date('2026-07-26'))
-      expect(allergensUrl?.lastModified).toEqual(new Date('2026-04-25'))
+      expect(allergensUrl?.lastModified).toEqual(new Date('2026-07-27'))
       expect(getStaticSitemapLastModified('/cakes')).toEqual(new Date('2026-03-17'))
       expect(getStaticSitemapLastModified('/cakes-by-post')).toEqual(new Date('2026-03-12'))
       expect(getStaticSitemapLastModified('/delivery')).toEqual(new Date('2026-07-26'))
-      expect(getStaticSitemapLastModified('/allergens')).toEqual(new Date('2026-04-25'))
+      expect(getStaticSitemapLastModified('/allergens')).toEqual(new Date('2026-07-27'))
     })
     it('should exclude retired legacy landing pages from sitemap coverage', async () => {
       mockFetch.mockResolvedValue([])

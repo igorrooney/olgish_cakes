@@ -51,7 +51,7 @@ export const locationStaticSitemapPages: StaticSitemapEntry[] = []
 export const eventStaticSitemapPages: StaticSitemapEntry[] = []
 
 export const dietaryStaticSitemapPages: StaticSitemapEntry[] = [
-  createStaticSitemapEntry('/allergens', '2026-04-25', 'monthly', 0.64)
+  createStaticSitemapEntry('/allergens', '2026-07-27', 'monthly', 0.64)
 ]
 
 export const educationalStaticSitemapPages: StaticSitemapEntry[] = [
