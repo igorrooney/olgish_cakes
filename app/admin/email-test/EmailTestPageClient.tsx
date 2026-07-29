@@ -448,7 +448,7 @@ const sections: FieldSection[] = [
       { key: 'customerName', label: 'Customer name', type: 'text', placeholder: 'Test Customer' },
       { key: 'customerEmail', label: 'Customer email', type: 'email', placeholder: 'test@example.com' },
       { key: 'customerPhone', label: 'Customer phone', type: 'tel', placeholder: '+44 7123 456789' },
-      { key: 'headingOverride', label: 'Email heading', type: 'text', placeholder: 'Order confirmed' },
+      { key: 'headingOverride', label: 'Email heading', type: 'text', placeholder: 'Your final order offer' },
       { key: 'message', label: 'Submitted message', type: 'textarea', placeholder: 'Original message from the form' },
       { key: 'note', label: 'Internal note', type: 'textarea', placeholder: 'Optional operational note' }
     ]

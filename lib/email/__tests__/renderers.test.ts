@@ -221,9 +221,9 @@ describe('email renderers', () => {
     expect(rendered.text).toContain('Notes: Please write congratulations on the card')
     expect(rendered.text).toContain('Gift Details')
     expect(rendered.text).toContain('Gift note: Happy birthday!')
-    expect(rendered.text).toContain('We\'ll review your order and delivery details within 24 hours')
-    expect(rendered.text).toContain('If everything is confirmed, we\'ll send you a secure payment link')
-    expect(rendered.text).toContain('Once payment is received, we\'ll prepare, pack, and send your cake by post')
+    expect(rendered.text).toContain('We\'ll review your request and delivery details within 24 hours')
+    expect(rendered.text).toContain('If we can accept it, we\'ll personally confirm the final details and price in writing')
+    expect(rendered.text).toContain('A contract starts only when you accept our final written offer or make the requested payment')
     expect(rendered.text).not.toContain('We\'ll contact you with a quote and final design details')
     expect(rendered.text).not.toContain('We\'ll confirm delivery or collection once you approve')
     expect(rendered.text).not.toContain('Customer message:')
@@ -482,13 +482,13 @@ describe('email renderers', () => {
       customerMessage: 'test message',
       giftNote: 'gift note test',
       deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
-      headingOverride: 'Order request confirmed',
-      titleOverride: 'Order Request Confirmed #26051220022842 - Olgish Cakes',
-      statusMessage: 'Great news, we\'ve confirmed your cakes by post request.'
+      headingOverride: 'Your final order offer',
+      titleOverride: 'Final Order Offer #26051220022842 - Olgish Cakes',
+      statusMessage: 'This is our final written offer. Please accept it in writing or make the requested payment before the contract starts.'
     })
 
-    expect(rendered.subject).toBe('Order Request Confirmed #26051220022842 - Olgish Cakes')
-    expect(rendered.text).toContain('Order request confirmed')
+    expect(rendered.subject).toBe('Final Order Offer #26051220022842 - Olgish Cakes')
+    expect(rendered.text).toContain('Your final order offer')
     expect(rendered.text).not.toContain('Order status update')
     expect(rendered.text).toContain('Order Summary')
     expect(rendered.text).toContain('Product: Personalised Congratulations Cake Card')
@@ -508,7 +508,7 @@ describe('email renderers', () => {
     expect(rendered.text).not.toContain('Product ID')
     expect(rendered.text).not.toContain('Design type')
     expect(rendered.text).not.toContain('Order Preferences')
-    expect(rendered.html).toContain('Order request confirmed')
+    expect(rendered.html).toContain('Your final order offer')
     expect(rendered.html).not.toContain('Product type: gift-hamper')
   })
 
@@ -764,10 +764,27 @@ describe('email renderers', () => {
     })
 
     expect(rendered.text).toContain('What happens next?')
-    expect(rendered.text).toContain('We\'ll review your order and confirm all details within 24 hours')
+    expect(rendered.text).toContain('We\'ll review your request and reply within 24 hours')
+    expect(rendered.text).toContain('A contract starts only when you accept our final written offer or make the requested payment')
     expect(rendered.html).toContain('What happens next?')
-    expect(rendered.html).toContain('review your order and confirm all details within 24 hours')
+    expect(rendered.html).toContain('review your request and reply within 24 hours')
   })
+
+  it('includes product-specific allergen information in a final offer email', () => {
+    const rendered = renderEmailTemplate('orders-status-update', {
+      customerName: 'Jane',
+      orderNumber: 'OC-ALLERGEN-1',
+      status: 'confirmed',
+      headingOverride: 'Your final order offer',
+      statusMessage: 'Please accept this offer in writing or make the requested payment.',
+      allergenStatement: 'Contains wheat (gluten), eggs, milk and hazelnuts.'
+    })
+
+    expect(rendered.text).toContain('Allergen information: Contains wheat (gluten), eggs, milk and hazelnuts.')
+    expect(rendered.html).toContain('Allergen information')
+    expect(rendered.html).toContain('Contains wheat (gluten), eggs, milk and hazelnuts.')
+  })
+
   it('renders Trustpilot review section for completed status updates', () => {
     const rendered = renderEmailTemplate('orders-status-update', {
       customerName: 'Jane',

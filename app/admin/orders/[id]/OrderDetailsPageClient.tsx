@@ -36,6 +36,9 @@ interface OrderDetailsFormState {
   deliveryAddress: string
   dateNeeded: string
   trackingNumber: string
+  allergenStatement: string
+  allergenLabelIncluded: boolean
+  customerAcceptedOffer: boolean
   note: string
 }
 
@@ -83,6 +86,9 @@ interface OrderPatchPayload {
   items?: OrderItem[]
   subtotal?: number
   total?: number
+  allergenStatement?: string
+  allergenLabelIncluded?: boolean
+  customerAcceptedOffer?: boolean
 }
 
 interface OrderImagePreview {
@@ -199,6 +205,15 @@ const readStringField = (record: Record<string, unknown>, field: string) => {
   const value = record[field]
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined
 }
+
+const getOrderAllergenStatement = (order: Order) =>
+  isRecord(order.metadata) ? readStringField(order.metadata, 'allergenStatement') || '' : ''
+
+const hasWrittenAllergenLabel = (order: Order) =>
+  isRecord(order.metadata) && order.metadata.allergenLabelIncluded === true
+
+const hasCustomerAcceptedOffer = (order: Order) =>
+  isRecord(order.metadata) && order.metadata.customerAcceptedOffer === true
 
 const getOrderDeliveryCourier = (order: Order) => {
   if (!isRecord(order.metadata)) {
@@ -455,6 +470,9 @@ const createFormState = (order: Order): OrderDetailsFormState => ({
   deliveryAddress: getDeliveryAddressFormValue(order),
   dateNeeded: getDateInputValue(order.delivery?.dateNeeded),
   trackingNumber: order.delivery?.trackingNumber || '',
+  allergenStatement: getOrderAllergenStatement(order),
+  allergenLabelIncluded: hasWrittenAllergenLabel(order),
+  customerAcceptedOffer: hasCustomerAcceptedOffer(order),
   note: ''
 })
 
@@ -508,8 +526,8 @@ const getHeaderContext = (order: Order) => [
 
 const getNextActionMessage = (order: Order) => {
   const statusAction = {
-    new: 'Review and confirm this order.',
-    confirmed: 'Start production when ready.',
+    new: 'Review the request and send the final offer.',
+    confirmed: 'Wait for written acceptance or payment before production.',
     'in-progress': 'Continue production and update when ready.',
     'ready-pickup': 'Arrange customer collection.',
     'out-delivery': 'Track delivery until complete.'
@@ -560,6 +578,9 @@ const hasFormChanges = (current: OrderDetailsFormState | null, saved: OrderDetai
     current.deliveryAddress !== saved.deliveryAddress ||
     current.dateNeeded !== saved.dateNeeded ||
     current.trackingNumber !== saved.trackingNumber ||
+    current.allergenStatement !== saved.allergenStatement ||
+    current.allergenLabelIncluded !== saved.allergenLabelIncluded ||
+    current.customerAcceptedOffer !== saved.customerAcceptedOffer ||
     current.note.trim().length > 0
 }
 
@@ -683,6 +704,18 @@ function buildOrderPatchPayload(
 
   if (formState.trackingNumber !== savedFormState.trackingNumber) {
     payload.trackingNumber = formState.trackingNumber
+  }
+
+  if (formState.allergenStatement !== savedFormState.allergenStatement) {
+    payload.allergenStatement = formState.allergenStatement.trim()
+  }
+
+  if (formState.allergenLabelIncluded !== savedFormState.allergenLabelIncluded) {
+    payload.allergenLabelIncluded = formState.allergenLabelIncluded
+  }
+
+  if (formState.customerAcceptedOffer !== savedFormState.customerAcceptedOffer) {
+    payload.customerAcceptedOffer = formState.customerAcceptedOffer
   }
 
   if (note) {
@@ -1139,6 +1172,58 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
                 ))}
               </select>
             </label>
+            </fieldset>
+
+            <fieldset className='grid gap-4 rounded-box border border-base-300 p-4'>
+              <legend className='px-1 text-sm font-semibold text-base-content'>Contract and allergen checks</legend>
+
+              <label className='form-control w-full'>
+                <span className='label-text mb-2'>Product-specific allergen information</span>
+                <textarea
+                  className='textarea textarea-bordered min-h-32 w-full rounded-box px-4 py-3 leading-relaxed'
+                  maxLength={2000}
+                  value={formState.allergenStatement}
+                  onChange={(event) => updateField('allergenStatement', event.target.value)}
+                  placeholder='Example: Contains wheat (gluten), eggs, milk and hazelnuts. Made in a kitchen that also handles all 14 regulated allergens; cross-contact cannot be excluded.'
+                />
+                <span className='label-text-alt mt-2 text-base-content/65'>
+                  Use the exact statement for this order. It is included in the final offer and later status emails.
+                </span>
+              </label>
+
+              <label className='label cursor-pointer justify-start gap-3 rounded-box border border-base-300 p-3'>
+                <input
+                  type='checkbox'
+                  className='checkbox checkbox-primary'
+                  checked={formState.customerAcceptedOffer}
+                  onChange={(event) => setFormState((current) => current
+                    ? { ...current, customerAcceptedOffer: event.target.checked }
+                    : current)}
+                />
+                <span className='label-text'>
+                  Customer accepted the final offer in writing
+                  <span className='mt-1 block text-xs text-base-content/65'>
+                    A received partial or full payment also records acceptance for the workflow check.
+                  </span>
+                </span>
+              </label>
+
+              <label className='label cursor-pointer justify-start gap-3 rounded-box border border-base-300 p-3'>
+                <input
+                  type='checkbox'
+                  className='checkbox checkbox-primary'
+                  checked={formState.allergenLabelIncluded}
+                  onChange={(event) => setFormState((current) => current
+                    ? { ...current, allergenLabelIncluded: event.target.checked }
+                    : current)}
+                />
+                <span className='label-text'>
+                  Written allergen information is included with the food
+                  <span className='mt-1 block text-xs text-base-content/65'>
+                    Required before marking an order ready for collection, dispatched, delivered or completed.
+                  </span>
+                </span>
+              </label>
             </fieldset>
 
             <fieldset className='grid gap-4 rounded-box border border-base-300 p-4'>

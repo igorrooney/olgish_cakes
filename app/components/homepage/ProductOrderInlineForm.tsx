@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+import { SensitiveDataConsentNotice } from '@/app/components/legal/SensitiveDataConsentNotice'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
@@ -22,6 +24,7 @@ import {
   csrfTokenLoadErrorMessage,
   fetchCsrfToken
 } from '@/app/services/csrfToken'
+import { CURRENT_TERMS_VERSION } from '@/lib/legal/legal-config'
 
 const ukPostcodePattern = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i
 
@@ -734,6 +737,20 @@ export function ProductOrderInlineForm({
           </div>
         </div>
       ) : null}
+      <p className='font-body text-xs leading-5 text-base-content/70'>
+        Submitting this form sends a non-binding order request. We will send a final written offer after confirming
+        availability, details and price. A contract starts only when you accept that offer in writing or make the
+        requested payment. Read our{' '}
+        <Link
+          className='link link-primary'
+          href='/terms'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          terms (version {CURRENT_TERMS_VERSION})
+        </Link>.
+      </p>
+      <SensitiveDataConsentNotice className='text-xs leading-5' />
       <button
         type='submit'
         className={`btn h-12 w-full rounded-full text-white shadow-btn tablet:h-12 ${buttonClassName}`}

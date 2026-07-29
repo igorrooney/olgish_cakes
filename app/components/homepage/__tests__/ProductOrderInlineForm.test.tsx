@@ -137,6 +137,11 @@ describe('ProductOrderInlineForm', () => {
     expect(screen.getByLabelText(/message/i)).toBeInTheDocument()
     expect(screen.queryByLabelText(/requirements/i)).not.toBeInTheDocument()
     expect(screen.queryByLabelText(/upload a reference image/i)).not.toBeInTheDocument()
+    expect(screen.getByText(/submitting this form sends a non-binding order request/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /terms \(version 2026-07-28\)/i })).toHaveAttribute(
+      'href',
+      '/terms'
+    )
   })
 
   it('applies cursor-pointer class to the occasion dropdown', () => {

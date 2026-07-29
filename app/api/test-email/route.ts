@@ -44,8 +44,8 @@ export async function POST(request: NextRequest) {
     // Status messages (same as in the real route)
     const statusMessages = {
       'confirmed': {
-        subject: `Order Confirmed #${mockOrder.orderNumber} - Olgish Cakes`,
-        message: `Great news! Your order has been confirmed and we've started working on it. We'll keep you updated on the progress.`
+        subject: `Final Order Offer #${mockOrder.orderNumber} - Olgish Cakes`,
+        message: `This is our final written offer. Please accept it in writing or make the requested payment before the contract starts.`
       },
       'in-progress': {
         subject: `Order In Progress #${mockOrder.orderNumber} - Olgish Cakes`,

@@ -212,6 +212,19 @@ describe('sitemap', () => {
       expect(contactUrl?.lastModified).not.toEqual(runtimeDate)
     })
 
+    it('should keep all legal-page dates aligned with the published policy version', async () => {
+      mockFetch.mockResolvedValue([])
+
+      const result = await sitemap()
+
+      for (const path of ['/terms', '/privacy', '/cookies'] as const) {
+        const entry = result.find((item) => item.url === `https://olgishcakes.co.uk${path}`)
+
+        expect(entry?.lastModified).toEqual(new Date('2026-07-28'))
+        expect(getStaticSitemapLastModified(path)).toEqual(new Date('2026-07-28'))
+      }
+    })
+
     it('should include the workshops landing page with the committed sitemap metadata', async () => {
       mockFetch.mockResolvedValue([])
 

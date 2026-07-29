@@ -50,9 +50,9 @@ export function isCakesByPostCustomerEmail(input: EmailTemplateCommonInput): boo
 
 function cakesByPostNextSteps(): string[] {
   return [
-    'We\'ll review your order and delivery details within 24 hours',
-    'If everything is confirmed, we\'ll send you a secure payment link',
-    'Once payment is received, we\'ll prepare, pack, and send your cake by post'
+    'We\'ll review your request and delivery details within 24 hours',
+    'If we can accept it, we\'ll personally confirm the final details and price in writing',
+    'A contract starts only when you accept our final written offer or make the requested payment; we\'ll then explain dispatch'
   ]
 }
 
@@ -147,6 +147,7 @@ function buildSummaryRows(input: EmailTemplateCommonInput): CustomerRow[] {
   row(rows, 'Product', input.productName)
   row(rows, 'Quantity', input.quantity ? String(input.quantity) : undefined)
   row(rows, 'Total Amount', formatCurrency(input.totalPrice))
+  row(rows, 'Allergen information', input.allergenStatement)
 
   return rows
 }

@@ -26,16 +26,16 @@ describe('BUSINESS_CONSTANTS', () => {
   })
 
   describe('Address', () => {
-    it('should have empty street', () => {
-      expect(BUSINESS_CONSTANTS.ADDRESS.street).toBe('')
+    it('should have the public street address', () => {
+      expect(BUSINESS_CONSTANTS.ADDRESS.street).toBe('15 Allerton Grange Avenue')
     })
 
     it('should have city as Leeds', () => {
       expect(BUSINESS_CONSTANTS.ADDRESS.city).toBe('Leeds')
     })
 
-    it('should have empty postcode', () => {
-      expect(BUSINESS_CONSTANTS.ADDRESS.postcode).toBe('')
+    it('should have the public postcode', () => {
+      expect(BUSINESS_CONSTANTS.ADDRESS.postcode).toBe('LS17 6PR')
     })
 
     it('should have country as United Kingdom', () => {

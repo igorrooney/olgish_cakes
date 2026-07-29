@@ -9,6 +9,8 @@ import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
 import { readRequiredFormData } from '@/lib/form-request'
 import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
+import { CURRENT_TERMS_VERSION } from '@/lib/legal/legal-config'
+import { getTermsEmailAttachment } from '@/lib/legal/terms-document'
 import {
   createSupabaseOrder,
   updateSupabaseOrderMetadata
@@ -212,8 +214,8 @@ const cakeRequestIntro = 'Thank you. We\'ve received your cake request and will 
 const cakeRequestPriceLabel = 'Estimated price'
 const cakeRequestNextSteps = [
   'We\'ll review your requested date, cake details, and any design notes within 24 hours.',
-  'We\'ll confirm availability, final price, and any design details before you need to pay.',
-  'Nothing is booked or payable until we agree the design, price, and collection or delivery details.'
+  'If we can accept your request, we\'ll personally confirm availability, final details and price in writing.',
+  'Nothing is booked or payable until you accept our final written offer or make the requested payment.'
 ]
 
 function getPostalOrderAddressValidationErrors(address: string, city: string, postcode: string) {
@@ -872,6 +874,7 @@ async function handlePOST(request: NextRequest) {
         metadata: {
           source: 'website-inline-v2',
           orderSourceVersion: 'v2-inline',
+          termsPresentedVersion: CURRENT_TERMS_VERSION,
           referrer,
           userAgent: request.headers.get('user-agent') || '',
           ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
@@ -911,6 +914,7 @@ async function handlePOST(request: NextRequest) {
       let customerEmailError = ''
       let adminEmailError = ''
 
+      const termsAttachment = await getTermsEmailAttachment()
       const customerEmailResult = await sendEmail({
         templateId: 'contact-inline-order-customer',
         input: {
@@ -943,7 +947,7 @@ async function handlePOST(request: NextRequest) {
           approximateSubmittedFrom,
           referrer: referrer || undefined,
           intro: isCakesByPostOrder
-            ? 'Thank you. We\'ve received your cakes by post request and will review your order and delivery details within 24 hours.'
+            ? 'Thank you. We\'ve received your cakes by post request and will review your request and delivery details within 24 hours.'
             : cakeRequestIntro,
           nextSteps: isCakesByPostOrder ? undefined : cakeRequestNextSteps,
           titleOverride: `Order request received #${orderNumber} - Olgish Cakes`
@@ -952,7 +956,8 @@ async function handlePOST(request: NextRequest) {
         message: {
           from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
           to: email,
-          bcc: getCustomerOrderEmailBcc()
+          bcc: getCustomerOrderEmailBcc(),
+          attachments: [termsAttachment]
         }
       })
 
@@ -1147,7 +1152,7 @@ async function handlePOST(request: NextRequest) {
           approximateSubmittedFrom,
           giftNote: giftNote || undefined,
           intro: isFallbackCakesByPostOrder
-            ? 'Thank you. We\'ve received your cakes by post request and will review your order and delivery details within 24 hours.'
+            ? 'Thank you. We\'ve received your cakes by post request and will review your request and delivery details within 24 hours.'
             : cakeRequestIntro,
           nextSteps: isFallbackCakesByPostOrder ? undefined : cakeRequestNextSteps,
           titleOverride: 'Order request received - Olgish Cakes'

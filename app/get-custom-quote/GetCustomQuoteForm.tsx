@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { SensitiveDataConsentNotice } from '../components/legal/SensitiveDataConsentNotice'
 import { useCustomCakeEnquiry } from '../hooks/useCustomCakeEnquiry'
 import {
   buildCustomCakeEnquiryFormData,
@@ -391,14 +392,17 @@ export function GetCustomQuoteForm({
 
       <div className='bottom-3'>
         {hasSubmittedSuccessfully ? null : (
-          <button
-            type='submit'
-            className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'
-            disabled={isSubmitDisabled}
-            aria-busy={isSubmitting || isCsrfLoading}
-          >
-            {submitButtonLabel}
-          </button>
+          <>
+            <SensitiveDataConsentNotice className='mb-3' />
+            <button
+              type='submit'
+              className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'
+              disabled={isSubmitDisabled}
+              aria-busy={isSubmitting || isCsrfLoading}
+            >
+              {submitButtonLabel}
+            </button>
+          </>
         )}
         {hasSubmittedSuccessfully ? null : (
           <p className='mt-3 text-center text-sm leading-6 text-base-content/70'>

@@ -25,6 +25,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { csrfTokenLoadErrorMessage, fetchCsrfToken } from "@/app/services/csrfToken";
+import { SensitiveDataConsentNotice } from '@/app/components/legal/SensitiveDataConsentNotice'
 
 // Configure dayjs for British locale
 dayjs.locale("en-gb");
@@ -138,10 +139,10 @@ export function ContactForm({
           description: "Authentic Ukrainian honey cakes made with love in Leeds",
           address: {
             "@type": "PostalAddress",
-            streetAddress: "Allerton Grange",
+            streetAddress: "15 Allerton Grange Avenue",
             addressLocality: "Leeds",
             addressRegion: "West Yorkshire",
-            postalCode: "LS17",
+            postalCode: "LS17 6PR",
             addressCountry: "GB",
           },
           contactPoint: {
@@ -192,10 +193,10 @@ export function ContactForm({
         description: "Authentic Ukrainian honey cakes made with love in Leeds",
         address: {
           "@type": "PostalAddress",
-          streetAddress: "Allerton Grange",
+          streetAddress: "15 Allerton Grange Avenue",
           addressLocality: "Leeds",
           addressRegion: "West Yorkshire",
-          postalCode: "LS17",
+          postalCode: "LS17 6PR",
           addressCountry: "GB",
         },
         areaServed: {
@@ -817,6 +818,8 @@ export function ContactForm({
               </MotionBox>
             )}
           </AnimatePresence>
+
+          <SensitiveDataConsentNotice />
 
           {showButton && (
             <MotionBox {...formFieldAnimation} transition={{ delay: 0.7 }}>

@@ -117,9 +117,9 @@ function buildLocalBusinessStructuredData(): StructuredData {
       'Handmade cakes from Leeds, with delivery for suitable bakes and workshops for groups, venues and events.',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Allerton Grange',
+      streetAddress: '15 Allerton Grange Avenue',
       addressLocality: 'Leeds',
-      postalCode: 'LS17',
+      postalCode: 'LS17 6PR',
       addressCountry: 'GB'
     },
     areaServed: [

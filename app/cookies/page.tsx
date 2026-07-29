@@ -1,9 +1,11 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
-
-const lastUpdated = '6 February 2026'
-const lastUpdatedIso = '2026-02-06'
-const lastUpdatedDateTime = `${lastUpdatedIso}T00:00:00.000Z`
+import {
+  LegalContactDetails,
+  LegalLastUpdated,
+  LegalPageNavigation,
+  LegalPolicyLinks
+} from '@/app/components/legal/LegalPageComponents'
+import { legalPageStyles } from '@/app/components/legal/legal-page-styles'
+import { createLegalPageMetadata } from '@/lib/legal/legal-config'
 
 const metaTitle = 'Cookie Policy for Leeds and West Yorkshire'
 const metaDescription = 'Learn how Olgish Cakes in Leeds uses essential, analytics and marketing cookies (Google Analytics and Microsoft Clarity) and how to manage choices easily.'
@@ -11,7 +13,7 @@ const metaDescription = 'Learn how Olgish Cakes in Leeds uses essential, analyti
 type CookieRow = {
   name: string
   purpose: string
-  type: 'First-party' | 'Third-party'
+  type: 'First-party cookie' | 'Third-party cookie' | 'Local storage'
   duration: string
 }
 
@@ -39,22 +41,34 @@ const cookieTypes = [
     description: 'Used for advertising measurement when you allow marketing cookies.'
   },
   {
-    title: 'Preference cookies',
-    description: 'Remember choices you make, such as layout or region settings, when available.'
+    title: 'Consent preference storage',
+    description: 'Remembers your cookie choices in first-party cookies and local browser storage.'
   }
 ]
 
 const essentialCookies: CookieRow[] = [
   {
+    name: 'olgish_cookie_consent',
+    purpose: 'Remembers whether you accepted or rejected optional cookies at the initial notice.',
+    type: 'First-party cookie',
+    duration: '12 months.'
+  },
+  {
+    name: 'olgishCookieConsent',
+    purpose: 'Stores the same initial consent choice in this browser so the notice behaves consistently.',
+    type: 'Local storage',
+    duration: 'Until you replace the choice or clear browser storage.'
+  },
+  {
     name: 'klaro',
-    purpose: 'Stores your cookie consent choices so we can respect them.',
-    type: 'First-party',
+    purpose: 'Stores your detailed analytics and marketing choices so we can respect them.',
+    type: 'First-party cookie',
     duration: 'About 4 months.'
   },
   {
     name: 'csrf-token',
     purpose: 'Protects forms by preventing malicious or automated submissions.',
-    type: 'First-party',
+    type: 'First-party cookie',
     duration: '1 hour.'
   }
 ]
@@ -63,20 +77,20 @@ const analyticsCookies: CookieRow[] = [
   {
     name: '_ga / _ga_*',
     purpose: 'Distinguishes users for aggregated Google Analytics reporting.',
-    type: 'First-party',
-    duration: 'About 13 months.'
+    type: 'First-party cookie',
+    duration: 'Up to 2 years by default; browser limits may be shorter.'
   },
   {
     name: '_gid',
     purpose: 'Groups page views for analytics reporting.',
-    type: 'First-party',
-    duration: 'Varies by Google Analytics settings.'
+    type: 'First-party cookie',
+    duration: '24 hours.'
   },
   {
     name: '_gat',
     purpose: 'Limits the rate of analytics requests.',
-    type: 'First-party',
-    duration: 'Varies by Google Analytics settings.'
+    type: 'First-party cookie',
+    duration: '1 minute.'
   }
 ]
 
@@ -84,44 +98,44 @@ const clarityCookies: CookieRow[] = [
   {
     name: '_clck',
     purpose: 'Keeps the Clarity user ID and site preferences for this browser.',
-    type: 'First-party',
-    duration: 'About 12 months.'
+    type: 'First-party cookie',
+    duration: '12 months.'
   },
   {
     name: '_clsk',
     purpose: 'Connects multiple page views into a single Clarity session.',
-    type: 'First-party',
-    duration: 'About 24 hours.'
+    type: 'First-party cookie',
+    duration: '24 hours.'
   },
   {
     name: 'CLID',
     purpose: 'Identifies the first time Clarity saw this user on a site.',
-    type: 'Third-party',
-    duration: 'Varies by Microsoft Clarity settings.'
+    type: 'Third-party cookie',
+    duration: '12 months.'
   },
   {
     name: 'ANONCHK',
     purpose: 'Indicates whether the Microsoft Advertising cookie is passed to Clarity.',
-    type: 'Third-party',
-    duration: 'Varies by Microsoft Clarity settings.'
+    type: 'Third-party cookie',
+    duration: '10 minutes.'
   },
   {
     name: 'MR',
     purpose: 'Signals whether to refresh the Microsoft Advertising ID.',
-    type: 'Third-party',
-    duration: 'Varies by Microsoft Clarity settings.'
+    type: 'Third-party cookie',
+    duration: '7 days.'
   },
   {
     name: 'MUID',
     purpose: 'Recognises unique users across Microsoft domains.',
-    type: 'Third-party',
-    duration: 'Varies by Microsoft Clarity settings.'
+    type: 'Third-party cookie',
+    duration: 'About 13 months.'
   },
   {
     name: 'SM',
     purpose: 'Synchronises the Microsoft Advertising ID across domains.',
-    type: 'Third-party',
-    duration: 'Varies by Microsoft Clarity settings.'
+    type: 'Third-party cookie',
+    duration: 'For the browser session.'
   }
 ]
 
@@ -129,179 +143,109 @@ const marketingCookies: CookieRow[] = [
   {
     name: '_gcl_au',
     purpose: 'Stores conversion data to measure Google Ads performance.',
-    type: 'First-party',
-    duration: 'Varies by Google Ads settings.'
+    type: 'First-party cookie',
+    duration: 'Typically 90 days.'
   },
   {
     name: '_gcl_aw',
     purpose: 'Stores ad click data for conversion attribution.',
-    type: 'First-party',
-    duration: 'Varies by Google Ads settings.'
+    type: 'First-party cookie',
+    duration: 'Typically 90 days.'
   },
   {
     name: '_gcl_dc',
     purpose: 'Supports cross-channel conversion measurement for Google Ads.',
-    type: 'First-party',
-    duration: 'Varies by Google Ads settings.'
+    type: 'First-party cookie',
+    duration: 'Typically 90 days.'
   }
 ]
 
-const heroTitleClassName = 'mt-4 font-moreSugar text-[26px] uppercase tracking-[0.14em] text-primary-700 -rotate-2 leading-[40px] text-center tablet:text-left tablet:text-[46px] tablet:leading-[56px]'
-const heroTextClassName = 'font-body text-sm tablet:text-base text-base-content leading-7'
-const badgeClassName = 'inline-flex items-center rounded-full bg-base-100/80 px-3 py-1 text-xs font-sans uppercase tracking-[0.28em] text-base-content/70 shadow-sm'
-const cardClassName = 'rounded-3xl border border-base-200 bg-base-100 shadow-lg'
-const sectionTitleClassName = 'font-oldenburg text-[20px] tablet:text-[24px] text-primary-800 leading-[28px]'
-const sectionTextClassName = 'mt-3 font-body text-sm tablet:text-base text-base-content leading-7'
-const listClassName = 'mt-4 space-y-3'
-const listItemClassName = 'flex gap-3 font-body text-sm tablet:text-base text-base-content leading-7'
-const listBulletClassName = 'mt-2 h-2 w-2 rounded-full bg-primary-500 flex-shrink-0'
-const summaryListClassName = 'mt-4 space-y-3'
-const summaryItemClassName = 'flex gap-3 font-body text-sm text-base-content leading-6'
-const actionButtonClassName = 'btn btn-primary rounded-btn font-oldenburg text-sm tablet:text-base'
-const outlineButtonClassName = 'btn btn-outline rounded-btn font-oldenburg text-sm tablet:text-base'
+const {
+  actionButton: actionButtonClassName,
+  badge: badgeClassName,
+  card: cardClassName,
+  heroText: heroTextClassName,
+  heroTitle: heroTitleClassName,
+  list: listClassName,
+  listBullet: listBulletClassName,
+  listItem: listItemClassName,
+  outlineButton: outlineButtonClassName,
+  sectionText: sectionTextClassName,
+  sectionTitle: sectionTitleClassName,
+  summaryItem: summaryItemClassName,
+  summaryList: summaryListClassName
+} = legalPageStyles
 
-export const metadata: Metadata = {
+export const metadata = createLegalPageMetadata({
   title: metaTitle,
   description: metaDescription,
-  openGraph: {
-    title: metaTitle,
-    description: metaDescription,
-    url: 'https://olgishcakes.co.uk/cookies',
-    siteName: 'Olgish Cakes',
-    images: [
-      {
-        url: 'https://olgishcakes.co.uk/images/og-legal.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Olgish Cakes bakery owner in Leeds'
-      }
-    ],
-    locale: 'en_GB',
-    type: 'article',
-    publishedTime: lastUpdatedDateTime,
-    modifiedTime: lastUpdatedDateTime
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: metaTitle,
-    description: metaDescription,
-    images: ['https://olgishcakes.co.uk/images/og-legal.jpg']
-  },
-  alternates: {
-    canonical: 'https://olgishcakes.co.uk/cookies'
-  },
-  keywords: [
-    'cookie policy Olgish Cakes',
-    'Ukrainian bakery cookies',
-    'website cookie usage',
-    'cake shop cookies',
-    'Ukrainian cake cookies',
-    'bakery website cookies',
-    'cake order cookies',
-    'Ukrainian dessert cookies',
-    'bakery cookie policy',
-    'cake service cookies',
-    'Ukrainian cake website',
-    'bakery cookie usage',
-    'cake order website',
-    'Ukrainian cake policy',
-    'bakery cookie management',
-    'cake shop cookie policy',
-    'Microsoft Clarity cookies',
-    'Google Analytics cookies'
-  ],
-  authors: [{ name: 'Olgish Cakes', url: 'https://olgishcakes.co.uk' }],
-  creator: 'Olgish Cakes',
-  publisher: 'Olgish Cakes',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false
-  },
-  metadataBase: new URL('https://olgishcakes.co.uk'),
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1
-    }
-  },
-  verification: {
-    google: 'ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64'
-  },
-  other: {
-    'geo.region': 'GB-ENG',
-    'geo.placename': 'Leeds'
-  }
-}
+  path: '/cookies'
+})
+
+const navigationItems = [
+  { id: 'what-are-cookies', title: '1. What are cookies?' },
+  { id: 'cookie-types', title: '2. Types of cookies we use' },
+  { id: 'essential-cookies', title: '3. Essential cookies' },
+  { id: 'analytics-cookies', title: '4. Analytics cookies' },
+  { id: 'clarity-cookies', title: '5. Microsoft Clarity cookies' },
+  { id: 'marketing-cookies', title: '6. Marketing cookies' },
+  { id: 'third-party-services', title: '7. Third-party services' },
+  { id: 'preferences', title: '8. Managing your preferences' },
+  { id: 'updates', title: '9. Updates to this policy' },
+  { id: 'contact', title: '10. Contact us' }
+] as const
 
 export default function CookiePolicyPage() {
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: 'Cookie Policy - Olgish Cakes',
-    description: metaDescription,
-    url: 'https://olgishcakes.co.uk/cookies',
-    publisher: {
-      '@type': 'Organization',
-      name: 'Olgish Cakes',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png'
-      }
-    },
-    mainEntity: {
-      '@type': 'Article',
-      headline: 'Cookie Policy for Olgish Cakes in Leeds and West Yorkshire',
-      description: 'Learn how Olgish Cakes uses cookies and how you can manage your preferences.',
-      author: {
-        '@type': 'Organization',
-        name: 'Olgish Cakes'
-      },
-      publisher: {
-        '@type': 'Organization',
-        name: 'Olgish Cakes'
-      },
-      datePublished: lastUpdatedDateTime,
-      dateModified: lastUpdatedDateTime
-    }
-  }
-
   const renderCookieTable = (items: CookieRow[]) => (
-    <div className="mt-4 overflow-hidden rounded-2xl border border-base-200">
-      <div className="grid grid-cols-1 gap-4 bg-base-200/60 px-4 py-3 text-xs font-sans uppercase tracking-[0.2em] text-base-content/70 tablet:grid-cols-[180px_1fr_160px_160px]">
-        <span>Cookie</span>
-        <span>Purpose</span>
-        <span>Type</span>
-        <span>Duration</span>
-      </div>
-      <div className="divide-y divide-base-200 bg-base-100">
+    <div className='mt-4 overflow-hidden rounded-2xl border border-base-200 bg-base-100'>
+      <table className='table table-sm w-full'>
+        <thead className='hidden bg-base-200/60 font-sans text-xs uppercase tracking-[0.2em] text-base-content/70 tablet:table-header-group'>
+          <tr>
+            <th scope='col'>Cookie</th>
+            <th scope='col'>Purpose</th>
+            <th scope='col'>Type</th>
+            <th scope='col'>Duration</th>
+          </tr>
+        </thead>
+        <tbody className='block divide-y divide-base-200 tablet:table-row-group'>
         {items.map(item => (
-          <div
+          <tr
             key={item.name}
-            className="grid grid-cols-1 gap-3 px-4 py-4 text-sm text-base-content tablet:grid-cols-[180px_1fr_160px_160px]"
+            className='block space-y-3 px-4 py-4 text-sm text-base-content tablet:table-row tablet:space-y-0 tablet:px-0 tablet:py-0'
           >
-            <span className="font-sans font-semibold text-primary-800">{item.name}</span>
-            <span className="font-body leading-6">{item.purpose}</span>
-            <span className="font-body text-base-content/80">{item.type}</span>
-            <span className="font-body text-base-content/80">{item.duration}</span>
-          </div>
+            <th scope='row' className='block p-0 text-left tablet:table-cell tablet:w-[180px] tablet:p-4'>
+              <span className='mb-1 block font-sans text-[10px] uppercase tracking-[0.18em] text-base-content/60 tablet:hidden'>
+                Cookie
+              </span>
+              <span className='font-sans font-semibold text-primary-800'>{item.name}</span>
+            </th>
+            <td className='block p-0 font-body leading-6 tablet:table-cell tablet:p-4'>
+              <span className='mb-1 block font-sans text-[10px] uppercase tracking-[0.18em] text-base-content/60 tablet:hidden'>
+                Purpose
+              </span>
+              {item.purpose}
+            </td>
+            <td className='block p-0 font-body text-base-content/80 tablet:table-cell tablet:w-[160px] tablet:p-4'>
+              <span className='mb-1 block font-sans text-[10px] uppercase tracking-[0.18em] text-base-content/60 tablet:hidden'>
+                Type
+              </span>
+              {item.type}
+            </td>
+            <td className='block p-0 font-body text-base-content/80 tablet:table-cell tablet:w-[160px] tablet:p-4'>
+              <span className='mb-1 block font-sans text-[10px] uppercase tracking-[0.18em] text-base-content/60 tablet:hidden'>
+                Duration
+              </span>
+              {item.duration}
+            </td>
+          </tr>
         ))}
-      </div>
+        </tbody>
+      </table>
     </div>
   )
 
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <main className="min-h-screen bg-base-100">
+    <div className='legal-document min-h-screen bg-base-100'>
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-base-200 via-base-100 to-base-100" />
           <div className="absolute -top-20 right-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
@@ -318,9 +262,7 @@ export default function CookiePolicyPage() {
                   find the right cake. You stay in control. We only use analytics or marketing cookies after you opt
                   in, and you can update choices any time via the footer.
                 </p>
-                <p className="font-sans text-xs uppercase tracking-[0.2em] text-base-content/60">
-                  Last updated: {lastUpdated}
-                </p>
+                <LegalLastUpdated />
               </div>
 
               <div className={cardClassName}>
@@ -335,12 +277,12 @@ export default function CookiePolicyPage() {
                     ))}
                   </ul>
                   <div className="mt-6 flex flex-wrap gap-3">
-                    <Link href="/privacy" className={outlineButtonClassName}>
+                    <a href="/privacy" className={outlineButtonClassName}>
                       Privacy policy
-                    </Link>
-                    <Link href="/contact" className={actionButtonClassName}>
+                    </a>
+                    <a href="/contact" className={actionButtonClassName}>
                       Ask a question
-                    </Link>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -348,11 +290,15 @@ export default function CookiePolicyPage() {
           </div>
         </section>
 
+        <section className='mx-auto max-w-6xl px-4 pb-6 tablet:hidden'>
+          <LegalPageNavigation items={navigationItems} variant='mobile' />
+        </section>
+
         <section className="mx-auto max-w-6xl px-4 pb-16">
           <div className="grid gap-10 tablet:grid-cols-[minmax(0,1fr)_280px]">
             <article className="space-y-10">
-              <section>
-                <h2 className={sectionTitleClassName}>1. What are cookies?</h2>
+              <section id='what-are-cookies' aria-labelledby='what-are-cookies-heading' className='scroll-mt-28'>
+                <h2 id='what-are-cookies-heading' className={sectionTitleClassName}>1. What are cookies?</h2>
                 <p className={sectionTextClassName}>
                   Cookies are small text files stored on your device when you visit a website. They help the site
                   remember actions such as accepting cookies, sending a form, or moving between pages. Some cookies
@@ -360,8 +306,8 @@ export default function CookiePolicyPage() {
                 </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>2. Types of cookies we use</h2>
+              <section id='cookie-types' aria-labelledby='cookie-types-heading' className='scroll-mt-28'>
+                <h2 id='cookie-types-heading' className={sectionTitleClassName}>2. Types of cookies we use</h2>
                 <p className={sectionTextClassName}>
                   We categorise cookies so you can choose what is right for you. The categories we use are:
                 </p>
@@ -378,17 +324,18 @@ export default function CookiePolicyPage() {
                 </ul>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>3. Essential cookies</h2>
+              <section id='essential-cookies' aria-labelledby='essential-cookies-heading' className='scroll-mt-28'>
+                <h2 id='essential-cookies-heading' className={sectionTitleClassName}>3. Essential cookies</h2>
                 <p className={sectionTextClassName}>
-                  These cookies are needed for the website to operate and cannot be switched off. They do not track
+                  These cookies and browser-storage entries are needed for the website to operate securely and
+                  remember your choices. They cannot be switched off through our preference tool and do not track
                   you for marketing.
                 </p>
                 {renderCookieTable(essentialCookies)}
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>4. Analytics cookies</h2>
+              <section id='analytics-cookies' aria-labelledby='analytics-cookies-heading' className='scroll-mt-28'>
+                <h2 id='analytics-cookies-heading' className={sectionTitleClassName}>4. Analytics cookies</h2>
                 <p className={sectionTextClassName}>
                   When you opt into analytics, we use Google Analytics and Microsoft Clarity through Google Tag
                   Manager. These tools help us understand which pages are most helpful and where the website can be
@@ -397,8 +344,8 @@ export default function CookiePolicyPage() {
                 {renderCookieTable(analyticsCookies)}
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>5. Microsoft Clarity cookies</h2>
+              <section id='clarity-cookies' aria-labelledby='clarity-cookies-heading' className='scroll-mt-28'>
+                <h2 id='clarity-cookies-heading' className={sectionTitleClassName}>5. Microsoft Clarity cookies</h2>
                 <p className={sectionTextClassName}>
                   Microsoft Clarity provides session insights such as page views, clicks, and scroll depth. These
                   cookies are only set after analytics consent.
@@ -406,8 +353,8 @@ export default function CookiePolicyPage() {
                 {renderCookieTable(clarityCookies)}
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>6. Marketing cookies</h2>
+              <section id='marketing-cookies' aria-labelledby='marketing-cookies-heading' className='scroll-mt-28'>
+                <h2 id='marketing-cookies-heading' className={sectionTitleClassName}>6. Marketing cookies</h2>
                 <p className={sectionTextClassName}>
                   Marketing cookies are used only if you allow marketing preferences. They help measure advertising
                   performance and improve relevant messaging.
@@ -415,17 +362,36 @@ export default function CookiePolicyPage() {
                 {renderCookieTable(marketingCookies)}
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>7. Third-party services</h2>
+              <section id='third-party-services' aria-labelledby='third-party-services-heading' className='scroll-mt-28'>
+                <h2 id='third-party-services-heading' className={sectionTitleClassName}>7. Third-party services</h2>
                 <p className={sectionTextClassName}>
                   Some cookies are placed by third-party services that appear on our pages, including Google and
                   Microsoft. These providers may process data outside the UK and apply their own cookie policies. We
                   require consent before any optional cookies are set.
                 </p>
+                <p className={sectionTextClassName}>
+                  Read the current{' '}
+                  <a
+                    className='link link-primary'
+                    href='https://support.google.com/analytics/answer/11397207?hl=en-GB'
+                    rel='noreferrer'
+                  >
+                    Google Analytics cookie information
+                  </a>
+                  {' '}and{' '}
+                  <a
+                    className='link link-primary'
+                    href='https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-cookies'
+                    rel='noreferrer'
+                  >
+                    Microsoft Clarity cookie information
+                  </a>
+                  .
+                </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>8. Managing your preferences</h2>
+              <section id='preferences' aria-labelledby='preferences-heading' className='scroll-mt-28'>
+                <h2 id='preferences-heading' className={sectionTitleClassName}>8. Managing your preferences</h2>
                 <p className={sectionTextClassName}>
                   You can manage cookies at any time using the Manage cookies link in the footer. You can also clear
                   cookies in your browser settings. If you decline analytics or marketing cookies, the website will
@@ -433,40 +399,39 @@ export default function CookiePolicyPage() {
                 </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>9. Updates to this policy</h2>
+              <section id='updates' aria-labelledby='updates-heading' className='scroll-mt-28'>
+                <h2 id='updates-heading' className={sectionTitleClassName}>9. Updates to this policy</h2>
                 <p className={sectionTextClassName}>
                   We review this policy regularly and will update the cookie list if we add new tools or providers.
                   The date at the top of this page shows when the policy was last updated.
                 </p>
                 <p className={sectionTextClassName}>
-                  {observedExpiryNote}
+                  {observedExpiryNote} We check the deployed site from a clean browser when providers or tag-manager
+                  settings change and update this list if the observed technologies differ.
                 </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>10. Contact us</h2>
+              <section id='contact' aria-labelledby='contact-heading' className='scroll-mt-28'>
+                <h2 id='contact-heading' className={sectionTitleClassName}>10. Contact us</h2>
                 <p className={sectionTextClassName}>
                   If you have any questions about cookies or privacy, please contact us:
                 </p>
-                <div className="mt-4 space-y-2 font-body text-sm tablet:text-base text-base-content">
-                  <p>Email: hello@olgishcakes.co.uk</p>
-                  <p>Phone: +44 786 721 8194</p>
-                  <p>Address: Based in Allerton Grange, Leeds LS17</p>
-                </div>
+                <LegalContactDetails />
               </section>
             </article>
 
             <aside className="space-y-6">
+              <LegalPageNavigation items={navigationItems} variant='desktop' />
+
               <div className={`${cardClassName} p-6`}>
                 <h3 className="font-oldenburg text-lg text-primary-800">Need to change settings?</h3>
                 <p className="mt-3 font-body text-sm text-base-content leading-6">
                   Cookie choices can be updated at any time using the Manage cookies link in the footer.
                 </p>
                 <div className="mt-4">
-                  <Link href="/privacy" className={outlineButtonClassName}>
+                  <a href="/privacy" className={outlineButtonClassName}>
                     Read privacy policy
-                  </Link>
+                  </a>
                 </div>
               </div>
 
@@ -477,15 +442,19 @@ export default function CookiePolicyPage() {
                   can always see the current expiry in your browser cookie settings.
                 </p>
                 <div className="mt-4">
-                  <Link href="/contact" className={actionButtonClassName}>
+                  <a href="/contact" className={actionButtonClassName}>
                     Ask about cookies
-                  </Link>
+                  </a>
                 </div>
+              </div>
+
+              <div className={`${cardClassName} no-print p-6`}>
+                <h2 className='font-oldenburg text-lg text-primary-800'>Other policies</h2>
+                <LegalPolicyLinks current='/cookies' />
               </div>
             </aside>
           </div>
         </section>
-      </main>
-    </>
+    </div>
   )
 }

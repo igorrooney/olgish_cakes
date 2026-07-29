@@ -224,9 +224,9 @@ describe('ContactPage', () => {
     expect(bakeryBlock?.telephone).toBe('+44 786 721 8194')
     expect(bakeryBlock?.address).toEqual({
       '@type': 'PostalAddress',
-      streetAddress: 'Allerton Grange',
+      streetAddress: '15 Allerton Grange Avenue',
       addressLocality: 'Leeds',
-      postalCode: 'LS17',
+      postalCode: 'LS17 6PR',
       addressCountry: 'GB'
     })
     expect((breadcrumbBlock?.itemListElement as Array<Record<string, unknown>>)[1]?.name).toBe(

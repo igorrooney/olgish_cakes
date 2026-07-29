@@ -150,7 +150,7 @@ describe('OrderDetailsPageClient', () => {
     expect(screen.getByText('Approx. submitted from')).toBeInTheDocument()
     expect(screen.getByText('Bristol, ENG, GB')).toBeInTheDocument()
     expect(screen.getByText('Jane Customer - Chocolate Delicia Sponge Cake - Needed 26/07/2026')).toBeInTheDocument()
-    expect(screen.getByText('Start production when ready. Payment is partial.')).toBeInTheDocument()
+    expect(screen.getByText('Wait for written acceptance or payment before production. Payment is partial.')).toBeInTheDocument()
     expect(screen.getAllByText('Chocolate Delicia Sponge Cake').length).toBeGreaterThan(0)
     expect(screen.getByLabelText('Courier')).toHaveValue('evri')
     expect(screen.getByRole('button', { name: 'Save changes' })).toBeDisabled()

@@ -68,10 +68,10 @@ export function SiteFooter() {
                 hello@olgishcakes.co.uk
               </a>
               <span className='text-sm text-base-content tablet:text-base'>
-                Allerton Grange
+                15 Allerton Grange Avenue
               </span>
               <span className='text-sm text-base-content tablet:text-base'>
-                Leeds, LS17
+                Leeds, LS17 6PR, United Kingdom
               </span>
             </nav>
             <nav aria-label='Legal and site information' className='col-span-2 flex flex-col gap-2 tablet:col-span-1'>

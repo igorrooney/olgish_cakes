@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { SensitiveDataConsentNotice } from '@/app/components/legal/SensitiveDataConsentNotice'
 import { ValidatorInput } from '@/app/components/homepage/ValidatorInput'
 import { getTodayDateInputValue } from '@/app/components/homepage/mobileForm.utils'
 import { useWorkshopEnquiry } from '@/app/hooks/useWorkshopEnquiry'
@@ -316,6 +317,7 @@ export function WorkshopEnquiryForm() {
 
       {hasSubmittedSuccessfully ? null : (
         <div>
+          <SensitiveDataConsentNotice className='mb-3' />
           <button
             type='submit'
             className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'

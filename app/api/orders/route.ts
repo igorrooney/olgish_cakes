@@ -8,6 +8,8 @@ import { getCustomerEmailBcc } from '@/lib/email/customer-bcc'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
 import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
 import { resolveCanonicalOrderType } from '@/lib/order-types'
+import { CURRENT_TERMS_VERSION } from '@/lib/legal/legal-config'
+import { getTermsEmailAttachment } from '@/lib/legal/terms-document'
 import { urlFor } from '@/sanity/lib/image'
 import {
   createSupabaseOrder,
@@ -303,6 +305,7 @@ async function handlePOST(request: NextRequest) {
       metadata: {
         source: 'website',
         sourceOrderType: validatedOrderData.orderType,
+        termsPresentedVersion: CURRENT_TERMS_VERSION,
         referrer: validatedOrderData.referrer || '',
         userAgent: request.headers.get('user-agent') || '',
         ipAddress: request.headers.get('x-forwarded-for') ||
@@ -341,6 +344,7 @@ async function handlePOST(request: NextRequest) {
         throw new Error(`Invalid email address format: ${validatedOrderData.email}`)
       }
 
+      const termsAttachment = await getTermsEmailAttachment()
       const customerEmailResult = await sendEmail({
         templateId: 'orders-customer-confirmation',
         input: {
@@ -375,7 +379,8 @@ async function handlePOST(request: NextRequest) {
         message: {
           from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
           to: validatedOrderData.email,
-          bcc: getCustomerEmailBcc(process.env.ADMIN_BCC_EMAIL)
+          bcc: getCustomerEmailBcc(process.env.ADMIN_BCC_EMAIL),
+          attachments: [termsAttachment]
         }
       })
 
@@ -467,7 +472,7 @@ async function handlePOST(request: NextRequest) {
       success: true,
       orderId: createdOrder._id,
       orderNumber,
-      message: 'Order created successfully'
+      message: 'Order request received successfully'
     })
   } catch (error) {
     logger.error('Orders API: Order creation error', {

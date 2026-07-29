@@ -415,9 +415,9 @@ export default async function CakePage({ params, searchParams }: PageProps) {
             email: "hello@olgishcakes.co.uk",
             address: {
               "@type": "PostalAddress",
-              streetAddress: "Allerton Grange",
+              streetAddress: "15 Allerton Grange Avenue",
               addressLocality: "Leeds",
-              postalCode: "LS17",
+              postalCode: "LS17 6PR",
               addressRegion: "West Yorkshire",
               addressCountry: "GB",
             },

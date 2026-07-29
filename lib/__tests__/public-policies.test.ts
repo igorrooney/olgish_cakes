@@ -6,14 +6,15 @@ import {
 
 describe('public cancellation and returns policies', () => {
   it('offers a voluntary cancellation and refund before preparation starts', () => {
-    expect(REFUND_BEFORE_WORK_POLICY).toMatch(/not started preparing/i)
+    expect(REFUND_BEFORE_WORK_POLICY).toMatch(/has not begun/i)
     expect(REFUND_BEFORE_WORK_POLICY).toMatch(/cancel.*refund/i)
   })
 
   it('excludes post-preparation change-of-mind cancellations for made-to-order food', () => {
-    expect(REFUND_AFTER_WORK_POLICY).toMatch(/preparation or baking has begun/i)
-    expect(REFUND_AFTER_WORK_POLICY).toMatch(/made-to-order and perishable/i)
-    expect(REFUND_AFTER_WORK_POLICY).toMatch(/change-of-mind cancellation or refund/i)
+    expect(REFUND_AFTER_WORK_POLICY).toMatch(/work or non-recoverable purchasing has begun/i)
+    expect(REFUND_AFTER_WORK_POLICY).toMatch(/fair amount/i)
+    expect(REFUND_AFTER_WORK_POLICY).toMatch(/actual costs/i)
+    expect(REFUND_AFTER_WORK_POLICY).toMatch(/explain any deduction/i)
   })
 
   it('preserves statutory remedies for faulty, damaged or misdescribed orders', () => {

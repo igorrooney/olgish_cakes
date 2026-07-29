@@ -138,9 +138,9 @@ function buildDefaultLocalBusinessData({
     email: 'hello@olgishcakes.co.uk',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Allerton Grange',
+      streetAddress: '15 Allerton Grange Avenue',
       addressLocality: 'Leeds',
-      postalCode: 'LS17',
+      postalCode: 'LS17 6PR',
       addressCountry: 'GB'
     },
     geo: {

@@ -65,9 +65,9 @@ export const serviceStaticSitemapPages: StaticSitemapEntry[] = []
 export const communityStaticSitemapPages: StaticSitemapEntry[] = []
 
 export const legalStaticSitemapPages: StaticSitemapEntry[] = [
-  createStaticSitemapEntry('/privacy', '2026-02-09', 'yearly', 0.3),
-  createStaticSitemapEntry('/terms', '2026-02-09', 'yearly', 0.3),
-  createStaticSitemapEntry('/cookies', '2026-02-09', 'yearly', 0.3)
+  createStaticSitemapEntry('/privacy', '2026-07-28', 'yearly', 0.3),
+  createStaticSitemapEntry('/terms', '2026-07-28', 'yearly', 0.3),
+  createStaticSitemapEntry('/cookies', '2026-07-28', 'yearly', 0.3)
 ]
 
 export const staticSitemapPages: StaticSitemapEntry[] = [

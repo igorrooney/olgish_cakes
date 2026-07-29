@@ -1,9 +1,11 @@
-import type { Metadata } from 'next'
-import Link from 'next/link'
-
-const lastUpdated = '6 February 2026'
-const lastUpdatedIso = '2026-02-06'
-const lastUpdatedDateTime = `${lastUpdatedIso}T00:00:00.000Z`
+import {
+  LegalContactDetails,
+  LegalLastUpdated,
+  LegalPageNavigation,
+  LegalPolicyLinks
+} from '@/app/components/legal/LegalPageComponents'
+import { legalPageStyles } from '@/app/components/legal/legal-page-styles'
+import { createLegalPageMetadata } from '@/lib/legal/legal-config'
 
 const metaTitle = 'Privacy Policy for Leeds and West Yorkshire'
 const metaDescription = 'Read how Olgish Cakes in Leeds handles personal data, marketing consent, and analytics like Google Analytics and Microsoft Clarity, plus your UK privacy rights.'
@@ -11,7 +13,7 @@ const metaDescription = 'Read how Olgish Cakes in Leeds handles personal data, m
 const summaryItems = [
   'We only collect the details needed to bake, deliver, and improve your experience.',
   'Analytics tools run only after you accept analytics cookies.',
-  'We never sell your data and only share it with trusted services.',
+  'We never sell your data and identify the services that receive it below.',
   'You can change cookie choices or withdraw consent anytime.',
   'You can ask us to access, correct, or delete your data.'
 ]
@@ -34,8 +36,8 @@ const informationItems = [
     description: 'IP address, device and browser details, pages viewed, and approximate location.'
   },
   {
-    title: 'Marketing preferences',
-    description: 'Your choices about email offers or updates.'
+    title: 'Cookie preferences',
+    description: 'Your choices about analytics and advertising measurement.'
   },
   {
     title: 'Reviews or photos you share',
@@ -48,8 +50,7 @@ const useItems = [
   'Respond to enquiries, quotes, and customer support messages.',
   'Improve our recipes, content, and website experience.',
   'Keep records for tax, accounting, and business administration.',
-  'Protect our website against misuse and keep it running smoothly.',
-  'Send marketing messages only when you have opted in.'
+  'Protect our website against misuse and keep it running smoothly.'
 ]
 
 const lawfulBasisItems = [
@@ -59,7 +60,7 @@ const lawfulBasisItems = [
   },
   {
     title: 'Consent',
-    description: 'For marketing messages and analytics cookies you opt into.'
+    description: 'For optional analytics or advertising measurement and for health-related allergy or dietary information that you choose to provide.'
   },
   {
     title: 'Legal obligation',
@@ -67,158 +68,81 @@ const lawfulBasisItems = [
   },
   {
     title: 'Legitimate interests',
-    description: 'To improve our products, keep the website secure, and understand demand.'
+    description: 'To answer genuine enquiries, improve our products, keep the website secure, prevent misuse and understand non-sensitive business demand, where those interests are not overridden by your rights.'
   }
 ]
 
 const shareItems = [
-  'Website hosting and security providers who keep the site online.',
-  'Analytics and performance tools used only with consent.',
-  'Delivery partners when we need to send your order.',
-  'Payment or invoicing providers if required for your order.'
+  'Vercel, for website hosting, performance and security services.',
+  'Supabase, for storing enquiries, orders, messages and uploaded reference files.',
+  'Resend, for sending enquiry and order emails.',
+  'Telegram, for restricted notifications to the business owner about new enquiries or orders.',
+  'Sanity, for website content and product images; customer order records are not intentionally stored there.',
+  'Google Analytics, Google Ads and Microsoft Clarity, only for the optional purposes you accept.',
+  'Delivery, payment or invoicing providers, but only where needed for your order.',
+  'Professional advisers, regulators, courts or law-enforcement bodies where disclosure is legally required or necessary to establish or defend legal rights.'
+]
+
+const retentionItems = [
+  'Enquiries that do not become orders: normally 24 months after our last contact.',
+  'Orders, contracts, invoices, payment records and associated correspondence: normally six years after the end of the relevant financial year, to meet tax, accounting and legal-claim requirements.',
+  'Reference images and other uploaded files: normally deleted within 24 months after the enquiry closes or the order is completed, unless they form necessary evidence for an ongoing complaint or legal claim.',
+  'Optional analytics information: according to our configured provider setting, normally no longer than 14 months, after which it is deleted or aggregated.',
+  'Cookie choices stored on your device: until the relevant cookie expires or you clear or replace the choice.',
+  'Security and abuse-prevention records: normally up to 90 days, or longer only while a specific incident or legal claim is investigated.',
+  'Reviews or photographs approved for publication: until permission is withdrawn or the material is no longer used; we review retained permissions at least annually.'
 ]
 
 const rightsItems = [
   'Access the personal data we hold about you.',
   'Request correction of inaccurate or incomplete data.',
-  'Ask us to delete data that we no longer need.',
+  'Ask us to delete data where there is no legal reason for us to keep it.',
   'Restrict or object to certain types of processing.',
-  'Request a copy of your data in a portable format.',
-  'Withdraw consent for marketing or analytics at any time.',
+  'Request a portable copy of eligible data you provided to us.',
+  'Withdraw consent for allergy information, analytics or advertising measurement at any time.',
   'Raise a complaint with the UK Information Commissioner’s Office (ICO).'
 ]
 
-const heroTitleClassName = 'mt-4 font-moreSugar text-[26px] uppercase tracking-[0.14em] text-primary-700 -rotate-2 leading-[40px] text-center tablet:text-left tablet:text-[46px] tablet:leading-[56px]'
-const heroTextClassName = 'font-body text-sm tablet:text-base text-base-content leading-7'
-const badgeClassName = 'inline-flex items-center rounded-full bg-base-100/80 px-3 py-1 text-xs font-sans uppercase tracking-[0.28em] text-base-content/70 shadow-sm'
-const cardClassName = 'rounded-3xl border border-base-200 bg-base-100 shadow-lg'
-const sectionTitleClassName = 'font-oldenburg text-[20px] tablet:text-[24px] text-primary-800 leading-[28px]'
-const sectionTextClassName = 'mt-3 font-body text-sm tablet:text-base text-base-content leading-7'
-const listClassName = 'mt-4 space-y-3'
-const listItemClassName = 'flex gap-3 font-body text-sm tablet:text-base text-base-content leading-7'
-const listBulletClassName = 'mt-2 h-2 w-2 rounded-full bg-primary-500 flex-shrink-0'
-const summaryListClassName = 'mt-4 space-y-3'
-const summaryItemClassName = 'flex gap-3 font-body text-sm text-base-content leading-6'
-const actionButtonClassName = 'btn btn-primary rounded-btn font-oldenburg text-sm tablet:text-base'
-const outlineButtonClassName = 'btn btn-outline rounded-btn font-oldenburg text-sm tablet:text-base'
+const {
+  actionButton: actionButtonClassName,
+  badge: badgeClassName,
+  card: cardClassName,
+  heroText: heroTextClassName,
+  heroTitle: heroTitleClassName,
+  list: listClassName,
+  listBullet: listBulletClassName,
+  listItem: listItemClassName,
+  outlineButton: outlineButtonClassName,
+  sectionText: sectionTextClassName,
+  sectionTitle: sectionTitleClassName,
+  summaryItem: summaryItemClassName,
+  summaryList: summaryListClassName
+} = legalPageStyles
 
-export const metadata: Metadata = {
+export const metadata = createLegalPageMetadata({
   title: metaTitle,
   description: metaDescription,
-  openGraph: {
-    title: metaTitle,
-    description: metaDescription,
-    url: 'https://olgishcakes.co.uk/privacy',
-    siteName: 'Olgish Cakes',
-    images: [
-      {
-        url: 'https://olgishcakes.co.uk/images/og-legal.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Olgish Cakes bakery owner in Leeds'
-      }
-    ],
-    locale: 'en_GB',
-    type: 'article',
-    publishedTime: lastUpdatedDateTime,
-    modifiedTime: lastUpdatedDateTime
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: metaTitle,
-    description: metaDescription,
-    images: ['https://olgishcakes.co.uk/images/og-legal.jpg']
-  },
-  alternates: {
-    canonical: 'https://olgishcakes.co.uk/privacy'
-  },
-  keywords: [
-    'privacy policy Olgish Cakes',
-    'Ukrainian bakery privacy',
-    'data protection cake shop',
-    'personal data handling',
-    'Ukrainian cake privacy',
-    'bakery data protection',
-    'cake order privacy',
-    'delivery data privacy',
-    'Ukrainian dessert privacy',
-    'bakery privacy policy',
-    'cake service privacy',
-    'Ukrainian cake data',
-    'bakery personal data',
-    'cake order data protection',
-    'Ukrainian cake privacy policy',
-    'bakery data handling',
-    'Microsoft Clarity privacy'
-  ],
-  authors: [{ name: 'Olgish Cakes', url: 'https://olgishcakes.co.uk' }],
-  creator: 'Olgish Cakes',
-  publisher: 'Olgish Cakes',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false
-  },
-  metadataBase: new URL('https://olgishcakes.co.uk'),
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1
-    }
-  },
-  verification: {
-    google: 'ggHjlSwV1aM_lVT4IcRSlUIk6Vn98ZbJ_FGCepoVi64'
-  },
-  other: {
-    'geo.region': 'GB-ENG',
-    'geo.placename': 'Leeds'
-  }
-}
+  path: '/privacy'
+})
+
+const navigationItems = [
+  { id: 'introduction', title: '1. Introduction' },
+  { id: 'information-we-collect', title: '2. Information we collect' },
+  { id: 'how-we-use-information', title: '3. How we use your information' },
+  { id: 'lawful-bases', title: '4. Lawful bases for processing' },
+  { id: 'analytics', title: '5. Analytics and session insights' },
+  { id: 'sharing', title: '6. Sharing your data' },
+  { id: 'retention', title: '7. Data retention' },
+  { id: 'rights', title: '8. Your rights' },
+  { id: 'international-transfers', title: '9. International transfers' },
+  { id: 'cookies', title: '10. Cookies and preference controls' },
+  { id: 'changes', title: '11. Changes to this policy' },
+  { id: 'contact', title: '12. Contact us' }
+] as const
 
 export default function PrivacyPolicyPage() {
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: 'Privacy Policy - Olgish Cakes',
-    description: metaDescription,
-    url: 'https://olgishcakes.co.uk/privacy',
-    publisher: {
-      '@type': 'Organization',
-      name: 'Olgish Cakes',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png'
-      }
-    },
-    mainEntity: {
-      '@type': 'Article',
-      headline: 'Privacy Policy for Olgish Cakes in Leeds and West Yorkshire',
-      description: 'Learn how Olgish Cakes protects your privacy and handles personal data.',
-      author: {
-        '@type': 'Organization',
-        name: 'Olgish Cakes'
-      },
-      publisher: {
-        '@type': 'Organization',
-        name: 'Olgish Cakes'
-      },
-      datePublished: lastUpdatedDateTime,
-      dateModified: lastUpdatedDateTime
-    }
-  }
-
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <main className="min-h-screen bg-base-100">
+    <div className='legal-document min-h-screen bg-base-100'>
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-base-200 via-base-100 to-base-100" />
           <div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
@@ -234,9 +158,7 @@ export default function PrivacyPolicyPage() {
                   We are a small Ukrainian bakery based in Leeds, and we treat your personal data with care.
                   This page explains what we collect, why we collect it, and the choices you have under UK law.
                 </p>
-                <p className="font-sans text-xs uppercase tracking-[0.2em] text-base-content/60">
-                  Last updated: {lastUpdated}
-                </p>
+                <LegalLastUpdated />
               </div>
 
               <div className={cardClassName}>
@@ -251,12 +173,12 @@ export default function PrivacyPolicyPage() {
                     ))}
                   </ul>
                   <div className="mt-6 flex flex-wrap gap-3">
-                    <Link href="/cookies" className={outlineButtonClassName}>
+                    <a href="/cookies" className={outlineButtonClassName}>
                       Cookie policy
-                    </Link>
-                    <Link href="/contact" className={actionButtonClassName}>
+                    </a>
+                    <a href="/contact" className={actionButtonClassName}>
                       Contact us
-                    </Link>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -264,20 +186,25 @@ export default function PrivacyPolicyPage() {
           </div>
         </section>
 
+        <section className='mx-auto max-w-6xl px-4 pb-6 tablet:hidden'>
+          <LegalPageNavigation items={navigationItems} variant='mobile' />
+        </section>
+
         <section className="mx-auto max-w-6xl px-4 pb-16">
           <div className="grid gap-10 tablet:grid-cols-[minmax(0,1fr)_280px]">
             <article className="space-y-10">
-              <section>
-                <h2 className={sectionTitleClassName}>1. Introduction</h2>
+              <section id='introduction' aria-labelledby='introduction-heading' className='scroll-mt-28'>
+                <h2 id='introduction-heading' className={sectionTitleClassName}>1. Introduction</h2>
                 <p className={sectionTextClassName}>
-                  Olgish Cakes is the data controller for this website. We only ask for the information needed to
-                  bake, deliver, and improve our cakes, and we keep it as simple as possible. If anything here is
-                  unclear, please get in touch and we will explain in plain English.
+                  Olgish Cakes, operated by Olga Ieromenko as a sole trader, is the data controller for this website.
+                  We only ask for the information needed to bake, deliver, and improve our cakes, and we keep it as
+                  simple as possible. If anything here is unclear, please get in touch and we will explain in plain
+                  English.
                 </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>2. Information we collect</h2>
+              <section id='information-we-collect' aria-labelledby='information-we-collect-heading' className='scroll-mt-28'>
+                <h2 id='information-we-collect-heading' className={sectionTitleClassName}>2. Information we collect</h2>
                 <p className={sectionTextClassName}>
                   The information we collect depends on how you use the site. Typical examples include:
                 </p>
@@ -292,10 +219,21 @@ export default function PrivacyPolicyPage() {
                     </li>
                   ))}
                 </ul>
+                <p className={sectionTextClassName}>
+                  We normally receive this information directly from you. If someone orders a gift for you, we may
+                  receive your name, delivery address, telephone number and gift message from that customer. Website
+                  usage information comes from your browser, device and our service providers.
+                </p>
+                <p className={sectionTextClassName}>
+                  Contact, order, delivery and payment details are needed when we enter into or fulfil a contract.
+                  If you do not provide the required information, we may be unable to quote, accept or deliver the
+                  order. Inspiration images, reviews and most dietary notes are optional. We do not use personal data
+                  to make solely automated decisions that have legal or similarly significant effects.
+                </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>3. How we use your information</h2>
+              <section id='how-we-use-information' aria-labelledby='how-we-use-information-heading' className='scroll-mt-28'>
+                <h2 id='how-we-use-information-heading' className={sectionTitleClassName}>3. How we use your information</h2>
                 <p className={sectionTextClassName}>We use your information to:</p>
                 <ul className={listClassName}>
                   {useItems.map(item => (
@@ -307,8 +245,8 @@ export default function PrivacyPolicyPage() {
                 </ul>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>4. Lawful bases for processing</h2>
+              <section id='lawful-bases' aria-labelledby='lawful-bases-heading' className='scroll-mt-28'>
+                <h2 id='lawful-bases-heading' className={sectionTitleClassName}>4. Lawful bases for processing</h2>
                 <p className={sectionTextClassName}>
                   Under UK GDPR, we must have a lawful basis for processing your data. The ones we rely on are:
                 </p>
@@ -323,10 +261,16 @@ export default function PrivacyPolicyPage() {
                     </li>
                   ))}
                 </ul>
+                <p className={sectionTextClassName}>
+                  Allergy, intolerance or other health-related dietary information may be special-category data.
+                  Where you choose to give us that information, we rely on your explicit consent to use it to assess
+                  whether we can supply safely and to fulfil the request. You may withdraw that consent before
+                  fulfilment, but we may then be unable to supply the affected product or service safely.
+                </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>5. Analytics and session insights</h2>
+              <section id='analytics' aria-labelledby='analytics-heading' className='scroll-mt-28'>
+                <h2 id='analytics-heading' className={sectionTitleClassName}>5. Analytics and session insights</h2>
                 <p className={sectionTextClassName}>
                   When you accept analytics cookies, we use Google Analytics and Microsoft Clarity via Google Tag
                   Manager. These tools help us understand how visitors use the site, such as pages viewed, clicks,
@@ -336,8 +280,8 @@ export default function PrivacyPolicyPage() {
                 </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>6. Sharing your data</h2>
+              <section id='sharing' aria-labelledby='sharing-heading' className='scroll-mt-28'>
+                <h2 id='sharing-heading' className={sectionTitleClassName}>6. Sharing your data</h2>
                 <p className={sectionTextClassName}>
                   We do not sell your personal data. We only share it when necessary to run the business and fulfil
                   your orders, for example with:
@@ -350,19 +294,34 @@ export default function PrivacyPolicyPage() {
                     </li>
                   ))}
                 </ul>
-              </section>
-
-              <section>
-                <h2 className={sectionTitleClassName}>7. Data retention</h2>
                 <p className={sectionTextClassName}>
-                  We keep personal data only for as long as needed for the purposes above, including legal and
-                  accounting obligations. Marketing preferences are stored until you unsubscribe. Analytics data is
-                  used in aggregated form where possible and deleted when it is no longer useful.
+                  Each provider may only use the information for the service it supplies to us or as otherwise
+                  required by law. We review access and share only the information reasonably needed for that
+                  purpose.
                 </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>8. Your rights</h2>
+              <section id='retention' aria-labelledby='retention-heading' className='scroll-mt-28'>
+                <h2 id='retention-heading' className={sectionTitleClassName}>7. Data retention</h2>
+                <p className={sectionTextClassName}>
+                  We review retained personal data at least annually. Our normal periods are:
+                </p>
+                <ul className={listClassName}>
+                  {retentionItems.map(item => (
+                    <li key={item} className={listItemClassName}>
+                      <span className={listBulletClassName} aria-hidden='true' />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className={sectionTextClassName}>
+                  We may keep a record longer where the law requires it, a complaint or legal claim is active, or a
+                  court or regulator requires preservation. When the reason ends, we delete or anonymise the data.
+                </p>
+              </section>
+
+              <section id='rights' aria-labelledby='rights-heading' className='scroll-mt-28'>
+                <h2 id='rights-heading' className={sectionTitleClassName}>8. Your rights</h2>
                 <p className={sectionTextClassName}>
                   You have rights under UK data protection law. These include the right to:
                 </p>
@@ -376,49 +335,69 @@ export default function PrivacyPolicyPage() {
                 </ul>
                 <p className={sectionTextClassName}>
                   If you want to exercise any of these rights, just email us. We may ask for verification to protect
-                  your privacy.
+                  your privacy. Rights can depend on the circumstances and lawful basis. We normally respond within
+                  one month.
                 </p>
-              </section>
-
-              <section>
-                <h2 className={sectionTitleClassName}>9. International transfers</h2>
+                <div className='alert alert-info mt-5 items-start text-sm'>
+                  <div>
+                    <p className='font-semibold'>Your right to object</p>
+                    <p className='mt-1 leading-6'>
+                      You may object at any time to processing based on our legitimate interests. Tell us what you
+                      object to and why. We will stop unless we can demonstrate compelling legitimate grounds or
+                      need the information to establish, exercise or defend legal claims.
+                    </p>
+                  </div>
+                </div>
                 <p className={sectionTextClassName}>
-                  Some service providers may process data outside the UK. When this happens, we use safeguards such
-                  as standard contractual clauses or equivalent protections required by UK law.
+                  You may complain to the ICO at{' '}
+                  <a className='link link-primary' href='https://ico.org.uk/make-a-complaint/' rel='noreferrer'>
+                    ico.org.uk/make-a-complaint
+                  </a>
+                  , or call 0303 123 1113. We would appreciate the opportunity to address your concern first.
                 </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>10. Cookies and preference controls</h2>
+              <section id='international-transfers' aria-labelledby='international-transfers-heading' className='scroll-mt-28'>
+                <h2 id='international-transfers-heading' className={sectionTitleClassName}>9. International transfers</h2>
+                <p className={sectionTextClassName}>
+                  Some providers listed above may process information outside the UK. Before making a restricted
+                  transfer, we use an applicable UK adequacy regulation or an approved safeguard such as the UK
+                  International Data Transfer Agreement or the UK Addendum to the EU Standard Contractual Clauses.
+                  Where required, we also complete a transfer risk assessment and apply additional security
+                  measures. Contact us if you would like more information or a copy of the relevant safeguard;
+                  commercially confidential wording may be redacted.
+                </p>
+              </section>
+
+              <section id='cookies' aria-labelledby='cookies-heading' className='scroll-mt-28'>
+                <h2 id='cookies-heading' className={sectionTitleClassName}>10. Cookies and preference controls</h2>
                 <p className={sectionTextClassName}>
                   For detailed cookie information, please read our cookie policy. You can update your preferences at
                   any time via the “Manage cookies” link in the footer.
                 </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>11. Changes to this policy</h2>
+              <section id='changes' aria-labelledby='changes-heading' className='scroll-mt-28'>
+                <h2 id='changes-heading' className={sectionTitleClassName}>11. Changes to this policy</h2>
                 <p className={sectionTextClassName}>
                   We may update this policy from time to time to reflect changes in the law or our services. When we
                   do, we will update the date at the top of this page.
                 </p>
               </section>
 
-              <section>
-                <h2 className={sectionTitleClassName}>12. Contact us</h2>
+              <section id='contact' aria-labelledby='contact-heading' className='scroll-mt-28'>
+                <h2 id='contact-heading' className={sectionTitleClassName}>12. Contact us</h2>
                 <p className={sectionTextClassName}>
                   If you have any questions about this Privacy Policy or how we handle personal data, please reach
                   out:
                 </p>
-                <div className="mt-4 space-y-2 font-body text-sm tablet:text-base text-base-content">
-                  <p>Email: hello@olgishcakes.co.uk</p>
-                  <p>Phone: +44 786 721 8194</p>
-                  <p>Address: Based in Allerton Grange, Leeds LS17</p>
-                </div>
+                <LegalContactDetails />
               </section>
             </article>
 
             <aside className="space-y-6">
+              <LegalPageNavigation items={navigationItems} variant='desktop' />
+
               <div className={`${cardClassName} p-6`}>
                 <h3 className="font-oldenburg text-lg text-primary-800">Need help quickly?</h3>
                 <p className="mt-3 font-body text-sm text-base-content leading-6">
@@ -426,12 +405,12 @@ export default function PrivacyPolicyPage() {
                   as soon as we can.
                 </p>
                 <div className="mt-4 flex flex-col gap-3">
-                  <Link href="/contact" className={actionButtonClassName}>
+                  <a href="/contact" className={actionButtonClassName}>
                     Send a message
-                  </Link>
-                  <Link href="/" className={outlineButtonClassName}>
+                  </a>
+                  <a href="/" className={outlineButtonClassName}>
                     Back to home
-                  </Link>
+                  </a>
                 </div>
               </div>
 
@@ -441,15 +420,19 @@ export default function PrivacyPolicyPage() {
                   Analytics cookies are always optional. You are in control, and you can change your choice anytime.
                 </p>
                 <div className="mt-4">
-                  <Link href="/cookies" className={outlineButtonClassName}>
+                  <a href="/cookies" className={outlineButtonClassName}>
                     View cookie policy
-                  </Link>
+                  </a>
                 </div>
+              </div>
+
+              <div className={`${cardClassName} no-print p-6`}>
+                <h2 className='font-oldenburg text-lg text-primary-800'>Other policies</h2>
+                <LegalPolicyLinks current='/privacy' />
               </div>
             </aside>
           </div>
         </section>
-      </main>
-    </>
+    </div>
   )
 }

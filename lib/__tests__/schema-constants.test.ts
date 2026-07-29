@@ -111,7 +111,7 @@ describe('schema-constants', () => {
       expect(BUSINESS_INFO.addressRegion).toBe('West Yorkshire')
     })
 
-    it('should have street address', () => {
+    it('should have the public street address', () => {
       expect(BUSINESS_INFO.streetAddress).toBe('15 Allerton Grange Avenue')
     })
 

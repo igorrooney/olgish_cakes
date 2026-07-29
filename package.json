@@ -9,6 +9,8 @@
     "social:workshops": "tsx scripts/generate-workshops-social-card.ts",
     "social:faqs": "tsx scripts/generate-faqs-social-card.ts",
     "social:delivery": "tsx scripts/generate-delivery-social-card.ts",
+    "social:legal": "tsx scripts/generate-legal-social-card.ts",
+    "legal:terms-pdf": "tsx scripts/export-terms-pdf-content.ts && python scripts/generate-terms-pdf.py",
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",

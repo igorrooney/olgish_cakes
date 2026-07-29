@@ -87,6 +87,12 @@ export interface OrderNote {
 export interface OrderMetadata {
     giftNote?: string;
     deliveryCourier?: string;
+    termsPresentedVersion?: string
+    allergenStatement?: string
+    allergenLabelIncluded?: boolean
+    allergenConfirmedAt?: string
+    customerAcceptedOffer?: boolean
+    customerAcceptedAt?: string
     [key: string]: unknown;
 }
 
@@ -138,6 +144,9 @@ export interface OrderUpdate {
     deliveryFee?: number;
     discount?: number;
     total?: number;
+    allergenStatement?: string;
+    allergenLabelIncluded?: boolean;
+    customerAcceptedOffer?: boolean;
 }
 
 /**

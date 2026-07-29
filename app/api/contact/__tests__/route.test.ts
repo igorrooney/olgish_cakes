@@ -693,6 +693,7 @@ describe('/api/contact', () => {
           metadata: expect.objectContaining({
             source: 'website-inline-v2',
             orderSourceVersion: 'v2-inline',
+            termsPresentedVersion: '2026-07-28',
             ipLocation: {
               city: 'Bristol',
               region: 'ENG',
@@ -723,7 +724,14 @@ describe('/api/contact', () => {
 
       expect(customerEmailCall).toEqual(expect.objectContaining({
         bcc: 'orders-bcc@example.com',
-        subject: expect.stringMatching(/^Order request received #\d+ - Olgish Cakes$/)
+        subject: expect.stringMatching(/^Order request received #\d+ - Olgish Cakes$/),
+        attachments: [
+          expect.objectContaining({
+            filename: 'olgish-cakes-terms-2026-07-28.pdf',
+            contentType: 'application/pdf',
+            content: expect.any(Buffer)
+          })
+        ]
       }))
       expect(customerEmailCall?.html).toContain('Order Preferences')
       expect(customerEmailCall?.html).not.toContain('Request type')
@@ -732,9 +740,9 @@ describe('/api/contact', () => {
       expect(customerEmailCall?.text).toContain('Estimated price: £25')
       expect(customerEmailCall?.text).toContain('Occasion: Birthday')
       expect(customerEmailCall?.text).toContain('Serves 8-12 people')
-      expect(customerEmailCall?.text).toContain('We\'ll confirm availability, final price, and any design details before you need to pay.')
+      expect(customerEmailCall?.text).toContain('If we can accept your request, we\'ll personally confirm availability, final details and price in writing.')
       expect(customerEmailCall?.text).not.toContain('I\'ll')
-      expect(customerEmailCall?.text).toContain('Nothing is booked or payable until we agree the design, price, and collection or delivery details.')
+      expect(customerEmailCall?.text).toContain('Nothing is booked or payable until you accept our final written offer or make the requested payment.')
       expect(customerEmailCall?.text).not.toContain('Order Confirmation')
 
       expect(adminEmailCall?.subject).toContain('New inline order')
@@ -1007,7 +1015,7 @@ describe('/api/contact', () => {
       expect(customerEmailCall?.text).toContain('Delivery address: 7 Sample Street, Leeds, LS1 1AA')
       expect(customerEmailCall?.text).toContain('Notes: Please write congratulations')
       expect(customerEmailCall?.text).not.toContain('Phone:')
-      expect(customerEmailCall?.text).toContain('If everything is confirmed, we\'ll send you a secure payment link')
+      expect(customerEmailCall?.text).toContain('If we can accept it, we\'ll personally confirm the final details and price in writing')
       expect(customerEmailCall?.text).not.toContain('We\'ll contact you with a quote and final design details')
       expect(customerEmailCall?.text).not.toContain('Customer message:')
       expect(customerEmailCall?.html).toContain('Gift note')
@@ -1225,7 +1233,7 @@ describe('/api/contact', () => {
       expect(fallbackCustomerEmailCall?.text).toContain('Thank you. We\'ve received your cake request and will review the details within 24 hours.')
       expect(fallbackCustomerEmailCall?.text).toContain('Date needed: 20 March 2026')
       expect(fallbackCustomerEmailCall?.text).toContain('Estimated price: £25')
-      expect(fallbackCustomerEmailCall?.text).toContain('We\'ll confirm availability, final price, and any design details before you need to pay.')
+      expect(fallbackCustomerEmailCall?.text).toContain('If we can accept your request, we\'ll personally confirm availability, final details and price in writing.')
       expect(fallbackCustomerEmailCall?.text).not.toContain('I\'ll')
       expect(fallbackCustomerEmailCall?.text).not.toContain('Order Confirmation')
       expect(fallbackAdminEmailCall?.html).toContain('Date needed')
@@ -1278,7 +1286,7 @@ describe('/api/contact', () => {
       expect(fallbackCustomerEmailCall?.text).toContain('Delivery Details')
       expect(fallbackCustomerEmailCall?.text).toContain('Recipient: Jane Recipient')
       expect(fallbackCustomerEmailCall?.text).toContain('Delivery address: 7 Sample Street, Leeds, LS1 1AA')
-      expect(fallbackCustomerEmailCall?.text).toContain('If everything is confirmed, we\'ll send you a secure payment link')
+      expect(fallbackCustomerEmailCall?.text).toContain('If we can accept it, we\'ll personally confirm the final details and price in writing')
       expect(fallbackCustomerEmailCall?.text).not.toContain('We\'ll contact you with a quote and final design details')
       expect(fallbackCustomerEmailCall?.text).not.toContain('Customer message:')
       expect(fallbackCustomerEmailCall?.text).toContain('Gift note: Happy birthday!')

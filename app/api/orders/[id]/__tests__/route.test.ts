@@ -104,7 +104,8 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'confirmed'
+        status: 'confirmed',
+        allergenStatement: 'Contains wheat (gluten), eggs and milk.'
       })
     })
 
@@ -139,6 +140,15 @@ describe('/api/orders/[id] PATCH', () => {
       unitPrice: 0,
       totalPrice: 15
     })
+    expect(sendCall.input.statusMessage).toContain('terms version 2026-07-28')
+    expect(sendCall.input.allergenStatement).toBe('Contains wheat (gluten), eggs and milk.')
+    expect(sendCall.message.attachments).toEqual([
+      expect.objectContaining({
+        filename: 'olgish-cakes-terms-2026-07-28.pdf',
+        contentType: 'application/pdf',
+        content: expect.any(Buffer)
+      })
+    ])
   })
 
   it('allows admins to clear an optional customer phone number', async () => {
@@ -264,7 +274,8 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'confirmed'
+        status: 'confirmed',
+        allergenStatement: 'Contains wheat (gluten), eggs and milk.'
       })
     })
 
@@ -276,14 +287,95 @@ describe('/api/orders/[id] PATCH', () => {
     expect(sendCall.templateId).toBe('orders-status-update')
     expect(sendCall.input).toMatchObject({
       productType: 'gift-hamper',
-      headingOverride: 'Order request confirmed',
-      titleOverride: 'Order Request Confirmed #26051220022842 - Olgish Cakes',
-      statusMessage: 'Great news, we\'ve confirmed your cakes by post request.',
+      headingOverride: 'Your final order offer',
+      titleOverride: 'Final Order Offer #26051220022842 - Olgish Cakes',
+      statusMessage: 'This email is our final written offer for the details and price shown below under terms version 2026-07-28. Please accept it in writing or make the requested payment. Your contract starts only when you do so.',
+      allergenStatement: 'Contains wheat (gluten), eggs and milk.',
       giftNote: 'gift note test',
       deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
       paymentStatus: 'pending'
     })
     expect(sendCall.input.customerMessage).toBeUndefined()
+    expect(sendCall.message.attachments[0]).toMatchObject({
+      filename: 'olgish-cakes-terms-2026-07-28.pdf',
+      contentType: 'application/pdf'
+    })
+  })
+
+  it('blocks a final offer without product-specific allergen information', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-03-01T10:00:00.000Z',
+      _updatedAt: '2026-03-01T10:00:00.000Z',
+      orderNumber: 'OC-2001',
+      status: 'new',
+      orderType: 'standard',
+      customer: {
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        phone: '07123456789'
+      },
+      items: [{ productName: 'Honey Cake', quantity: 1, totalPrice: 40 }],
+      delivery: { deliveryMethod: 'collection' },
+      pricing: { total: 40, paymentStatus: 'pending' },
+      notes: [],
+      metadata: {}
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'confirmed' })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+    const json = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(json.error).toBe('Allergen information required')
+    expect(mockUpdateSupabaseOrder).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('blocks production until the customer accepts or pays', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-03-01T10:00:00.000Z',
+      _updatedAt: '2026-03-01T10:00:00.000Z',
+      orderNumber: 'OC-2001',
+      status: 'confirmed',
+      orderType: 'standard',
+      customer: {
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        phone: '07123456789'
+      },
+      items: [{ productName: 'Honey Cake', quantity: 1, totalPrice: 40 }],
+      delivery: { deliveryMethod: 'collection' },
+      pricing: { total: 40, paymentStatus: 'pending' },
+      notes: [],
+      metadata: {
+        allergenStatement: 'Contains wheat (gluten), eggs and milk.'
+      }
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'in-progress' })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+    const json = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(json.error).toBe('Customer acceptance required')
+    expect(mockUpdateSupabaseOrder).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
   it('passes cakes by post status email fields for in-progress orders', async () => {
@@ -419,7 +511,8 @@ describe('/api/orders/[id] PATCH', () => {
       body: JSON.stringify({
         status: 'out-delivery',
         deliveryCourier: 'evri',
-        trackingNumber: 'H02X8A0022918652'
+        trackingNumber: 'H02X8A0022918652',
+        allergenLabelIncluded: true
       })
     })
 
@@ -503,7 +596,8 @@ describe('/api/orders/[id] PATCH', () => {
       body: JSON.stringify({
         status: 'out-delivery',
         deliveryCourier: 'royal-mail',
-        trackingNumber: '12345'
+        trackingNumber: '12345',
+        allergenLabelIncluded: true
       })
     })
 
@@ -585,7 +679,8 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'out-delivery'
+        status: 'out-delivery',
+        allergenLabelIncluded: true
       })
     })
 
@@ -655,7 +750,8 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'out-delivery'
+        status: 'out-delivery',
+        allergenLabelIncluded: true
       })
     })
 
@@ -724,7 +820,8 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'out-delivery'
+        status: 'out-delivery',
+        allergenLabelIncluded: true
       })
     })
 
@@ -798,7 +895,8 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'out-delivery'
+        status: 'out-delivery',
+        allergenLabelIncluded: true
       })
     })
 
@@ -850,7 +948,8 @@ describe('/api/orders/[id] PATCH', () => {
       messages: [],
       notes: [],
       metadata: {
-        deliveryCourier: 'royal-mail'
+        deliveryCourier: 'royal-mail',
+        allergenLabelIncluded: true
       }
     }
 
@@ -927,7 +1026,8 @@ describe('/api/orders/[id] PATCH', () => {
       messages: [],
       notes: [],
       metadata: {
-        deliveryCourier: 'evri'
+        deliveryCourier: 'evri',
+        allergenLabelIncluded: true
       }
     }
 
@@ -1218,7 +1318,8 @@ describe('/api/orders/[id] PATCH', () => {
       },
       body: JSON.stringify({
         status: 'out-delivery',
-        trackingNumber: 'H02X8A0022918652'
+        trackingNumber: 'H02X8A0022918652',
+        allergenLabelIncluded: true
       })
     })
 
@@ -1346,7 +1447,8 @@ describe('/api/orders/[id] PATCH', () => {
       messages: [],
       notes: [],
       metadata: {
-        deliveryCourier: 'royal-mail'
+        deliveryCourier: 'royal-mail',
+        allergenLabelIncluded: true
       }
     }
 
@@ -1510,6 +1612,7 @@ describe('/api/orders/[id] PATCH', () => {
 
     const formData = new FormData()
     formData.append('status', 'confirmed')
+    formData.append('allergenStatement', 'Contains wheat (gluten), eggs and milk.')
     formData.append('itemPrice', '45')
     formData.append('totalPrice', '65')
     formData.append('selectedCakeId', 'hamper-1')

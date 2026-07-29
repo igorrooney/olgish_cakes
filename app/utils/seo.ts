@@ -314,9 +314,9 @@ export function generatePageMetadata({
       payment: "cash, credit card, bank transfer",
       delivery: "yes",
       takeout: "yes",
-      "business:contact_data:street_address": "Allerton Grange",
+      "business:contact_data:street_address": "15 Allerton Grange Avenue",
       "business:contact_data:locality": "Leeds",
-      "business:contact_data:postal_code": "LS17",
+      "business:contact_data:postal_code": "LS17 6PR",
       "business:contact_data:country_name": "United Kingdom",
       "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
       "business:contact_data:email": "hello@olgishcakes.co.uk",
@@ -348,10 +348,10 @@ export function generateOrganizationSchema(reviewStats?: ReviewStats) {
     email: "hello@olgishcakes.co.uk",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Allerton Grange",
+      streetAddress: "15 Allerton Grange Avenue",
       addressLocality: "Leeds",
       addressRegion: "West Yorkshire",
-      postalCode: "LS17",
+      postalCode: "LS17 6PR",
       addressCountry: "GB",
     },
     geo: {
@@ -409,10 +409,10 @@ export function generateLocalBusinessSchema(reviewStats?: ReviewStats) {
     email: "hello@olgishcakes.co.uk",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Allerton Grange",
+      streetAddress: "15 Allerton Grange Avenue",
       addressLocality: "Leeds",
       addressRegion: "West Yorkshire",
-      postalCode: "LS17",
+      postalCode: "LS17 6PR",
       addressCountry: "GB",
     },
     geo: {

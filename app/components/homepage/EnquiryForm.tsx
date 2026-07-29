@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { useCustomCakeEnquiry } from '@/app/hooks/useCustomCakeEnquiry'
+import { SensitiveDataConsentNotice } from '@/app/components/legal/SensitiveDataConsentNotice'
 import {
   buildCustomCakeEnquiryFormData,
   customCakeEnquiryFallbackErrorMessage,
@@ -390,6 +391,7 @@ export function EnquiryForm({
               </div>
             </div>
           ) : null}
+          <SensitiveDataConsentNotice className='mb-3 text-xs leading-5' />
           <button
             type='submit'
             className='btn h-12 w-full rounded-full bg-primary-500 text-white shadow-btn hover:bg-primary-700 tablet:h-12'

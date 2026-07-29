@@ -74,6 +74,7 @@ export interface EmailTemplateCommonInput {
   headingOverride?: string
   statusMessage?: string
   paymentStatus?: string
+  allergenStatement?: string
   orderItems?: Array<{
     productName?: string
     productId?: string

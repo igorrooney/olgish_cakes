@@ -515,6 +515,7 @@ export const commonInputSchema = z.object({
   headingOverride: z.string().optional(),
   statusMessage: z.string().optional(),
   paymentStatus: z.string().optional(),
+  allergenStatement: z.string().optional(),
   trackingNumber: z.string().optional(),
   adminUrl: z.string().optional(),
   approximateSubmittedFrom: z.string().optional(),
@@ -571,9 +572,9 @@ function defaultNextSteps(input: EmailTemplateCommonInput): string[] {
   }
 
   return [
-    'We\'ll review your order and confirm all details within 24 hours',
-    'We\'ll contact you with a quote and final design details',
-    'We\'ll confirm delivery or collection once you approve'
+    'We\'ll review your request and reply within 24 hours',
+    'If we can accept it, we\'ll personally confirm availability, final details and price in writing',
+    'A contract starts only when you accept our final written offer or make the requested payment'
   ]
 }
 
@@ -769,6 +770,7 @@ function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
   row(summaryRows, 'Product', input.productName)
   row(summaryRows, 'Date needed', dateNeeded)
   row(summaryRows, priceLabel, formatCurrency(input.totalPrice))
+  row(summaryRows, 'Allergen information', input.allergenStatement)
 
   const normalizedStatus = toTrimmed(input.status).toLowerCase()
   if (normalizedStatus === 'out-for-delivery' || normalizedStatus === 'out-delivery') {

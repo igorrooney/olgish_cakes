@@ -95,16 +95,26 @@ describe('/api/orders POST', () => {
     })
 
     const response = await POST(request)
+    const responseBody = await response.json()
 
     expect(response.status).toBe(200)
+    expect(responseBody.message).toBe('Order request received successfully')
     expect(mockCreateSupabaseOrder).toHaveBeenCalledWith(expect.objectContaining({
       orderType: 'custom-cake',
       metadata: expect.objectContaining({
-        sourceOrderType: 'standard'
+        sourceOrderType: 'standard',
+        termsPresentedVersion: '2026-07-28'
       })
     }))
     expect(mockSendEmail).toHaveBeenCalledTimes(2)
     expect(mockSendEmail.mock.calls[0]?.[0].input.customerMessage).toBe('Please make it less sweet')
+    expect(mockSendEmail.mock.calls[0]?.[0].message.attachments).toEqual([
+      expect.objectContaining({
+        filename: 'olgish-cakes-terms-2026-07-28.pdf',
+        contentType: 'application/pdf',
+        content: expect.any(Buffer)
+      })
+    ])
     expect(mockUpdateSupabaseOrderMetadata).toHaveBeenCalledWith('order-1', {}, expect.objectContaining({
       emailSent: false,
       emailError: expect.stringContaining('Transport did not accept the customer email')
@@ -225,7 +235,8 @@ describe('/api/orders POST', () => {
     expect(mockCreateSupabaseOrder).toHaveBeenCalledWith(expect.objectContaining({
       orderType: 'cakes-by-post',
       metadata: expect.objectContaining({
-        sourceOrderType: 'gift-hamper'
+        sourceOrderType: 'gift-hamper',
+        termsPresentedVersion: '2026-07-28'
       })
     }))
     expect(mockSendEmail.mock.calls[0]?.[0].input.orderType).toBe('cakes-by-post')

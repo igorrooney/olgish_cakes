@@ -2,6 +2,38 @@
 
 This guide explains how production content updates work in the current app.
 
+## Legal Release Gate
+
+Do not release the 28 July 2026 legal-page update until every item below is complete:
+
+- [ ] A UK-qualified solicitor has reviewed the exact terms version `2026-07-28`.
+- [ ] The solicitor has confirmed the sole-trader identity, public trading address, contract-formation process, cancellation wording, allergen wording, liability wording and governing-law wording.
+- [ ] Any solicitor changes have been applied to both the visible `/terms` page and `public/legal/olgish-cakes-terms-2026-07-28.pdf`.
+- [ ] The final PDF has been regenerated with `pnpm run legal:terms-pdf` and visually checked page by page.
+- [ ] Order-request receipts and final-offer emails have been tested with the versioned terms attachment.
+- [ ] Staff use the final-offer workflow and record written acceptance or payment before production or fulfilment.
+- [ ] Product-specific written allergen information is included in the final offer and supplied with the food.
+- [ ] Staff identify fixed-date workshops, catering and leisure services that fall within the statutory cancellation exception and explain this before contract.
+- [ ] For any other service starting during an applicable 14-day cancellation period, the customer expressly requests early performance and acknowledges the effect on the cancellation right.
+- [ ] Processor terms, data-processing agreements and international-transfer safeguards have been checked for Vercel, Supabase, Resend, Telegram, Sanity, Google and Microsoft.
+- [ ] The privacy retention schedule has an assigned owner and a recurring deletion/review process.
+
+The current wording is a guidance-aligned working draft, not a substitute for legal advice.
+
+### Known `/terms` performance risk
+
+The local production Lighthouse audit on 28 July 2026 scored Performance 90,
+Accessibility 100, Best Practices 100 and SEO 100. CLS was 0.002, but mobile lab
+LCP was 3.46 seconds. The page's observed LCP element rendered in 234 ms; the
+higher simulated result remains a release risk to verify against the deployed
+URL and real-user data.
+
+Non-visible optimisations have been applied, including removing speculative
+prefetching from legal-page navigation. Do not delay the immediately visible
+cookie-consent UI or change the approved page design solely to improve the lab
+score. Re-run Lighthouse against the deployed `/terms` URL before release and
+monitor Core Web Vitals after release.
+
 ## Update Paths In Production
 
 ### Immediate updates from Sanity webhook

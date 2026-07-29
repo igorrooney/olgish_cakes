@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { SensitiveDataConsentNotice } from '@/app/components/legal/SensitiveDataConsentNotice'
 import { ValidatorInput } from '../components/homepage/ValidatorInput'
 import {
   buildContactPageEnquiryFormData,
@@ -294,6 +295,7 @@ export function ContactPageForm() {
               </Link>
               .
             </p>
+            <SensitiveDataConsentNotice className='mb-3' includePrivacyLink={false} />
             <button
               type='submit'
               className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'

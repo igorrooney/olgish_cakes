@@ -155,7 +155,7 @@ describe('/api/dev/email-preview', () => {
     expect(json.input.customerName).toBe('Edited Customer')
     expect(json.input.productName).toBe('Personalised Congratulations Cake Card')
     expect(json.input.paymentStatus).toBe('pending')
-    expect(json.input.titleOverride).toContain('Order Request Confirmed #26051220022842')
+    expect(json.input.titleOverride).toContain('Final Order Offer #26051220022842')
     expect(json.rendered.text).toContain('Personalised Congratulations Cake Card')
     expect(json.rendered.text).not.toContain('Payment status:')
     expect(json.rendered.text).toContain('Delivery method: By post')

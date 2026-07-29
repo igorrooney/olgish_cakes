@@ -6,9 +6,9 @@ const cakesByPostConfirmedInput = createDefaultScenarioInput({
   customerName: 'Igor Ieromenko',
   customerEmail: 'igor@example.com',
   customerPhone: '+44 7867 218241',
-  address: '15 Allerton Grange Avenue',
+  address: '10 Example Street',
   city: 'Leeds',
-  postcode: 'LS17 6PR',
+  postcode: 'LS1 1AA',
   orderNumber: '26051220022842',
   orderType: 'gift-hamper',
   productName: 'Personalised Congratulations Cake Card',
@@ -24,7 +24,7 @@ const cakesByPostConfirmedInput = createDefaultScenarioInput({
   servings: undefined,
   customerMessage: 'test message',
   deliveryMethod: 'postal',
-  deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+  deliveryAddress: '10 Example Street, Leeds, LS1 1AA',
   paymentMethod: 'card',
   paymentStatus: 'pending',
   referrer: 'cakes-by-post',
@@ -33,9 +33,9 @@ const cakesByPostConfirmedInput = createDefaultScenarioInput({
   note: undefined,
   giftNote: 'test gift note',
   attachmentNames: [],
-  titleOverride: 'Order Request Confirmed #26051220022842 - Olgish Cakes',
-  headingOverride: 'Order request confirmed',
-  statusMessage: 'Great news, we\'ve confirmed your cakes by post request.'
+  titleOverride: 'Final Order Offer #26051220022842 - Olgish Cakes',
+  headingOverride: 'Your final order offer',
+  statusMessage: 'This is our final written offer. Please accept it in writing or make the requested payment before the contract starts.'
 })
 
 const customerConfirmationScenarios = [
@@ -43,7 +43,7 @@ const customerConfirmationScenarios = [
     id: 'default',
     label: 'Customer confirmation (default)',
     input: createDefaultScenarioInput({
-      titleOverride: 'Order Confirmation #OC-2026-1001 - Olgish Cakes'
+      titleOverride: 'Order Request Received #OC-2026-1001 - Olgish Cakes'
     })
   }
 ]
@@ -64,8 +64,9 @@ const statusUpdateScenarios = [
     label: 'Status: confirmed',
     input: createDefaultScenarioInput({
       status: 'confirmed',
-      titleOverride: 'Order Confirmed #OC-2026-1001 - Olgish Cakes',
-      statusMessage: 'Great news! Your order has been confirmed and we are now preparing your delicious cake.'
+      titleOverride: 'Final Order Offer #OC-2026-1001 - Olgish Cakes',
+      headingOverride: 'Your final order offer',
+      statusMessage: 'This is our final written offer. Please accept it in writing or make the requested payment before the contract starts.'
     })
   },
   {
@@ -201,9 +202,9 @@ const statusUpdateScenarios = [
 export const ordersTemplateDefinitions: Record<string, TemplateDefinition<EmailTemplateCommonInput>> = {
   'orders-customer-confirmation': createTemplateDefinition(
     {
-      subject: 'Order confirmation',
-      heading: 'Order confirmed',
-      intro: 'Thank you for your order with Olgish Cakes.',
+      subject: 'Order request received',
+      heading: 'Order request received',
+      intro: 'Thanks, we have received your order request. This is not a booking confirmation or contract. We will contact you personally with a final written offer confirming availability, details and price. A contract starts only when you accept that offer in writing or make the requested payment. The current terms are attached for reference.',
       admin: false
     },
     customerConfirmationScenarios
