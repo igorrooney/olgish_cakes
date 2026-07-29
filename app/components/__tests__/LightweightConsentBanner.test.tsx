@@ -1,189 +1,327 @@
 /**
  * @jest-environment jsdom
  */
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
+import {
+  consentBannerDescription,
+  consentCookieName,
+  consentDialogStateEventName,
+  consentOpenEventName,
+  type ConsentChoices
+} from '@/app/lib/consent-config'
+import {
+  createConsentRecord,
+  serializeConsentRecord
+} from '@/app/lib/consent-record'
+import { saveConsentChoices } from '@/app/lib/consent-runtime'
 import { LightweightConsentBanner } from '../LightweightConsentBanner'
 
 type ConsentTestWindow = Window & typeof globalThis & {
+  __olgishAnalyticsConsent?: boolean
+  __olgishApplyConsentRecord?: unknown
+  __olgishConsentAwareGtagInstalled?: boolean
+  __olgishConsentPreferencesRequested?: boolean
+  __olgishConsentRecord?: unknown
+  __olgishGtmLoaded?: boolean
+  clarity?: jest.Mock
   dataLayer?: unknown[]
   gtag?: (...args: unknown[]) => void
-  __olgishAnalyticsConsent?: boolean
-  __olgishConsentAwareGtagInstalled?: boolean
-  __loadOlgishGtmOnce?: () => void
-  __olgishGtmLoaded?: boolean
 }
 
-function renderBannerWithController() {
+const originalGtmId = process.env.NEXT_PUBLIC_GTM_ID
+
+function clearCookies() {
+  document.cookie.split(';').forEach(entry => {
+    const cookieName = entry.trim().split('=')[0]
+    if (cookieName) {
+      document.cookie = `${cookieName}=; Max-Age=0; Path=/`
+    }
+  })
+}
+
+function resetRuntime(clearStoredConsent = true) {
+  const runtimeWindow = window as ConsentTestWindow
+  document.querySelectorAll('#gtm-consent-script').forEach(element => element.remove())
+  if (clearStoredConsent) {
+    clearCookies()
+    window.localStorage.clear()
+  }
+  Reflect.deleteProperty(runtimeWindow, 'dataLayer')
+  Reflect.deleteProperty(runtimeWindow, 'gtag')
+  Reflect.deleteProperty(runtimeWindow, 'clarity')
+  Reflect.deleteProperty(runtimeWindow, '__olgishAnalyticsConsent')
+  Reflect.deleteProperty(runtimeWindow, '__olgishApplyConsentRecord')
+  Reflect.deleteProperty(runtimeWindow, '__olgishConsentAwareGtagInstalled')
+  Reflect.deleteProperty(runtimeWindow, '__olgishConsentPreferencesRequested')
+  Reflect.deleteProperty(runtimeWindow, '__olgishConsentRecord')
+  Reflect.deleteProperty(runtimeWindow, '__olgishGtmLoaded')
+}
+
+function renderWithBootstrap() {
   const result = render(<LightweightConsentBanner />)
   const script = result.container.querySelector('script')
 
   if (!script?.textContent) {
-    throw new Error('Expected consent controller script to render')
+    throw new Error('Expected the consent bootstrap script')
   }
 
   window.eval(script.textContent)
-
   return result
 }
 
-function getDataLayerCommands() {
-  return (window.dataLayer ?? []).map((entry) => Array.from(entry as ArrayLike<unknown>))
+function getGtagCalls() {
+  return ((window as ConsentTestWindow).dataLayer ?? [])
+    .filter(entry => Object.prototype.toString.call(entry) === '[object Arguments]')
+    .map(entry => Array.from(entry as ArrayLike<unknown>))
+}
+
+function writeCanonicalChoice(choices: ConsentChoices) {
+  const record = createConsentRecord(choices, 'preferences')
+  document.cookie = `${consentCookieName}=${serializeConsentRecord(record)}; Path=/`
 }
 
 describe('LightweightConsentBanner', () => {
-  const consentTestWindow = window as ConsentTestWindow
+  beforeAll(() => {
+    process.env.NEXT_PUBLIC_GTM_ID = 'GTM-TEST123'
+  })
 
   beforeEach(() => {
     window.history.replaceState(null, '', '/')
-    window.localStorage.clear()
-    document.cookie = 'olgish_cookie_consent=; Max-Age=0; Path=/'
-    document.cookie = 'klaro=; Max-Age=0; Path=/'
-    document.querySelectorAll('#gtm-consent-script, #olgish-consent-preferences-runtime').forEach((element) => {
-      element.remove()
-    })
-    Reflect.deleteProperty(consentTestWindow, 'dataLayer')
-    Reflect.deleteProperty(consentTestWindow, 'gtag')
-    Reflect.deleteProperty(consentTestWindow, '__olgishAnalyticsConsent')
-    Reflect.deleteProperty(consentTestWindow, '__olgishConsentAwareGtagInstalled')
-    delete consentTestWindow.__olgishGtmLoaded
-    delete consentTestWindow.__loadOlgishGtmOnce
+    resetRuntime()
   })
 
-  it('shows immediately when no cookie choice has been stored', () => {
-    renderBannerWithController()
+  afterAll(() => {
+    if (originalGtmId) {
+      process.env.NEXT_PUBLIC_GTM_ID = originalGtmId
+    } else {
+      delete process.env.NEXT_PUBLIC_GTM_ID
+    }
+  })
 
-    expect(screen.getByRole('complementary', { name: 'Cookie preferences' })).toBeInTheDocument()
+  it('shows the server-rendered first layer immediately with the approved copy and actions', () => {
+    renderWithBootstrap()
+
+    const banner = screen.getByRole('complementary', { name: 'Cookie preferences' })
+    const policyLink = screen.getByRole('link', { name: 'Cookie policy' })
+
+    expect(banner).toBeVisible()
+    expect(banner).toHaveAttribute('aria-labelledby', 'cookie-banner-title')
+    expect(banner).toHaveAttribute('aria-describedby', 'cookie-banner-description')
+    expect(screen.getByText(consentBannerDescription)).toBeInTheDocument()
+    expect(policyLink).toHaveClass('min-h-11', 'min-w-11')
+    expect(screen.getByRole('button', { name: 'Choose preferences' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Reject optional cookies' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Accept optional cookies' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Cookie policy' })).toHaveAttribute('href', '/cookies')
   })
 
-  it('does not render direct GA or placeholder GTM tags in initial HTML', () => {
-    const { container } = render(<LightweightConsentBanner />)
+  it('uses an in-flow responsive notice instead of a fixed overlay', () => {
+    renderWithBootstrap()
 
-    expect(container.querySelector('script[src*="googletagmanager"]')).not.toBeInTheDocument()
-    expect(container.querySelector('iframe[src*="googletagmanager"]')).not.toBeInTheDocument()
-    expect(container.innerHTML).not.toContain('gtag/js?id=')
-    expect(container.innerHTML).not.toContain('GTM-XXXXXXX')
-    expect(container.innerHTML).not.toContain('G-QGQC58H2LD')
+    const banner = screen.getByRole('complementary', { name: 'Cookie preferences' })
+    const layout = banner.firstElementChild
+    const actions = screen.getByRole('button', { name: 'Choose preferences' }).parentElement
+
+    expect(banner).toHaveClass('w-full')
+    expect(banner).not.toHaveClass('fixed', 'bottom-4', 'left-4', 'right-4')
+    expect(layout).toHaveClass(
+      'homepage-container',
+      'tablet:grid-cols-[minmax(0,1fr)_minmax(0,32rem)]'
+    )
+    expect(actions).toHaveClass('grid-cols-2', 'tablet:grid-cols-3')
   })
 
-  it('drops analytics events before consent and allows them after acceptance', () => {
-    renderBannerWithController()
+  it('sets all Google Consent Mode v2 defaults before loading any vendor', () => {
+    renderWithBootstrap()
 
-    window.gtag('event', 'pre_consent_event')
-
-    expect(getDataLayerCommands()).toEqual([
-      ['consent', 'default', {
+    expect(getGtagCalls()[0]).toEqual([
+      'consent',
+      'default',
+      {
         ad_storage: 'denied',
         analytics_storage: 'denied',
         ad_user_data: 'denied',
         ad_personalization: 'denied'
-      }],
-      ['set', 'ads_data_redaction', true]
+      }
     ])
-
-    fireEvent.click(screen.getByRole('button', { name: 'Accept optional cookies' }))
-    window.gtag('event', 'post_consent_event')
-
-    expect(getDataLayerCommands()).toEqual(expect.arrayContaining([
-      ['event', 'post_consent_event']
-    ]))
-    expect(window.__olgishAnalyticsConsent).toBe(true)
+    expect(document.getElementById('gtm-consent-script')).not.toBeInTheDocument()
   })
 
-  it('stores a declined choice without loading the heavy preferences runtime', () => {
-    const consentListener = jest.fn()
-    window.addEventListener('cookie-consent', consentListener)
+  it('does not render the consent runtime for a missing or unsafe GTM configuration', () => {
+    process.env.NEXT_PUBLIC_GTM_ID = 'GTM-TEST</script>'
+    const { container } = render(<LightweightConsentBanner />)
 
-    renderBannerWithController()
+    expect(container).toBeEmptyDOMElement()
+    process.env.NEXT_PUBLIC_GTM_ID = 'GTM-TEST123'
+  })
+
+  it('stores one canonical all-denied record and no local-storage duplicate', () => {
+    renderWithBootstrap()
     fireEvent.click(screen.getByRole('button', { name: 'Reject optional cookies' }))
 
-    expect(window.localStorage.getItem('olgishCookieConsent')).toBe('declined')
-    expect(window.localStorage.getItem('cookieConsent')).toBe('declined')
-    expect(document.getElementById('klaro-script')).not.toBeInTheDocument()
-    expect(consentListener).toHaveBeenCalledWith(expect.objectContaining({
-      detail: {
-        status: 'declined'
-      }
+    expect(document.cookie).toContain(`${consentCookieName}=`)
+    expect(window.localStorage).toHaveLength(0)
+    expect(document.getElementById('gtm-consent-script')).not.toBeInTheDocument()
+    expect(document.getElementById('olgish-consent-banner')).not.toBeVisible()
+  })
+
+  it('requests the lazy dialog and hides the first layer while it is open', () => {
+    const openListener = jest.fn()
+    window.addEventListener(consentOpenEventName, openListener)
+    renderWithBootstrap()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Choose preferences' }))
+    window.dispatchEvent(new CustomEvent(consentDialogStateEventName, {
+      detail: { isOpen: true }
     }))
-    expect(screen.queryByRole('complementary', { name: 'Cookie preferences' })).not.toBeInTheDocument()
 
-    window.removeEventListener('cookie-consent', consentListener)
+    expect(openListener).toHaveBeenCalledTimes(1)
+    expect(document.getElementById('olgish-consent-banner')).not.toBeVisible()
+
+    window.dispatchEvent(new CustomEvent(consentDialogStateEventName, {
+      detail: { isOpen: false }
+    }))
+    expect(screen.getByRole('complementary', { name: 'Cookie preferences' })).toBeVisible()
+    window.removeEventListener(consentOpenEventName, openListener)
   })
 
-  it('defers detailed preferences until the user asks to choose', async () => {
-    renderBannerWithController()
-    fireEvent.click(screen.getByRole('button', { name: 'Choose' }))
-
-    await waitFor(() => {
-      expect(screen.queryByRole('complementary', { name: 'Cookie preferences' })).not.toBeInTheDocument()
-    })
-  })
-
-  it('hides after a stored choice exists', async () => {
-    window.localStorage.setItem('olgishCookieConsent', 'accepted')
-
-    renderBannerWithController()
-
-    await waitFor(() => {
-      expect(screen.queryByRole('complementary', { name: 'Cookie preferences' })).not.toBeInTheDocument()
-    })
-  })
-
-  it('hides after detailed Klaro preferences have been saved', async () => {
-    const gtagMock = jest.fn()
-    window.gtag = gtagMock
-    document.cookie = `klaro=${encodeURIComponent(JSON.stringify({
-      'google-analytics': true,
-      'google-ads': false
-    }))}; Path=/`
-
-    renderBannerWithController()
-
-    await waitFor(() => {
-      expect(screen.queryByRole('complementary', { name: 'Cookie preferences' })).not.toBeInTheDocument()
-    })
-    expect(gtagMock).toHaveBeenCalledWith('consent', 'update', {
-      ad_storage: 'denied',
-      analytics_storage: 'granted',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied'
-    })
-  })
-
-  it('does not grant Google Analytics consent when only Microsoft Clarity is saved', async () => {
-    const gtagMock = jest.fn()
-    window.gtag = gtagMock
+  it('migrates granular Klaro first and removes every legacy source', () => {
     document.cookie = `klaro=${encodeURIComponent(JSON.stringify({
       'google-analytics': false,
       'microsoft-clarity': true,
       'google-ads': false
     }))}; Path=/`
+    document.cookie = 'olgish_cookie_consent=accepted; Path=/'
+    window.localStorage.setItem('olgishCookieConsent', 'accepted')
+    window.localStorage.setItem('cookieConsent', 'accepted')
 
-    renderBannerWithController()
+    renderWithBootstrap()
 
-    await waitFor(() => {
-      expect(screen.queryByRole('complementary', { name: 'Cookie preferences' })).not.toBeInTheDocument()
+    expect(document.cookie).toContain(`${consentCookieName}=`)
+    expect(document.cookie).not.toContain('klaro=')
+    expect(document.cookie).not.toContain('olgish_cookie_consent=')
+    expect(window.localStorage).toHaveLength(0)
+    expect(getGtagCalls()).toContainEqual([
+      'consent',
+      'update',
+      {
+        ad_storage: 'denied',
+        analytics_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied'
+      }
+    ])
+    expect(document.getElementById('gtm-consent-script')).toBeInTheDocument()
+  })
+
+  it('does not let stale legacy acceptance override a malformed canonical record', () => {
+    document.cookie = `${consentCookieName}=malformed; Path=/`
+    window.localStorage.setItem('olgishCookieConsent', 'accepted')
+
+    renderWithBootstrap()
+
+    expect(screen.getByRole('complementary', { name: 'Cookie preferences' })).toBeVisible()
+    expect(document.cookie).not.toContain(`${consentCookieName}=`)
+    expect(window.localStorage).toHaveLength(0)
+    expect(document.getElementById('gtm-consent-script')).not.toBeInTheDocument()
+  })
+
+  it.each([
+    { googleAnalytics: false, microsoftClarity: false, googleAds: false },
+    { googleAnalytics: true, microsoftClarity: false, googleAds: false },
+    { googleAnalytics: false, microsoftClarity: true, googleAds: false },
+    { googleAnalytics: false, microsoftClarity: false, googleAds: true },
+    { googleAnalytics: true, microsoftClarity: true, googleAds: false },
+    { googleAnalytics: true, microsoftClarity: false, googleAds: true },
+    { googleAnalytics: false, microsoftClarity: true, googleAds: true },
+    { googleAnalytics: true, microsoftClarity: true, googleAds: true }
+  ])('enforces the service combination %# without reloading', choices => {
+    writeCanonicalChoice(choices)
+    renderWithBootstrap()
+
+    expect(getGtagCalls()).toContainEqual([
+      'consent',
+      'update',
+      {
+        ad_storage: choices.googleAds ? 'granted' : 'denied',
+        analytics_storage: choices.googleAnalytics ? 'granted' : 'denied',
+        ad_user_data: choices.googleAds ? 'granted' : 'denied',
+        ad_personalization: choices.googleAds ? 'granted' : 'denied'
+      }
+    ])
+    expect(Boolean(document.getElementById('gtm-consent-script'))).toBe(
+      choices.googleAnalytics || choices.microsoftClarity || choices.googleAds
+    )
+  })
+
+  it('revokes Clarity and deletes accessible vendor cookies immediately', () => {
+    writeCanonicalChoice({
+      googleAnalytics: true,
+      microsoftClarity: true,
+      googleAds: true
     })
-    expect(gtagMock).toHaveBeenCalledWith('consent', 'update', {
-      ad_storage: 'denied',
-      analytics_storage: 'denied',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied'
+    const clarity = jest.fn()
+    ;(window as ConsentTestWindow).clarity = clarity
+    renderWithBootstrap()
+    document.cookie = '_ga=analytics; Path=/'
+    document.cookie = '_ga_TEST=analytics; Path=/'
+    document.cookie = '_gid=analytics; Path=/'
+    document.cookie = '_gcl_aw=ads; Path=/'
+    document.cookie = '_clck=clarity; Path=/'
+    document.cookie = '_clsk=clarity; Path=/'
+
+    saveConsentChoices({
+      googleAnalytics: false,
+      microsoftClarity: false,
+      googleAds: false
+    }, 'preferences')
+
+    expect(document.cookie).not.toMatch(/_ga|_gid|_gcl_|_clck|_clsk/)
+    expect(clarity).toHaveBeenCalledWith('consentv2', {
+      source: 'olgish-cakes',
+      ad_Storage: 'denied',
+      analytics_Storage: 'denied'
     })
+    expect(clarity).toHaveBeenCalledWith('consent', false)
+  })
+
+  it('keeps the latest choice authoritative across accept, reject and reload', () => {
+    const firstRender = renderWithBootstrap()
+    fireEvent.click(screen.getByRole('button', { name: 'Accept optional cookies' }))
+    saveConsentChoices({
+      googleAnalytics: false,
+      microsoftClarity: false,
+      googleAds: false
+    }, 'preferences')
+    firstRender.unmount()
+    resetRuntime(false)
+
+    renderWithBootstrap()
+
+    expect(document.getElementById('gtm-consent-script')).not.toBeInTheDocument()
+    expect((window as ConsentTestWindow).__olgishAnalyticsConsent).toBe(false)
+  })
+
+  it('recovers from a GTM runtime load failure without granting new consent', () => {
+    renderWithBootstrap()
+    fireEvent.click(screen.getByRole('button', { name: 'Accept optional cookies' }))
+    const failedScript = document.getElementById('gtm-consent-script')
+
+    failedScript?.dispatchEvent(new Event('error'))
+    expect(document.getElementById('gtm-consent-script')).not.toBeInTheDocument()
+
+    saveConsentChoices({
+      googleAnalytics: true,
+      microsoftClarity: true,
+      googleAds: true
+    }, 'preferences')
+    expect(document.getElementById('gtm-consent-script')).toBeInTheDocument()
   })
 
   it('does not run consent side effects on admin pages', () => {
-    const gtagMock = jest.fn()
     window.history.replaceState(null, '', '/admin/orders')
-    window.localStorage.setItem('olgishCookieConsent', 'accepted')
-    window.gtag = gtagMock
+    renderWithBootstrap()
 
-    renderBannerWithController()
-
-    const banner = document.getElementById('olgish-consent-banner')
-    expect(banner).not.toBeVisible()
-    expect(gtagMock).not.toHaveBeenCalled()
-    expect(document.getElementById('gtm-consent-script')).not.toBeInTheDocument()
+    expect(document.getElementById('olgish-consent-banner')).not.toBeVisible()
+    expect((window as ConsentTestWindow).dataLayer).toBeUndefined()
   })
 })

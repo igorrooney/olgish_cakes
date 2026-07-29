@@ -1,11 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import { loadConsentRuntime } from '@/app/lib/consent-runtime'
-
-type KlaroManager = {
-  show: (config?: unknown, modal?: boolean) => void
-}
+import { requestConsentPreferences } from '@/app/lib/consent-runtime'
 
 type ManageCookiesLinkProps = {
   className?: string
@@ -13,15 +9,7 @@ type ManageCookiesLinkProps = {
 
 export function ManageCookiesLink({ className }: ManageCookiesLinkProps) {
   const handleClick = useCallback(() => {
-    if (typeof window === 'undefined') return
-
-    const klaro = (window as Window & { klaro?: KlaroManager }).klaro
-    if (klaro?.show) {
-      klaro.show(undefined, true)
-      return
-    }
-
-    void loadConsentRuntime({ openModal: true })
+    requestConsentPreferences()
   }, [])
 
   return (

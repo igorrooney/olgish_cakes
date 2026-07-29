@@ -272,11 +272,10 @@ export default function PrivacyPolicyPage() {
               <section id='analytics' aria-labelledby='analytics-heading' className='scroll-mt-28'>
                 <h2 id='analytics-heading' className={sectionTitleClassName}>5. Analytics and session insights</h2>
                 <p className={sectionTextClassName}>
-                  When you accept analytics cookies, we use Google Analytics and Microsoft Clarity via Google Tag
-                  Manager. These tools help us understand how visitors use the site, such as pages viewed, clicks,
-                  scrolls, device and browser details, and general location. We use these insights to improve
-                  navigation, content, and the overall cake-ordering experience. You can withdraw consent at any
-                  time using the “Manage cookies” control in the site footer.
+                  You can choose Google Analytics for page and journey analytics, Microsoft Clarity for heatmaps and
+                  session recordings, and Google Ads for advertising measurement and personalisation. We load only
+                  the services you select through Google Tag Manager. You can withdraw any choice at any time using
+                  the “Manage cookies” control in the site footer.
                 </p>
               </section>
 

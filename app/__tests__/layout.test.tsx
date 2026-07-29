@@ -93,10 +93,6 @@ jest.mock('../components/PerformanceOptimizer', () => ({
   PerformanceOptimizer: () => <div data-testid='performance-optimizer' />
 }))
 
-jest.mock('../components/NonCriticalClientFeatures', () => ({
-  NonCriticalClientFeatures: () => <div data-testid='non-critical-client-features' />
-}))
-
 jest.mock('../components/DeferredVercelObservability', () => ({
   DeferredVercelObservability: () => <div data-testid='deferred-vercel-observability' />
 }))
@@ -170,8 +166,8 @@ describe('RootLayout', () => {
     })
 
     expect(markup).not.toContain('id="gtag-consent-default"')
-    expect(markup).not.toContain('id="klaro-config"')
-    expect(markup).not.toContain('id="klaro-script"')
+    expect(markup).not.toContain('/runtime/klaro')
+    expect(markup).not.toContain('klaro.min.css')
     expect(markup).not.toContain('id="google-tag-manager-template"')
     expect(markup).not.toContain('data-name="google-tag-manager"')
     expect(markup).not.toContain('googletagmanager.com/gtag/js')
@@ -250,7 +246,6 @@ describe('RootLayout', () => {
     const markup = await renderRootLayout()
 
     expect(markup).toContain('data-testid="non-critical-client-features"')
-    expect(markup).not.toContain('data-testid="klaro-bridge"')
     expect(markup).not.toContain('data-testid="scroll-to-top"')
     expect(markup).not.toContain('data-testid="web-vitals-monitor"')
   })

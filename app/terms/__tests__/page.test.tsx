@@ -97,11 +97,12 @@ describe('legal pages', () => {
     expect(screen.getByText(/International Data Transfer Agreement/i)).toBeInTheDocument()
   })
 
-  it('discloses the consent cookie and local-storage entry used by the runtime', () => {
+  it('discloses only the canonical consent cookie used by the runtime', () => {
     render(<CookiePolicyPage />)
 
-    expect(screen.getByText('olgish_cookie_consent')).toBeInTheDocument()
-    expect(screen.getByText('olgishCookieConsent')).toBeInTheDocument()
-    expect(screen.getByText('Local storage')).toBeInTheDocument()
+    expect(screen.getByText('olgish_cookie_preferences')).toBeInTheDocument()
+    expect(screen.queryByText('olgish_cookie_consent')).not.toBeInTheDocument()
+    expect(screen.queryByText('olgishCookieConsent')).not.toBeInTheDocument()
+    expect(screen.queryByText('Local storage')).not.toBeInTheDocument()
   })
 })

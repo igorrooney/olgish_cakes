@@ -12,6 +12,10 @@ jest.mock('../LightweightConsentBanner', () => ({
   LightweightConsentBanner: () => <div data-testid='lightweight-consent-banner' />
 }))
 
+jest.mock('../ConsentPreferencesController', () => ({
+  ConsentPreferencesController: () => <div data-testid='consent-preferences-controller' />
+}))
+
 jest.mock('../DeferredVercelObservability', () => ({
   DeferredVercelObservability: () => <div data-testid='deferred-vercel-observability' />
 }))
@@ -41,8 +45,27 @@ describe('RootChrome', () => {
     expect(screen.getByTestId('site-header')).toBeInTheDocument()
     expect(screen.getByTestId('site-footer')).toBeInTheDocument()
     expect(screen.getByTestId('lightweight-consent-banner')).toBeInTheDocument()
+    expect(screen.getByTestId('consent-preferences-controller')).toBeInTheDocument()
     expect(screen.getByTestId('deferred-non-critical-client-features')).toBeInTheDocument()
     expect(screen.getByRole('main')).toContainElement(screen.getByTestId('page-child'))
+  })
+
+  it('keeps the in-flow consent notice before the header without replacing window scrolling', () => {
+    renderRootChrome({
+      children: <div data-testid='page-child'>Page</div>
+    })
+
+    const consentRoot = screen.getByTestId('lightweight-consent-banner').closest('.public-root-consent')
+    const headerRoot = screen.getByTestId('site-header').closest('.public-root-header')
+    const rootChrome = consentRoot?.parentElement
+
+    expect(consentRoot).not.toBeNull()
+    expect(headerRoot).not.toBeNull()
+    expect(consentRoot?.compareDocumentPosition(headerRoot as Node)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    )
+    expect(rootChrome).toHaveClass('min-h-screen', 'flex', 'flex-col')
+    expect(rootChrome).not.toHaveClass('h-dvh', 'overflow-y-auto')
   })
 
   it('keeps public chrome outside admin content so admin CSS can hide it without a client root wrapper', () => {

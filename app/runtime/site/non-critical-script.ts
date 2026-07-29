@@ -97,7 +97,7 @@ export function createDeferredRuntimeScript() {
       return;
     }
 
-    var isVisible = window.pageYOffset > 300 && document.body.dataset.klaroOpen !== 'true';
+    var isVisible = window.pageYOffset > 300 && document.body.dataset.consentDialogOpen !== 'true';
     var classesToRemove = isVisible ? hiddenScrollToTopClasses : visibleScrollToTopClasses;
     var classesToAdd = isVisible ? visibleScrollToTopClasses : hiddenScrollToTopClasses;
 
@@ -155,7 +155,7 @@ export function createDeferredRuntimeScript() {
       }
     });
     window.addEventListener('scroll', toggleScrollButton, { passive: true });
-    window.addEventListener('klaro-visibility-change', toggleScrollButton);
+    window.addEventListener('olgish-consent-dialog-state', toggleScrollButton);
     toggleScrollButton();
   }
 

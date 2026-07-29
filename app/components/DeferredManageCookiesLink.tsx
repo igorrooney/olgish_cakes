@@ -1,38 +1,21 @@
 'use client'
 
 import { useCallback } from 'react'
-
-type KlaroManager = {
-  show: (config?: unknown, modal?: boolean) => void
-}
+import { requestConsentPreferences } from '@/app/lib/consent-runtime'
 
 type DeferredManageCookiesLinkProps = {
   className?: string
 }
 
 export function DeferredManageCookiesLink({ className }: DeferredManageCookiesLinkProps) {
-  const handleClick = useCallback(async () => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    const klaro = (window as Window & { klaro?: KlaroManager }).klaro
-
-    if (klaro?.show) {
-      klaro.show(undefined, true)
-      return
-    }
-
-    const { loadConsentRuntime } = await import('@/app/lib/consent-runtime')
-    await loadConsentRuntime({ openModal: true })
+  const handleClick = useCallback(() => {
+    requestConsentPreferences()
   }, [])
 
   return (
     <button
       type='button'
-      onClick={() => {
-        void handleClick()
-      }}
+      onClick={handleClick}
       className={className}
       aria-label='Manage cookies'
     >

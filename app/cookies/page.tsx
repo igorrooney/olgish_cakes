@@ -5,22 +5,27 @@ import {
   LegalPolicyLinks
 } from '@/app/components/legal/LegalPageComponents'
 import { legalPageStyles } from '@/app/components/legal/legal-page-styles'
+import {
+  consentCookieName,
+  consentServices,
+  type ConsentServiceKey
+} from '@/app/lib/consent-config'
 import { createLegalPageMetadata } from '@/lib/legal/legal-config'
 
 const metaTitle = 'Cookie Policy for Leeds and West Yorkshire'
-const metaDescription = 'Learn how Olgish Cakes in Leeds uses essential, analytics and marketing cookies (Google Analytics and Microsoft Clarity) and how to manage choices easily.'
+const metaDescription = 'Learn how Olgish Cakes in Leeds uses essential, analytics and marketing cookies from Google Analytics, Microsoft Clarity and Google Ads, and how to manage choices easily.'
 
 type CookieRow = {
   name: string
   purpose: string
-  type: 'First-party cookie' | 'Third-party cookie' | 'Local storage'
+  type: 'First-party cookie' | 'Third-party cookie'
   duration: string
 }
 
 const summaryItems = [
   'We use essential cookies to keep the site secure and working properly.',
   'Analytics and marketing cookies only run after you opt in.',
-  'We use Google Analytics and Microsoft Clarity for site insights.',
+  'You can choose Google Analytics, Microsoft Clarity and Google Ads independently.',
   'You can change your preferences anytime using Manage cookies.',
   'We never sell cookie data and keep it only as long as needed.'
 ]
@@ -42,28 +47,16 @@ const cookieTypes = [
   },
   {
     title: 'Consent preference storage',
-    description: 'Remembers your cookie choices in first-party cookies and local browser storage.'
+    description: 'Remembers your three optional-service choices in one first-party cookie.'
   }
 ]
 
 const essentialCookies: CookieRow[] = [
   {
-    name: 'olgish_cookie_consent',
-    purpose: 'Remembers whether you accepted or rejected optional cookies at the initial notice.',
+    name: consentCookieName,
+    purpose: 'Remembers your Google Analytics, Microsoft Clarity and Google Ads choices.',
     type: 'First-party cookie',
     duration: '12 months.'
-  },
-  {
-    name: 'olgishCookieConsent',
-    purpose: 'Stores the same initial consent choice in this browser so the notice behaves consistently.',
-    type: 'Local storage',
-    duration: 'Until you replace the choice or clear browser storage.'
-  },
-  {
-    name: 'klaro',
-    purpose: 'Stores your detailed analytics and marketing choices so we can respect them.',
-    type: 'First-party cookie',
-    duration: 'About 4 months.'
   },
   {
     name: 'csrf-token',
@@ -73,92 +66,14 @@ const essentialCookies: CookieRow[] = [
   }
 ]
 
-const analyticsCookies: CookieRow[] = [
-  {
-    name: '_ga / _ga_*',
-    purpose: 'Distinguishes users for aggregated Google Analytics reporting.',
-    type: 'First-party cookie',
-    duration: 'Up to 2 years by default; browser limits may be shorter.'
-  },
-  {
-    name: '_gid',
-    purpose: 'Groups page views for analytics reporting.',
-    type: 'First-party cookie',
-    duration: '24 hours.'
-  },
-  {
-    name: '_gat',
-    purpose: 'Limits the rate of analytics requests.',
-    type: 'First-party cookie',
-    duration: '1 minute.'
-  }
-]
+function getServiceCookies(serviceKey: ConsentServiceKey): CookieRow[] {
+  const service = consentServices.find(item => item.key === serviceKey)
+  return (service?.cookies ?? []).map(cookie => ({ ...cookie }))
+}
 
-const clarityCookies: CookieRow[] = [
-  {
-    name: '_clck',
-    purpose: 'Keeps the Clarity user ID and site preferences for this browser.',
-    type: 'First-party cookie',
-    duration: '12 months.'
-  },
-  {
-    name: '_clsk',
-    purpose: 'Connects multiple page views into a single Clarity session.',
-    type: 'First-party cookie',
-    duration: '24 hours.'
-  },
-  {
-    name: 'CLID',
-    purpose: 'Identifies the first time Clarity saw this user on a site.',
-    type: 'Third-party cookie',
-    duration: '12 months.'
-  },
-  {
-    name: 'ANONCHK',
-    purpose: 'Indicates whether the Microsoft Advertising cookie is passed to Clarity.',
-    type: 'Third-party cookie',
-    duration: '10 minutes.'
-  },
-  {
-    name: 'MR',
-    purpose: 'Signals whether to refresh the Microsoft Advertising ID.',
-    type: 'Third-party cookie',
-    duration: '7 days.'
-  },
-  {
-    name: 'MUID',
-    purpose: 'Recognises unique users across Microsoft domains.',
-    type: 'Third-party cookie',
-    duration: 'About 13 months.'
-  },
-  {
-    name: 'SM',
-    purpose: 'Synchronises the Microsoft Advertising ID across domains.',
-    type: 'Third-party cookie',
-    duration: 'For the browser session.'
-  }
-]
-
-const marketingCookies: CookieRow[] = [
-  {
-    name: '_gcl_au',
-    purpose: 'Stores conversion data to measure Google Ads performance.',
-    type: 'First-party cookie',
-    duration: 'Typically 90 days.'
-  },
-  {
-    name: '_gcl_aw',
-    purpose: 'Stores ad click data for conversion attribution.',
-    type: 'First-party cookie',
-    duration: 'Typically 90 days.'
-  },
-  {
-    name: '_gcl_dc',
-    purpose: 'Supports cross-channel conversion measurement for Google Ads.',
-    type: 'First-party cookie',
-    duration: 'Typically 90 days.'
-  }
-]
+const analyticsCookies = getServiceCookies('googleAnalytics')
+const clarityCookies = getServiceCookies('microsoftClarity')
+const marketingCookies = getServiceCookies('googleAds')
 
 const {
   actionButton: actionButtonClassName,
@@ -327,9 +242,8 @@ export default function CookiePolicyPage() {
               <section id='essential-cookies' aria-labelledby='essential-cookies-heading' className='scroll-mt-28'>
                 <h2 id='essential-cookies-heading' className={sectionTitleClassName}>3. Essential cookies</h2>
                 <p className={sectionTextClassName}>
-                  These cookies and browser-storage entries are needed for the website to operate securely and
-                  remember your choices. They cannot be switched off through our preference tool and do not track
-                  you for marketing.
+                  These cookies are needed for the website to operate securely and remember your choices. They cannot
+                  be switched off through our preference tool and do not track you for marketing.
                 </p>
                 {renderCookieTable(essentialCookies)}
               </section>
@@ -337,9 +251,8 @@ export default function CookiePolicyPage() {
               <section id='analytics-cookies' aria-labelledby='analytics-cookies-heading' className='scroll-mt-28'>
                 <h2 id='analytics-cookies-heading' className={sectionTitleClassName}>4. Analytics cookies</h2>
                 <p className={sectionTextClassName}>
-                  When you opt into analytics, we use Google Analytics and Microsoft Clarity through Google Tag
-                  Manager. These tools help us understand which pages are most helpful and where the website can be
-                  improved.
+                  If you enable {consentServices[0].name}, we use it for {consentServices[0].description.toLowerCase()}
+                  {' '}This choice is separate from Microsoft Clarity and Google Ads.
                 </p>
                 {renderCookieTable(analyticsCookies)}
               </section>
@@ -347,8 +260,8 @@ export default function CookiePolicyPage() {
               <section id='clarity-cookies' aria-labelledby='clarity-cookies-heading' className='scroll-mt-28'>
                 <h2 id='clarity-cookies-heading' className={sectionTitleClassName}>5. Microsoft Clarity cookies</h2>
                 <p className={sectionTextClassName}>
-                  Microsoft Clarity provides session insights such as page views, clicks, and scroll depth. These
-                  cookies are only set after analytics consent.
+                  If you enable {consentServices[1].name}, we use it for {consentServices[1].description.toLowerCase()}
+                  {' '}This can include page views, clicks, scrolls, heatmaps and session recordings.
                 </p>
                 {renderCookieTable(clarityCookies)}
               </section>
@@ -356,8 +269,8 @@ export default function CookiePolicyPage() {
               <section id='marketing-cookies' aria-labelledby='marketing-cookies-heading' className='scroll-mt-28'>
                 <h2 id='marketing-cookies-heading' className={sectionTitleClassName}>6. Marketing cookies</h2>
                 <p className={sectionTextClassName}>
-                  Marketing cookies are used only if you allow marketing preferences. They help measure advertising
-                  performance and improve relevant messaging.
+                  If you enable {consentServices[2].name}, we use it for {consentServices[2].description.toLowerCase()}
+                  {' '}This choice is separate from Google Analytics and Microsoft Clarity.
                 </p>
                 {renderCookieTable(marketingCookies)}
               </section>

@@ -1,4 +1,5 @@
 import { DeferredManageCookiesLink } from './DeferredManageCookiesLink'
+import { isConsentRuntimeEnabled } from '@/app/lib/consent-runtime'
 
 const footerSectionHeadingClassName = 'mb-2 font-moreSugar text-sm font-normal uppercase leading-5 tracking-normal text-left text-[color:var(--color-navigation)] tablet:text-xl'
 const footerLinkClassName = 'link link-hover text-sm text-base-content tablet:text-base'
@@ -21,7 +22,7 @@ export const footerDividerStyle = {
 } as const
 
 export function SiteFooter() {
-  const isConsentEnabled = Boolean(process.env.NEXT_PUBLIC_GTM_ID)
+  const isConsentEnabled = isConsentRuntimeEnabled()
   const currentYear = new Intl.DateTimeFormat('en-GB', {
     year: 'numeric',
     timeZone: 'UTC'
