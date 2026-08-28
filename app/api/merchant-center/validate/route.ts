@@ -3,9 +3,18 @@ import { getAllCakes } from "@/app/utils/fetchCakes";
 import { getAllGiftHampers } from "@/app/utils/fetchGiftHampers";
 import { blocksToText, type Cake } from "@/types/cake";
 import type { GiftHamper } from "@/types/giftHamper";
+import {
+  isProductionEnvironment,
+  productionRouteNotFound
+} from '@/lib/security/internal-route'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 // Google Merchant Center Feed Validation Endpoint
 export async function GET() {
+  if (isProductionEnvironment()) {
+    return productionRouteNotFound()
+  }
+
   try {
     const [cakes, giftHampers] = await Promise.all([
       getAllCakes(),
@@ -44,9 +53,18 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error('Error validating merchant center feed:', error);
+    const safeError = toSafeOperationalError(error)
+
+    console.error('Merchant Center validation failed', {
+      operation: 'merchant-center-validate',
+      ...safeError
+    })
+
     return NextResponse.json(
-      { error: 'Failed to validate product feed' },
+      {
+        error: 'Failed to validate product feed',
+        code: safeError.code
+      },
       { status: 500 }
     );
   }

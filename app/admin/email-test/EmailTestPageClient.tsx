@@ -26,6 +26,8 @@ type EditableFieldKey =
   | 'dateNeeded'
   | 'cakeInterest'
   | 'status'
+  | 'customerFacingOfferDescription'
+  | 'allergenStatement'
   | 'trackingNumber'
   | 'address'
   | 'city'
@@ -253,6 +255,12 @@ const commonFields: EditableFieldKey[] = [
   'note'
 ]
 
+const orderStatusIdentityFields: EditableFieldKey[] = [
+  'customerName',
+  'customerEmail',
+  'customerPhone'
+]
+
 const orderFields: EditableFieldKey[] = [
   'orderNumber',
   'orderType',
@@ -277,6 +285,11 @@ const instagramTokenAlertFields: EditableFieldKey[] = [
 
 const statusFields: EditableFieldKey[] = ['status', 'trackingNumber']
 
+const finalOfferFields: EditableFieldKey[] = [
+  'customerFacingOfferDescription',
+  'allergenStatement'
+]
+
 const preferenceFields: EditableFieldKey[] = [
   'address',
   'city',
@@ -298,12 +311,30 @@ const preferenceFields: EditableFieldKey[] = [
   'adminUrl'
 ]
 
+const orderStatusPreferenceFields: EditableFieldKey[] = [
+  'address',
+  'city',
+  'postcode',
+  'cakeInterest',
+  'occasion',
+  'designType',
+  'filling',
+  'servings',
+  'deliveryMethod',
+  'deliveryCourier',
+  'deliveryAddress',
+  'paymentMethod',
+  'paymentStatus',
+  'referrer'
+]
+
 const listFields: EditableFieldKey[] = ['attachmentNames', 'nextSteps']
 
 const allFieldKeys: EditableFieldKey[] = [
   ...commonFields,
   ...orderFields,
   ...statusFields,
+  ...finalOfferFields,
   ...preferenceFields,
   ...listFields
 ]
@@ -388,11 +419,11 @@ const templateFieldMap: Record<EmailTemplateId, EditableFieldKey[]> = {
     'attachmentNames'
   ],
   'orders-status-update': [
-    ...commonFields,
+    ...orderStatusIdentityFields,
     ...orderFields,
     ...statusFields,
-    ...preferenceFields,
-    'nextSteps'
+    ...finalOfferFields,
+    ...orderStatusPreferenceFields
   ],
   'quote-admin-request': [
     ...commonFields,
@@ -448,7 +479,7 @@ const sections: FieldSection[] = [
       { key: 'customerName', label: 'Customer name', type: 'text', placeholder: 'Test Customer' },
       { key: 'customerEmail', label: 'Customer email', type: 'email', placeholder: 'test@example.com' },
       { key: 'customerPhone', label: 'Customer phone', type: 'tel', placeholder: '+44 7123 456789' },
-      { key: 'headingOverride', label: 'Email heading', type: 'text', placeholder: 'Order confirmed' },
+      { key: 'headingOverride', label: 'Email heading', type: 'text', placeholder: 'Your final order offer' },
       { key: 'message', label: 'Submitted message', type: 'textarea', placeholder: 'Original message from the form' },
       { key: 'note', label: 'Internal note', type: 'textarea', placeholder: 'Optional operational note' }
     ]
@@ -533,7 +564,7 @@ const sections: FieldSection[] = [
         key: 'nextSteps',
         label: 'Next steps',
         type: 'list',
-        placeholder: 'We\'ll review within 24 hours, We\'ll contact you with a quote',
+        placeholder: 'We\'ll reply as soon as we can, We\'ll contact you with a quote',
         helper: 'Used mostly for customer-facing confirmations.'
       }
     ]
@@ -558,6 +589,8 @@ const numericFieldLabels: Record<EditableFieldKey, string> = {
   dateNeeded: 'Date needed',
   cakeInterest: 'Cake interest',
   status: 'Status',
+  customerFacingOfferDescription: 'Customer-facing offer description',
+  allergenStatement: 'Product-specific allergen information',
   trackingNumber: 'Tracking number',
   address: 'Address',
   city: 'City',
@@ -733,6 +766,8 @@ export function EmailTestPageClient() {
     return shouldIncludeTrackingNumber(selectedTemplate, formValues.status || '')
   }, [formValues.status, selectedTemplate])
   const shouldShowCourierSelector = selectedScenarioOption.statusGroup === 'cakes-by-post'
+  const isConfirmedFinalOffer = selectedTemplate === 'orders-status-update' &&
+    formValues.status.trim().toLowerCase() === 'confirmed'
 
   const visibleSections = useMemo(() => {
     return sections
@@ -781,6 +816,22 @@ export function EmailTestPageClient() {
 
     return errors
   }, [activeFieldSet, formValues])
+
+  const finalOfferValidationErrors = useMemo(() => {
+    if (!isConfirmedFinalOffer) {
+      return []
+    }
+
+    const errors: string[] = []
+    if (formValues.customerFacingOfferDescription.trim().length === 0) {
+      errors.push('Customer-facing offer description is required for a confirmed final-offer send')
+    }
+    if (formValues.allergenStatement.trim().length === 0) {
+      errors.push('Product-specific allergen information is required for a confirmed final-offer send')
+    }
+
+    return errors
+  }, [formValues.allergenStatement, formValues.customerFacingOfferDescription, isConfirmedFinalOffer])
 
   const metadataText = useMemo(() => {
     if (!previewData?.rendered.metadata) {
@@ -846,6 +897,7 @@ export function EmailTestPageClient() {
     isPending: isRealSendPending,
     error: realSendError
   } = useMutation({
+    retry: false,
     mutationFn: async () => {
       if (sendAbortRef.current) {
         sendAbortRef.current.abort()
@@ -923,6 +975,7 @@ export function EmailTestPageClient() {
     loadTemplateDefaults()
   }, [loadTemplateDefaults, selectedScenarioKey, selectedTemplate])
   const hasInvalidForm = numericValidationErrors.length > 0
+  const hasInvalidRealSendForm = hasInvalidForm || finalOfferValidationErrors.length > 0
   const hasRecipient = recipient.trim().length > 0
 
   const handleRequestChange = (requestId: EmailRequestId) => {
@@ -1174,11 +1227,62 @@ export function EmailTestPageClient() {
                     </div>
                   </div>
                 ))}
+
+                {selectedScenarioOption.statusGroup ? (
+                  <div className='rounded-md border border-base-300 bg-base-200/40 p-4'>
+                    <h3 className='text-sm font-semibold uppercase tracking-wide text-base-content/70'>
+                      Final offer checks
+                    </h3>
+                    <p className='mt-1 text-xs leading-5 text-base-content/70'>
+                      Staff-authored customer wording for confirmed final offers. The current terms PDF is attached automatically to the real test send.
+                    </p>
+                    <div className='mt-3 grid gap-3'>
+                      <div className='form-control gap-2'>
+                        <label htmlFor='email-test-offer-description' className='label-text text-xs font-semibold text-base-content/80'>Customer-facing offer description</label>
+                        <textarea
+                          id='email-test-offer-description'
+                          className='textarea textarea-bordered min-h-[92px] w-full text-sm'
+                          value={formValues.customerFacingOfferDescription}
+                          onChange={(event) => handleFieldChange('customerFacingOfferDescription', event.target.value)}
+                          placeholder='One handmade honey cake for collection.'
+                          maxLength={2000}
+                          required={isConfirmedFinalOffer}
+                          aria-describedby='email-test-offer-description-help'
+                        />
+                        <span id='email-test-offer-description-help' className='text-xs text-base-content/60'>
+                          Required for a confirmed final-offer test. Do not paste customer messages, notes or health information.
+                        </span>
+                      </div>
+                      <div className='form-control gap-2'>
+                        <label htmlFor='email-test-allergen-statement' className='label-text text-xs font-semibold text-base-content/80'>Product-specific allergen information</label>
+                        <textarea
+                          id='email-test-allergen-statement'
+                          className='textarea textarea-bordered min-h-[92px] w-full text-sm'
+                          value={formValues.allergenStatement}
+                          onChange={(event) => handleFieldChange('allergenStatement', event.target.value)}
+                          placeholder='Contains wheat (gluten), eggs and milk.'
+                          maxLength={2000}
+                          required={isConfirmedFinalOffer}
+                          aria-describedby='email-test-allergen-statement-help'
+                        />
+                        <span id='email-test-allergen-statement-help' className='text-xs text-base-content/60'>
+                          Required for a confirmed final-offer test. Use the checked wording for this exact product.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               {numericValidationErrors.length > 0 ? (
                 <div className='alert alert-error' role='alert'>
                   <span>{numericValidationErrors[0]}</span>
+                </div>
+              ) : null}
+
+              {finalOfferValidationErrors.length > 0 ? (
+                <div className='alert alert-warning' role='status'>
+                  <span>{finalOfferValidationErrors[0]}</span>
                 </div>
               ) : null}
 
@@ -1222,7 +1326,7 @@ export function EmailTestPageClient() {
                   type='button'
                   className='btn btn-outline btn-warning'
                   onClick={handleRequestRealSend}
-                  disabled={isRealSendPending || hasInvalidForm || !hasRecipient}
+                  disabled={isRealSendPending || hasInvalidRealSendForm || !hasRecipient}
                   aria-busy={isRealSendPending}
                 >
                   {isRealSendPending ? 'Sending...' : 'Send real test email'}
@@ -1344,7 +1448,7 @@ export function EmailTestPageClient() {
               type='button'
               className='btn btn-warning'
               onClick={handleConfirmRealSend}
-              disabled={isRealSendPending || hasInvalidForm || !hasRecipient}
+              disabled={isRealSendPending || hasInvalidRealSendForm || !hasRecipient}
             >
               Confirm and send
             </button>

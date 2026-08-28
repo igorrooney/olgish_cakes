@@ -19,7 +19,7 @@ export function HomeHero() {
               <span className='hidden small-laptop:inline'> </span>
               STRAIGHT
             </span>
-            <span className='block'>
+            <span className='block tablet:[word-spacing:0.14em] small-laptop:[word-spacing:normal]'>
                TO YOUR DOOR
             </span>
           </h1>
@@ -112,7 +112,7 @@ export function HomeHero() {
               alt=''
               aria-hidden='true'
               fill
-              sizes='(min-width: 768px) 64px, 48px'
+              sizes='(min-width: 1024px) 64px, 48px'
               fetchPriority='low'
               quality={50}
               className='object-contain'

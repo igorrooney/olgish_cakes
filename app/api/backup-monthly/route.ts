@@ -1,39 +1,13 @@
-import { NextResponse } from 'next/server';
-import { execSync } from 'child_process';
+import { NextRequest } from 'next/server'
+import { handleBackupRequest } from '@/lib/security/backup-route'
 
-export async function GET() {
-  try {
-    console.warn('🔄 Starting monthly backup (full with images)...');
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
-    // Run the monthly backup
-    const result = execSync('npm run backup:monthly', {
-      cwd: process.cwd(),
-      encoding: 'utf8',
-      stdio: 'pipe'
-    });
-
-    return NextResponse.json({
-      success: true,
-      type: 'monthly',
-      message: 'Monthly backup completed successfully',
-      timestamp: new Date().toISOString(),
-      output: result
-    });
-
-  } catch (error) {
-    console.error('❌ Monthly backup failed:', error);
-
-    return NextResponse.json({
-      success: false,
-      type: 'monthly',
-      message: 'Monthly backup failed',
-      timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
-  }
+export async function GET(request: NextRequest) {
+  return handleBackupRequest(request, 'monthly')
 }
 
-// Also handle POST requests (some cron services use POST)
-export async function POST() {
-  return GET();
+export async function POST(request: NextRequest) {
+  return handleBackupRequest(request, 'monthly')
 }

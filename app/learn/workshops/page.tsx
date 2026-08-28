@@ -10,6 +10,7 @@ import workshopDecoratingImage from '@/public/images/workshops/workshop-decorati
 import workshopFinishedCakesImage from '@/public/images/workshops/workshop-finished-cakes.png'
 import workshopSetupImage from '@/public/images/workshops/workshop-setup.png'
 import { WorkshopEnquiryFormSection } from './WorkshopEnquiryFormSection'
+import { WorkshopEnquiryScrollLink } from './WorkshopEnquiryScrollLink'
 
 const title = 'Mobile Cake Decorating Workshops Across the UK'
 const description =
@@ -287,12 +288,11 @@ export default function WorkshopsPage() {
             </div>
 
             <div className='flex flex-wrap gap-2.5 tablet:gap-3'>
-              <a
-                href='#workshop-enquiry-form'
+              <WorkshopEnquiryScrollLink
                 className='btn btn-primary rounded-full border-none px-5 normal-case shadow-none'
               >
                 Ask about your date
-              </a>
+              </WorkshopEnquiryScrollLink>
               <Link
                 href='/contact'
                 prefetch={false}

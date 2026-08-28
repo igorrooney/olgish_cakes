@@ -3,17 +3,20 @@
  */
 import { jest } from '@jest/globals'
 
+const mockLoggerError = jest.fn()
+
+jest.mock('@/lib/logger', () => ({
+  logger: {
+    error: (...args: unknown[]) => mockLoggerError(...args)
+  }
+}))
+
 describe('/api/csrf-token', () => {
   const originalCsrfSecret = process.env.CSRF_SECRET
-  const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
   beforeEach(() => {
     jest.resetModules()
-    consoleErrorSpy.mockClear()
-  })
-
-  afterAll(() => {
-    consoleErrorSpy.mockRestore()
+    mockLoggerError.mockClear()
   })
 
   afterEach(() => {
@@ -55,9 +58,20 @@ describe('/api/csrf-token', () => {
     const response = await GET()
 
     expect(response.status).toBe(500)
-    await expect(response.json()).resolves.toEqual({
+    const body = await response.json()
+
+    expect(body).toEqual({
       error: 'Failed to generate CSRF token'
     })
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      'Failed to generate CSRF token',
+      {
+        operation: 'csrf-token.generate',
+        code: 'OPERATION_FAILED'
+      }
+    )
+    expect(JSON.stringify({ body, logs: mockLoggerError.mock.calls }))
+      .not.toContain('CSRF_SECRET')
   })
 
   it('returns a generic 500 response when the secret is too short', async () => {

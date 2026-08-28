@@ -142,7 +142,7 @@ describe('sitemap', () => {
       mockFetch.mockResolvedValue([])
 
       const result = await sitemap()
-      const quoteUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/get-custom-quote')
+      const quoteUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/custom-cakes')
       const contactUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/contact')
       const faqsUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/faqs')
       const deliveryUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/delivery')
@@ -212,6 +212,24 @@ describe('sitemap', () => {
       expect(contactUrl?.lastModified).not.toEqual(runtimeDate)
     })
 
+    it('should keep each legal-page date aligned with its published policy version', async () => {
+      mockFetch.mockResolvedValue([])
+
+      const result = await sitemap()
+      const expectedDates = [
+        ['/privacy', '2026-08-25'],
+        ['/terms', '2026-07-28'],
+        ['/cookies', '2026-07-28']
+      ] as const
+
+      for (const [path, expectedDate] of expectedDates) {
+        const entry = result.find((item) => item.url === `https://olgishcakes.co.uk${path}`)
+
+        expect(entry?.lastModified).toEqual(new Date(expectedDate))
+        expect(getStaticSitemapLastModified(path)).toEqual(new Date(expectedDate))
+      }
+    })
+
     it('should include the workshops landing page with the committed sitemap metadata', async () => {
       mockFetch.mockResolvedValue([])
 
@@ -237,12 +255,12 @@ describe('sitemap', () => {
 
       expect(cakesUrl?.lastModified).toEqual(new Date('2026-03-17'))
       expect(hampersUrl?.lastModified).toEqual(new Date('2026-03-12'))
-      expect(deliveryUrl?.lastModified).toEqual(new Date('2026-04-24'))
-      expect(allergensUrl?.lastModified).toEqual(new Date('2026-04-25'))
+      expect(deliveryUrl?.lastModified).toEqual(new Date('2026-07-26'))
+      expect(allergensUrl?.lastModified).toEqual(new Date('2026-07-27'))
       expect(getStaticSitemapLastModified('/cakes')).toEqual(new Date('2026-03-17'))
       expect(getStaticSitemapLastModified('/cakes-by-post')).toEqual(new Date('2026-03-12'))
-      expect(getStaticSitemapLastModified('/delivery')).toEqual(new Date('2026-04-24'))
-      expect(getStaticSitemapLastModified('/allergens')).toEqual(new Date('2026-04-25'))
+      expect(getStaticSitemapLastModified('/delivery')).toEqual(new Date('2026-07-26'))
+      expect(getStaticSitemapLastModified('/allergens')).toEqual(new Date('2026-07-27'))
     })
     it('should exclude retired legacy landing pages from sitemap coverage', async () => {
       mockFetch.mockResolvedValue([])

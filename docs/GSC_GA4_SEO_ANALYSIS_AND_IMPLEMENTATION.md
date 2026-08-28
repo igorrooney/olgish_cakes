@@ -276,7 +276,7 @@ Some individual product pages still showing warnings:
 2. **Complete Profile:**
    - Business Name: Olgish Cakes
    - Categories: Ukrainian Restaurant, Bakery, Cake Shop, Wedding Service
-   - Address: Allerton Grange, Leeds, LS17, West Yorkshire
+   - Address: 15 Allerton Grange Avenue, Leeds, LS17 6PR, United Kingdom
    - Phone: +44 786 721 8194
    - Website: https://olgishcakes.co.uk
    - Email: hello@olgishcakes.co.uk

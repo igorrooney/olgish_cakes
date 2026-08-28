@@ -96,7 +96,9 @@ describe('CakeDetailPage', () => {
     category: 'Traditional',
     ingredients: ['Honey'],
     allergens: ['Gluten'],
-    mainImage: {},
+    mainImage: {
+      asset: { _ref: 'image-main', _type: 'reference' }
+    },
     images: [],
     seo: { metaTitle: 'Custom Title', metaDescription: 'Custom Description' },
     structuredData: {}
@@ -134,12 +136,17 @@ describe('CakeDetailPage', () => {
 
     it('should handle errors gracefully', async () => {
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
-      mockGetAllCakes.mockRejectedValue(new Error('Fetch failed'))
+      const providerSentinel = 'PRIVATE_STATIC_PARAMS_FAILURE'
+      mockGetAllCakes.mockRejectedValue(new Error(providerSentinel))
 
       const params = await generateStaticParams()
 
       expect(params).toEqual([])
-      expect(consoleSpy).toHaveBeenCalledWith('Error generating static params for cakes:', expect.any(Error))
+      expect(consoleSpy).toHaveBeenCalledWith('Cake static parameter generation failed', {
+        operation: 'cakes.static-params.generate',
+        code: 'OPERATION_FAILED'
+      })
+      expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain(providerSentinel)
 
       consoleSpy.mockRestore()
     })
@@ -230,7 +237,7 @@ describe('CakeDetailPage', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'vanilla-cake' }) })
 
-      expect(metadata.description).toBe('traditional Ukrainian honey cake - Vanilla Cake. Freshly baked in Leeds with real recipes. Free UK delivery.')
+      expect(metadata.description).toBe('Traditional Ukrainian honey cake - Vanilla Cake, freshly baked in Leeds. Ask us to confirm collection or delivery for your date.')
     })
 
     it('should prioritize normalized SEO metaDescription over shortDescription fallback', async () => {
@@ -251,7 +258,7 @@ describe('CakeDetailPage', () => {
       expect(metadata.description).toBe('SEO description value')
     })
 
-    it('should optimize honey cake for "buy honey cake online" keyword', async () => {
+    it('should describe honey cake without unsupported online-order or delivery claims', async () => {
       const honeyCake = {
         ...mockCake,
         name: 'Honey Cake (Medovik)',
@@ -261,8 +268,10 @@ describe('CakeDetailPage', () => {
 
       const metadata = await generateMetadata({ params: Promise.resolve({ slug: 'honey-cake-medovik' }) })
 
-      expect(metadata.title).toContain('Buy Honey Cake Online')
-      expect(metadata.description).toContain('Buy authentic honey cake')
+      expect(metadata.title).toContain('Honey Cake (Medovik)')
+      expect(metadata.description).toBe("Traditional Ukrainian honey cake (Medovik), handmade in Leeds. Prices start from £30. Send an enquiry and we'll confirm collection or delivery for your date.")
+      expect(metadata.description).not.toMatch(/buy|order online|free (?:uk )?delivery/i)
+      expect(metadata.description).not.toMatch(/same-day/i)
     })
 
     it('should return 404 metadata for missing cake', async () => {
@@ -380,7 +389,7 @@ describe('CakeDetailPage', () => {
       expect(scripts.length).toBeGreaterThan(0)
     })
 
-    it('should escape html fragments in Product and Organization JSON-LD scripts', async () => {
+    it('should escape html fragments in Product JSON-LD scripts', async () => {
       const cakeWithUnsafeContent = {
         ...mockCake,
         name: 'Honey <script>alert("xss")</script> Cake',
@@ -397,21 +406,12 @@ describe('CakeDetailPage', () => {
       const productScript = Array.from(scripts).find((script) =>
         script.textContent?.includes('"@type":"Product"')
       )
-      const organizationScript = Array.from(scripts).find((script) =>
-        script.textContent?.includes('"@type":"Organization"') &&
-        script.textContent?.includes('"hasOfferCatalog"')
-      )
-
       expect(productScript).toBeDefined()
-      expect(organizationScript).toBeDefined()
 
       const productScriptText = productScript?.textContent || ''
-      const organizationScriptText = organizationScript?.textContent || ''
 
       expect(productScriptText).toContain('\\u003cscript')
       expect(productScriptText).not.toContain('<script')
-      expect(organizationScriptText).toContain('\\u003cscript')
-      expect(organizationScriptText).not.toContain('<script')
     })
 
     it('should not include BreadcrumbList structured data', async () => {
@@ -539,7 +539,7 @@ describe('CakeDetailPage', () => {
   })
 
   describe('Structured Data - GSC Merchant Listings Compliance', () => {
-    it('should use minimum servings price across Product and Organization offers when available', async () => {
+    it('should use minimum servings price in the Product offer when available', async () => {
       mockGetCakeBySlug.mockResolvedValue({
         ...mockCake,
         pricing: {
@@ -562,18 +562,10 @@ describe('CakeDetailPage', () => {
       const productScript = Array.from(scripts).find((script) => {
         return script.textContent?.includes('"@type":"Product"')
       })
-      const organizationScript = Array.from(scripts).find((script) => {
-        return script.textContent?.includes('"@type":"Organization"') &&
-          script.textContent?.includes('"hasOfferCatalog"')
-      })
-
       const productJsonLd = JSON.parse(productScript?.textContent || '{}')
-      const organizationJsonLd = JSON.parse(organizationScript?.textContent || '{}')
-      const organizationOffer = organizationJsonLd.hasOfferCatalog?.itemListElement?.[0]?.itemOffered?.offers
 
       expect(productJsonLd.offers.price).toBe(30)
-      expect(productJsonLd.offers.eligibleTransactionVolume.price).toBe(30)
-      expect(organizationOffer?.price).toBe(30)
+      expect(productJsonLd.offers.eligibleTransactionVolume).toBeUndefined()
     })
 
     it('should fallback structured data prices to legacy standard when servings pricing is missing', async () => {
@@ -592,18 +584,10 @@ describe('CakeDetailPage', () => {
       const productScript = Array.from(scripts).find((script) => {
         return script.textContent?.includes('"@type":"Product"')
       })
-      const organizationScript = Array.from(scripts).find((script) => {
-        return script.textContent?.includes('"@type":"Organization"') &&
-          script.textContent?.includes('"hasOfferCatalog"')
-      })
-
       const productJsonLd = JSON.parse(productScript?.textContent || '{}')
-      const organizationJsonLd = JSON.parse(organizationScript?.textContent || '{}')
-      const organizationOffer = organizationJsonLd.hasOfferCatalog?.itemListElement?.[0]?.itemOffered?.offers
 
       expect(productJsonLd.offers.price).toBe(34)
-      expect(productJsonLd.offers.eligibleTransactionVolume.price).toBe(34)
-      expect(organizationOffer?.price).toBe(34)
+      expect(productJsonLd.offers.eligibleTransactionVolume).toBeUndefined()
     })
 
     it('should include Product structured data with required fields', async () => {
@@ -780,7 +764,7 @@ describe('CakeDetailPage', () => {
       const jsonLd = JSON.parse(productScript!.textContent || '{}')
 
       expect(jsonLd.offers.shippingDetails).toBeUndefined()
-      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('shipping fee \u00A35'))
+      expect(consoleWarnSpy).not.toHaveBeenCalled()
 
       consoleWarnSpy.mockRestore()
     })
@@ -929,7 +913,25 @@ describe('CakeDetailPage', () => {
       expect(jsonLd.review).toBeUndefined()
     })
 
-    it('should not include aggregateRating in nested itemOffered Product under Organization', async () => {
+    it('omits fabricated identifiers and unsupported offer claims', async () => {
+      mockGetCakeBySlug.mockResolvedValue(mockCake)
+
+      const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+      const productScript = Array.from(scripts).find(script =>
+        script.textContent?.includes('"@type":"Product"')
+      )
+      const jsonLd = JSON.parse(productScript?.textContent || '{}')
+
+      expect(jsonLd.gtin).toBeUndefined()
+      expect(jsonLd.mpn).toBeUndefined()
+      expect(jsonLd.offers.priceValidUntil).toBeUndefined()
+      expect(jsonLd.offers.eligibleTransactionVolume).toBeUndefined()
+      expect(jsonLd.offers.acceptedPaymentMethod).toBeUndefined()
+    })
+
+    it('should not duplicate the Product in an Organization offer catalog', async () => {
       mockGetCakeBySlug.mockResolvedValue(mockCake)
 
       const page = await CakeDetailPage({ params: Promise.resolve({ slug: 'honey-cake' }) })
@@ -937,17 +939,13 @@ describe('CakeDetailPage', () => {
 
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       const organizationScript = Array.from(scripts).find(script =>
-        script.textContent?.includes('"@type":"Organization"') &&
-        script.textContent?.includes('"hasOfferCatalog"')
+        script.textContent?.includes('"@type":"Organization"')
       )
 
       expect(organizationScript).toBeDefined()
 
       const organizationJsonLd = JSON.parse(organizationScript!.textContent || '{}')
-      const itemOffered = organizationJsonLd.hasOfferCatalog?.itemListElement?.[0]?.itemOffered
-
-      expect(itemOffered).toBeDefined()
-      expect(itemOffered.aggregateRating).toBeUndefined()
+      expect(organizationJsonLd.hasOfferCatalog).toBeUndefined()
     })
   })
 
@@ -1009,7 +1007,7 @@ describe('CakeDetailPage', () => {
       expect(jsonLd.image).not.toMatch(/^\/[^/]/)
     })
 
-    it('should use fallback placeholder when no images are available', async () => {
+    it('should omit Product structured data when no real product image is available', async () => {
       const cakeWithoutImages = {
         ...mockCake,
         mainImage: undefined,
@@ -1026,11 +1024,7 @@ describe('CakeDetailPage', () => {
         script.textContent?.includes('"@type":"Product"')
       )
 
-      const jsonLd = JSON.parse(productScript!.textContent || '{}')
-      
-      // Should use fallback placeholder
-      expect(jsonLd.image).toBe('https://olgishcakes.co.uk/images/placeholder-cake.jpg')
-      expect(jsonLd.image).toMatch(/^https:\/\//)
+      expect(productScript).toBeUndefined()
     })
 
     it('should use mainImage when available', async () => {

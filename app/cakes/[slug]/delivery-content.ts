@@ -35,7 +35,7 @@ export const fallbackCakeDeliveryDescription: NonNullable<Cake['description']> =
     children: [
       {
         _type: 'span',
-        text: 'Free UK delivery is included. If you need a specific delivery day, please include it in your order request.'
+        text: 'Delivery availability and cost are confirmed for each order. If you need a specific delivery day, please include it in your order request.'
       }
     ]
   }

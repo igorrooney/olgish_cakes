@@ -259,10 +259,6 @@ function renderOrderItemText(item: NormalizedOrderItem): string {
     lines.push(`Filling: ${item.filling}`)
   }
 
-  if (item.specialInstructions.length > 0) {
-    lines.push(`Customer message / requirements: ${item.specialInstructions}`)
-  }
-
   return lines.join('\n')
 }
 
@@ -279,10 +275,6 @@ function renderCustomerOrderItemText(item: NormalizedOrderItem): string {
 
   if (item.filling.length > 0) {
     lines.push(`Filling: ${item.filling}`)
-  }
-
-  if (item.specialInstructions.length > 0) {
-    lines.push(`Customer message / requirements: ${item.specialInstructions}`)
   }
 
   return lines.join('\n')
@@ -329,10 +321,6 @@ export function renderOrderItemsHtml(items: NormalizedOrderItem[]): string {
       details.push(`Filling: ${item.filling}`)
     }
 
-    if (item.specialInstructions.length > 0) {
-      details.push(`Customer message / requirements: ${item.specialInstructions}`)
-    }
-
     const detailsHtml = details.length > 0
       ? `<ul style="margin: 8px 0 0 18px; padding: 0; color: #4B5563; font-family: ${EMAIL_FONT_SANS}; font-size: 14px; line-height: 21px;">${details.map((detail) => `<li>${escapeHtml(detail)}</li>`).join('')}</ul>`
       : ''
@@ -361,10 +349,6 @@ function renderCustomerOrderItemsHtml(items: NormalizedOrderItem[]): string {
 
     if (item.filling.length > 0) {
       details.push(`Filling: ${item.filling}`)
-    }
-
-    if (item.specialInstructions.length > 0) {
-      details.push(`Customer message / requirements: ${item.specialInstructions}`)
     }
 
     const detailsHtml = details.length > 0
@@ -396,6 +380,15 @@ export function buildAdminSections(input: EmailTemplateCommonInput): EmailSectio
   appendRow(orderRows, 'Product type', input.productType)
   appendRow(orderRows, 'Status', input.status)
   appendRow(orderRows, 'Admin link', input.adminUrl)
+  if (input.hasDietaryHealthInformation) {
+    appendRow(
+      orderRows,
+      'Protected dietary health information',
+      input.adminUrl
+        ? `Supplied. Review it securely in admin: ${input.adminUrl}`
+        : 'Supplied. Review it securely in the authenticated admin record.'
+    )
+  }
 
   const pricingRows: EmailFieldRow[] = []
   appendNumericRow(pricingRows, 'Quantity', input.quantity)
@@ -418,23 +411,15 @@ export function buildAdminSections(input: EmailTemplateCommonInput): EmailSectio
   appendRow(preferencesRows, 'Design type', input.designType)
   appendRow(preferencesRows, 'Filling', input.filling)
   appendRow(preferencesRows, 'Servings', input.servings)
-  appendRow(preferencesRows, 'Customer message / requirements', input.customerMessage, true)
+  appendRow(preferencesRows, 'Final-offer description', input.customerFacingOfferDescription, true)
 
   const contextRows: EmailFieldRow[] = []
   appendRow(contextRows, 'Delivery method', input.deliveryMethod)
-  appendRow(contextRows, 'Delivery address', input.deliveryAddress)
   appendRow(contextRows, 'Payment method', input.paymentMethod)
-  appendRow(contextRows, 'Approx. submitted from', input.approximateSubmittedFrom)
   appendRow(contextRows, 'Referrer', input.referrer)
 
   const messageRows: EmailFieldRow[] = []
-  appendRow(messageRows, 'Submitted message', input.message, true)
-  appendRow(messageRows, 'Additional note', input.note, true)
-  appendRow(messageRows, 'Gift note', input.giftNote, true)
   appendRow(messageRows, 'Tracking number', input.trackingNumber)
-  if (Array.isArray(input.attachmentNames) && input.attachmentNames.length > 0) {
-    appendRow(messageRows, 'Attachments', input.attachmentNames.join(', '))
-  }
 
   return nonEmptySections([
     { title: 'Customer identity', rows: identityRows },
@@ -472,6 +457,20 @@ export function renderRowsAsHtml(sections: EmailSection[]): string {
       return `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" bgcolor="#ffffff" style="background-color: #ffffff; border: 1px solid #D8D9F3; border-radius: 10px; border-collapse: separate;"><tr><td style="padding: 22px 24px;"><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"><tr><td style="padding: 0 0 14px 0; color: #2E3192; font-family: ${EMAIL_FONT_DISPLAY}; font-size: 16px; font-weight: 700; line-height: 22px; text-transform: uppercase;">${escapeHtml(section.title)}</td></tr></table><table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">${rows}</table></td></tr></table>${renderEmailSpacer(14)}`
     })
     .join('')
+}
+
+export function buildOperationalAlertContent(input: EmailTemplateCommonInput) {
+  const rows: EmailFieldRow[] = []
+  appendRow(rows, 'Operation', input.operation)
+  appendRow(rows, 'Code', input.operationalCode)
+  appendRow(rows, 'Reference', input.recordReference)
+  appendRow(rows, 'Admin link', input.adminUrl)
+  const sections = nonEmptySections([{ title: 'Operational details', rows }])
+
+  return {
+    bodyText: renderRowsAsText(sections),
+    bodyHtml: renderRowsAsHtml(sections)
+  }
 }
 
 export const commonInputSchema = z.object({
@@ -515,6 +514,12 @@ export const commonInputSchema = z.object({
   headingOverride: z.string().optional(),
   statusMessage: z.string().optional(),
   paymentStatus: z.string().optional(),
+  allergenStatement: z.string().optional(),
+  customerFacingOfferDescription: z.string().optional(),
+  hasDietaryHealthInformation: z.boolean().optional(),
+  operation: z.string().optional(),
+  operationalCode: z.string().optional(),
+  recordReference: z.string().optional(),
   trackingNumber: z.string().optional(),
   adminUrl: z.string().optional(),
   approximateSubmittedFrom: z.string().optional(),
@@ -571,9 +576,9 @@ function defaultNextSteps(input: EmailTemplateCommonInput): string[] {
   }
 
   return [
-    'We\'ll review your order and confirm all details within 24 hours',
-    'We\'ll contact you with a quote and final design details',
-    'We\'ll confirm delivery or collection once you approve'
+    'We\'ll reply as soon as we can',
+    'If we can accept it, we\'ll personally confirm availability, final details and price in writing',
+    'A contract starts only when you accept our final written offer or make the requested payment'
   ]
 }
 
@@ -649,82 +654,6 @@ function resolveEmailLogoSrc(): string {
   }
 }
 
-function resolveCustomerMessage(value: string | null | undefined): string {
-  const trimmedValue = toTrimmed(value)
-  const normalizedValue = trimmedValue.toLowerCase()
-
-  if (
-    normalizedValue === 'message' ||
-    normalizedValue === 'test message' ||
-    isGeneratedProductSummary(normalizedValue)
-  ) {
-    return ''
-  }
-
-  return trimmedValue
-}
-
-function resolveCakeBrief(value: string | null | undefined): string {
-  const customerMessage = resolveCustomerMessage(value)
-  if (customerMessage.length === 0) {
-    return ''
-  }
-
-  const lines = customerMessage
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)
-
-  if (lines[0]?.toLowerCase() !== 'quote brief') {
-    return customerMessage
-  }
-
-  const briefLine = lines.find((line) => line.toLowerCase().startsWith('brief:'))
-  if (!briefLine) {
-    return ''
-  }
-
-  return briefLine.slice('Brief:'.length).trim()
-}
-
-function parseQuoteRequirementFields(value: string | null | undefined): Map<string, string> {
-  const customerMessage = resolveCustomerMessage(value)
-  const lines = customerMessage
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)
-
-  if (lines[0]?.toLowerCase() !== 'quote brief') {
-    return new Map()
-  }
-
-  return lines.slice(1).reduce<Map<string, string>>((fields, line) => {
-    const separatorIndex = line.indexOf(':')
-    if (separatorIndex <= 0) {
-      return fields
-    }
-
-    const label = line.slice(0, separatorIndex).trim()
-    const fieldValue = line.slice(separatorIndex + 1).trim()
-    if (label.length === 0 || fieldValue.length === 0) {
-      return fields
-    }
-
-    fields.set(label.toLowerCase(), fieldValue)
-    return fields
-  }, new Map())
-}
-
-function isGeneratedProductSummary(normalizedValue: string): boolean {
-  if (normalizedValue.length === 0) {
-    return false
-  }
-
-  return normalizedValue.includes('product:') &&
-    normalizedValue.includes('product type:') &&
-    normalizedValue.includes('price:')
-}
-
 function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
   const contactRows: CustomerRow[] = []
   const summaryRows: CustomerRow[] = []
@@ -747,29 +676,16 @@ function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
     rows.push({ label, value: trimmed, href })
   }
 
-  const customCakeEnquiry = isCustomCakeEnquiry(input)
-  const quoteFields = customCakeEnquiry
-    ? parseQuoteRequirementFields(input.customerMessage)
-    : new Map<string, string>()
   const priceLabel = toTrimmed(input.priceLabel) || 'Total Amount'
   const dateNeeded = isCakeRequestEmail(input) || toTrimmed(input.status).length > 0
     ? formatLongDate(input.dateNeeded)
     : formatDate(input.dateNeeded)
 
-  if (customCakeEnquiry) {
-    row(contactRows, 'Name', input.customerName)
-    row(contactRows, 'Email', input.customerEmail)
-    row(contactRows, 'Phone', formatPhoneDisplay(input.customerPhone))
-    row(contactRows, 'Address', input.address)
-    row(contactRows, 'City', input.city)
-    row(contactRows, 'Postcode', input.postcode)
-  }
-
   row(summaryRows, 'Order Number', input.orderNumber)
   row(summaryRows, 'Product', input.productName)
   row(summaryRows, 'Date needed', dateNeeded)
   row(summaryRows, priceLabel, formatCurrency(input.totalPrice))
-
+  row(summaryRows, 'Allergen information', input.allergenStatement)
   const normalizedStatus = toTrimmed(input.status).toLowerCase()
   if (normalizedStatus === 'out-for-delivery' || normalizedStatus === 'out-delivery') {
     const trackingNumber = toTrimmed(input.trackingNumber)
@@ -787,28 +703,11 @@ function buildCustomerRows(input: EmailTemplateCommonInput): CustomerRows {
     )
   }
 
-  row(preferencesRows, 'Occasion', formatDisplayLabel(input.occasion) || quoteFields.get('occasion'))
+  row(preferencesRows, 'Occasion', formatDisplayLabel(input.occasion))
   row(preferencesRows, 'Design type', formatDisplayLabel(input.designType))
   row(preferencesRows, 'Filling', input.filling)
-  row(preferencesRows, 'Servings', input.servings || quoteFields.get('servings'))
-  row(
-    preferencesRows,
-    customCakeEnquiry ? 'Cake brief' : 'Customer message',
-    customCakeEnquiry
-      ? quoteFields.get('brief') || resolveCakeBrief(input.customerMessage)
-      : resolveCustomerMessage(input.customerMessage)
-  )
-  quoteFields.forEach((fieldValue, fieldKey) => {
-    if (['occasion', 'servings', 'brief'].includes(fieldKey)) {
-      return
-    }
-
-    row(preferencesRows, formatDisplayLabel(fieldKey), fieldValue)
-  })
-  row(preferencesRows, 'Gift note', input.giftNote)
-  if (customCakeEnquiry && Array.isArray(input.attachmentNames)) {
-    row(preferencesRows, 'Reference image uploaded', input.attachmentNames.join(', '))
-  }
+  row(preferencesRows, 'Servings', input.servings)
+  row(preferencesRows, 'Final-offer description', input.customerFacingOfferDescription)
 
   return {
     contact: contactRows,
@@ -940,25 +839,77 @@ function buildCustomerHtmlBody(input: EmailTemplateCommonInput, nextSteps: strin
 
   return `${contactCard}${summaryCard}${orderItemsCard}${preferencesCard}${steps}${completedReviewCard}${buildCustomerFooterHtml(input)}`
 }
-function buildTemplateEmail(meta: TemplateMeta, input: EmailTemplateCommonInput, options: TemplateOptions = {}): RenderedEmail {
-  const subject = buildSubject(meta, input)
-  const heading = input.headingOverride?.trim() || meta.heading
-  const intro = input.intro?.trim() || input.statusMessage?.trim() || meta.intro
-  const nextSteps = resolveNextSteps(input)
-  const customerContent = meta.admin ? null : options.customerContentBuilder?.(input) ?? null
-  const adminContent = meta.admin ? options.adminContentBuilder?.(input) ?? null : null
 
-  const sections = buildAdminSections(input)
+function sanitizeExternalEmailInput(
+  input: EmailTemplateCommonInput,
+  admin: boolean
+): EmailTemplateCommonInput {
+  if (admin && toTrimmed(input.operation).length > 0) {
+    return {
+      operation: input.operation,
+      operationalCode: input.operationalCode,
+      recordReference: input.recordReference,
+      adminUrl: input.adminUrl
+    }
+  }
+
+  const orderItems = Array.isArray(input.orderItems)
+    ? input.orderItems.map((item) => ({
+        productName: item.productName,
+        productId: item.productId,
+        productType: item.productType,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        totalPrice: item.totalPrice,
+        designType: item.designType,
+        filling: item.filling,
+        servings: item.servings
+      }))
+    : undefined
+
+  return {
+    ...input,
+    customerMessage: undefined,
+    message: undefined,
+    note: undefined,
+    giftNote: undefined,
+    attachmentNames: undefined,
+    referenceImageUrls: undefined,
+    hasDietaryHealthInformation: admin
+      ? input.hasDietaryHealthInformation
+      : undefined,
+    adminUrl: admin ? input.adminUrl : undefined,
+    orderItems,
+    ...(admin
+      ? {
+          titleOverride: undefined,
+          headingOverride: undefined,
+          intro: undefined
+        }
+      : {})
+  }
+}
+
+function buildTemplateEmail(meta: TemplateMeta, input: EmailTemplateCommonInput, options: TemplateOptions = {}): RenderedEmail {
+  const safeInput = sanitizeExternalEmailInput(input, meta.admin)
+  const subject = buildSubject(meta, safeInput)
+  const heading = safeInput.headingOverride?.trim() || meta.heading
+  const intro = safeInput.intro?.trim() || safeInput.statusMessage?.trim() || meta.intro
+  const nextSteps = resolveNextSteps(safeInput)
+  const customerContent = meta.admin ? null : options.customerContentBuilder?.(safeInput) ?? null
+  const adminContent = meta.admin ? options.adminContentBuilder?.(safeInput) ?? null : null
+
+  const sections = buildAdminSections(safeInput)
   const bodyText = meta.admin
     ? adminContent?.bodyText ?? renderRowsAsText(sections)
-    : customerContent?.bodyText ?? buildCustomerTextBody(input, nextSteps)
+    : customerContent?.bodyText ?? buildCustomerTextBody(safeInput, nextSteps)
   const bodyHtml = meta.admin
-    ? adminContent?.bodyHtml ?? `${renderReferenceImageGalleryHtml(input.referenceImageUrls)}${renderRowsAsHtml(sections)}`
-    : customerContent?.bodyHtml ?? buildCustomerHtmlBody(input, nextSteps)
+    ? adminContent?.bodyHtml ?? `${renderReferenceImageGalleryHtml(safeInput.referenceImageUrls)}${renderRowsAsHtml(sections)}`
+    : customerContent?.bodyHtml ?? buildCustomerHtmlBody(safeInput, nextSteps)
 
-  const greetingName = input.customerName?.trim() || 'there'
+  const greetingName = safeInput.customerName?.trim() || 'there'
   const greetingPrefix = meta.admin ? 'Hello' : 'Dear'
-  const signature = meta.admin ? 'Olgish Cakes' : buildCustomerFooterText(input)
+  const signature = meta.admin ? 'Olgish Cakes' : buildCustomerFooterText(safeInput)
 
   const text = [
     heading,

@@ -4,9 +4,14 @@
 import { NextRequest } from 'next/server'
 
 const mockSendEmail = jest.fn()
+const mockGetTermsEmailAttachment = jest.fn()
 
 jest.mock('@/lib/email/service', () => ({
   sendEmail: (...args: unknown[]) => mockSendEmail(...args)
+}))
+
+jest.mock('@/lib/legal/terms-document', () => ({
+  getTermsEmailAttachment: (...args: unknown[]) => mockGetTermsEmailAttachment(...args)
 }))
 
 jest.mock('@/lib/admin/auth-token', () => ({
@@ -20,13 +25,21 @@ const { verifyAdminAuthToken: mockVerifyAdminAuthToken } = jest.requireMock('@/l
 }
 
 describe('/api/dev/email-test-send', () => {
+  const originalNodeEnv = process.env.NODE_ENV
+
   beforeEach(() => {
     jest.clearAllMocks()
+    process.env.NODE_ENV = 'test'
     process.env.EMAIL_REAL_SEND_ENABLED = 'true'
     process.env.EMAIL_TEST_RECIPIENT_ALLOWLIST = 'allowlisted@example.com'
     process.env.EMAIL_REAL_SEND_RATE_LIMIT_PER_HOUR = '5'
     process.env.EMAIL_TEST_SUBJECT_PREFIX = '[TEST]'
     mockVerifyAdminAuthToken.mockResolvedValue(true)
+    mockGetTermsEmailAttachment.mockResolvedValue({
+      filename: 'olgish-cakes-terms-2026-07-28.pdf',
+      content: Buffer.from('test terms'),
+      contentType: 'application/pdf'
+    })
     mockSendEmail.mockResolvedValue({
       accepted: true,
       mode: 'live',
@@ -40,9 +53,20 @@ describe('/api/dev/email-test-send', () => {
     })
   })
 
-  function buildRequest(body: Record<string, unknown>, token?: string) {
+  afterAll(() => {
+    process.env.NODE_ENV = originalNodeEnv
+  })
+
+  function buildRequest(
+    body: Record<string, unknown>,
+    token?: string,
+    additionalHeaders: Record<string, string> = {}
+  ) {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      Origin: 'http://localhost',
+      'Sec-Fetch-Site': 'same-origin',
+      ...additionalHeaders
     }
 
     if (token) {
@@ -56,6 +80,22 @@ describe('/api/dev/email-test-send', () => {
     })
   }
 
+  it('is unavailable in production before authentication or sending', async () => {
+    process.env.NODE_ENV = 'production'
+
+    const request = buildRequest({
+      templateId: 'contact-admin-inquiry',
+      to: 'allowlisted@example.com'
+    }, 'admin-cookie')
+    const response = await POST(request)
+
+    expect(response.status).toBe(404)
+    expect(await response.text()).toBe('')
+    expect(response.headers.get('cache-control')).toContain('no-store')
+    expect(mockVerifyAdminAuthToken).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
   it('rejects unauthorized requests', async () => {
     mockVerifyAdminAuthToken.mockResolvedValue(false)
 
@@ -68,6 +108,39 @@ describe('/api/dev/email-test-send', () => {
     const response = await POST(request)
     expect(response.status).toBe(401)
     expect(mockVerifyAdminAuthToken).toHaveBeenCalledWith('invalid-cookie')
+  })
+
+  it('rejects cross-origin mutation requests before authentication or sending', async () => {
+    const request = buildRequest({
+      templateId: 'contact-admin-inquiry',
+      to: 'allowlisted@example.com'
+    }, 'admin-cookie', {
+      Origin: 'https://attacker.example',
+      'Sec-Fetch-Site': 'cross-site'
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(403)
+    expect(mockVerifyAdminAuthToken).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('rejects oversized request bodies before parsing or sending', async () => {
+    const request = buildRequest({
+      templateId: 'contact-admin-inquiry',
+      to: 'allowlisted@example.com',
+      input: {
+        message: 'x'.repeat(33 * 1024)
+      }
+    }, 'oversized-body-cookie')
+
+    const response = await POST(request)
+    const json = await response.json()
+
+    expect(response.status).toBe(413)
+    expect(json.reason).toBe('Request payload is too large')
+    expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
   it('rejects when real-send is disabled', async () => {
@@ -158,6 +231,150 @@ describe('/api/dev/email-test-send', () => {
         titleOverride: expect.stringContaining('Order Completed #')
       })
     }))
+    expect(mockGetTermsEmailAttachment).not.toHaveBeenCalled()
+  })
+
+  it('sends a controlled confirmed final offer with approved wording and the current terms PDF', async () => {
+    const request = buildRequest({
+      templateId: 'orders-status-update',
+      scenarioId: 'confirmed',
+      to: 'allowlisted@example.com',
+      input: {
+        status: 'confirmed',
+        customerFacingOfferDescription: '  One handmade honey cake for collection.  ',
+        allergenStatement: '  Contains WHEAT (gluten), EGG and MILK.  ',
+        customerMessage: 'SENTINEL CUSTOMER MESSAGE',
+        message: 'SENTINEL MESSAGE',
+        note: 'SENTINEL NOTE',
+        giftNote: 'SENTINEL GIFT NOTE',
+        titleOverride: 'SENTINEL TITLE',
+        headingOverride: 'SENTINEL HEADING',
+        statusMessage: 'SENTINEL STATUS MESSAGE',
+        nextSteps: ['SENTINEL NEXT STEP'],
+        hasDietaryHealthInformation: true,
+        orderItems: [{
+          productName: 'Honey Cake',
+          specialInstructions: 'SENTINEL SPECIAL INSTRUCTIONS'
+        }]
+      }
+    }, 'confirmed-final-offer-cookie')
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(mockGetTermsEmailAttachment).toHaveBeenCalledTimes(1)
+
+    const sendCall = mockSendEmail.mock.calls[0]?.[0]
+    expect(sendCall).toMatchObject({
+      templateId: 'orders-status-update',
+      input: {
+        status: 'confirmed',
+        customerFacingOfferDescription: 'One handmade honey cake for collection.',
+        allergenStatement: 'Contains WHEAT (gluten), EGG and MILK.',
+        titleOverride: 'Final Order Offer #OC-2026-1001 - Olgish Cakes',
+        headingOverride: 'Your final order offer',
+        statusMessage: expect.stringContaining('terms version 2026-07-28')
+      },
+      message: {
+        attachments: [{
+          filename: 'olgish-cakes-terms-2026-07-28.pdf',
+          contentType: 'application/pdf'
+        }]
+      }
+    })
+    expect(sendCall.input.customerMessage).toBeUndefined()
+    expect(sendCall.input.message).toBeUndefined()
+    expect(sendCall.input.note).toBeUndefined()
+    expect(sendCall.input.giftNote).toBeUndefined()
+    expect(sendCall.input.hasDietaryHealthInformation).toBeUndefined()
+    expect(sendCall.input.nextSteps).toBeUndefined()
+    expect(sendCall.input.orderItems[0].specialInstructions).toBeUndefined()
+    expect(JSON.stringify(sendCall.input)).not.toContain('SENTINEL')
+  })
+
+  it('rejects a confirmed final-offer send when approved allergen wording is missing', async () => {
+    const request = buildRequest({
+      templateId: 'orders-status-update',
+      scenarioId: 'confirmed',
+      to: 'allowlisted@example.com',
+      input: {
+        status: 'confirmed',
+        customerFacingOfferDescription: 'One handmade honey cake for collection.',
+        allergenStatement: '   '
+      }
+    }, 'missing-final-offer-allergen-cookie')
+
+    const response = await POST(request)
+    const json = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(json.reason).toBe('Product-specific allergen information is required for a confirmed final-offer send')
+    expect(mockGetTermsEmailAttachment).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('rejects a confirmed final-offer send when the staff-authored offer description is missing', async () => {
+    const request = buildRequest({
+      templateId: 'orders-status-update',
+      scenarioId: 'confirmed',
+      to: 'allowlisted@example.com',
+      input: {
+        status: 'confirmed',
+        customerFacingOfferDescription: '   ',
+        allergenStatement: 'Contains WHEAT (gluten), EGG and MILK.'
+      }
+    }, 'missing-final-offer-description-cookie')
+
+    const response = await POST(request)
+    const json = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(json.reason).toBe('Customer-facing offer description is required for a confirmed final-offer send')
+    expect(mockGetTermsEmailAttachment).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('rejects overlong confirmed final-offer wording', async () => {
+    const request = buildRequest({
+      templateId: 'orders-status-update',
+      scenarioId: 'confirmed',
+      to: 'allowlisted@example.com',
+      input: {
+        status: 'confirmed',
+        customerFacingOfferDescription: 'x'.repeat(2001),
+        allergenStatement: 'Contains WHEAT (gluten), EGG and MILK.'
+      }
+    }, 'overlong-final-offer-description-cookie')
+
+    const response = await POST(request)
+    const json = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(json.reason).toBe('Customer-facing offer description must be 2,000 characters or fewer')
+    expect(mockGetTermsEmailAttachment).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('fails safely when the current terms attachment cannot be loaded', async () => {
+    mockGetTermsEmailAttachment.mockRejectedValueOnce(new Error('private filesystem details'))
+    const request = buildRequest({
+      templateId: 'orders-status-update',
+      scenarioId: 'confirmed',
+      to: 'allowlisted@example.com',
+      input: {
+        status: 'confirmed',
+        customerFacingOfferDescription: 'One handmade honey cake for collection.',
+        allergenStatement: 'Contains WHEAT (gluten), EGG and MILK.'
+      }
+    }, 'terms-attachment-failure-cookie')
+
+    const response = await POST(request)
+    const json = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(json).toEqual({ accepted: false, reason: 'OPERATION_FAILED' })
+    expect(JSON.stringify(json)).not.toContain('private filesystem details')
+    expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
   it('enforces rate limit', async () => {

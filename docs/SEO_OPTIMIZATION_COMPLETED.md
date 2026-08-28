@@ -171,7 +171,7 @@ Based on GSC data and optimization improvements:
 **Citation Format (Use Exactly):**
 ```
 Business Name: Olgish Cakes
-Address: Allerton Grange, Leeds, LS17, West Yorkshire
+Address: 15 Allerton Grange Avenue, Leeds, LS17 6PR, United Kingdom
 Phone: +44 786 721 8194
 Website: https://olgishcakes.co.uk
 Email: hello@olgishcakes.co.uk

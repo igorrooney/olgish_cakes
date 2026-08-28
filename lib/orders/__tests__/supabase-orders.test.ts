@@ -10,7 +10,8 @@ import {
   mapSupabaseOrderNoteImageRow,
   mapSupabaseOrderNoteRow,
   mapSupabaseOrderRow,
-  signSupabaseOrderImageUrls
+  signSupabaseOrderImageUrls,
+  withdrawSupabaseOrderDietaryHealthInformation
 } from '@/lib/orders/supabase-orders'
 import type { Order, OrderMessage, OrderNote } from '@/types/order'
 
@@ -120,6 +121,73 @@ describe('signSupabaseOrderImageUrls', () => {
   })
 })
 
+describe('withdrawSupabaseOrderDietaryHealthInformation', () => {
+  const mockRpc = jest.fn()
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockedGetSupabaseAdminClient.mockReturnValue({
+      rpc: mockRpc
+    } as unknown as ReturnType<typeof getSupabaseAdminClient>)
+  })
+
+  it.each([
+    ['withdrawn', '2026-08-23 15:30:00+00'],
+    ['already-withdrawn', '2026-08-22 10:15:00+00']
+  ] as const)('maps the atomic RPC %s result', async (status, withdrawnAt) => {
+    mockRpc.mockResolvedValueOnce({
+      data: [{ status, withdrawn_at: withdrawnAt }],
+      error: null
+    })
+
+    await expect(withdrawSupabaseOrderDietaryHealthInformation('OC-1001'))
+      .resolves.toEqual({ status, withdrawnAt })
+
+    expect(mockRpc).toHaveBeenCalledWith(
+      'withdraw_order_dietary_health_information',
+      { p_identifier: 'OC-1001' }
+    )
+  })
+
+  it.each(['not-found', 'no-active-information'] as const)(
+    'maps the atomic RPC %s result without returning order data',
+    async (status) => {
+      mockRpc.mockResolvedValueOnce({
+        data: [{ status, withdrawn_at: null }],
+        error: null
+      })
+
+      await expect(withdrawSupabaseOrderDietaryHealthInformation('OC-1001'))
+        .resolves.toEqual({ status })
+    }
+  )
+
+  it('fails safely when the RPC reports a persistence error', async () => {
+    mockRpc.mockResolvedValueOnce({
+      data: null,
+      error: {
+        message: 'SENTINEL-HEALTH-TEXT',
+        details: 'SENTINEL-HEALTH-TEXT'
+      }
+    })
+
+    await expect(withdrawSupabaseOrderDietaryHealthInformation('OC-1001'))
+      .rejects.toThrow('Failed to withdraw Supabase order dietary-health information')
+  })
+
+  it.each([
+    null,
+    [],
+    [{ status: 'withdrawn', withdrawn_at: null }],
+    [{ status: 'unexpected', withdrawn_at: '2026-08-23 15:30:00+00' }]
+  ])('rejects malformed RPC data without exposing it: %p', async (data) => {
+    mockRpc.mockResolvedValueOnce({ data, error: null })
+
+    await expect(withdrawSupabaseOrderDietaryHealthInformation('OC-1001'))
+      .rejects.toThrow('Failed to withdraw Supabase order dietary-health information')
+  })
+})
+
 describe('Supabase order row mapping', () => {
   const row = {
     id: 'order-id',
@@ -146,6 +214,8 @@ describe('Supabase order row mapping', () => {
     total_price: '65.00',
     payment_status: 'paid',
     payment_method: 'card',
+    dietary_health_retention_due_at: '2026-10-20T09:00:00.000Z',
+    dietary_health_erased_at: null,
     created_at: '2026-04-27T18:32:51.000Z',
     updated_at: '2026-04-27T18:32:51.000Z'
   }
@@ -194,6 +264,29 @@ describe('Supabase order row mapping', () => {
     expect(order.items).toEqual(relationalItems)
     expect(order.messages).toEqual(relationalMessages)
     expect(order.notes).toEqual(relationalNotes)
+    expect(order.retentionLifecycle).toMatchObject({
+      dietaryHealthRetentionDueAt: '2026-10-20T09:00:00.000Z',
+      legalHold: false
+    })
+  })
+
+  it('maps completed dietary-health retention erasure evidence separately from consent metadata', () => {
+    const order = mapSupabaseOrderRow({
+      ...row,
+      metadata: {
+        dietaryHealthConsentVersion: '2026-07-29',
+        dietaryHealthConsentedAt: '2026-04-27T18:32:51.000Z'
+      },
+      dietary_health_erased_at: '2026-10-20T09:30:00.000Z'
+    }, [], [], [])
+
+    expect(order.metadata).toMatchObject({
+      dietaryHealthConsentVersion: '2026-07-29'
+    })
+    expect(order.retentionLifecycle).toMatchObject({
+      dietaryHealthRetentionDueAt: '2026-10-20T09:00:00.000Z',
+      dietaryHealthErasedAt: '2026-10-20T09:30:00.000Z'
+    })
   })
 
   it('maps delivery recipient from metadata when the structured column is empty', () => {

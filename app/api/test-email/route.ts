@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PHONE_UTILS } from "@/lib/constants";
+import {
+  isProductionEnvironment,
+  productionRouteNotFound
+} from '@/lib/security/internal-route'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 interface MockOrderItem {
   productName?: string;
@@ -8,11 +13,14 @@ interface MockOrderItem {
   quantity?: number;
   productType?: string;
   designType?: string;
-  specialInstructions?: string;
 }
 
 // Test email route - for development only
 export async function POST(request: NextRequest) {
+  if (isProductionEnvironment()) {
+    return productionRouteNotFound()
+  }
+
   try {
     const { deliveryMethod, trackingNumber, status } = await request.json();
 
@@ -36,16 +44,15 @@ export async function POST(request: NextRequest) {
         totalPrice: 25,
         quantity: 1,
         productType: "cake",
-        designType: "individual",
-        specialInstructions: "Happy Birthday John!"
+        designType: "individual"
       }]
     };
 
     // Status messages (same as in the real route)
     const statusMessages = {
       'confirmed': {
-        subject: `Order Confirmed #${mockOrder.orderNumber} - Olgish Cakes`,
-        message: `Great news! Your order has been confirmed and we've started working on it. We'll keep you updated on the progress.`
+        subject: `Final Order Offer #${mockOrder.orderNumber} - Olgish Cakes`,
+        message: `This is our final written offer. Please accept it in writing or make the requested payment before the contract starts.`
       },
       'in-progress': {
         subject: `Order In Progress #${mockOrder.orderNumber} - Olgish Cakes`,
@@ -179,7 +186,6 @@ export async function POST(request: NextRequest) {
                           <p style="margin: 0; color: #6b7280; font-size: 14px;">
                             Quantity: ${item.quantity || 1}${item.productType === 'cake' ? ` • Design: ${item.designType === 'individual' ? 'Individual Design' : 'Standard Design'}` : ''}
                           </p>
-                          ${item.specialInstructions ? `<p style="margin: 8px 0 0 0; color: #374151; font-size: 14px; font-style: italic;">Special Instructions: ${item.specialInstructions}</p>` : ''}
                         </div>
                       `).join('')}
                     </div>
@@ -279,9 +285,18 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Test email error:', error);
+    const safeError = toSafeOperationalError(error)
+
+    console.error('Test email generation failed', {
+      operation: 'test-email-generate',
+      ...safeError
+    })
+
     return NextResponse.json(
-      { error: 'Failed to generate test email' },
+      {
+        error: 'Failed to generate test email',
+        code: safeError.code
+      },
       { status: 500 }
     );
   }

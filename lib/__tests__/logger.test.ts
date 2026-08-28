@@ -1,7 +1,7 @@
 /**
  * Tests for logger utility
  */
-import { logger } from '../logger'
+import { logger, toSafeLogMetadata } from '../logger'
 
 describe('Logger', () => {
     const originalEnv = process.env.NODE_ENV
@@ -28,14 +28,14 @@ describe('Logger', () => {
         })
 
         it('should log errors in development', () => {
-            const error = new Error('Test error')
+            const error = new Error('PRIVATE_SENTINEL')
             logger.error('Test error message', error)
 
             expect(consoleErrorSpy).toHaveBeenCalledWith(
                 expect.stringContaining('[ERROR]'),
-                'Test error message',
-                error
+                { code: 'OPERATION_FAILED' }
             )
+            expect(JSON.stringify(consoleErrorSpy.mock.calls)).not.toContain('PRIVATE_SENTINEL')
         })
 
         it('should log warnings in development', () => {
@@ -44,8 +44,7 @@ describe('Logger', () => {
 
             expect(consoleWarnSpy).toHaveBeenCalledWith(
                 expect.stringContaining('[WARN]'),
-                'Test warning',
-                data
+                ''
             )
         })
 
@@ -54,8 +53,7 @@ describe('Logger', () => {
 
             expect(consoleInfoSpy).toHaveBeenCalledWith(
                 expect.stringContaining('[INFO]'),
-                'Test info',
-                { data: 'test' }
+                ''
             )
         })
 
@@ -64,8 +62,7 @@ describe('Logger', () => {
 
             expect(consoleDebugSpy).toHaveBeenCalledWith(
                 expect.stringContaining('[DEBUG]'),
-                'Test debug',
-                { debug: 'data' }
+                ''
             )
         })
 
@@ -74,7 +71,6 @@ describe('Logger', () => {
 
             expect(consoleErrorSpy).toHaveBeenCalledWith(
                 expect.stringContaining('[ERROR]'),
-                'Test error message',
                 ''
             )
         })
@@ -84,7 +80,6 @@ describe('Logger', () => {
 
             expect(consoleWarnSpy).toHaveBeenCalledWith(
                 expect.stringContaining('[WARN]'),
-                'Test warning',
                 ''
             )
         })
@@ -101,13 +96,23 @@ describe('Logger', () => {
     })
 
     describe('Production mode', () => {
-        // Note: Logger is a singleton, so NODE_ENV is checked at module load time
-        // These tests verify the behavior when logger was initialized in production
-        // In practice, the logger will be initialized based on the actual NODE_ENV
-        it('should verify production behavior', () => {
-            // This test documents expected behavior
-            // Actual production testing would require module reload
-            expect(logger).toBeDefined()
+        it('keeps operational error logging privacy-safe', () => {
+            process.env.NODE_ENV = 'production'
+
+            logger.error('PRIVATE_PRODUCTION_MESSAGE', {
+                operation: 'orders.persist',
+                code: 'DB_FAILED',
+                payload: 'PRIVATE_PRODUCTION_PAYLOAD'
+            })
+
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[ERROR]'),
+                {
+                    operation: 'orders.persist',
+                    code: 'DB_FAILED'
+                }
+            )
+            expect(JSON.stringify(consoleErrorSpy.mock.calls)).not.toContain('PRIVATE_PRODUCTION')
         })
     })
 
@@ -121,7 +126,6 @@ describe('Logger', () => {
 
             expect(consoleErrorSpy).toHaveBeenCalledWith(
                 expect.stringContaining('[ERROR]'),
-                'Test error',
                 ''
             )
         })
@@ -131,7 +135,6 @@ describe('Logger', () => {
 
             expect(consoleErrorSpy).toHaveBeenCalledWith(
                 expect.stringContaining('[ERROR]'),
-                'Test error',
                 ''
             )
         })
@@ -141,8 +144,7 @@ describe('Logger', () => {
 
             expect(consoleErrorSpy).toHaveBeenCalledWith(
                 expect.stringContaining('[ERROR]'),
-                'Test error',
-                'String error message'
+                { code: 'OPERATION_FAILED' }
             )
         })
 
@@ -152,8 +154,7 @@ describe('Logger', () => {
 
             expect(consoleErrorSpy).toHaveBeenCalledWith(
                 expect.stringContaining('[ERROR]'),
-                'Test error',
-                errorObject
+                { code: 'OPERATION_FAILED' }
             )
         })
     })
@@ -168,11 +169,10 @@ describe('Logger', () => {
             logger.error('Error occurred', error)
 
             expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
-            const [timestamp, message, errorData] = consoleErrorSpy.mock.calls[0]
+            const [timestamp, errorData] = consoleErrorSpy.mock.calls[0]
 
             expect(timestamp).toContain('[ERROR]')
-            expect(message).toBe('Error occurred')
-            expect(errorData).toBe(error)
+            expect(errorData).toEqual({ code: 'OPERATION_FAILED' })
         })
 
         it('should format warning logs correctly', () => {
@@ -180,11 +180,57 @@ describe('Logger', () => {
             logger.warn('Warning message', data)
 
             expect(consoleWarnSpy).toHaveBeenCalledTimes(1)
-            const [timestamp, message, warningData] = consoleWarnSpy.mock.calls[0]
+            const [timestamp, warningData] = consoleWarnSpy.mock.calls[0]
 
             expect(timestamp).toContain('[WARN]')
-            expect(message).toBe('Warning message')
-            expect(warningData).toBe(data)
+            expect(warningData).toBe('')
+        })
+    })
+
+    describe('Privacy-safe metadata', () => {
+        it('never emits the caller-provided message', () => {
+            const sentinel = 'PRIVATE_CALLER_MESSAGE_SENTINEL'
+
+            logger.error(sentinel, {
+                operation: 'contact.persist',
+                code: 'DB_FAILED'
+            })
+
+            expect(JSON.stringify(consoleErrorSpy.mock.calls)).not.toContain(sentinel)
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                expect.stringContaining('[ERROR]'),
+                {
+                    operation: 'contact.persist',
+                    code: 'DB_FAILED'
+                }
+            )
+        })
+
+        it('retains only allowlisted operational fields', () => {
+            const sentinel = 'PRIVATE_HEALTH_SENTINEL'
+
+            expect(toSafeLogMetadata({
+                operation: 'contact.persist',
+                code: 'DB_FAILED',
+                status: 503,
+                recordReference: 'CONTACT-123',
+                message: sentinel,
+                details: sentinel,
+                payload: { dietaryHealthInformation: sentinel }
+            }, true)).toEqual({
+                operation: 'contact.persist',
+                code: 'DB_FAILED',
+                status: 503,
+                recordReference: 'CONTACT-123'
+            })
+        })
+
+        it('rejects unsafe operation and record-reference values', () => {
+            expect(toSafeLogMetadata({
+                operation: 'contact persist PRIVATE_SENTINEL',
+                recordReference: 'CONTACT/PRIVATE_SENTINEL',
+                code: 'SAFE_CODE'
+            }, true)).toEqual({ code: 'SAFE_CODE' })
         })
     })
 })

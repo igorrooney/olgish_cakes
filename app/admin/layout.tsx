@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
+import { Providers } from '@/app/providers'
 import './admin.css'
 
 export const metadata: Metadata = {
@@ -16,5 +17,9 @@ export const metadata: Metadata = {
 }
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  return <div data-admin-root>{children}</div>
+  return (
+    <Providers>
+      <div data-admin-root>{children}</div>
+    </Providers>
+  )
 }

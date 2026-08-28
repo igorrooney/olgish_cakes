@@ -5,10 +5,7 @@ import { render } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import React from 'react'
 import HomePage, { generateMetadata } from '../page'
-import {
-  getAllTestimonialsStats,
-  getTestimonialsPage
-} from '../utils/fetchTestimonials'
+import { getTestimonialsPage } from '../utils/fetchTestimonials'
 
 // Type definitions for test mocks
 interface AnimatedComponentProps {
@@ -61,7 +58,6 @@ jest.mock('../utils/fetchGiftHampers', () => ({
 
 jest.mock('../utils/fetchTestimonials', () => ({
   getFeaturedTestimonials: jest.fn(() => Promise.resolve([])),
-  getAllTestimonialsStats: jest.fn(() => Promise.resolve({ count: 127, averageRating: 5.0 })),
   getTestimonialsPage: jest.fn(() => Promise.resolve({
     reviews: [],
     nextCursor: null
@@ -230,7 +226,6 @@ jest.mock('@/lib/constants', () => ({
 }))
 
 const mockGetTestimonialsPage = getTestimonialsPage as jest.MockedFunction<typeof getTestimonialsPage>
-const mockGetAllTestimonialsStats = getAllTestimonialsStats as jest.MockedFunction<typeof getAllTestimonialsStats>
 const { getHomepageCollections: mockGetHomepageCollections } = jest.requireMock('../utils/fetchCollections')
 
 describe('HomePage', () => {
@@ -243,7 +238,6 @@ describe('HomePage', () => {
       reviews: [],
       nextCursor: null
     })
-    mockGetAllTestimonialsStats.mockResolvedValue({ count: 127, averageRating: 5 })
     mockGetHomepageCollections.mockResolvedValue([])
   })
 
@@ -334,10 +328,10 @@ describe('HomePage', () => {
         }
       })
       expect(mockGetTestimonialsPage).toHaveBeenCalledTimes(1)
-      expect(mockGetAllTestimonialsStats).toHaveBeenCalledTimes(1)
+      expect(mockGetTestimonialsPage).toHaveBeenCalledTimes(1)
     })
 
-    it('should include structured data scripts when testimonials exist', async () => {
+    it('keeps homepage structured data limited to accurate page and bakery entities', async () => {
       mockGetTestimonialsPage.mockResolvedValue({
         reviews: [{
           _id: 'testimonial-1',
@@ -355,75 +349,46 @@ describe('HomePage', () => {
       const scripts = container.querySelectorAll('script[type="application/ld+json"]')
       expect(scripts.length).toBeGreaterThan(0)
 
-      const productSchema = Array.from(scripts).map((script) => {
-        try {
-          return JSON.parse(script.textContent || '{}') as {
-            '@type'?: string
-            offers?: {
-              hasMerchantReturnPolicy?: Record<string, unknown>
-            }
-          }
-        } catch {
-          return null
-        }
-      }).find((data) => data?.['@type'] === 'Product')
-
-      const returnPolicy = productSchema?.offers?.hasMerchantReturnPolicy
-
-      expect(returnPolicy).toEqual(expect.objectContaining({
-        '@type': 'MerchantReturnPolicy',
-        applicableCountry: 'GB',
-        returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted'
-      }))
-      expect(returnPolicy).not.toHaveProperty('merchantReturnDays')
-      expect(returnPolicy).not.toHaveProperty('returnFees')
-      expect(returnPolicy).not.toHaveProperty('returnMethod')
-    })
-
-    it('should render review schema from testimonials', async () => {
-      mockGetTestimonialsPage.mockResolvedValue({
-        reviews: [{
-          _id: 'testimonial-1',
-          customerName: 'Olha',
-          rating: 5,
-          date: '2026-01-10',
-          text: 'Absolutely delicious.'
-        }],
-        nextCursor: null
-      })
-
-      const page = await HomePage()
-      const { container } = render(page)
-      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
-
-      expect(scripts.length).toBeGreaterThan(0)
-
-      let reviewSchema: {
-        '@context'?: string
-        '@graph'?: Array<{
-          '@type'?: string
-          author?: { name?: string }
-        }>
-      } | null = null
-
-      scripts.forEach((script) => {
+      const schemaTypes = Array.from(scripts).flatMap((script) => {
         try {
           const data = JSON.parse(script.textContent || '{}') as {
-            '@context'?: string
-            '@graph'?: unknown
+            '@type'?: string
+            '@graph'?: Array<{ '@type'?: string }>
           }
-          if (data['@context'] === 'https://schema.org' && Array.isArray(data['@graph'])) {
-            reviewSchema = data as typeof reviewSchema
-          }
+          return [
+            data['@type'],
+            ...(data['@graph'] ?? []).map((entry) => entry['@type'])
+          ].filter((type): type is string => typeof type === 'string')
         } catch {
-          // Ignore parse errors
+          return []
         }
       })
 
-      expect(reviewSchema).toBeTruthy()
-      const reviewGraph = reviewSchema?.['@graph'] || []
-      const reviewEntry = reviewGraph.find((entry) => entry['@type'] === 'Review')
-      expect(reviewEntry?.author?.name).toBe('Olha')
+      expect(schemaTypes).toEqual(expect.arrayContaining(['Bakery', 'WebPage']))
+      expect(schemaTypes).not.toContain('Product')
+      expect(schemaTypes).not.toContain('Review')
+    })
+
+    it('does not expose standalone review or aggregate-rating markup from testimonials', async () => {
+      mockGetTestimonialsPage.mockResolvedValue({
+        reviews: [{
+          _id: 'testimonial-1',
+          customerName: 'Olha',
+          rating: 5,
+          date: '2026-01-10',
+          text: 'Absolutely delicious.'
+        }],
+        nextCursor: null
+      })
+
+      const page = await HomePage()
+      const { container } = render(page)
+      const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+
+      expect(scripts.length).toBeGreaterThan(0)
+
+      expect(container.innerHTML).not.toContain('"@type":"Review"')
+      expect(container.innerHTML).not.toContain('"aggregateRating"')
     })
 
     it('should not render review schema when testimonials are empty', async () => {

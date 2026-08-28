@@ -7,6 +7,9 @@ import { withRateLimit } from "@/lib/rate-limit";
 import { categoryLandingCanonicalPaths } from "@/app/cakes/categoryLandingConfig";
 import { createSanityWriteClient } from "@/lib/sanity-admin-client";
 import { ensureProductDisplayOrderEntry, type ProductDisplayOrderField, type ProductDisplayOrderSyncResult } from "@/lib/product-display-order-sync";
+import { logger } from '@/lib/logger'
+import { isBearerTokenAuthorized } from '@/lib/security/internal-route'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 // Webhook payload validation schema
 const revalidateSchema = z.object({
@@ -35,7 +38,10 @@ async function syncProductDisplayOrderEntry({
       fieldName
     })
   } catch (error) {
-    console.error('Product display order sync failed:', error)
+    logger.error('Product display order sync failed', {
+      operation: 'revalidate.product-display-order-sync',
+      ...toSafeOperationalError(error)
+    })
     return {
       documentId,
       fieldName,
@@ -49,10 +55,7 @@ async function syncProductDisplayOrderEntry({
 async function handlePOST(request: NextRequest) {
   try {
     // Security: Verify revalidation secret
-    const authHeader = request.headers.get('authorization');
-    const expectedToken = process.env.REVALIDATE_SECRET;
-
-    if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+    if (!isBearerTokenAuthorized(request, process.env.REVALIDATE_SECRET)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -128,7 +131,7 @@ async function handlePOST(request: NextRequest) {
       // Revalidate pages that surface testimonial stats or reviews
       addPath("/") // Home page might show testimonials
       addPath("/cakes-by-post")
-      addPath("/get-custom-quote")
+      addPath("/custom-cakes")
       await invalidateCache("testimonials");
       addTag('testimonials')
     } else if (_type === "faq") {
@@ -226,14 +229,18 @@ async function handlePOST(request: NextRequest) {
       productsDisplayOrder: productDisplayOrderSync,
     });
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.error('Revalidation error:', error);
-    }
+    const safeError = toSafeOperationalError(error)
+
+    logger.error('Revalidation failed', {
+      operation: 'revalidate.webhook',
+      ...safeError
+    })
+
     return NextResponse.json(
       {
         success: false,
         error: "Revalidation failed",
-        details: error instanceof Error ? error.message : "Unknown error",
+        code: safeError.code,
       },
       { status: 500 }
     );
@@ -248,11 +255,7 @@ export const POST = withRateLimit(handlePOST, {
 
 // GET method - protected for security
 export async function GET(request: NextRequest) {
-  // Security: Require authentication even for GET endpoint
-  const authHeader = request.headers.get('authorization');
-  const expectedToken = process.env.REVALIDATE_SECRET;
-
-  if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+  if (!isBearerTokenAuthorized(request, process.env.REVALIDATE_SECRET)) {
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }

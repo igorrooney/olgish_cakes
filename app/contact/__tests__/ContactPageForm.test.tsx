@@ -162,7 +162,7 @@ describe('ContactPageForm', () => {
     expect(
       screen.getByText(/we'll use your details only to reply to this enquiry/i)
     ).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /privacy policy/i })).toHaveAttribute(
+    expect(screen.getAllByRole('link', { name: /privacy policy/i })[0]).toHaveAttribute(
       'href',
       '/privacy'
     )

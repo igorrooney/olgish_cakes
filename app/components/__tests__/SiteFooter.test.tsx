@@ -79,8 +79,8 @@ describe('SiteFooter', () => {
 
     expect(screen.getByRole('link', { name: '+44 786 721 8194' })).toHaveAttribute('href', 'tel:+447867218194')
     expect(screen.getByRole('link', { name: 'hello@olgishcakes.co.uk' })).toHaveAttribute('href', 'mailto:hello@olgishcakes.co.uk')
-    expect(screen.getByText('Allerton Grange')).toBeInTheDocument()
-    expect(screen.getByText('Leeds, LS17')).toBeInTheDocument()
+    expect(screen.getByText('15 Allerton Grange Avenue')).toBeInTheDocument()
+    expect(screen.getByText('Leeds, LS17 6PR, United Kingdom')).toBeInTheDocument()
   })
 
   it('renders social links with safe external attributes', () => {

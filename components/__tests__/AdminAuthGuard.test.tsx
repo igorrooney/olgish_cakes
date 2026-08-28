@@ -2,7 +2,8 @@
  * @jest-environment jsdom
  */
 import React from 'react'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render as renderWithTestingLibrary, screen, waitFor, fireEvent, type RenderOptions } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AdminAuthGuard } from '../AdminAuthGuard'
 
 // Mock Next.js navigation
@@ -39,6 +40,31 @@ jest.mock('../ErrorBoundary', () => ({
 
 // Mock fetch
 global.fetch = jest.fn()
+
+const render = (ui: React.ReactElement, options?: RenderOptions) => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false }
+    }
+  })
+
+  const result = renderWithTestingLibrary(
+    <QueryClientProvider client={queryClient}>
+      {ui}
+    </QueryClientProvider>,
+    options
+  )
+
+  return {
+    ...result,
+    rerender: (nextUi: React.ReactElement) => result.rerender(
+      <QueryClientProvider client={queryClient}>
+        {nextUi}
+      </QueryClientProvider>
+    )
+  }
+}
 
 describe('AdminAuthGuard', () => {
   beforeEach(() => {
@@ -206,6 +232,20 @@ describe('AdminAuthGuard', () => {
       })
     })
 
+    it('should keep the drawer collapsed through the 1024px tablet layout', async () => {
+      render(<AdminAuthGuard>Content</AdminAuthGuard>)
+
+      await waitFor(() => {
+        const menuControl = screen.getByLabelText('Open admin navigation')
+        const drawer = document.querySelector('.drawer')
+
+        expect(menuControl).toHaveClass('small-laptop:hidden')
+        expect(menuControl).not.toHaveClass('lg:hidden')
+        expect(drawer).toHaveClass('small-laptop:drawer-open')
+        expect(drawer).not.toHaveClass('lg:drawer-open')
+      })
+    })
+
     it('should show Dashboard link', async () => {
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
 
@@ -239,6 +279,17 @@ describe('AdminAuthGuard', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Earnings')).toBeInTheDocument()
+      })
+    })
+
+    it('should show the privacy-retention centre link', async () => {
+      render(<AdminAuthGuard>Content</AdminAuthGuard>)
+
+      await waitFor(() => {
+        expect(screen.getByRole('link', { name: 'Privacy retention' })).toHaveAttribute(
+          'href',
+          '/admin/privacy-retention'
+        )
       })
     })
 
@@ -350,7 +401,7 @@ describe('AdminAuthGuard', () => {
       })
     })
 
-    it('should log error on logout failure', async () => {
+    it('should avoid logging raw logout failures', async () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
 
       render(<AdminAuthGuard>Content</AdminAuthGuard>)
@@ -366,8 +417,10 @@ describe('AdminAuthGuard', () => {
       fireEvent.click(logoutButton)
 
       await waitFor(() => {
-        expect(consoleErrorSpy).toHaveBeenCalledWith('Logout failed:', error)
+        expect(mockPush).toHaveBeenCalledWith('/admin/auth')
       })
+
+      expect(consoleErrorSpy).not.toHaveBeenCalled()
 
       consoleErrorSpy.mockRestore()
     })

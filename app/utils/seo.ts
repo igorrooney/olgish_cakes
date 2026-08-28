@@ -1,11 +1,10 @@
 import { BUSINESS_CONSTANTS } from "@/lib/constants";
-import { REVIEW_DATES } from "@/lib/structured-data-defaults";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import type { DeliveryPolicy } from "@/types/deliveryPolicy";
 import { Metadata } from "next";
 import type { DeliveryPolicyVisibleClaims } from "./delivery-policy";
 import { normalizeDeliveryPolicy } from "./delivery-policy";
-import { buildAggregateRating, formatRatingValue, formatReviewCount, normalizeReviewStats, type ReviewStats } from "./review-stats";
+import { buildAggregateRating, type ReviewStats } from "./review-stats";
 
 // SEO Configuration
 export const SEO_CONFIG = {
@@ -135,13 +134,6 @@ export function generateCanonicalUrl(path: string): string {
   return `${SEO_CONFIG.siteUrl}${path}`;
 }
 
-// Compute ISO date (YYYY-MM-DD) for Offer.priceValidUntil
-export function getPriceValidUntil(daysFromNow: number = 30): string {
-  const date = new Date();
-  date.setDate(date.getDate() + daysFromNow);
-  return date.toISOString().split("T")[0];
-}
-
 // Reusable Merchant Return Policy for Offers (required by Merchant listings)
 export function getMerchantReturnPolicy() {
   return {
@@ -153,7 +145,7 @@ export function getMerchantReturnPolicy() {
 
 // Reusable shipping details for Offer (helps Merchant listings rich results)
 export function getOfferShippingDetails(
-  policyInput?: Partial<DeliveryPolicy> | null,
+  policyInput: DeliveryPolicy,
   visibleClaims?: DeliveryPolicyVisibleClaims | null
 ) {
   const resolvedPolicy = normalizeDeliveryPolicy(policyInput)
@@ -241,11 +233,11 @@ export function generatePageMetadata({
     : generateOpenGraphImage(SEO_CONFIG.defaultImage, title);
 
   const allKeywords = [...PRIMARY_KEYWORDS, ...keywords];
-  const normalizedReviewStats = normalizeReviewStats(reviewStats);
-  const reviewMeta: Record<string, string> = reviewStats && normalizedReviewStats.count > 0
+  const aggregateRating = buildAggregateRating(reviewStats);
+  const reviewMeta: Record<string, string> = aggregateRating
     ? {
-        rating: formatRatingValue(normalizedReviewStats.averageRating),
-        rating_count: formatReviewCount(normalizedReviewStats.count),
+        rating: aggregateRating.ratingValue,
+        rating_count: aggregateRating.reviewCount,
       }
     : {};
 
@@ -301,22 +293,14 @@ export function generatePageMetadata({
         "max-snippet": -1,
       },
     },
-    verification: {
-      google: "your-google-verification-code",
-    },
     other: {
       "geo.region": "GB-ENG",
       "geo.placename": "Leeds",
-      "geo.position": "53.8008;-1.5491",
-      ICBM: "53.8008, -1.5491",
       price_range: "££",
       cuisine: "Ukrainian",
-      payment: "cash, credit card, bank transfer",
-      delivery: "yes",
-      takeout: "yes",
-      "business:contact_data:street_address": "Allerton Grange",
+      "business:contact_data:street_address": "15 Allerton Grange Avenue",
       "business:contact_data:locality": "Leeds",
-      "business:contact_data:postal_code": "LS17",
+      "business:contact_data:postal_code": "LS17 6PR",
       "business:contact_data:country_name": "United Kingdom",
       "business:contact_data:phone_number": BUSINESS_CONSTANTS.PHONE,
       "business:contact_data:email": "hello@olgishcakes.co.uk",
@@ -348,25 +332,12 @@ export function generateOrganizationSchema(reviewStats?: ReviewStats) {
     email: "hello@olgishcakes.co.uk",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Allerton Grange",
+      streetAddress: "15 Allerton Grange Avenue",
       addressLocality: "Leeds",
       addressRegion: "West Yorkshire",
-      postalCode: "LS17",
+      postalCode: "LS17 6PR",
       addressCountry: "GB",
     },
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: "53.8008",
-      longitude: "-1.5491",
-    },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-        opens: "00:00",
-        closes: "23:59",
-      },
-    ],
     priceRange: "££",
     servesCuisine: ["Ukrainian", "Traditional", "Honey Cake", "Medovik", "Kyiv Cake"],
     hasMenu: `${SEO_CONFIG.siteUrl}/cakes`,
@@ -387,11 +358,6 @@ export function generateOrganizationSchema(reviewStats?: ReviewStats) {
       "https://www.instagram.com/olgish_cakes/",
     ],
     ...(aggregateRating ? { aggregateRating } : {}),
-    paymentAccepted: ["Cash", "Credit Card", "Bank Transfer"],
-    deliveryAvailable: true,
-    takeoutAvailable: true,
-    foundingDate: "2023",
-    award: ["Best Ukrainian Bakery Leeds 2024", "5★ Customer Rating", "Same-day Delivery Service"],
   };
 }
 
@@ -409,25 +375,12 @@ export function generateLocalBusinessSchema(reviewStats?: ReviewStats) {
     email: "hello@olgishcakes.co.uk",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Allerton Grange",
+      streetAddress: "15 Allerton Grange Avenue",
       addressLocality: "Leeds",
       addressRegion: "West Yorkshire",
-      postalCode: "LS17",
+      postalCode: "LS17 6PR",
       addressCountry: "GB",
     },
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: "53.8008",
-      longitude: "-1.5491",
-    },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-        opens: "00:00",
-        closes: "23:59",
-      },
-    ],
     priceRange: "££",
     servesCuisine: ["Ukrainian", "Traditional", "Honey Cake", "Medovik", "Kyiv Cake"],
     areaServed: [
@@ -516,6 +469,17 @@ export function generateProductSchema(product: {
     reviewCount: number;
   };
 }) {
+  if (!Number.isFinite(product.price) || product.price <= 0) {
+    throw new Error('A real positive price is required for Product structured data')
+  }
+
+  const aggregateRating = product.aggregateRating
+    ? buildAggregateRating({
+        count: product.aggregateRating.reviewCount,
+        averageRating: product.aggregateRating.ratingValue
+      })
+    : null
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -528,66 +492,18 @@ export function generateProductSchema(product: {
       "@type": "Brand",
       name: product.brand || SEO_CONFIG.siteName,
     },
-    category: product.category || "Ukrainian Honey Cake",
+    ...(product.category ? { category: product.category } : {}),
     offers: {
       "@type": "Offer",
-      price: formatStructuredDataPrice(product.price, 25),
+      price: formatStructuredDataPrice(product.price, 0),
       priceCurrency: product.currency || "GBP",
-      availability: product.availability || "https://schema.org/InStock",
-      priceValidUntil: getPriceValidUntil(30),
+      ...(product.availability ? { availability: product.availability } : {}),
       seller: {
         "@id": `${SEO_CONFIG.siteUrl}/#organization`,
       },
-      shippingDetails: getOfferShippingDetails(),
       hasMerchantReturnPolicy: getMerchantReturnPolicy(),
     },
-    ...(product.aggregateRating && {
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: product.aggregateRating.ratingValue,
-        reviewCount: product.aggregateRating.reviewCount,
-        bestRating: "5",
-        worstRating: "1",
-      },
-    }),
-    review: [
-      {
-        "@type": "Review",
-        itemReviewed: {
-          "@id": `${product.url}#product`
-        },
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: "5",
-          bestRating: "5",
-          worstRating: "1"
-        },
-        author: {
-          "@type": "Person",
-          name: "Sarah M."
-        },
-        reviewBody: `Excellent ${product.name}! The quality and taste are outstanding. Highly recommend!`,
-        datePublished: REVIEW_DATES.RECENT
-      },
-      {
-        "@type": "Review",
-        itemReviewed: {
-          "@id": `${product.url}#product`
-        },
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: "5",
-          bestRating: "5",
-          worstRating: "1"
-        },
-        author: {
-          "@type": "Person",
-          name: "James K."
-        },
-        reviewBody: `Amazing service and incredible quality. The ${product.name} exceeded our expectations!`,
-        datePublished: REVIEW_DATES.OLDER
-      }
-    ],
+    ...(aggregateRating ? { aggregateRating } : {}),
   };
 }
 
@@ -652,6 +568,10 @@ export function generateServiceSchema(service: {
   price?: number;
   currency?: string;
 }) {
+  const hasPrice = typeof service.price === 'number' &&
+    Number.isFinite(service.price) &&
+    service.price > 0
+
   return {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -661,16 +581,14 @@ export function generateServiceSchema(service: {
     provider: {
       "@id": `${SEO_CONFIG.siteUrl}/#organization`,
     },
-    ...(service.price && {
+    ...(hasPrice && {
       offers: {
         "@type": "Offer",
-        price: formatStructuredDataPrice(service.price, 25),
+        price: formatStructuredDataPrice(service.price, 0),
         priceCurrency: service.currency || "GBP",
-        availability: "https://schema.org/InStock",
         seller: {
           "@id": `${SEO_CONFIG.siteUrl}/#organization`,
-        },
-        hasMerchantReturnPolicy: getMerchantReturnPolicy(),
+        }
       },
     }),
   };

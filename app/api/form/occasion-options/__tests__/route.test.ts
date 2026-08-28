@@ -10,6 +10,14 @@ jest.mock('@/app/components/homepage/formOptions', () => ({
   buildOccasionOptionsFromCollections: jest.fn()
 }))
 
+const mockLoggerError = jest.fn()
+
+jest.mock('@/lib/logger', () => ({
+  logger: {
+    error: (...args: unknown[]) => mockLoggerError(...args)
+  }
+}))
+
 import { GET } from '../route'
 
 const mockedGetHomepageCollections = jest.requireMock('@/app/utils/fetchCollections').getHomepageCollections as jest.MockedFunction<() => Promise<Array<{ _id: string, name: string }>>>
@@ -41,8 +49,9 @@ describe('/api/form/occasion-options', () => {
     expect(mockedBuildOccasionOptionsFromCollections).toHaveBeenCalledWith(collections)
   })
 
-  it('returns 500 with noindex header on error', async () => {
-    mockedGetHomepageCollections.mockRejectedValue(new Error('Fetch failed'))
+  it('returns a generic 500 and safely logs an upstream error', async () => {
+    const sentinel = 'PRIVATE_COLLECTION_PROVIDER_MESSAGE'
+    mockedGetHomepageCollections.mockRejectedValue(new Error(sentinel))
 
     const response = await GET()
     const body = await response.json()
@@ -50,5 +59,13 @@ describe('/api/form/occasion-options', () => {
     expect(response.status).toBe(500)
     expect(body).toEqual({ error: 'Failed to fetch occasion options' })
     expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      'Failed to fetch occasion options',
+      {
+        operation: 'form.occasion-options.fetch',
+        code: 'OPERATION_FAILED'
+      }
+    )
+    expect(JSON.stringify({ body, logs: mockLoggerError.mock.calls })).not.toContain(sentinel)
   })
 })

@@ -6,7 +6,6 @@ import { render, screen } from '@testing-library/react'
 import {
   DynamicContactForm,
   DynamicCakeImageGallery,
-  DynamicCookieConsent,
   DynamicDevTools,
   DynamicComponentWrapper
 } from '../DynamicImports'
@@ -62,16 +61,6 @@ describe('DynamicImports', () => {
     })
   })
 
-  describe('DynamicCookieConsent', () => {
-    it('should be defined', () => {
-      expect(DynamicCookieConsent).toBeDefined()
-    })
-
-    it('should be a React component', () => {
-      expect(typeof DynamicCookieConsent).toBe('function')
-    })
-  })
-
   describe('DynamicDevTools', () => {
     it('should be defined', () => {
       expect(DynamicDevTools).toBeDefined()
@@ -115,7 +104,6 @@ describe('DynamicImports', () => {
     it('should export all dynamic components', () => {
       expect(DynamicContactForm).toBeDefined()
       expect(DynamicCakeImageGallery).toBeDefined()
-      expect(DynamicCookieConsent).toBeDefined()
       expect(DynamicDevTools).toBeDefined()
       expect(DynamicComponentWrapper).toBeDefined()
     })

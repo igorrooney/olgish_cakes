@@ -5,6 +5,14 @@ jest.mock('../../../../cakes/catalogPageData', () => ({
   getCatalogCustomCakesData: jest.fn()
 }))
 
+const mockLoggerError = jest.fn()
+
+jest.mock('@/lib/logger', () => ({
+  logger: {
+    error: (...args: unknown[]) => mockLoggerError(...args)
+  }
+}))
+
 type CatalogCustomCakesData = {
   cakes: Array<{
     id: string
@@ -66,8 +74,9 @@ describe('/api/catalog/custom-cakes', () => {
     expect(response.headers.get('Cache-Control')).toBe('no-store')
   })
 
-  it('returns noindex header on error', async () => {
-    mockedGetCatalogCustomCakesData.mockRejectedValue(new Error('Catalog fetch failed'))
+  it('returns a generic error and logs only safe operational fields', async () => {
+    const sentinel = 'PRIVATE_CATALOG_PROVIDER_MESSAGE'
+    mockedGetCatalogCustomCakesData.mockRejectedValue(new Error(sentinel))
 
     const response = await GET()
     const data = await response.json()
@@ -75,5 +84,13 @@ describe('/api/catalog/custom-cakes', () => {
     expect(response.status).toBe(500)
     expect(data).toEqual({ error: 'Failed to fetch custom cakes catalog data' })
     expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      'Failed to fetch custom cakes catalog data',
+      {
+        operation: 'catalog.custom-cakes.fetch',
+        code: 'OPERATION_FAILED'
+      }
+    )
+    expect(JSON.stringify({ data, logs: mockLoggerError.mock.calls })).not.toContain(sentinel)
   })
 })

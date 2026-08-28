@@ -16,9 +16,9 @@ const cakesByPostBaseInput = createDefaultScenarioInput({
   customerName: 'Igor Ieromenko',
   customerEmail: 'igor@example.com',
   customerPhone: '+44 7867 218241',
-  address: '15 Allerton Grange Avenue',
+  address: '10 Example Street',
   city: 'Leeds',
-  postcode: 'LS17 6PR',
+  postcode: 'LS1 1AA',
   orderNumber: '26051220022842',
   orderType: 'gift-hamper',
   productName: 'Personalised Congratulations Cake Card',
@@ -34,7 +34,7 @@ const cakesByPostBaseInput = createDefaultScenarioInput({
   servings: undefined,
   customerMessage: 'test message',
   deliveryMethod: 'postal',
-  deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
+  deliveryAddress: '10 Example Street, Leeds, LS1 1AA',
   paymentMethod: 'card',
   referrer: 'cakes-by-post',
   status: 'new',
@@ -111,7 +111,7 @@ const cakeProductCustomDesignInput = createDefaultScenarioInput({
 })
 
 const cakeRequestNextSteps = [
-  'We\'ll review your requested date, cake details, and any design notes within 24 hours.',
+  'We\'ll reply as soon as we can.',
   'We\'ll confirm availability, final price, and any design details before you need to pay.',
   'Nothing is booked or payable until we agree the design, price, and collection or delivery details.'
 ]
@@ -120,7 +120,7 @@ const cakeProductCustomerInput = {
   ...cakeProductBaseInput,
   status: undefined,
   priceLabel: 'Estimated price',
-  intro: 'Thank you. We\'ve received your cake request and will review the details within 24 hours.',
+  intro: 'Thank you. We\'ve received your cake request. We\'ll reply as soon as we can.',
   nextSteps: cakeRequestNextSteps
 }
 
@@ -128,7 +128,7 @@ const cakeProductCustomDesignCustomerInput = {
   ...cakeProductCustomDesignInput,
   status: undefined,
   priceLabel: 'Estimated price',
-  intro: 'Thank you. We\'ve received your cake request and will review the details within 24 hours.',
+  intro: 'Thank you. We\'ve received your cake request. We\'ll reply as soon as we can.',
   nextSteps: cakeRequestNextSteps
 }
 
@@ -232,10 +232,6 @@ function renderContactCustomerConfirmation(input: EmailTemplateCommonInput): Cus
   addCustomerContactRow(enquiryRows, 'Postcode', input.postcode)
   addCustomerContactRow(enquiryRows, 'Topic', input.cakeInterest)
   addCustomerContactRow(enquiryRows, 'Date', formatLongDate(input.dateNeeded))
-  addCustomerContactRow(enquiryRows, 'Message', input.customerMessage || input.message)
-  addCustomerContactRow(enquiryRows, 'Additional note', input.note)
-  addCustomerContactRow(enquiryRows, 'Gift note', input.giftNote)
-  addCustomerContactRow(enquiryRows, 'Attachments', input.attachmentNames?.join(', '))
 
   const nextStepsText = `What happens next\n${nextSteps.map((step) => `- ${step}`).join('\n')}`
   const nextStepsHtml = renderCustomerCard(
@@ -292,7 +288,7 @@ const inlineOrderCustomerScenarios = [
       unitPrice: 45,
       totalPrice: 45,
       priceLabel: 'Estimated price',
-      intro: 'Thank you. We\'ve received your cake request and will review the details within 24 hours.',
+      intro: 'Thank you. We\'ve received your cake request. We\'ll reply as soon as we can.',
       nextSteps: cakeRequestNextSteps
     }
   }
@@ -324,7 +320,7 @@ const fallbackCustomerScenarios = [
       ...cakeProductBaseInput,
       status: undefined,
       priceLabel: 'Estimated price',
-      intro: 'Thank you. We\'ve received your cake request and will review the details within 24 hours.',
+      intro: 'Thank you. We\'ve received your cake request. We\'ll reply as soon as we can.',
       nextSteps: cakeRequestNextSteps,
       titleOverride: 'Order request received - Olgish Cakes'
     }
@@ -384,7 +380,7 @@ export const contactTemplateDefinitions: Record<string, TemplateDefinition<Email
     {
       subject: 'Order request received',
       heading: 'Thank you for choosing Olgish Cakes',
-      intro: 'Thank you for your order! We\'ve received your request and will get back to you within 24 hours with confirmation and next steps.',
+      intro: 'Thank you for your order. We\'ve received your request. We\'ll reply as soon as we can.',
       admin: false
     },
     inlineOrderCustomerScenarios,
@@ -408,7 +404,7 @@ export const contactTemplateDefinitions: Record<string, TemplateDefinition<Email
     {
       subject: 'Order request received',
       heading: 'Thank you for choosing Olgish Cakes',
-      intro: 'Thank you for your order! We\'ve received your request and will get back to you within 24 hours with confirmation and next steps.',
+      intro: 'Thank you for your order. We\'ve received your request. We\'ll reply as soon as we can.',
       admin: false
     },
     fallbackCustomerScenarios,

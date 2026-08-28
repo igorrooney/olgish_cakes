@@ -11,6 +11,7 @@ import {
   createCatalogMetadata,
   type ResolvedSearchParams
 } from './catalogSeo'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 const pageTitle = 'Traditional Ukrainian Cakes Leeds | Birthday & Wedding'
 const pageDescription = 'Authentic Ukrainian cakes in Leeds from GBP 25, including Medovik honey cake, Kyiv cake and custom birthday designs, baked fresh for delivery or collection.'
@@ -40,7 +41,10 @@ export default async function CakesPage() {
   const [catalogData, byPostCakesPriceCeilingHint] = await Promise.all([
     getCatalogPageData('cakes'),
     getCatalogByPostCakesPriceCeiling().catch((error) => {
-      console.warn('Failed to fetch by-post cakes price ceiling hint for cakes page:', error)
+      console.warn('Cake price ceiling hint fetch failed', {
+        operation: 'cakes.price-ceiling.fetch',
+        ...toSafeOperationalError(error)
+      })
       return undefined
     })
   ])

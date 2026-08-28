@@ -20,6 +20,9 @@ const createReview = (
   rating: 5,
   date: '2026-01-01',
   text: 'So tasty!',
+  source: 'trustpilot',
+  sourceUrl: 'https://uk.trustpilot.com/reviews/example',
+  incentivised: false,
   ...overrides
 })
 
@@ -110,8 +113,10 @@ describe('ReviewsCarousel', () => {
 
     expect(container.querySelectorAll('.carousel')).toHaveLength(1)
     expect(screen.getAllByText('Amazing cake')).toHaveLength(1)
-    expect(container.querySelector('svg[width="107"][height="20"]')).toBeInTheDocument()
-    expect(container.querySelector('path[fill="#219653"]')).toBeInTheDocument()
+    const rating = screen.getByRole('img', { name: '5 out of 5 stars' })
+    expect(rating).toBeInTheDocument()
+    expect(rating.querySelectorAll('.mask-star-2.bg-success')).toHaveLength(5)
+    expect(screen.queryByText(/published on/i)).not.toBeInTheDocument()
     expect(container.querySelector('.rounded-\\[16px\\].bg-amber-50')).toBeInTheDocument()
     expect(container.querySelector('.carousel-item')).toHaveStyle({
       width: '342px',
@@ -123,6 +128,40 @@ describe('ReviewsCarousel', () => {
     expect(screen.getByText('Anonymous')).toBeInTheDocument()
     expect(screen.getByText('1 January 2026')).toBeInTheDocument()
     expect(screen.getByText('2 January 2026')).toBeInTheDocument()
+  })
+
+  it('keeps source attribution metadata out of the original card design', () => {
+    render(
+      <ReviewsCarousel
+        testimonials={[
+          createReview({
+            _id: 'url-less-external-review',
+            customerName: 'External customer',
+            sourceUrl: undefined
+          }),
+          createReview({
+            _id: 'direct-review',
+            customerName: 'Direct customer',
+            source: 'direct',
+            sourceUrl: undefined
+          }),
+          createReview({
+            _id: 'historical-review',
+            customerName: 'Historical customer',
+            source: 'historical',
+            sourceUrl: undefined
+          })
+        ]}
+      />,
+      { wrapper: createWrapper() }
+    )
+
+    expect(screen.getByText('External customer')).toBeInTheDocument()
+    expect(screen.getByText('Direct customer')).toBeInTheDocument()
+    expect(screen.getByText('Historical customer')).toBeInTheDocument()
+    expect(screen.queryByText(/published on/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/submitted directly/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/historical customer review/i)).not.toBeInTheDocument()
   })
 
   it('keeps long reviews collapsed initially and supports disclosure', () => {
@@ -192,6 +231,101 @@ describe('ReviewsCarousel', () => {
         signal: controller.signal
       })
     )
+  })
+
+  it('rejects paginated reviews whose URL does not match the declared source', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        reviews: [createReview({
+          source: 'trustpilot',
+          sourceUrl: 'https://www.google.com/maps/reviews/example'
+        })],
+        nextCursor: null
+      })
+    } as Response)
+
+    await expect(fetchTestimonialsPage({
+      client: {} as QueryClient,
+      direction: 'forward',
+      meta: undefined,
+      pageParam: null,
+      queryKey: ['testimonials', 'carousel'],
+      signal: new AbortController().signal
+    })).rejects.toThrow('We could not load more reviews.')
+  })
+
+  it('rejects whitespace-only source URLs rather than rendering them as links', async () => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        reviews: [createReview({ sourceUrl: '   ' })],
+        nextCursor: null
+      })
+    } as Response)
+
+    await expect(fetchTestimonialsPage({
+      client: {} as QueryClient,
+      direction: 'forward',
+      meta: undefined,
+      pageParam: null,
+      queryKey: ['testimonials', 'carousel'],
+      signal: new AbortController().signal
+    })).rejects.toThrow('We could not load more reviews.')
+  })
+
+  it('accepts URL-less external and historical reviews from pagination', async () => {
+    const page: PaginatedReviewsResponse = {
+      reviews: [
+        createReview({
+          _id: 'url-less-external-review',
+          sourceUrl: undefined
+        }),
+        createReview({
+          _id: 'historical-review',
+          source: 'historical',
+          sourceUrl: undefined
+        })
+      ],
+      nextCursor: null
+    }
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => page
+    } as Response)
+
+    await expect(fetchTestimonialsPage({
+      client: {} as QueryClient,
+      direction: 'forward',
+      meta: undefined,
+      pageParam: null,
+      queryKey: ['testimonials', 'carousel'],
+      signal: new AbortController().signal
+    })).resolves.toEqual(page)
+  })
+
+  it('accepts a review without provenance or incentive-disclosure metadata', async () => {
+    const page: PaginatedReviewsResponse = {
+      reviews: [createReview({
+        incentivised: true,
+        incentiveDisclosure: undefined,
+        sourceUrl: undefined
+      })],
+      nextCursor: null
+    }
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => page
+    } as Response)
+
+    await expect(fetchTestimonialsPage({
+      client: {} as QueryClient,
+      direction: 'forward',
+      meta: undefined,
+      pageParam: null,
+      queryKey: ['testimonials', 'carousel'],
+      signal: new AbortController().signal
+    })).resolves.toEqual(page)
   })
 
   it('automatically appends and deduplicates the next page when the final card is visible', async () => {

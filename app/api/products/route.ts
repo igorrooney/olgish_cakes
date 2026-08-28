@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server'
 import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
+import { logger } from '@/lib/logger'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
+import { PRODUCTS_CAKES_QUERY } from '@/lib/queries/cakes'
+import { PRODUCTS_GIFT_HAMPERS_QUERY } from '@/lib/queries/giftHampers'
 
 interface CakeQueryResult {
   _id: string
@@ -26,29 +30,14 @@ export async function GET() {
     const giftHampersConfig = getCacheConfig('giftHampers')
     
     // Fetch cakes
-    const cakes = await cachedSanityFetch<CakeQueryResult[]>(`
-      *[_type == "cake"] {
-        _id,
-        name,
-        size,
-        pricing,
-        category,
-        slug,
-        order
-      } | order(order asc, _createdAt desc)
-    `, {}, cakesConfig)
+    const cakes = await cachedSanityFetch<CakeQueryResult[]>(PRODUCTS_CAKES_QUERY, {}, cakesConfig)
 
     // Fetch gift hampers
-    const giftHampers = await cachedSanityFetch<GiftHamperQueryResult[]>(`
-      *[_type == "giftHamper"] {
-        _id,
-        name,
-        price,
-        category,
-        slug,
-        order
-      } | order(order asc, _createdAt desc)
-    `, {}, giftHampersConfig)
+    const giftHampers = await cachedSanityFetch<GiftHamperQueryResult[]>(
+      PRODUCTS_GIFT_HAMPERS_QUERY,
+      {},
+      giftHampersConfig
+    )
 
     // Transform data for easier use in the frontend
     const products = [
@@ -86,7 +75,10 @@ export async function GET() {
       }
     )
   } catch (error) {
-    console.error('Failed to fetch products:', error)
+    logger.error('Failed to fetch products', {
+      operation: 'products.fetch',
+      ...toSafeOperationalError(error)
+    })
     return NextResponse.json(
       { error: 'Failed to fetch products' },
       { status: 500 }

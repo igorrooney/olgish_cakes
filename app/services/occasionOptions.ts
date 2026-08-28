@@ -29,7 +29,7 @@ function isOccasionOption(value: unknown): value is OccasionOption {
   return true
 }
 
-export async function fetchOccasionOptions(signal?: AbortSignal): Promise<OccasionOption[]> {
+export async function fetchOccasionOptions(signal: AbortSignal): Promise<OccasionOption[]> {
   const response = await fetch('/api/form/occasion-options', {
     headers: {
       Accept: 'application/json'

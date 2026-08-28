@@ -32,6 +32,17 @@ describe('robots.txt', () => {
     expect(rules.disallow).not.toContain('/test-emails/')
   })
 
+  it('keeps framework CSS, JavaScript and optimized images crawlable', () => {
+    const result = robots()
+    const rules = Array.isArray(result.rules) ? result.rules[0] : result.rules
+    const disallowed = Array.isArray(rules.disallow) ? rules.disallow : [rules.disallow]
+
+    expect(disallowed).not.toContain('/_next/')
+    expect(disallowed.some((path) => '/_next/static/css/app.css'.startsWith(path || ''))).toBe(false)
+    expect(disallowed.some((path) => '/_next/static/chunks/app.js'.startsWith(path || ''))).toBe(false)
+    expect(disallowed.some((path) => '/_next/image'.startsWith(path || ''))).toBe(false)
+  })
+
   it('should not set crawl delay', () => {
     const result = robots()
     const rules = Array.isArray(result.rules) ? result.rules[0] : result.rules

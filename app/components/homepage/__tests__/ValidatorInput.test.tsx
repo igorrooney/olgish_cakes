@@ -54,6 +54,12 @@ describe('ValidatorInput error card', () => {
 
     const alert = screen.getByRole('alert')
     expect(alert).toBeVisible()
+    expect(alert).toHaveClass(
+      'alert',
+      'border-error/30',
+      'bg-error/10',
+      'text-error'
+    )
     expect(alert).toHaveAttribute('aria-live', 'assertive')
     expect(alert).toHaveTextContent('Name is required')
     expect(screen.getByLabelText('Full Name:')).toHaveAttribute(

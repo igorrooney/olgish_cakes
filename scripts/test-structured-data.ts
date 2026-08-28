@@ -6,6 +6,7 @@
 
 import { getMerchantReturnPolicy, getOfferShippingDetails } from '../app/utils/seo';
 import { generateProductSchema } from '../app/utils/seo';
+import { defaultDeliveryPolicy } from '../types/deliveryPolicy';
 
 async function testStructuredData(): Promise<void> {
   console.log('🧪 Testing Structured Data Components...\n');
@@ -18,7 +19,7 @@ async function testStructuredData(): Promise<void> {
 
   // Test 2: Shipping Details
   console.log('2. Testing getOfferShippingDetails():');
-  const shippingDetails = getOfferShippingDetails();
+  const shippingDetails = getOfferShippingDetails(defaultDeliveryPolicy);
   console.log('✅ Shipping details generated:', JSON.stringify(shippingDetails, null, 2));
   console.log('');
 
@@ -45,13 +46,12 @@ async function testStructuredData(): Promise<void> {
     console.log('❌ Product schema missing hasMerchantReturnPolicy');
   }
 
-  // Check if shippingDetails is present
-  const hasShippingDetails = productSchema.offers?.shippingDetails;
-  if (hasShippingDetails) {
-    console.log('✅ Product schema includes shippingDetails');
-  } else {
-    console.log('❌ Product schema missing shippingDetails');
-  }
+  // Generic Product data has no verified delivery policy. Product pages add
+  // shipping only after comparing an explicit policy with visible copy.
+  const hasShippingDetails = 'shippingDetails' in productSchema.offers;
+  console.log(hasShippingDetails
+    ? '❌ Product schema unexpectedly includes shippingDetails'
+    : '✅ Product schema omits unverified shippingDetails');
 
   console.log('');
 

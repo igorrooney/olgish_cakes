@@ -1,24 +1,21 @@
 import type { MarketSchedule, MarketScheduleStructuredData } from "@/app/types/marketSchedule";
 import { getLondonDateKey, getMarketDateKey } from "./londonDate";
-import { buildAggregateRating, type ReviewStats } from "./review-stats";
 
 /**
  * Generate JSON-LD structured data for a market event
  */
 export function generateEventStructuredData(
-  event: MarketSchedule,
-  reviewStats?: ReviewStats
+  event: MarketSchedule
 ): MarketScheduleStructuredData {
   const startDateTime = new Date(`${event.date}T${event.startTime}:00`).toISOString();
   const endDateTime = new Date(`${event.date}T${event.endTime}:00`).toISOString();
-  const aggregateRating = buildAggregateRating(reviewStats);
 
   // Create a safe slug for the event URL from the title
   const eventSlug = event.title
     .toLowerCase()
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "");
-  const eventId = `https://olgishcakes.co.uk/events/${eventSlug}`;
+  const eventId = `https://olgishcakes.co.uk/#event-${eventSlug}`;
 
   const structuredData: MarketScheduleStructuredData = {
     "@context": "https://schema.org",
@@ -33,14 +30,7 @@ export function generateEventStructuredData(
     location: {
       "@type": "Place",
       name: event.location,
-      url: `https://www.google.com/maps/search/${encodeURIComponent(event.location)}`,
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Leeds",
-        addressRegion: "West Yorkshire",
-        postalCode: "LS17",
-        addressCountry: "GB",
-      },
+      url: event.googleMapsUrl,
     },
     organizer: {
       "@type": "Organization",
@@ -49,17 +39,10 @@ export function generateEventStructuredData(
       email: "hello@olgishcakes.co.uk",
       telephone: "+44 786 721 8194",
     },
-    // Set performer to the bakery by default to satisfy Event rich results
-    performer: {
-      "@type": "Organization",
-      name: "Olgish Cakes",
-      url: "https://olgishcakes.co.uk",
-    },
     eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     isAccessibleForFree: true,
     url: eventId,
-    ...(aggregateRating ? { aggregateRating } : {}),
   };
 
   // Add Google Maps URL as location URL
@@ -80,15 +63,7 @@ export function generateEventStructuredData(
     ? (event.image.asset.url.startsWith("http")
         ? event.image.asset.url
         : `https://olgishcakes.co.uk${event.image.asset.url}`)
-    : "https://olgishcakes.co.uk/images/market-event-placeholder.jpg";
-
-  // Include offers without a zero price (free entry indicated via isAccessibleForFree)
-  structuredData.offers = {
-    "@type": "Offer",
-    availability: "https://schema.org/InStock",
-    validFrom: startDateTime,
-    url: eventId,
-  };
+    : undefined;
 
   // Add contact information if available
   if (event.contactInfo) {
@@ -106,12 +81,12 @@ export function generateEventStructuredData(
 /**
  * Generate JSON-LD structured data for multiple events (ItemList)
  */
-export function generateEventsListStructuredData(events: MarketSchedule[], reviewStats?: ReviewStats) {
+export function generateEventsListStructuredData(events: MarketSchedule[]) {
   const today = getLondonDateKey(new Date());
   const upcomingEvents = events.filter(event => {
     // Check if event has required fields
     if (!event.title || !event.date || !event.location || !event.startTime || !event.endTime) {
-      console.warn("Skipping event with missing required fields:", event._id);
+      console.warn('Skipping market event with missing required fields')
       return false;
     }
 
@@ -135,7 +110,7 @@ export function generateEventsListStructuredData(events: MarketSchedule[], revie
     itemListElement: upcomingEvents.map((event, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      item: generateEventStructuredData(event, reviewStats),
+      item: generateEventStructuredData(event),
     })),
     mainEntity: {
       "@type": "Organization",
@@ -147,7 +122,8 @@ export function generateEventsListStructuredData(events: MarketSchedule[], revie
         "@type": "PostalAddress",
         addressLocality: "Leeds",
         addressRegion: "West Yorkshire",
-        postalCode: "LS17",
+        streetAddress: "15 Allerton Grange Avenue",
+        postalCode: "LS17 6PR",
         addressCountry: "GB",
       },
       contactPoint: {

@@ -2,6 +2,7 @@ import 'server-only'
 
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { logger } from '@/lib/logger'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 export type TelegramManagerNotificationType =
   | 'new-order'
@@ -12,13 +13,9 @@ export type TelegramManagerNotificationType =
 
 export interface TelegramManagerNotificationInput {
   type: TelegramManagerNotificationType
-  customerName: string
-  customerEmail?: string
-  customerPhone?: string
+  recordReference?: string
   dateNeeded?: string
-  productName?: string
   total?: number
-  messagePreview?: string
   imageCount?: number
   adminPath?: '/admin' | '/admin/orders' | '/admin/enquiries' | `/admin/orders/${string}` | `/admin/enquiries/${string}/${string}`
 }
@@ -42,8 +39,15 @@ const notificationTypeLabels: Record<TelegramManagerNotificationType, string> = 
   'workshop-enquiry': 'New workshop enquiry'
 }
 
+const notificationOperations: Record<TelegramManagerNotificationType, string> = {
+  'new-order': 'telegram.notification.new-order',
+  'inline-order': 'telegram.notification.inline-order',
+  'contact-enquiry': 'telegram.notification.contact-enquiry',
+  'custom-cake-enquiry': 'telegram.notification.custom-cake-enquiry',
+  'workshop-enquiry': 'telegram.notification.workshop-enquiry'
+}
+
 const maxTelegramMessageLength = 4096
-const maxPreviewLength = 220
 const telegramTimeoutMs = 5000
 
 function isTelegramExplicitlyDisabled() {
@@ -60,16 +64,6 @@ function getTelegramConfig() {
   }
 
   return { token, chatId }
-}
-
-function truncateText(value: string, maxLength: number) {
-  const normalizedValue = value.replace(/\s+/g, ' ').trim()
-
-  if (normalizedValue.length <= maxLength) {
-    return normalizedValue
-  }
-
-  return `${normalizedValue.slice(0, maxLength - 1)}...`
 }
 
 function truncateMessage(value: string, maxLength: number) {
@@ -98,28 +92,17 @@ function resolveAdminUrl(path: TelegramManagerNotificationInput['adminPath']) {
 
 export function buildTelegramManagerMessage(input: TelegramManagerNotificationInput) {
   const lines = [
-    notificationTypeLabels[input.type],
-    '',
-    'Customer',
-    `Name: ${input.customerName}`
+    notificationTypeLabels[input.type]
   ]
 
-  if (input.customerPhone) {
-    lines.push(`Phone: ${input.customerPhone}`)
-  }
-
-  if (input.customerEmail) {
-    lines.push(`Email: ${input.customerEmail}`)
+  if (input.recordReference) {
+    lines.push('', `Reference: ${input.recordReference}`)
   }
 
   const orderLines: string[] = []
 
   if (input.dateNeeded) {
     orderLines.push(`Needed date: ${input.dateNeeded}`)
-  }
-
-  if (input.productName) {
-    orderLines.push(`Item: ${input.productName}`)
   }
 
   if (typeof input.total === 'number' && Number.isFinite(input.total)) {
@@ -132,10 +115,6 @@ export function buildTelegramManagerMessage(input: TelegramManagerNotificationIn
 
   if (orderLines.length > 0) {
     lines.push('', 'Order', ...orderLines)
-  }
-
-  if (input.messagePreview) {
-    lines.push('', 'Message', truncateText(input.messagePreview, maxPreviewLength))
   }
 
   lines.push('', 'Admin', resolveAdminUrl(input.adminPath))
@@ -173,22 +152,23 @@ export async function sendTelegramManagerNotification(
 
     const data = await response.json().catch((): TelegramApiResponse => ({}))
     if (!response.ok || data.ok === false) {
-      const error = data.description || `Telegram API responded with ${response.status}`
+      const error = `TELEGRAM_HTTP_${response.status}`
       logger.error('Telegram manager notification failed', {
-        notificationType: input.type,
-        error
+        operation: notificationOperations[input.type],
+        code: error,
+        status: response.status
       })
       return { sent: false, skipped: false, error }
     }
 
     return { sent: true, skipped: false }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Telegram notification request failed'
+    const safeError = toSafeOperationalError(error)
     logger.error('Telegram manager notification failed', {
-      notificationType: input.type,
-      error: errorMessage
+      operation: notificationOperations[input.type],
+      ...safeError
     })
-    return { sent: false, skipped: false, error: errorMessage }
+    return { sent: false, skipped: false, error: safeError.code }
   } finally {
     clearTimeout(timeoutId)
   }

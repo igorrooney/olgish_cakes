@@ -80,7 +80,7 @@ describe('ContactPage', () => {
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /get a cake quote/i })).toHaveAttribute(
       'href',
-      '/get-custom-quote'
+      '/custom-cakes'
     )
     expect(screen.getByRole('link', { name: /ask a question/i })).toHaveAttribute(
       'href',
@@ -173,7 +173,7 @@ describe('ContactPage', () => {
       screen.getByRole('link', { name: /need a cake price instead\?/i })
     ).toHaveAttribute(
       'href',
-      '/get-custom-quote'
+      '/custom-cakes'
     )
     expect(heroContainer).toHaveClass(styles.contactPageContainer)
     expect(formLayout).toHaveClass(styles.contactPageContainer, styles.formLayout)
@@ -224,9 +224,9 @@ describe('ContactPage', () => {
     expect(bakeryBlock?.telephone).toBe('+44 786 721 8194')
     expect(bakeryBlock?.address).toEqual({
       '@type': 'PostalAddress',
-      streetAddress: 'Allerton Grange',
+      streetAddress: '15 Allerton Grange Avenue',
       addressLocality: 'Leeds',
-      postalCode: 'LS17',
+      postalCode: 'LS17 6PR',
       addressCountry: 'GB'
     })
     expect((breadcrumbBlock?.itemListElement as Array<Record<string, unknown>>)[1]?.name).toBe(

@@ -5,6 +5,7 @@ import {
   HOMEPAGE_GIFT_HAMPER_COLLECTIONS_QUERY
 } from '@/lib/queries/collections'
 import type { HomepageCollection } from '@/app/types/collection'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 type CakeHomepageCollection = HomepageCollection & {
   homepageOrder?: number | null
@@ -116,7 +117,10 @@ async function fetchCollectionsDisplayOrder(config: CacheConfig): Promise<Collec
       cacheConfig
     )
   } catch (error) {
-    console.error('Error fetching collections display order settings:', error)
+    console.error('Sanity read failed', {
+      operation: 'sanity.fetch-collection-display-order',
+      ...toSafeOperationalError(error)
+    })
     return null
   }
 }
@@ -132,7 +136,10 @@ export async function getHomepageCollections(): Promise<HomepageCollection[]> {
 
     return sortCakeCollectionsByConfiguredOrder(collections || [], orderMap)
   } catch (error) {
-    console.error('Error fetching homepage collections:', error)
+    console.error('Sanity read failed', {
+      operation: 'sanity.fetch-homepage-cake-collections',
+      ...toSafeOperationalError(error)
+    })
     return []
   }
 }
@@ -148,7 +155,10 @@ export async function getHomepageGiftHamperCollections(): Promise<HomepageCollec
 
     return sortCollectionsByConfiguredOrder(collections || [], orderMap)
   } catch (error) {
-    console.error('Error fetching homepage gift hamper collections:', error)
+    console.error('Sanity read failed', {
+      operation: 'sanity.fetch-homepage-gift-hamper-collections',
+      ...toSafeOperationalError(error)
+    })
     return []
   }
 }

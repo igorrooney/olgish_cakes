@@ -16,7 +16,7 @@ export const ORDER_STATUS_COLORS = {
 
 export const ORDER_STATUS_LABELS = {
     'new': 'New Order',
-    'confirmed': 'Confirmed',
+    'confirmed': 'Final Offer Sent',
     'in-progress': 'In Progress',
     'ready-pickup': 'Ready for Pickup',
     'out-delivery': 'Out for Delivery',

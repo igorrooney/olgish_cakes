@@ -37,6 +37,8 @@ export type FormValues = {
   occasion?: string
   date: string
   requirements?: string
+  dietaryHealthInformation: string
+  dietaryHealthConsent: boolean
 }
 
 const referenceImageConfig = {
@@ -57,6 +59,8 @@ export const formFieldOrder = [
   'occasion',
   'date',
   'requirements',
+  'dietaryHealthInformation',
+  'dietaryHealthConsent',
   'giftNote',
   'referenceImage'
 ] as const

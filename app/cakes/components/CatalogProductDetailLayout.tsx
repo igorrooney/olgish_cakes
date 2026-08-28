@@ -244,6 +244,9 @@ export function CatalogProductDetailLayout({
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
   })
   const galleryRegionRef = useRef<HTMLElement | null>(null)
+  const orderRegionRef = useRef<HTMLElement | null>(null)
+  const orderTriggerRef = useRef<HTMLButtonElement | null>(null)
+  const wasOrderFormOpenRef = useRef(isOrderFormOpen)
   const fadeCleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const prefersReducedMotionRef = useRef(prefersReducedMotion)
   const preloadedGalleryImageSrcsRef = useRef(new Set<string>())
@@ -288,6 +291,34 @@ export function CatalogProductDetailLayout({
   const shouldShowPriceSuffix = !shouldRenderOrderOnly && Boolean(priceSuffix)
   const shouldPrioritizeInitialHeroImage = fadeState.transitionKey === 0 && normalizedDisplayedImageIndex === 0
   const stableGalleryImageFetchPriority = shouldPrioritizeInitialHeroImage ? 'high' : 'auto'
+
+  useEffect(() => {
+    const wasOrderFormOpen = wasOrderFormOpenRef.current
+    wasOrderFormOpenRef.current = isOrderFormOpen
+
+    if (!wasOrderFormOpen && isOrderFormOpen) {
+      orderRegionRef.current?.focus()
+      return
+    }
+
+    if (wasOrderFormOpen && !isOrderFormOpen) {
+      orderTriggerRef.current?.focus()
+    }
+  }, [isOrderFormOpen])
+
+  const handleOrderRegionKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
+    if (
+      event.key !== 'Escape' ||
+      event.defaultPrevented ||
+      !isOrderFormOpen ||
+      !onBackToProduct
+    ) {
+      return
+    }
+
+    event.preventDefault()
+    onBackToProduct()
+  }, [isOrderFormOpen, onBackToProduct])
 
   const clearFadeCleanupTimer = useCallback(() => {
     if (fadeCleanupTimerRef.current !== null) {
@@ -1013,7 +1044,13 @@ export function CatalogProductDetailLayout({
           ) : null}
         </section>
 
-        <section aria-label='Product details'>
+        <section
+          ref={orderRegionRef}
+          aria-label={shouldRenderOrderOnly ? `Order ${title}` : 'Product details'}
+          tabIndex={shouldRenderOrderOnly ? -1 : undefined}
+          onKeyDown={shouldRenderOrderOnly ? handleOrderRegionKeyDown : undefined}
+          className={shouldRenderOrderOnly ? 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500' : undefined}
+        >
           {shouldRenderOrderOnly ? (
             <>
               <header>
@@ -1088,6 +1125,7 @@ export function CatalogProductDetailLayout({
               </ul>
 
               <button
+                ref={orderTriggerRef}
                 type='button'
                 onClick={onCtaClick}
                 onMouseEnter={onCtaIntent}

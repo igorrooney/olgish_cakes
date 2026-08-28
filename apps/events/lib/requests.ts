@@ -27,6 +27,12 @@ export interface UploadedDocument {
   size: number
 }
 
+export const EVENT_PHOTO_CLEANUP_REQUEST_LIST_FAILED =
+  'EVENT_PHOTO_CLEANUP_REQUEST_LIST_FAILED'
+export const EVENT_PHOTO_CLEANUP_REQUEST_BATCH_SIZE = 12
+
+export type EventPhotoCleanupRequest = Pick<EventPhotoRequestRow, 'id'>
+
 export async function createEventPhotoRequest(
   input: CreateEventPhotoRequestInput
 ): Promise<EventPhotoRequestRow> {
@@ -134,14 +140,19 @@ export async function updateTelegramStatus(
   clearTempPaths: boolean
 ): Promise<void> {
   const supabase = getSupabaseAdmin()
+  const cleanupPatch = clearTempPaths
+    ? {
+        temp_image_paths: [],
+        files_deleted_at: new Date().toISOString()
+      }
+    : {}
   const { error } = await supabase
     .from('event_photo_requests')
     .update({
       telegram_status: status,
       telegram_message_ids: messageIds,
       telegram_error: errorMessage,
-      temp_image_paths: clearTempPaths ? [] : undefined,
-      files_deleted_at: clearTempPaths ? new Date().toISOString() : null,
+      ...cleanupPatch,
       updated_at: new Date().toISOString()
     })
     .eq('id', id)
@@ -151,18 +162,33 @@ export async function updateTelegramStatus(
   }
 }
 
-export async function listRequestsForCleanup(cutoffIso: string): Promise<EventPhotoRequestRow[]> {
-  const supabase = getSupabaseAdmin()
-  const { data, error } = await supabase
-    .from('event_photo_requests')
-    .select('*')
-    .in('telegram_status', ['pending', 'failed', 'sent'])
-    .lt('created_at', cutoffIso)
-    .not('temp_image_paths', 'eq', '{}')
-
-  if (error) {
-    throw new Error(`Could not load cleanup requests: ${error.message}`)
+export async function listRequestsForCleanup(
+  cutoffIso: string,
+  limit = EVENT_PHOTO_CLEANUP_REQUEST_BATCH_SIZE
+): Promise<EventPhotoCleanupRequest[]> {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 50) {
+    throw new Error(EVENT_PHOTO_CLEANUP_REQUEST_LIST_FAILED)
   }
 
-  return data
+  const { data, error } = await getSupabaseAdmin().rpc(
+    'list_event_photo_cleanup_candidates',
+    {
+      p_cutoff: cutoffIso,
+      p_limit: limit
+    }
+  )
+
+  if (error) {
+    throw new Error(EVENT_PHOTO_CLEANUP_REQUEST_LIST_FAILED)
+  }
+
+  if (
+    !Array.isArray(data) ||
+    data.length > limit ||
+    data.some((row) => !row || typeof row.id !== 'string')
+  ) {
+    throw new Error(EVENT_PHOTO_CLEANUP_REQUEST_LIST_FAILED)
+  }
+
+  return data.map((row) => ({ id: row.id }))
 }

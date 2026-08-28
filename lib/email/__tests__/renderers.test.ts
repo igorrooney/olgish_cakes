@@ -2,8 +2,68 @@
  * @jest-environment node
  */
 import { buildTemplateExampleInput, renderEmailTemplate } from '../renderers'
+import { emailTemplateIds } from '../types'
 
 describe('email renderers', () => {
+  it.each(emailTemplateIds)('never renders customer-authored or provider content in %s', (templateId) => {
+    const sentinels = [
+      'SENTINEL-CUSTOMER-MESSAGE',
+      'SENTINEL-GENERAL-MESSAGE',
+      'SENTINEL-NOTE',
+      'SENTINEL-GIFT-NOTE',
+      'SENTINEL-FILENAME.jpg',
+      'SENTINEL-REFERENCE-URL',
+      'SENTINEL-SPECIAL-INSTRUCTIONS'
+    ]
+    const rendered = renderEmailTemplate(templateId, {
+      customerMessage: sentinels[0],
+      message: sentinels[1],
+      note: sentinels[2],
+      giftNote: sentinels[3],
+      attachmentNames: [sentinels[4]],
+      referenceImageUrls: [`https://example.invalid/${sentinels[5]}`],
+      orderItems: [{
+        productName: 'Safe product',
+        quantity: 1,
+        totalPrice: 10,
+        specialInstructions: sentinels[6]
+      }],
+      operation: templateId.includes('failure-alert')
+        ? 'email.notification'
+        : undefined,
+      operationalCode: templateId.includes('failure-alert')
+        ? 'EMAIL_NOT_ACCEPTED'
+        : undefined
+    })
+    const output = `${rendered.subject}\n${rendered.text}\n${rendered.html}`
+
+    sentinels.forEach((sentinel) => {
+      expect(output).not.toContain(sentinel)
+    })
+  })
+
+  it('limits operational alerts to safe operational evidence', () => {
+    const rendered = renderEmailTemplate('custom-cake-enquiry-failure-alert', {
+      operation: 'custom-cake-enquiry.notification',
+      operationalCode: 'ADMIN_EMAIL_FAILED',
+      recordReference: 'CUSTOM-CAKE-1001',
+      adminUrl: 'https://olgishcakes.co.uk/admin/enquiries/custom-cake/CUSTOM-CAKE-1001',
+      customerName: 'SENTINEL-CUSTOMER-NAME',
+      customerEmail: 'sentinel@example.com',
+      statusMessage: 'SENTINEL-PROVIDER-ERROR-BODY',
+      intro: 'SENTINEL-RAW-INTRO'
+    })
+
+    expect(rendered.text).toContain('Operation: custom-cake-enquiry.notification')
+    expect(rendered.text).toContain('Code: ADMIN_EMAIL_FAILED')
+    expect(rendered.text).toContain('Reference: CUSTOM-CAKE-1001')
+    expect(rendered.text).toContain('https://olgishcakes.co.uk/admin/enquiries/custom-cake/CUSTOM-CAKE-1001')
+    expect(rendered.text).not.toContain('SENTINEL-CUSTOMER-NAME')
+    expect(rendered.text).not.toContain('sentinel@example.com')
+    expect(rendered.text).not.toContain('SENTINEL-PROVIDER-ERROR-BODY')
+    expect(rendered.text).not.toContain('SENTINEL-RAW-INTRO')
+  })
+
   it('renders required fields for admin templates', () => {
     const rendered = renderEmailTemplate('contact-inline-order-admin', {
       customerName: 'John Doe',
@@ -20,7 +80,7 @@ describe('email renderers', () => {
     expect(rendered.html).toContain('Kyiv Cake')
   })
 
-  it('renders all submitted homepage enquiry details for customer emails', () => {
+  it('acknowledges homepage enquiries without echoing customer-authored content', () => {
     const rendered = renderEmailTemplate('custom-cake-enquiry-customer', {
       orderType: 'custom-cake-enquiry',
       customerName: 'Igor Ieromenko',
@@ -37,27 +97,17 @@ describe('email renderers', () => {
 
     expect(rendered.subject).toBe('Custom cake enquiry received')
     expect(rendered.text).toContain('We\'ve received your details and will check availability before getting back to you.')
-    expect(rendered.text).toContain('Contact Details')
-    expect(rendered.text).toContain('Name: Igor Ieromenko')
-    expect(rendered.text).toContain('Email: igor@example.com')
-    expect(rendered.text).toContain('Phone: +44 7867 218194')
-    expect(rendered.text).toContain('Address: 1 Cake Street')
-    expect(rendered.text).toContain('City: Leeds')
-    expect(rendered.text).toContain('Postcode: LS17 1AA')
     expect(rendered.text).toContain('Date needed: 25 May 2026')
     expect(rendered.text).toContain('Occasion: Mother\'s Day Gifts')
-    expect(rendered.text).toContain('Cake brief: test requirements')
-    expect(rendered.text).not.toContain('Customer message: test requirements')
-    expect(rendered.text).toContain('Reference image uploaded: reference.jpg')
+    expect(rendered.text).not.toContain('test requirements')
+    expect(rendered.text).not.toContain('reference.jpg')
     expect(rendered.text).toContain('We\'ll check the date, your notes and the delivery details.')
     expect(rendered.text).not.toContain('We\'ll review your order and confirm all details within 24 hours')
     expect(rendered.text).toContain('Questions about your enquiry? We\'re here to help.')
     expect(rendered.text).not.toContain('Questions about your order? We\'re here to help.')
-    expect(rendered.html).toContain('Contact details')
     expect(rendered.html).toContain('Cake details')
-    expect(rendered.html).toContain('Cake brief')
     expect(rendered.html).not.toContain('Customer message</td>')
-    expect(rendered.html).toContain('reference.jpg')
+    expect(rendered.html).not.toContain('reference.jpg')
     expect(rendered.html).toContain('src="https://olgishcakes.co.uk/images/olgish-cakes-email-logo.png"')
     expect(rendered.html).toContain('width="112" height="112"')
     expect(rendered.html).not.toContain('src="cid:olgish-cakes-email-logo"')
@@ -70,7 +120,7 @@ describe('email renderers', () => {
     expect(rendered.html).toContain('background-color: #2E3192')
   })
 
-  it('shows only the cake brief from generated quote summaries in custom enquiry customer emails', () => {
+  it('does not echo generated quote summaries in customer emails', () => {
     const rendered = renderEmailTemplate('custom-cake-enquiry-customer', {
       orderType: 'custom-cake-enquiry',
       customerName: 'Igor Ieromenko',
@@ -85,12 +135,12 @@ describe('email renderers', () => {
       ].join('\n')
     })
 
-    expect(rendered.text).toContain('Cake brief: cake brief')
-    expect(rendered.text).toContain('Servings: 100')
+    expect(rendered.text).not.toContain('cake brief')
+    expect(rendered.text).not.toContain('Servings: 100')
     expect(rendered.text).not.toContain('Customer message:')
     expect(rendered.text).not.toContain('Quote brief')
     expect(rendered.text).not.toContain('Brief: cake brief')
-    expect(rendered.html).toContain('Cake brief')
+    expect(rendered.html).not.toContain('cake brief')
     expect(rendered.html).not.toContain('Customer message</td>')
     expect(rendered.html).not.toContain('Quote brief')
   })
@@ -123,7 +173,7 @@ describe('email renderers', () => {
     expect(rendered.text).toContain('Design type: Sex Party')
     expect(rendered.text).toContain('Group size: 1000')
     expect(rendered.text).toContain('Location: Clerkenwell, London')
-    expect(rendered.text).toContain('Event brief: test brief brief')
+    expect(rendered.text).not.toContain('test brief brief')
     expect(rendered.text).toContain('Questions about your workshop enquiry? We\'re here to help.')
     expect(rendered.text).toContain('+44 786 721 8194')
     expect(rendered.text).not.toContain('Order Summary')
@@ -135,7 +185,7 @@ describe('email renderers', () => {
     expect(rendered.html).toContain('Workshop details')
     expect(rendered.html).toContain('Preferred date')
     expect(rendered.html).toContain('Group size')
-    expect(rendered.html).toContain('Event brief')
+    expect(rendered.html).not.toContain('test brief brief')
     expect(rendered.html).not.toContain('Order Summary')
     expect(rendered.html).not.toContain('Order Preferences')
   })
@@ -159,7 +209,7 @@ describe('email renderers', () => {
 
     expect(rendered.html).not.toContain('<script>')
     expect(rendered.html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
-    expect(rendered.html).toContain('&lt;img src=x onerror=alert(1) /&gt;')
+    expect(rendered.html).not.toContain('onerror=alert(1)')
   })
 
   it('escapes dangerous cakes by post recipient names in email HTML', () => {
@@ -178,15 +228,44 @@ describe('email renderers', () => {
     expect(rendered.html).not.toContain('<img src=x onerror=alert(1)>')
   })
 
-  it('renders gift note in customer inline order emails when provided', () => {
+  it('does not echo gift notes in customer inline order receipts', () => {
     const rendered = renderEmailTemplate('contact-inline-order-customer', {
       customerName: 'Jane',
       customerEmail: 'jane@example.com',
       giftNote: 'Happy birthday!'
     })
 
-    expect(rendered.text).toContain('Gift note: Happy birthday!')
-    expect(rendered.html).toContain('Gift note')
+    expect(rendered.text).not.toContain('Happy birthday!')
+    expect(rendered.html).not.toContain('Happy birthday!')
+  })
+
+  it('never exposes protected-health presence or admin links in customer receipts', () => {
+    const rendered = renderEmailTemplate('orders-customer-confirmation', {
+      customerName: 'Jane',
+      customerEmail: 'jane@example.com',
+      orderNumber: 'OC-HEALTH-1',
+      hasDietaryHealthInformation: true,
+      adminUrl: 'https://olgishcakes.co.uk/admin/orders/OC-HEALTH-1'
+    })
+
+    expect(rendered.text).not.toContain('Protected dietary health information')
+    expect(rendered.text).not.toContain('/admin/orders/OC-HEALTH-1')
+    expect(rendered.html).not.toContain('Protected dietary health information')
+    expect(rendered.html).not.toContain('/admin/orders/OC-HEALTH-1')
+  })
+
+  it('limits admin health notices to presence and an authenticated record link', () => {
+    const rendered = renderEmailTemplate('orders-admin-notification', {
+      customerName: 'Jane',
+      orderNumber: 'OC-HEALTH-2',
+      hasDietaryHealthInformation: true,
+      adminUrl: 'https://olgishcakes.co.uk/admin/orders/OC-HEALTH-2'
+    })
+
+    expect(rendered.text).toContain('Protected dietary health information')
+    expect(rendered.text).toContain('https://olgishcakes.co.uk/admin/orders/OC-HEALTH-2')
+    expect(rendered.html).toContain('Protected dietary health information')
+    expect(rendered.html).toContain('https://olgishcakes.co.uk/admin/orders/OC-HEALTH-2')
   })
 
   it('renders cakes by post customer emails with postal next steps and address details only for gift-hamper products', () => {
@@ -217,13 +296,11 @@ describe('email renderers', () => {
     expect(rendered.text).toContain('Delivery address: 7 Sample Street')
     expect(rendered.text).toContain('Town or city: Leeds')
     expect(rendered.text).toContain('Postcode: LS1 1AA')
-    expect(rendered.text).toContain('Customer Notes')
-    expect(rendered.text).toContain('Notes: Please write congratulations on the card')
-    expect(rendered.text).toContain('Gift Details')
-    expect(rendered.text).toContain('Gift note: Happy birthday!')
-    expect(rendered.text).toContain('We\'ll review your order and delivery details within 24 hours')
-    expect(rendered.text).toContain('If everything is confirmed, we\'ll send you a secure payment link')
-    expect(rendered.text).toContain('Once payment is received, we\'ll prepare, pack, and send your cake by post')
+    expect(rendered.text).not.toContain('Please write congratulations on the card')
+    expect(rendered.text).not.toContain('Happy birthday!')
+    expect(rendered.text).toContain('We\'ll reply as soon as we can')
+    expect(rendered.text).toContain('If we can accept it, we\'ll personally confirm the final details and price in writing')
+    expect(rendered.text).toContain('A contract starts only when you accept our final written offer or make the requested payment')
     expect(rendered.text).not.toContain('We\'ll contact you with a quote and final design details')
     expect(rendered.text).not.toContain('We\'ll confirm delivery or collection once you approve')
     expect(rendered.text).not.toContain('Customer message:')
@@ -232,8 +309,8 @@ describe('email renderers', () => {
     expect(rendered.text).not.toContain('Filling:')
     expect(rendered.text).not.toContain('Servings:')
     expect(rendered.html).toContain('Ordered by')
-    expect(rendered.html).toContain('Gift Details')
-    expect(rendered.html).toContain('Please write congratulations on the card')
+    expect(rendered.html).not.toContain('Please write congratulations on the card')
+    expect(rendered.html).not.toContain('Happy birthday!')
     expect(rendered.html).toContain('7 Sample Street')
     expect(rendered.html).not.toContain('Product type: gift-hamper')
     expect(rendered.html).not.toContain('Design type')
@@ -282,10 +359,9 @@ describe('email renderers', () => {
     expect(rendered.text).toContain('Delivery details')
     expect(rendered.text).toContain('Recipient: Gift Recipient')
     expect(rendered.text).toContain('Order summary')
-    expect(rendered.text).toContain('Customer notes')
     expect(rendered.text).toContain('Request context')
-    expect(rendered.text).toContain('Notes: test message')
-    expect(rendered.text).toContain('Gift note: gift note test')
+    expect(rendered.text).not.toContain('test message')
+    expect(rendered.text).not.toContain('gift note test')
     expect(rendered.text).toContain('Approx. submitted from: Leeds, ENG, GB')
     expect(rendered.text).toContain('Admin link: https://olgishcakes.co.uk/admin/orders/26051219414558')
     expect(rendered.text).not.toContain('Order type: gift-hamper')
@@ -311,7 +387,7 @@ describe('email renderers', () => {
       dateNeeded: '2026-06-02',
       customerMessage: 'Please add candles',
       nextSteps: [
-        'We\'ll review your requested date, cake details, and any design notes within 24 hours.',
+        'We\'ll reply as soon as we can.',
         'We\'ll confirm availability, final price, and any design details before you need to pay.',
         'Nothing is booked or payable until we agree the design, price, and collection or delivery details.'
       ]
@@ -319,10 +395,9 @@ describe('email renderers', () => {
 
     expect(rendered.subject).toBe('Order request received #OC-NON-POSTAL-1')
     expect(rendered.subject).not.toContain('Order Confirmation')
-    expect(rendered.text).toContain('Order Preferences')
     expect(rendered.text).toContain('Date needed: 2 June 2026')
     expect(rendered.text).toContain('Estimated price: £45')
-    expect(rendered.text).toContain('Customer message: Please add candles')
+    expect(rendered.text).not.toContain('Please add candles')
     expect(rendered.text).toContain('We\'ll confirm availability, final price, and any design details before you need to pay.')
     expect(rendered.text).not.toContain('I\'ll')
     expect(rendered.text).toContain('Nothing is booked or payable until we agree the design, price, and collection or delivery details.')
@@ -332,7 +407,6 @@ describe('email renderers', () => {
     expect(rendered.text).not.toContain('Address: 7 Sample Street')
     expect(rendered.text).not.toContain('secure payment link')
     expect(rendered.text).not.toContain('send your cake by post')
-    expect(rendered.html).toContain('Order Preferences')
     expect(rendered.html).toContain('Estimated price')
     expect(rendered.html).not.toContain('Order Confirmation')
     expect(rendered.html).not.toContain('Contact details')
@@ -344,7 +418,7 @@ describe('email renderers', () => {
       productName: 'Honey Cake',
       priceLabel: 'Estimated price',
       customerMessage: 'message',
-      intro: 'Thank you. We\'ve received your cake request and will review the details within 24 hours.'
+      intro: 'Thank you. We\'ve received your cake request. We\'ll reply as soon as we can.'
     })
 
     expect(rendered.html).not.toContain('display: none')
@@ -402,11 +476,11 @@ describe('email renderers', () => {
       note: 'Run pnpm instagram:refresh-token and update INSTAGRAM_TOKEN_EXPIRES_AT.'
     })
 
-    expect(rendered.subject).toBe('Instagram token expires in 5 days')
+    expect(rendered.subject).toContain('Instagram token refresh reminder')
     expect(rendered.text).toContain('Instagram access token')
     expect(rendered.text).toContain('05/06/2026')
     expect(rendered.html).toContain('Instagram access token')
-    expect(rendered.html).toContain('Run pnpm instagram:refresh-token')
+    expect(rendered.html).not.toContain('Run pnpm instagram:refresh-token')
   })
   it('renders tracking number for out-for-delivery status updates', () => {
     const rendered = renderEmailTemplate('orders-status-update', {
@@ -476,19 +550,20 @@ describe('email renderers', () => {
       totalPrice: 8.95,
       dateNeeded: '2026-05-26',
       status: 'confirmed',
+      customerFacingOfferDescription: 'One personalised honey cake card for postal delivery.',
       paymentStatus: 'pending',
       deliveryMethod: 'postal',
       designType: 'standard',
       customerMessage: 'test message',
       giftNote: 'gift note test',
       deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
-      headingOverride: 'Order request confirmed',
-      titleOverride: 'Order Request Confirmed #26051220022842 - Olgish Cakes',
-      statusMessage: 'Great news, we\'ve confirmed your cakes by post request.'
+      headingOverride: 'Your final order offer',
+      titleOverride: 'Final Order Offer #26051220022842 - Olgish Cakes',
+      statusMessage: 'This is our final written offer. Please accept it in writing or make the requested payment before the contract starts.'
     })
 
-    expect(rendered.subject).toBe('Order Request Confirmed #26051220022842 - Olgish Cakes')
-    expect(rendered.text).toContain('Order request confirmed')
+    expect(rendered.subject).toBe('Final Order Offer #26051220022842 - Olgish Cakes')
+    expect(rendered.text).toContain('Your final order offer')
     expect(rendered.text).not.toContain('Order status update')
     expect(rendered.text).toContain('Order Summary')
     expect(rendered.text).toContain('Product: Personalised Congratulations Cake Card')
@@ -498,17 +573,16 @@ describe('email renderers', () => {
     expect(rendered.text).toContain('Delivery method: By post')
     expect(rendered.text).toContain('Delivery address: 15 Allerton Grange Avenue, Leeds, LS17 6PR')
     expect(rendered.text.match(/Date needed:/g)).toHaveLength(1)
-    expect(rendered.text).toContain('Gift Details')
-    expect(rendered.text).toContain('Customer Notes')
-    expect(rendered.text).toContain('Notes: test message')
-    expect(rendered.text).toContain('Gift note: gift note test')
+    expect(rendered.text).toContain('Final-offer description: One personalised honey cake card for postal delivery.')
+    expect(rendered.text).not.toContain('test message')
+    expect(rendered.text).not.toContain('gift note test')
     expect(rendered.text).toContain('secure payment link')
     expect(rendered.text).not.toContain('Order items')
     expect(rendered.text).not.toContain('Product type: gift-hamper')
     expect(rendered.text).not.toContain('Product ID')
     expect(rendered.text).not.toContain('Design type')
     expect(rendered.text).not.toContain('Order Preferences')
-    expect(rendered.html).toContain('Order request confirmed')
+    expect(rendered.html).toContain('Your final order offer')
     expect(rendered.html).not.toContain('Product type: gift-hamper')
   })
 
@@ -764,10 +838,27 @@ describe('email renderers', () => {
     })
 
     expect(rendered.text).toContain('What happens next?')
-    expect(rendered.text).toContain('We\'ll review your order and confirm all details within 24 hours')
+    expect(rendered.text).toContain('We\'ll reply as soon as we can')
+    expect(rendered.text).toContain('A contract starts only when you accept our final written offer or make the requested payment')
     expect(rendered.html).toContain('What happens next?')
-    expect(rendered.html).toContain('review your order and confirm all details within 24 hours')
+    expect(rendered.html).toContain('reply as soon as we can')
   })
+
+  it('includes product-specific allergen information in a final offer email', () => {
+    const rendered = renderEmailTemplate('orders-status-update', {
+      customerName: 'Jane',
+      orderNumber: 'OC-ALLERGEN-1',
+      status: 'confirmed',
+      headingOverride: 'Your final order offer',
+      statusMessage: 'Please accept this offer in writing or make the requested payment.',
+      allergenStatement: 'Contains wheat (gluten), eggs, milk and hazelnuts.'
+    })
+
+    expect(rendered.text).toContain('Allergen information: Contains wheat (gluten), eggs, milk and hazelnuts.')
+    expect(rendered.html).toContain('Allergen information')
+    expect(rendered.html).toContain('Contains wheat (gluten), eggs, milk and hazelnuts.')
+  })
+
   it('renders Trustpilot review section for completed status updates', () => {
     const rendered = renderEmailTemplate('orders-status-update', {
       customerName: 'Jane',
@@ -882,7 +973,7 @@ describe('email renderers', () => {
     expect(rendered.html).toContain('Napoleon Slice')
   })
 
-  it('renders reference image previews in admin notifications', () => {
+  it('does not expose reference filenames or images in admin notifications', () => {
     const rendered = renderEmailTemplate('orders-admin-notification', {
       customerName: 'Admin',
       orderNumber: 'OC-IMAGE-ADMIN',
@@ -890,10 +981,9 @@ describe('email renderers', () => {
       referenceImageUrls: ['https://cdn.sanity.io/images/demo/reference-1.jpg']
     })
 
-    expect(rendered.text).toContain('Attachments: design-reference.jpg')
-    expect(rendered.html).toContain('Reference images')
-    expect(rendered.html).toContain('https://cdn.sanity.io/images/demo/reference-1.jpg')
-    expect(rendered.html).toContain('alt="Reference image 1"')
+    expect(rendered.text).not.toContain('design-reference.jpg')
+    expect(rendered.html).not.toContain('Reference images')
+    expect(rendered.html).not.toContain('https://cdn.sanity.io/images/demo/reference-1.jpg')
   })
 
   it('renders multiple order items in customer confirmation', () => {

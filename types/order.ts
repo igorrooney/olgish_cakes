@@ -87,8 +87,37 @@ export interface OrderNote {
 export interface OrderMetadata {
     giftNote?: string;
     deliveryCourier?: string;
+    termsPresentedVersion?: string
+    allergenStatement?: string
+    allergenLabelIncluded?: boolean
+    allergenConfirmedAt?: string
+    customerAcceptedOffer?: boolean
+    customerAcceptedAt?: string
+    dietaryHealthInformation?: string | null
+    dietaryHealthConsent?: boolean
+    dietaryHealthConsentVersion?: string | null
+    dietaryHealthConsentedAt?: string | null
+    dietaryHealthWithdrawnAt?: string | null
+    customerFacingOfferDescription?: string
     [key: string]: unknown;
 }
+
+export interface OrderRetentionLifecycle {
+    completedAt?: string
+    financialYearEndedAt?: string
+    retentionDueAt?: string
+    dietaryHealthRetentionDueAt?: string
+    dietaryHealthErasedAt?: string
+    legalHold: boolean
+    legalHoldReason?: 'active-complaint' | 'legal-claim' | 'regulatory-request' | 'fraud-investigation' | 'other-necessary-hold'
+    legalHoldReviewAt?: string
+}
+
+export type OrderRetentionEvidenceBasis =
+    | 'order-status-record'
+    | 'payment-provider-record'
+    | 'invoice-accounting-record'
+    | 'customer-correspondence'
 
 export interface Order {
     _id: string;
@@ -104,6 +133,7 @@ export interface Order {
     messages?: OrderMessage[];
     notes?: OrderNote[];
     metadata?: OrderMetadata;
+    retentionLifecycle?: OrderRetentionLifecycle;
 }
 
 /**
@@ -138,6 +168,10 @@ export interface OrderUpdate {
     deliveryFee?: number;
     discount?: number;
     total?: number;
+    allergenStatement?: string;
+    allergenLabelIncluded?: boolean;
+    customerAcceptedOffer?: boolean;
+    customerFacingOfferDescription?: string;
 }
 
 /**

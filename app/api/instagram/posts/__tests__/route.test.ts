@@ -42,21 +42,28 @@ describe('instagram posts route', () => {
 
   it('returns a 500 response when fetching fails', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
-    mockGetLatestInstagramPosts.mockRejectedValueOnce(new Error('API error'))
+    const providerSentinel = 'PRIVATE_PROVIDER_ERROR_BODY'
+    mockGetLatestInstagramPosts.mockRejectedValueOnce(new Error(providerSentinel))
 
     const response = await GET(new Request('http://localhost/api/instagram/posts'))
     const body = await response.json()
 
     expect(response.status).toBe(500)
     expect(body.error).toBe('Unable to fetch Instagram posts')
+    expect(consoleSpy).toHaveBeenCalledWith('Instagram API route error', {
+      operation: 'instagram.posts.fetch',
+      code: 'OPERATION_FAILED'
+    })
+    expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain(providerSentinel)
 
     consoleSpy.mockRestore()
   })
 
   it('returns an empty response for recoverable Instagram failures', async () => {
     const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    const providerSentinel = 'Session has expired'
     mockGetLatestInstagramPosts.mockRejectedValueOnce(
-      new Error('Instagram API error (400): Error validating access token: Session has expired')
+      new Error(`Instagram API error (400): Error validating access token: ${providerSentinel}`)
     )
 
     const response = await GET(new Request('http://localhost/api/instagram/posts'))
@@ -66,8 +73,12 @@ describe('instagram posts route', () => {
     expect(body.data).toEqual([])
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       'Instagram API route warning. Refresh INSTAGRAM_ACCESS_TOKEN if the token has expired.',
-      'Instagram API error (400): Error validating access token: Session has expired'
+      {
+        operation: 'instagram.posts.fetch',
+        code: 'OPERATION_FAILED'
+      }
     )
+    expect(JSON.stringify(consoleWarnSpy.mock.calls)).not.toContain(providerSentinel)
 
     consoleWarnSpy.mockRestore()
   })

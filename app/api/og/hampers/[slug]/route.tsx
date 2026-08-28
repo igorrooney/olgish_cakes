@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import { getClient } from "@/sanity/lib/client";
+import { GIFT_HAMPER_OG_QUERY } from '@/lib/queries/giftHampers'
 
 export const runtime = "edge";
 
@@ -19,14 +20,8 @@ interface HamperOgData {
 }
 
 async function getHamper(slug: string) {
-  const query = `*[_type == "giftHamper" && slug.current == $slug][0]{
-    name,
-    slug,
-    price,
-    images[]{asset->{url}, alt, isMain}
-  }`;
   const client = getClient(false);
-  return client.fetch<HamperOgData | null>(query, { slug });
+  return client.fetch<HamperOgData | null>(GIFT_HAMPER_OG_QUERY, { slug });
 }
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {

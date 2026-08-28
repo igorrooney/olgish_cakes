@@ -10,14 +10,14 @@
 - Context7 MCP may be used for any project task where current external documentation improves accuracy, including implementation, debugging, refactoring, review, and verification
 
 ## Tech Stack
-- Next.js 16.2.3 (App Router)
+- Next.js 16.2.11 (App Router)
 - React 19.2.5
 - TypeScript 5.9.3
 - Tailwind CSS 4.1.17 with DaisyUI 5.5.8
-- Sanity 5.23.0 with next-sanity 12.3.2
+- Sanity 5.31.2 with next-sanity 13.3.3
 - DaisyUI for all UI components
 - pnpm for package management
-- Node 20.9+
+- Node 20.19.1–21.x or 22.12+
 
 ## Code Style
 - Standard.js style guide

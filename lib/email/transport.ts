@@ -7,6 +7,7 @@ import type {
   RenderedEmail,
   SendMode
 } from './types'
+import { createSafeEmailResultError } from './safe-error'
 
 const capturedEmails: CapturedEmail[] = []
 const maxCapturedEmails = 200
@@ -109,7 +110,10 @@ export async function deliverEmail(params: {
       mode,
       accepted: false,
       id: null,
-      error: { message: 'RESEND_API_KEY not configured for live email transport' },
+      error: {
+        message: 'Email delivery is not configured',
+        code: 'EMAIL_TRANSPORT_NOT_CONFIGURED'
+      },
       rendered: params.rendered
     }
   }
@@ -123,7 +127,7 @@ export async function deliverEmail(params: {
         mode,
         accepted: false,
         id: null,
-        error: { message: response.error.message || 'Failed to send email' },
+        error: createSafeEmailResultError(response.error, true),
         rendered: params.rendered
       }
     }
@@ -140,9 +144,7 @@ export async function deliverEmail(params: {
       mode,
       accepted: false,
       id: null,
-      error: {
-        message: error instanceof Error ? error.message : 'Unknown email transport error'
-      },
+      error: createSafeEmailResultError(error),
       rendered: params.rendered
     }
   }

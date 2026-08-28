@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { DeferredNonCriticalClientFeatures } from './DeferredNonCriticalClientFeatures'
 import { DeferredVercelObservability } from './DeferredVercelObservability'
 import { LightweightConsentBanner } from './LightweightConsentBanner'
+import { ConsentPreferencesController } from './ConsentPreferencesController'
 
 interface RootChromeProps {
   children: ReactNode
@@ -20,6 +21,7 @@ export function RootChrome({
     <div className='public-root-chrome flex min-h-screen flex-col'>
       <div className='public-root-consent'>
         <LightweightConsentBanner />
+        <ConsentPreferencesController />
       </div>
       <div className='public-root-deferred-features'>
         <DeferredNonCriticalClientFeatures />

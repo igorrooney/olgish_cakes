@@ -103,21 +103,23 @@ export function UtilityBar() {
             variant="body2"
             sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
           >
-            Order online 24/7
+            Enquiries welcome online
           </Typography>
-          <Box sx={{ display: { xs: "none", md: "inline-flex" }, alignItems: "center", gap: 0.5 }}>
-            <StarIcon sx={{ fontSize: 16, color: colors.secondary.main }} />
-            <Typography
-              variant="body2"
-              sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
-            >
-              {hasReviews ? `${ratingDisplay}★ (${reviewCount})` : "5★ rated"}
-            </Typography>
-          </Box>
+          {hasReviews ? (
+            <Box sx={{ display: { xs: "none", tablet: "inline-flex" }, alignItems: "center", gap: 0.5 }}>
+              <StarIcon sx={{ fontSize: 16, color: colors.secondary.main }} />
+              <Typography
+                variant="body2"
+                sx={{ color: colors.text.secondary, fontSize: typography.fontSize.sm }}
+              >
+                {`${ratingDisplay}★ (${reviewCount})`}
+              </Typography>
+            </Box>
+          ) : null}
         </Box>
 
         {/* Right: Socials */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, md: 1 } }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, tablet: 1 } }}>
           <Tooltip title="Instagram">
             <Box component="span" sx={{ display: "inline-flex" }}>
               <AccessibleIconButton

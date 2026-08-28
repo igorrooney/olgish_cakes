@@ -48,10 +48,7 @@ Visit our local market stalls or order online for fresh delivery. Every cake is 
 
 **Address:**
 ```
-Allerton Grange
-Leeds LS17
-West Yorkshire
-United Kingdom
+15 Allerton Grange Avenue, Leeds, LS17 6PR, United Kingdom
 ```
 
 **Service Area:**

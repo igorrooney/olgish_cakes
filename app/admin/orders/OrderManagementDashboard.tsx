@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { designTokens } from "@/lib/design-system";
 import { logger } from "@/lib/logger";
+import { toSafeOperationalError } from "@/lib/security/safe-operational-error";
 import { ORDER_STATUS_LABELS } from "@/lib/order-constants";
 import { urlFor } from "@/sanity/lib/image";
 import type { Order, SortableOrderValue } from "@/types/order";
@@ -47,6 +48,8 @@ import { LocalizationProvider } from "@/lib/daisy-ui";
 import dayjs, { type Dayjs } from "dayjs";
 import "dayjs/locale/en-gb";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useAbortableRequest } from '@/app/hooks/useAbortableRequest'
 import { AddOrderModal } from "./AddOrderModal";
 
 // Set British locale for date formatting
@@ -75,8 +78,25 @@ type StoredIpLocation = {
   country?: string;
 };
 
+type AvailableCake = {
+  _id: string
+  name: string
+  slug: { current: string }
+  size: string
+  pricing: { standard: number, individual: number }
+  category: string
+}
+
+interface UpdateOrderRequestInput {
+  orderId: string
+  payload: FormData
+  signal: AbortSignal
+}
+
 const needsActionStatuses = ['new', 'confirmed', 'in-progress'];
 const activeStatuses = [...needsActionStatuses, 'ready-pickup', 'out-delivery'];
+const emptyOrders: Order[] = []
+const emptyAvailableCakes: AvailableCake[] = []
 
 const isNeedsActionStatus = (status: string) => needsActionStatuses.includes(status);
 const isActiveStatus = (status: string) => activeStatuses.includes(status);
@@ -136,18 +156,71 @@ function getOrderImagePreviews(order: Order): OrderImagePreview[] {
   return [...messageImages, ...noteImages];
 }
 
+export async function fetchAllAdminOrders(signal: AbortSignal): Promise<Order[]> {
+  const orders: Order[] = []
+  const limit = 100
+  let offset = 0
+
+  while (true) {
+    const response = await fetch(`/api/orders?limit=${limit}&offset=${offset}&t=${Date.now()}`, {
+      credentials: 'include',
+      signal
+    })
+    const data = await response.json() as {
+      orders?: Order[]
+      hasMore?: boolean
+      error?: string
+    }
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to fetch orders')
+    }
+
+    orders.push(...(data.orders || []))
+
+    if (!data.hasMore) {
+      return orders
+    }
+
+    offset += limit
+  }
+}
+
+export async function fetchAvailableCakes(signal: AbortSignal): Promise<AvailableCake[]> {
+  const response = await fetch('/api/admin/cakes', {
+    credentials: 'include',
+    signal
+  })
+  const data: unknown = await response.json()
+  const record = isRecord(data) ? data : {}
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch cakes')
+  }
+
+  return Array.isArray(record.cakes) ? record.cakes as AvailableCake[] : []
+}
+
+export async function updateAdminOrder({ orderId, payload, signal }: UpdateOrderRequestInput) {
+  const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
+    method: 'PATCH',
+    credentials: 'include',
+    body: payload,
+    signal
+  })
+  const data: unknown = await response.json().catch(() => ({}))
+  const record = isRecord(data) ? data : {}
+
+  if (!response.ok) {
+    throw new Error(typeof record.error === 'string' ? record.error : 'Failed to update order')
+  }
+}
+
 export function OrderManagementDashboard() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [addOrderModalOpen, setAddOrderModalOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [deletePassword, setDeletePassword] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<OrderImageAsset | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -168,14 +241,6 @@ export function OrderManagementDashboard() {
     severity: 'info',
   });
   // Removed unused monthlyEarnings state - using filteredStats instead
-  const [availableCakes, setAvailableCakes] = useState<Array<{
-    _id: string;
-    name: string;
-    slug: { current: string };
-    size: string;
-    pricing: { standard: number; individual: number };
-    category: string;
-  }>>([]);
 
   // Edit form state
   const [editForm, setEditForm] = useState({
@@ -239,102 +304,58 @@ export function OrderManagementDashboard() {
   const showNotification = useCallback((message: string, severity: 'success' | 'error' | 'info') => {
     setNotification({ open: true, message, severity });
   }, []);
+  const queryClient = useQueryClient()
+  const {
+    abort: abortSave,
+    start: startSave
+  } = useAbortableRequest()
+  const ordersQuery = useQuery({
+    queryKey: ['admin-orders'],
+    queryFn: ({ signal }) => fetchAllAdminOrders(signal),
+    retry: false,
+    staleTime: 15 * 1000
+  })
+  const cakesQuery = useQuery({
+    queryKey: ['admin-order-cakes'],
+    queryFn: ({ signal }) => fetchAvailableCakes(signal),
+    retry: false,
+    staleTime: 5 * 60 * 1000
+  })
+  const updateMutation = useMutation({ mutationFn: updateAdminOrder })
+  const orders = ordersQuery.data ?? emptyOrders
+  const availableCakes = cakesQuery.data ?? emptyAvailableCakes
+  const loading = ordersQuery.isPending
+  const isRefreshing = ordersQuery.isFetching && !ordersQuery.isPending
+  const isSaving = updateMutation.isPending
 
-  const fetchOrders = useCallback(async (isRefresh = false, signal?: AbortSignal) => {
-    const controller = signal ? null : new AbortController();
-    const requestSignal = signal || controller?.signal;
-    const fetchedOrders: Order[] = [];
-    const limit = 100;
-    let offset = 0;
-
-    try {
-      if (isRefresh) {
-        setIsRefreshing(true);
-      } else {
-        setLoading(true);
-      }
-
-      while (true) {
-        const response = await fetch(`/api/orders?limit=${limit}&offset=${offset}&t=${Date.now()}`, {
-          credentials: 'include',
-          signal: requestSignal,
-        });
-        const data = await response.json() as {
-          orders?: Order[];
-          hasMore?: boolean;
-          error?: string;
-        };
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to fetch orders');
-        }
-
-        fetchedOrders.push(...(data.orders || []));
-
-        if (!data.hasMore) {
-          break;
-        }
-
-        offset += limit;
-      }
-
-      setOrders(fetchedOrders);
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        return;
-      }
-
-      logger.error('Error fetching orders', error);
-      showNotification('Failed to fetch orders', 'error');
-    } finally {
-      if (!requestSignal?.aborted) {
-        if (isRefresh) {
-          setIsRefreshing(false);
-        } else {
-          setLoading(false);
-        }
-      }
-    }
-  }, [showNotification]);
-
-  // Removed fetchMonthlyEarnings - not used in component
-
-  const fetchCakes = async (signal?: AbortSignal) => {
-    const controller = signal ? null : new AbortController();
-    const requestSignal = signal || controller?.signal;
-
-    try {
-      const response = await fetch('/api/admin/cakes', {
-        credentials: 'include',
-        signal: requestSignal,
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        setAvailableCakes(data.cakes || []);
-      } else {
-        logger.error('Failed to fetch cakes', data);
-      }
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        return;
-      }
-
-      logger.error('Error fetching cakes', error);
-    }
-  };
-
-  // Fetch data on component mount
   useEffect(() => {
-    const controller = new AbortController();
+    if (!ordersQuery.error) {
+      return
+    }
 
-    fetchOrders(false, controller.signal);
-    fetchCakes(controller.signal);
+    logger.error('Error fetching orders', {
+      operation: 'admin.orders.fetch',
+      ...toSafeOperationalError(ordersQuery.error)
+    })
+    showNotification('Failed to fetch orders', 'error')
+  }, [ordersQuery.error, showNotification])
 
-    return () => {
-      controller.abort();
-    };
-  }, [fetchOrders]); // Fetch on component mount
+  useEffect(() => {
+    if (!cakesQuery.error) {
+      return
+    }
+
+    logger.error('Error fetching cakes', {
+      operation: 'admin.orders.fetch-cakes',
+      ...toSafeOperationalError(cakesQuery.error)
+    })
+  }, [cakesQuery.error])
+
+  useEffect(() => {
+    if (!editDialogOpen) {
+      abortSave()
+    }
+  }, [abortSave, editDialogOpen])
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -416,61 +437,9 @@ export function OrderManagementDashboard() {
     setEditDialogOpen(true);
   };
 
-  const handleDeleteOrderPermanently = async () => {
-    const password = deletePassword.trim();
-
-    if (!selectedOrder || !password) return;
-
-    const controller = new AbortController();
-    const deletedOrderId = selectedOrder._id;
-
-    setIsDeleting(true);
-    try {
-      const response = await fetch(`/api/orders/${deletedOrderId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          password,
-          permanent: true
-        }),
-        signal: controller.signal,
-      });
-
-      if (response.ok) {
-        showNotification('Order permanently deleted from Supabase', 'success');
-        setOrders((currentOrders) => currentOrders.filter((order) => order._id !== deletedOrderId));
-        setDeleteConfirmOpen(false);
-        setEditDialogOpen(false);
-        setViewDialogOpen(false);
-        setSelectedOrder(null);
-        setDeletePassword("");
-        // Refresh orders data
-        await fetchOrders();
-      } else {
-        const errorData = await response.json();
-        if (errorData.error === 'Invalid password') {
-          showNotification('Incorrect password. Order not deleted.', 'error');
-        } else {
-          showNotification(errorData.error || 'Failed to delete order', 'error');
-        }
-      }
-    } catch (error) {
-      logger.error('Error deleting order', error);
-      showNotification('Failed to delete order', 'error');
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
   const handleSaveOrder = async () => {
     if (!selectedOrder) return;
 
-    const controller = new AbortController();
-
-    setIsSaving(true);
     try {
       // Create FormData to handle file uploads
       const formData = new FormData();
@@ -507,26 +476,24 @@ export function OrderManagementDashboard() {
         formData.append(`images`, image);
       });
 
-      const response = await fetch(`/api/orders/${selectedOrder._id}`, {
-        method: 'PATCH',
-        credentials: 'include',
-        body: formData,
-        signal: controller.signal,
-      });
-
-      if (response.ok) {
-        showNotification('Order updated successfully', 'success');
-        setEditDialogOpen(false);
-        fetchOrders(); // Refresh orders list
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update order');
-      }
+      await updateMutation.mutateAsync({
+        orderId: selectedOrder._id,
+        payload: formData,
+        signal: startSave()
+      })
+      showNotification('Order updated successfully', 'success');
+      setEditDialogOpen(false);
+      await queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
     } catch (error) {
-      logger.error('Error updating order', error);
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return
+      }
+
+      logger.error('Error updating order', {
+        operation: 'admin.orders.update',
+        ...toSafeOperationalError(error)
+      });
       showNotification('Failed to update order', 'error');
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -577,9 +544,12 @@ export function OrderManagementDashboard() {
           const total = order.pricing?.total;
           if (total == null || typeof total !== 'number' || isNaN(total)) return sum;
           return sum + total;
-        } catch (error) {
+        } catch {
           // If anything goes wrong, just skip this order
-          logger.warn('Error calculating order total', { error, order });
+          logger.warn('Error calculating order total', {
+            operation: 'admin.orders.calculate-total',
+            code: 'INVALID_ORDER_TOTAL'
+          });
           return sum;
         }
       }, 0);
@@ -744,7 +714,10 @@ export function OrderManagementDashboard() {
       const imageUrl = urlFor(imageAsset).width(width).height(height).url();
       return imageUrl;
     } catch (error) {
-      logger.error('Error generating image URL', error);
+      logger.error('Error generating image URL', {
+        operation: 'admin.orders.image-url',
+        ...toSafeOperationalError(error)
+      });
       return '';
     }
   };
@@ -876,7 +849,9 @@ export function OrderManagementDashboard() {
             <button
               type="button"
               className="btn btn-outline btn-sm"
-              onClick={() => fetchOrders(true)}
+              onClick={() => {
+                void ordersQuery.refetch()
+              }}
               disabled={loading || isRefreshing}
             >
               {isRefreshing ? (
@@ -1751,24 +1726,12 @@ export function OrderManagementDashboard() {
         </DialogContent>
         <DialogActions className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end">
           <Button onClick={() => setEditDialogOpen(false)} className="w-full sm:w-auto">Cancel</Button>
-          <Button
-            onClick={() => setDeleteConfirmOpen(true)}
-            variant="outlined"
-            color="error"
-            size="small"
-            className="w-full sm:mr-auto sm:w-auto"
-            sx={{
-              mr: 'auto',
-              color: 'error.main',
-              borderColor: 'error.main',
-              '&:hover': {
-                backgroundColor: 'error.main',
-                color: 'white'
-              }
-            }}
+          <Link
+            href='/admin/privacy-retention'
+            className='btn btn-outline btn-sm w-full sm:mr-auto sm:w-auto'
           >
-            Delete Order
-          </Button>
+            Privacy retention
+          </Link>
           <Button
             onClick={handleSaveOrder}
             variant="contained"
@@ -1777,46 +1740,6 @@ export function OrderManagementDashboard() {
             className="w-full sm:w-auto"
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteConfirmOpen} onClose={() => setDeleteConfirmOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Delete Order Permanently</DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            <strong>Warning:</strong> This action will permanently delete order #{selectedOrder?.orderNumber} from Supabase.
-            This cannot be undone.
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Customer: {selectedOrder?.customer.name} ({selectedOrder?.customer.email})
-          </Typography>
-          <TextField
-            fullWidth
-            label="Admin Password"
-            type="password"
-            value={deletePassword}
-            onChange={(e) => setDeletePassword(e.target.value)}
-            placeholder="Enter admin password to confirm deletion"
-            variant="outlined"
-            autoFocus
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => {
-            setDeleteConfirmOpen(false);
-            setDeletePassword("");
-          }}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleDeleteOrderPermanently}
-            variant="contained"
-            color="error"
-            disabled={deletePassword.trim().length === 0 || isDeleting}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete Permanently'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -2053,8 +1976,11 @@ export function OrderManagementDashboard() {
                                       }}
                                       image={imageUrl}
                                       alt={attachment.alt || 'Design reference'}
-                                      onError={(e) => {
-                                        logger.error('Failed to load design image', e);
+                                      onError={() => {
+                                        logger.error('Failed to load design image', {
+                                          operation: 'admin.orders.design-image-load',
+                                          code: 'IMAGE_LOAD_FAILED'
+                                        });
                                       }}
                                     />
                                     <IconButton
@@ -2246,8 +2172,11 @@ export function OrderManagementDashboard() {
                                         }}
                                         image={imageUrl}
                                         alt={attachment.alt || 'Message attachment'}
-                                        onError={(e) => {
-                                          logger.error('Failed to load message image', e);
+                                        onError={() => {
+                                          logger.error('Failed to load message image', {
+                                            operation: 'admin.orders.message-image-load',
+                                            code: 'IMAGE_LOAD_FAILED'
+                                          });
                                         }}
                                       />
                                       <IconButton
@@ -2321,8 +2250,11 @@ export function OrderManagementDashboard() {
                                         }}
                                         image={imageUrl}
                                         alt={image.alt || 'Note attachment'}
-                                        onError={(e) => {
-                                          logger.error('Failed to load thumbnail image', e);
+                                        onError={() => {
+                                          logger.error('Failed to load thumbnail image', {
+                                            operation: 'admin.orders.thumbnail-image-load',
+                                            code: 'IMAGE_LOAD_FAILED'
+                                          });
                                         }}
                                       />
                                       <IconButton
@@ -2372,7 +2304,7 @@ export function OrderManagementDashboard() {
         open={addOrderModalOpen}
         onClose={() => setAddOrderModalOpen(false)}
         onOrderCreated={() => {
-          fetchOrders();
+          void ordersQuery.refetch()
         }}
       />
 
@@ -2403,8 +2335,11 @@ export function OrderManagementDashboard() {
                   objectFit: 'contain',
                   borderRadius: '8px',
                 }}
-                onError={(e) => {
-                  logger.error('Failed to load image in modal', e);
+                onError={() => {
+                  logger.error('Failed to load image in modal', {
+                    operation: 'admin.orders.modal-image-load',
+                    code: 'IMAGE_LOAD_FAILED'
+                  });
                 }}
               />
             </Box>

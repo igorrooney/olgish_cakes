@@ -22,7 +22,7 @@ export const cakesCatalogFaqItems: CatalogFaqItem[] = [
   },
   {
     question: 'Can any cake be delivered across the UK?',
-    answer: 'Yes. Any cake can be delivered across the UK by agreement. During ordering, put all requests in the Requirements field in the order form so I can confirm the cake type, date, delivery details, and cost.'
+    answer: 'Yes. Any cake can be delivered across the UK by agreement. During ordering, put all requests in the Requirements field in the order form so we can confirm the cake type, date, delivery details, and cost.'
   },
   {
     question: 'Do you work with corporate clients and events?',

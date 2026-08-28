@@ -4,6 +4,7 @@ import type {
   Testimonial
 } from '@/app/types/testimonial'
 import { getTestimonialsPage } from '@/app/utils/fetchTestimonials'
+import { isReviewSourceUrl } from '@/lib/testimonials/review-source'
 import { DeferredReviewsCarousel } from './DeferredReviewsCarousel'
 
 interface ReviewsProps {
@@ -25,14 +26,26 @@ const hasValidReviewIdentity = (testimonial: Testimonial) =>
   Boolean(testimonial.date?.trim()) &&
   !Number.isNaN(new Date(testimonial.date).getTime())
 
-const mapHomepageReview = (testimonial: Testimonial): HomepageReview => ({
-  _id: testimonial._id,
-  customerName: testimonial.customerName,
-  rating: testimonial.rating,
-  date: testimonial.date,
-  text: testimonial.text,
-  ...(testimonial.title ? { title: testimonial.title } : {})
-})
+const mapHomepageReview = (testimonial: Testimonial): HomepageReview => {
+  const sourceUrl = isReviewSourceUrl(testimonial.source, testimonial.sourceUrl)
+    ? testimonial.sourceUrl
+    : undefined
+
+  return {
+    _id: testimonial._id,
+    customerName: testimonial.customerName,
+    rating: testimonial.rating,
+    date: testimonial.date,
+    text: testimonial.text,
+    source: testimonial.source,
+    incentivised: testimonial.incentivised === true,
+    ...(sourceUrl ? { sourceUrl } : {}),
+    ...(testimonial.incentiveDisclosure
+      ? { incentiveDisclosure: testimonial.incentiveDisclosure }
+      : {}),
+    ...(testimonial.title ? { title: testimonial.title } : {})
+  }
+}
 
 export async function Reviews({
   testimonials,

@@ -136,12 +136,12 @@ describe('daisy-ui compatibility wrappers', () => {
   describe('Box', () => {
     it('maps responsive display sx values to Tailwind classes', () => {
       render(
-        <Box sx={{ display: { xs: 'none', md: 'inline-flex' } }}>
+        <Box sx={{ display: { xs: 'none', tablet: 'inline-flex' } }}>
           Responsive content
         </Box>
       )
 
-      expect(screen.getByText('Responsive content')).toHaveClass('hidden', 'md:inline-flex')
+      expect(screen.getByText('Responsive content')).toHaveClass('hidden', 'tablet:inline-flex')
     })
   })
 

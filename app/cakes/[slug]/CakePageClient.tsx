@@ -14,6 +14,7 @@ import {
   resolveCakeDefaultServingsKey,
   type CakeServingsPriceKey
 } from '@/lib/utils/cake-base-price'
+import { getSanityCdnImageLoader, isSanityCdnImageUrl } from '@/lib/utils/image-url'
 import { blocksToText, type Cake } from '@/types/cake'
 import { getCakeDeliveryFallbackKeyPoint, type ResolvedCakeDeliveryContent } from './delivery-content'
 
@@ -49,6 +50,12 @@ function formatPrice(value: number) {
 }
 
 const fillingPreviewImageSizes = '(min-width: 1024px) 560px, 100vw'
+const fillingPreviewImageLoader = getSanityCdnImageLoader({
+  width: 560,
+  height: 560,
+  fit: 'crop',
+  quality: 80
+})
 const customDesignSurcharge = 14
 const mobileViewportMediaQuery = '(max-width: 1023px)'
 const emptyFillingOptions: CakePageClientFillingOption[] = []
@@ -395,6 +402,9 @@ export function CakePageClient({
             src={fillingCarouselImage.src}
             alt={fillingCarouselImage.alt}
             fill
+            loader={isSanityCdnImageUrl(fillingCarouselImage.src)
+              ? fillingPreviewImageLoader
+              : undefined}
             sizes={fillingPreviewImageSizes}
             className='object-cover'
           />

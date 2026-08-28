@@ -6,8 +6,10 @@
 
 import { Resend } from 'resend'
 import { serverClient } from '../sanity/lib/client'
-import { urlFor } from '../sanity/lib/image'
 import { PHONE_UTILS } from '../lib/constants'
+import { toSafeEmailProviderError } from '../lib/email/safe-error'
+import { RESEND_ORDER_EMAIL_QUERY } from '../lib/queries/orderEmail.js'
+import { toSafeOperationalError } from '../lib/security/safe-operational-error'
 import dotenv from 'dotenv'
 
 // Load environment variables
@@ -37,42 +39,79 @@ type ResendOrder = {
   }
 }
 
+const orderReferencePattern = /^[A-Za-z0-9-]{1,64}$/
+
+function escapeHtml(value: unknown): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function logOperationalError(
+  operation: string,
+  error: unknown,
+  recordReference?: string,
+  providerResponse = false
+) {
+  const safeError = providerResponse
+    ? toSafeEmailProviderError(error)
+    : toSafeOperationalError(error)
+
+  console.error('Order email operation failed', {
+    operation,
+    ...safeError,
+    ...(recordReference ? { recordReference } : {})
+  })
+}
+
 async function resendOrderEmail(orderNumber: string, targetEmail?: string) {
   try {
+    if (!orderReferencePattern.test(orderNumber)) {
+      console.error('Order email operation failed', {
+        operation: 'order-email.validate-reference',
+        code: 'INVALID_RECORD_REFERENCE'
+      })
+      process.exit(1)
+    }
+
     if (!process.env.RESEND_API_KEY) {
-      console.error('❌ RESEND_API_KEY not configured')
+      console.error('Order email operation failed', {
+        operation: 'order-email.send',
+        code: 'EMAIL_TRANSPORT_NOT_CONFIGURED',
+        recordReference: orderNumber
+      })
       process.exit(1)
     }
 
     // Find order by order number
     const order = await serverClient.fetch<ResendOrder | null>(
-      `*[_type == "order" && orderNumber == "${orderNumber}"][0]{
-        _id,
-        orderNumber,
-        status,
-        customer,
-        items,
-        delivery,
-        pricing,
-        messages,
-        metadata
-      }`
+      RESEND_ORDER_EMAIL_QUERY,
+      { orderNumber }
     )
 
     if (!order) {
-      console.error(`❌ Order #${orderNumber} not found`)
+      console.error('Order email operation failed', {
+        operation: 'order-email.fetch',
+        code: 'RECORD_NOT_FOUND',
+        recordReference: orderNumber
+      })
       process.exit(1)
     }
 
-    console.log(`✅ Found order #${order.orderNumber} for ${order.customer.email}`)
+    console.log('Order found', {
+      operation: 'order-email.fetch',
+      recordReference: orderNumber
+    })
 
     const emailTo = targetEmail || order.customer.email
-    console.log(`📧 Sending confirmation email to: ${emailTo}`)
 
     // Generate order summary HTML (simplified version)
     const itemsHtml = order.items?.map((item) => `
       <div style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
-        <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${item.productName || 'Custom Product'}</h4>
+        <h4 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 600;">${escapeHtml(item.productName || 'Custom Product')}</h4>
         <p style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: 700;">£${item.totalPrice || item.unitPrice || 0}</p>
         <p style="margin: 0; color: #6b7280; font-size: 14px;">
           Quantity: ${item.quantity || 1}
@@ -106,21 +145,21 @@ async function resendOrderEmail(orderNumber: string, targetEmail?: string) {
                 <tr>
                   <td style="padding: 40px 30px;">
                     <p style="margin: 0 0 24px 0; color: #374151; font-size: 16px; line-height: 1.6;">
-                      Dear <strong>${order.customer.name}</strong>,
+                      Dear <strong>${escapeHtml(order.customer.name)}</strong>,
                     </p>
                     <p style="margin: 0 0 32px 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
-                      Thank you for your order! We've received your request and will get back to you within 24 hours with confirmation and next steps.
+                      Thank you for your order! We've received your request and will reply as soon as we can with confirmation and next steps.
                     </p>
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 32px;">
                       <h2 style="margin: 0 0 20px 0; color: #1f2937; font-size: 20px; font-weight: 600;">Order Summary</h2>
                       <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                         <tr>
                           <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Order Number</td>
-                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">#${order.orderNumber}</td>
+                          <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 600; text-align: right;">#${escapeHtml(order.orderNumber)}</td>
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Status</td>
-                          <td style="padding: 8px 0; color: #059669; font-size: 14px; font-weight: 600; text-align: right;">${order.status || 'New Order'}</td>
+                          <td style="padding: 8px 0; color: #059669; font-size: 14px; font-weight: 600; text-align: right;">${escapeHtml(order.status || 'New Order')}</td>
                         </tr>
                         <tr>
                           <td style="padding: 8px 0; color: #6b7280; font-size: 14px; font-weight: 500;">Total Amount</td>
@@ -162,20 +201,24 @@ async function resendOrderEmail(orderNumber: string, targetEmail?: string) {
       from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
       to: emailTo,
       subject: `Order Confirmation #${order.orderNumber} - Olgish Cakes`,
-      html: emailHtml,
+      html: emailHtml
     })
 
     if (result.error) {
-      console.error('❌ Email error:', result.error)
+      logOperationalError('order-email.send', result.error, orderNumber, true)
       process.exit(1)
     }
 
-    console.log('✅ Confirmation email sent successfully!')
-    console.log(`   Email ID: ${result.data?.id}`)
-    console.log(`   Sent to: ${emailTo}`)
-
+    console.log('Confirmation email sent', {
+      operation: 'order-email.send',
+      recordReference: orderNumber
+    })
   } catch (error) {
-    console.error('❌ Error:', error)
+    logOperationalError(
+      'order-email.run',
+      error,
+      orderReferencePattern.test(orderNumber) ? orderNumber : undefined
+    )
     process.exit(1)
   }
 }

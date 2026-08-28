@@ -156,20 +156,21 @@ describe('CakesByPostPage', () => {
     })
   })
 
-  it('fetches shared catalog data, custom price ceiling hint and testimonial stats', async () => {
+  it('fetches shared catalog data and price hints without an unused testimonial-statistics request', async () => {
     await CakesByPostPage()
 
     expect(mockedGetCatalogPageData).toHaveBeenCalledTimes(1)
     expect(mockedGetCatalogPageData).toHaveBeenCalledWith('giftHampers')
     expect(mockedGetCatalogCustomCakesPriceCeiling).toHaveBeenCalledTimes(1)
-    expect(mockedGetAllTestimonialsStats).toHaveBeenCalledTimes(1)
+    expect(mockedGetAllTestimonialsStats).not.toHaveBeenCalled()
   })
 
   it('renders page when optional custom-cakes price hint fetch fails', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
 
     try {
-      mockedGetCatalogCustomCakesPriceCeiling.mockRejectedValueOnce(new Error('Hint fetch failed'))
+      const providerSentinel = 'PRIVATE_HINT_FETCH_FAILURE'
+      mockedGetCatalogCustomCakesPriceCeiling.mockRejectedValueOnce(new Error(providerSentinel))
 
       const page = await CakesByPostPage()
       render(page)
@@ -182,9 +183,13 @@ describe('CakesByPostPage', () => {
       ).toBeInTheDocument()
       expect(screen.getByTestId('cakes-catalog')).toBeInTheDocument()
       expect(warnSpy).toHaveBeenCalledWith(
-        'Failed to fetch custom cakes price ceiling hint for gift hampers page:',
-        expect.any(Error)
+        'Custom cake price ceiling hint fetch failed',
+        {
+          operation: 'gift-hampers.price-ceiling.fetch',
+          code: 'OPERATION_FAILED'
+        }
       )
+      expect(JSON.stringify(warnSpy.mock.calls)).not.toContain(providerSentinel)
     } finally {
       warnSpy.mockRestore()
     }
@@ -274,6 +279,13 @@ describe('CakesByPostPage', () => {
     expect(
       screen.getByText('For corporate orders, branded cake slices and larger hamper orders are available by request.')
     ).toBeInTheDocument()
+    expect(
+      screen.getByText(/read how uk post, local delivery, leeds collection, cancellations and damaged orders/i)
+    ).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Delivery and returns' })).toHaveAttribute(
+      'href',
+      '/delivery'
+    )
   })
 
   it('renders catalog suspense fallback during catalog suspension', async () => {
@@ -371,7 +383,7 @@ describe('CakesByPostPage', () => {
     expect(firstListItem.item.url).toBe('https://olgishcakes.co.uk/cakes-by-post/hamper-99')
   })
 
-  it('includes aggregate rating in local business data when reviews exist', async () => {
+  it('omits unsupported aggregate rating data', async () => {
     const page = await CakesByPostPage()
     const { container } = render(page)
     const jsonLdBlocks = parseJsonLdScripts(container)
@@ -381,6 +393,6 @@ describe('CakesByPostPage', () => {
       throw new Error('Expected LocalBusiness structured data')
     }
 
-    expect(isRecord(localBusinessBlock.aggregateRating)).toBe(true)
+    expect(localBusinessBlock.aggregateRating).toBeUndefined()
   })
 })

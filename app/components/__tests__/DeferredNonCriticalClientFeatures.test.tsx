@@ -49,6 +49,7 @@ describe('DeferredNonCriticalClientFeatures', () => {
     expect(button).toHaveAttribute('aria-hidden', 'true')
     expect(button).toHaveAttribute('aria-label', 'Scroll to top')
     expect(button).toHaveClass('pointer-events-none')
+    expect(button).toHaveClass('hidden', 'tablet:inline-flex')
   })
 
   it('reveals the scroll-to-top control after the page is scrolled', () => {

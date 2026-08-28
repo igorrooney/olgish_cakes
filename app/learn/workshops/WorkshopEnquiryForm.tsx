@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { SensitiveDataConsentFields } from '@/app/components/legal/SensitiveDataConsentFields'
 import { ValidatorInput } from '@/app/components/homepage/ValidatorInput'
 import { getTodayDateInputValue } from '@/app/components/homepage/mobileForm.utils'
 import { useWorkshopEnquiry } from '@/app/hooks/useWorkshopEnquiry'
@@ -68,7 +69,7 @@ export function WorkshopEnquiryForm() {
   }
 
   const updateField = (
-    field: keyof WorkshopEnquiryFormValues,
+    field: Exclude<keyof WorkshopEnquiryFormValues, 'dietaryHealthConsent'>,
     value: string,
     shouldClearError = false
   ) => {
@@ -277,6 +278,22 @@ export function WorkshopEnquiryForm() {
         error={errors.brief}
         required
         onValueChange={value => updateField('brief', value, true)}
+      />
+
+      <SensitiveDataConsentFields
+        information={formData.dietaryHealthInformation ?? ''}
+        consent={formData.dietaryHealthConsent === true}
+        informationError={errors.dietaryHealthInformation}
+        consentError={errors.dietaryHealthConsent}
+        disabled={isSubmitting}
+        onInformationChange={value => {
+          updateField('dietaryHealthInformation', value, true)
+        }}
+        onConsentChange={value => {
+          setFormData(current => ({ ...current, dietaryHealthConsent: value }))
+          resetSuccessState()
+          clearFieldError('dietaryHealthConsent')
+        }}
       />
 
       {errors.submit ? (

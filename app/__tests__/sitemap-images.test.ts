@@ -179,7 +179,7 @@ describe('sitemap-images', () => {
     it('should keep image sitemap helpers aligned with committed cakes and cakes by post dates', () => {
       expect(getStaticSitemapLastModified('/cakes')).toEqual(new Date('2026-03-17'))
       expect(getStaticSitemapLastModified('/cakes-by-post')).toEqual(new Date('2026-03-12'))
-      expect(getStaticSitemapLastModified('/get-custom-quote')).toEqual(new Date('2026-03-17'))
+      expect(getStaticSitemapLastModified('/custom-cakes')).toEqual(new Date('2026-07-29'))
     })
 
     it('should filter out invalid image refs and dedupe duplicate cake image URLs', async () => {

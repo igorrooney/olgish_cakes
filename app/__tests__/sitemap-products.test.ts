@@ -62,20 +62,20 @@ describe('sitemap-products', () => {
       const result = await sitemapProducts()
       const cakesPage = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes')
       const hampersPage = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/cakes-by-post')
-      const quotePage = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/get-custom-quote')
+      const quotePage = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/custom-cakes')
 
       expect(cakesPage).toBeDefined()
       expect(hampersPage).toBeDefined()
       expect(quotePage).toBeDefined()
       expect(cakesPage?.lastModified).toEqual(getStaticSitemapLastModified('/cakes'))
       expect(hampersPage?.lastModified).toEqual(getStaticSitemapLastModified('/cakes-by-post'))
-      expect(quotePage?.lastModified).toEqual(getStaticSitemapLastModified('/get-custom-quote'))
+      expect(quotePage?.lastModified).toEqual(getStaticSitemapLastModified('/custom-cakes'))
     })
 
     it('should keep central static sitemap lastModified values in sync for key category pages', () => {
       expect(getStaticSitemapLastModified('/cakes')).toEqual(new Date('2026-03-17'))
       expect(getStaticSitemapLastModified('/cakes-by-post')).toEqual(new Date('2026-03-12'))
-      expect(getStaticSitemapLastModified('/get-custom-quote')).toEqual(new Date('2026-03-17'))
+      expect(getStaticSitemapLastModified('/custom-cakes')).toEqual(new Date('2026-07-29'))
     })
 
     it('should omit cakes without a slug from the sitemap', async () => {

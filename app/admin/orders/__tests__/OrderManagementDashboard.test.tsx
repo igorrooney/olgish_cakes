@@ -8,11 +8,28 @@
  * 
  * Remaining tests focus on date picker functionality which can be tested without dialog interactions.
  */
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, render as renderWithTestingLibrary, screen, waitFor, within, type RenderOptions } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
 import type { ConfigType } from 'dayjs'
 import type { Order } from '@/types/order'
 import { OrderManagementDashboard } from '../OrderManagementDashboard'
+
+const render = (ui: React.ReactElement, options?: RenderOptions) => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false }
+    }
+  })
+
+  return renderWithTestingLibrary(
+    <QueryClientProvider client={queryClient}>
+      {ui}
+    </QueryClientProvider>,
+    options
+  )
+}
 
 // Increase timeout for complex async tests
 jest.setTimeout(15000)

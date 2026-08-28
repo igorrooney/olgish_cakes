@@ -121,4 +121,13 @@ describe('Bestsellers', () => {
     expect(screen.getByText('Walnut Cake, Custom cake')).toBeInTheDocument()
     expect(screen.getByText('Full description fallback.')).toBeInTheDocument()
   })
+
+  it('links the custom-cake call to action to the canonical quote page', async () => {
+    mockGetAllCakes.mockResolvedValueOnce([baseCake])
+
+    const element = await Bestsellers()
+    render(element)
+
+    expect(screen.getByRole('link', { name: /shop custom cakes/i })).toHaveAttribute('href', '/custom-cakes')
+  })
 })

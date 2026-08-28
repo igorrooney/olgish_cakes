@@ -111,7 +111,11 @@ describe('useSanityLive', () => {
         subscribeCall.error(error)
       })
 
-      expect(consoleSpy).toHaveBeenCalledWith('Sanity live update error:', error)
+      expect(consoleSpy).toHaveBeenCalledWith('Sanity live update failed', {
+        operation: 'sanity.live-update',
+        code: 'OPERATION_FAILED'
+      })
+      expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Subscription error')
 
       consoleSpy.mockRestore()
     })

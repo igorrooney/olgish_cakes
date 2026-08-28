@@ -5,7 +5,7 @@ import {
   classifyPageOnlyQueryFromListingSearchParams,
   isIndexablePageOnlyPagination
 } from '@/lib/utils/catalog-listing-query-seo'
-import { getMerchantReturnPolicy, getPriceValidUntil } from '../utils/seo'
+import { getMerchantReturnPolicy } from '../utils/seo'
 
 const baseUrl = 'https://olgishcakes.co.uk'
 const brandId = `${baseUrl}/#brand`
@@ -149,8 +149,6 @@ export function createCatalogItemListStructuredData({
                 '@type': 'Offer',
                 price: formatStructuredDataPrice(item.price, 0),
                 priceCurrency: 'GBP',
-                availability: 'https://schema.org/InStock',
-                priceValidUntil: getPriceValidUntil(30),
                 url: itemUrl,
                 seller: {
                   '@type': 'Organization',

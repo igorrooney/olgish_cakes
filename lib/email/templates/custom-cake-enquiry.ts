@@ -1,5 +1,9 @@
 import type { EmailTemplateCommonInput, TemplateDefinition } from '../types'
-import { createDefaultScenarioInput, createTemplateDefinition } from './shared'
+import {
+  buildOperationalAlertContent,
+  createDefaultScenarioInput,
+  createTemplateDefinition
+} from './shared'
 
 const adminScenarios = [
   {
@@ -199,13 +203,12 @@ const failureAlertScenarios = [
   {
     id: 'default',
     label: 'Internal failure alert',
-    input: createDefaultScenarioInput({
-      titleOverride: 'Custom Cake Enquiry Alert: Test Customer',
-      productName: 'Custom Cake Enquiry Failure Alert',
-      intro: 'A custom cake enquiry was saved, but one or more follow-up notifications failed.',
-      message: 'Failed notifications: admin email',
-      note: 'Enquiry saved in the database. Provider error: Transport did not accept admin email.'
-    })
+    input: {
+      operation: 'custom-cake-enquiry.notification',
+      operationalCode: 'ADMIN_EMAIL_FAILED',
+      recordReference: 'CUSTOM-CAKE-1001',
+      adminUrl: 'https://olgishcakes.co.uk/admin/enquiries/custom-cake/CUSTOM-CAKE-1001'
+    }
   }
 ]
 
@@ -235,6 +238,9 @@ export const customCakeTemplateDefinitions: Record<string, TemplateDefinition<Em
       intro: 'A custom cake enquiry was saved, but one or more notification steps failed.',
       admin: true
     },
-    failureAlertScenarios
+    failureAlertScenarios,
+    {
+      adminContentBuilder: buildOperationalAlertContent
+    }
   )
 }

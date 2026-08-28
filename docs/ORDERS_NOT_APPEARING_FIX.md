@@ -70,10 +70,11 @@ I've created a test endpoint to check Sanity connectivity:
 ```bash
 # Test locally
 curl http://localhost:3000/api/test-sanity-write
-
-# Test production (after deploying)
-curl https://olgishcakes.co.uk/api/test-sanity-write
 ```
+
+This diagnostic is deliberately unavailable in production and returns `404`.
+Use authenticated admin order checks and safe operational logs for deployed
+diagnosis.
 
 **Good Response:**
 ```json

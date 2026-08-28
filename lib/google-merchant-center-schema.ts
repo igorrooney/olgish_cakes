@@ -5,38 +5,46 @@
  * for Google Merchant Center product detection and indexing.
  */
 
-import { getPriceValidUntil } from "@/app/utils/seo";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
-import { buildAggregateRating, type ReviewStats } from '@/app/utils/review-stats'
+
+type MerchantAvailability =
+  | 'BackOrder'
+  | 'Discontinued'
+  | 'InStock'
+  | 'InStoreOnly'
+  | 'LimitedAvailability'
+  | 'OnlineOnly'
+  | 'OutOfStock'
+  | 'PreOrder'
+  | 'SoldOut'
+
+type MerchantItemCondition =
+  | 'DamagedCondition'
+  | 'NewCondition'
+  | 'RefurbishedCondition'
+  | 'UsedCondition'
 
 export interface MerchantCenterProductData {
-  id: string;
   name: string;
   description: string;
   url: string;
-  image: string;
-  price: number;
+  image?: string;
+  price?: number;
   currency: string;
-  availability: string;
+  availability?: MerchantAvailability;
   brand: string;
   category: string;
   gtin?: string;
   mpn?: string;
   sku?: string;
-  condition: string;
+  condition?: MerchantItemCondition;
   shipping?: {
     country: string;
     service: string;
     price: number;
   };
-  tax?: {
-    country: string;
-    rate: number;
-  };
   additionalImages?: string[];
-  customLabels?: string[];
-  reviewStats?: ReviewStats;
 }
 
 interface MerchantImageAssetRef {
@@ -134,18 +142,18 @@ function toPlainText(value: string | PortableTextValue | undefined) {
  */
 export function generateMerchantCenterProductSchema(data: MerchantCenterProductData) {
   const baseUrl = "https://olgishcakes.co.uk";
-  const aggregateRating = buildAggregateRating(data.reviewStats)
+  const hasPrice = typeof data.price === 'number' && Number.isFinite(data.price) && data.price > 0
   
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    "@id": `${baseUrl}/products/${data.id}`,
+    "@id": `${data.url}#product`,
     
     // Core product information
     name: data.name,
     description: data.description,
     url: data.url,
-    image: [data.image, ...(data.additionalImages || [])],
+    ...(data.image ? { image: [data.image, ...(data.additionalImages || [])] } : {}),
     
     // Brand and manufacturer
     brand: {
@@ -164,7 +172,7 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
         addressLocality: "Leeds",
         addressRegion: "West Yorkshire",
         addressCountry: "GB",
-        postalCode: "LS1 1AA",
+        postalCode: "LS17 6PR",
       },
     },
     
@@ -175,17 +183,18 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
     
     // Category and classification
     category: data.category,
-    productID: data.id,
     
-    // Enhanced offer with shipping and tax details
-    offers: {
+    ...(hasPrice ? { offers: {
       "@type": "Offer",
-      "@id": `${baseUrl}/offers/${data.id}`,
+      "@id": `${data.url}#offer`,
       price: formatStructuredDataPrice(data.price, 0),
       priceCurrency: data.currency,
-      availability: `https://schema.org/${data.availability}`,
-      condition: `https://schema.org/${data.condition}`,
-      priceValidUntil: getPriceValidUntil(30),
+      ...(data.availability
+        ? { availability: `https://schema.org/${data.availability}` }
+        : {}),
+      ...(data.condition
+        ? { condition: `https://schema.org/${data.condition}` }
+        : {}),
       
       // Seller information
       seller: {
@@ -194,51 +203,19 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
         url: baseUrl,
       },
       
-      // Shipping details
-      shippingDetails: data.shipping ? {
+      // Shipping details are emitted only from an explicit trusted policy.
+      ...(data.shipping ? { shippingDetails: {
         "@type": "OfferShippingDetails",
         shippingRate: {
           "@type": "MonetaryAmount",
           value: data.shipping.price,
           currency: data.currency,
         },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          businessDays: {
-            "@type": "OpeningHoursSpecification",
-            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-            opens: "09:00",
-            closes: "17:00",
-          },
-          cutoffTime: "14:00",
-          handlingTime: {
-            "@type": "QuantitativeValue",
-            minValue: 1,
-            maxValue: 2,
-            unitCode: "DAY",
-          },
-          transitTime: {
-            "@type": "QuantitativeValue",
-            minValue: 1,
-            maxValue: 3,
-            unitCode: "DAY",
-          },
-        },
         shippingDestination: {
           "@type": "DefinedRegion",
           addressCountry: data.shipping.country,
         },
-      } : undefined,
-      
-      // Tax information
-      ...(data.tax && {
-        eligibleTransactionVolume: {
-          "@type": "PriceSpecification",
-          price: data.price,
-          priceCurrency: data.currency,
-          valueAddedTaxIncluded: true,
-        },
-      }),
+      } } : {}),
       
       // Return policy
       hasMerchantReturnPolicy: {
@@ -247,67 +224,7 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
         returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted",
       },
       
-      // Payment methods
-      acceptedPaymentMethod: [
-        "https://schema.org/CreditCard",
-        "https://schema.org/PaymentByTransfer",
-        "https://schema.org/PaymentByBankTransfer",
-      ],
-    },
-    
-    // Additional product properties for better categorization
-    additionalProperty: [
-      {
-        "@type": "PropertyValue",
-        name: "Custom Label 0",
-        value: "Ukrainian",
-      },
-      {
-        "@type": "PropertyValue",
-        name: "Custom Label 1",
-        value: "Traditional",
-      },
-      {
-        "@type": "PropertyValue",
-        name: "Custom Label 2",
-        value: "Handmade",
-      },
-      {
-        "@type": "PropertyValue",
-        name: "Custom Label 3",
-        value: "Leeds Bakery",
-      },
-      ...(data.customLabels?.map((label, index) => ({
-        "@type": "PropertyValue",
-        name: `Custom Label ${index + 4}`,
-        value: label,
-      })) || []),
-    ],
-    
-    // Aggregate rating if available
-    ...(aggregateRating ? { aggregateRating } : {}),
-    
-    // Review information
-    review: [
-      {
-        "@type": "Review",
-        itemReviewed: {
-          "@id": `${baseUrl}/#product`
-        },
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: "5",
-          bestRating: "5",
-          worstRating: "1",
-        },
-        author: {
-          "@type": "Person",
-          name: "Sarah M.",
-        },
-        reviewBody: "Absolutely delicious! The honey cake was perfect for our celebration. Highly recommend Olgish Cakes!",
-        datePublished: "2025-09-30",
-      },
-    ],
+    } } : {}),
   };
 }
 
@@ -316,7 +233,13 @@ export function generateMerchantCenterProductSchema(data: MerchantCenterProductD
  */
 export function generateCakeMerchantCenterSchema(cake: MerchantCakeInput): ReturnType<typeof generateMerchantCenterProductSchema> {
   const baseUrl = "https://olgishcakes.co.uk";
-  const productUrl = `${baseUrl}/cakes/${cake.slug.current}`;
+  const productSlug = cake.slug.current.trim()
+
+  if (!productSlug) {
+    throw new Error('A real public slug is required for Merchant product structured data')
+  }
+
+  const productUrl = `${baseUrl}/cakes/${productSlug}`;
   
   // Get the best available image
   const mainImage = cake.mainImage?.asset?._ref 
@@ -333,39 +256,29 @@ export function generateCakeMerchantCenterSchema(cake: MerchantCakeInput): Retur
   
   const imageUrl = mainImage?.asset?._ref 
     ? urlFor(mainImage).width(800).height(800).url()
-    : `${baseUrl}/images/placeholder-cake.jpg`;
+    : undefined;
 
-  const price = cake.pricing?.standard || cake.pricing?.from || 25;
+  const price = cake.pricing?.standard ?? cake.pricing?.from;
   
   // Enhanced description
-  let description = toPlainText(cake.shortDescription) || toPlainText(cake.description) || '';
-  
-  if (!description || description.length < 100) {
-    description = `${cake.name} - Traditional Ukrainian honey cake handmade with authentic recipes in Leeds, Yorkshire. Perfect for birthdays, celebrations, and special occasions. Available in various sizes with custom designs. Free delivery across Leeds and surrounding areas. Premium quality ingredients, expertly crafted by our experienced bakers.`;
+  const description = (
+    toPlainText(cake.shortDescription) ||
+    toPlainText(cake.description)
+  ).trim();
+
+  if (!description) {
+    throw new Error('A real product description is required for Merchant product structured data')
   }
 
   return generateMerchantCenterProductSchema({
-    id: `cake_${cake._id}`,
     name: cake.name,
     description: description,
     url: productUrl,
     image: imageUrl,
     price: price,
     currency: "GBP",
-    availability: "InStock",
     brand: "Olgish Cakes",
     category: "Food & Drink > Bakery > Cakes",
-    condition: "NewCondition",
-    shipping: {
-      country: "GB",
-      service: "Standard delivery",
-      price: 0,
-    },
-    tax: {
-      country: "GB",
-      rate: 20,
-    },
-    customLabels: ["Ukrainian", "Traditional", "Handmade", "Leeds Bakery"],
   });
 }
 
@@ -374,7 +287,13 @@ export function generateCakeMerchantCenterSchema(cake: MerchantCakeInput): Retur
  */
 export function generateHamperMerchantCenterSchema(hamper: MerchantHamperInput): ReturnType<typeof generateMerchantCenterProductSchema> {
   const baseUrl = "https://olgishcakes.co.uk";
-  const productUrl = `${baseUrl}/cakes-by-post/${hamper.slug?.current || hamper._id}`;
+  const productSlug = hamper.slug?.current?.trim()
+
+  if (!productSlug) {
+    throw new Error('A real public slug is required for Merchant product structured data')
+  }
+
+  const productUrl = `${baseUrl}/cakes-by-post/${productSlug}`;
   
   const mainImage = hamper.images?.find((img: MerchantImage) => img.isMain && img.asset?._ref) || 
                    hamper.images?.find((img: MerchantImage) => img.asset?._ref) || 
@@ -382,39 +301,29 @@ export function generateHamperMerchantCenterSchema(hamper: MerchantHamperInput):
   
   const imageUrl = mainImage?.asset?._ref 
     ? urlFor(mainImage).width(800).height(800).url()
-    : `${baseUrl}/images/placeholder-hamper.jpg`;
+    : undefined;
 
-  const price = hamper.price || hamper.pricing?.standard || 35;
+  const price = hamper.price ?? hamper.pricing?.standard;
   
   // Enhanced description
-  let description = toPlainText(hamper.shortDescription) || toPlainText(hamper.description) || '';
-  
-  if (!description || description.length < 100) {
-    description = `${hamper.name} - Beautiful Ukrainian gift hamper handmade with authentic recipes in Leeds, Yorkshire. Perfect for special occasions, birthdays, anniversaries, and celebrations. Thoughtfully curated selection of traditional treats. Free delivery across Leeds and surrounding areas. Premium quality ingredients, expertly crafted by our experienced bakers.`;
+  const description = (
+    toPlainText(hamper.shortDescription) ||
+    toPlainText(hamper.description)
+  ).trim();
+
+  if (!description) {
+    throw new Error('A real product description is required for Merchant product structured data')
   }
 
   return generateMerchantCenterProductSchema({
-    id: `hamper_${hamper._id}`,
     name: hamper.name,
     description: description,
     url: productUrl,
     image: imageUrl,
     price: price,
     currency: "GBP",
-    availability: "InStock",
     brand: "Olgish Cakes",
     category: "Food & Drink > Gift Baskets > Food Gift Baskets",
-    condition: "NewCondition",
-    shipping: {
-      country: "GB",
-      service: "Standard delivery",
-      price: 0,
-    },
-    tax: {
-      country: "GB",
-      rate: 20,
-    },
-    customLabels: ["Ukrainian", "Gift Hamper", "Handmade", "Leeds Bakery"],
   });
 }
 

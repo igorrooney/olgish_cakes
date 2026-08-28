@@ -4,6 +4,11 @@
 import type { ReactNode } from 'react'
 import { render, screen } from '@testing-library/react'
 import DeliveryPage, { metadata } from '../page'
+import {
+  REFUND_AFTER_WORK_POLICY,
+  REFUND_BEFORE_WORK_POLICY,
+  STATUTORY_RIGHTS_POLICY
+} from '@/lib/public-policies'
 
 jest.mock('next/link', () => ({
   __esModule: true,
@@ -26,13 +31,20 @@ function parseJsonLdScripts(container: HTMLElement) {
 }
 
 describe('DeliveryPage', () => {
-  it('exposes indexable metadata for the live delivery page', () => {
-    expect(metadata.title).toBe('Delivery and Returns | Olgish Cakes')
-    expect(metadata.description).toBe(
-      'Delivery information for Olgish Cakes, including cakes by post across the UK, collection from Leeds, local cake delivery by arrangement, and what to do if there is a problem with the order.'
-    )
+  it('exposes correctly composed metadata for the delivery page', () => {
+    expect(metadata.title).toBe('Delivery and Returns')
+    expect(metadata.description).toContain('free UK delivery for suitable postal cakes')
     expect(metadata.alternates?.canonical).toBe('https://olgishcakes.co.uk/delivery')
+    expect(metadata.openGraph?.title).toBe('Delivery and Returns | Olgish Cakes')
     expect(metadata.openGraph?.url).toBe('https://olgishcakes.co.uk/delivery')
+    expect(metadata.openGraph?.images).toEqual([
+      {
+        url: 'https://olgishcakes.co.uk/images/delivery/delivery-social-card.png',
+        width: 1200,
+        height: 630,
+        alt: 'Olgish Cakes delivery and returns information'
+      }
+    ])
     expect(metadata.twitter?.card).toBe('summary_large_image')
     expect(metadata.robots).toEqual({
       index: true,
@@ -40,78 +52,116 @@ describe('DeliveryPage', () => {
     })
   })
 
-  it('renders straightforward delivery guidance and contact options', () => {
-    render(<DeliveryPage />)
+  it('renders a semantic, scannable policy page without a nested main landmark', () => {
+    const { container } = render(<DeliveryPage />)
 
+    expect(container.querySelector('main')).toBeNull()
+    expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).not.toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1, name: 'Delivery and returns' })).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
-    expect(screen.getByText(/some cakes post well and some do not/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Quick summary' })).toBeInTheDocument()
     expect(
-      screen.getByText(/for post, i usually send slices and other bakes made for travel/i)
+      screen.getByRole('heading', { level: 2, name: 'Cakes by post across the UK' })
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/send me the date, postcode and the cake you want\. i can usually tell you quickly what will work/i)
+      screen.getByRole('heading', { level: 2, name: 'Local delivery and Leeds collection' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Arrange delivery or collection' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', {
+        level: 2,
+        name: 'Damaged orders, cancellations and returns'
+      })
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5)
 
-    expect(screen.queryByRole('heading', { level: 2, name: 'By post' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('heading', { level: 2, name: 'Full cakes' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('heading', { level: 2, name: 'Dates' })).not.toBeInTheDocument()
-
-    expect(screen.getByText(/by post means slices and other bakes made to travel/i)).toBeInTheDocument()
-    expect(screen.getByText(/free uk delivery is included for suitable postal cakes/i)).toBeInTheDocument()
-    expect(screen.getByText(/standard post is still a delivery window rather than a promise/i)).toBeInTheDocument()
-    expect(screen.getByText(/for a guaranteed day, special delivery is usually the safer route/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /see cakes by post/i })).toHaveAttribute(
-      'href',
-      '/cakes-by-post'
-    )
-
-    expect(screen.getByText(/tall celebration cakes, tiered cakes and anything with a polished finish/i)).toBeInTheDocument()
-    expect(screen.getByText(/i work in leeds and across yorkshire/i)).toBeInTheDocument()
-    expect(screen.getByText(/i will tell you straight if it is workable/i)).toBeInTheDocument()
-    expect(screen.getByText(/i regularly deliver around leeds, wakefield, huddersfield, bradford and york/i)).toBeInTheDocument()
-    expect(screen.getByText(/save £2\./i)).toBeInTheDocument()
-
-    expect(screen.getByText(/if the date matters, send the date, postcode and the cake you have in mind/i)).toBeInTheDocument()
-    expect(screen.getByText(/i will tell you whether it should go by post, stay local, or be collected/i)).toBeInTheDocument()
-    expect(screen.getByText(/if it needs to stay local, i will say so before you book/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /ask about delivery/i })).toHaveAttribute(
-      'href',
-      '/get-custom-quote'
-    )
-
-    expect(screen.getByText(/if the order arrives damaged or there is a delivery issue, contact me as soon as you can/i)).toBeInTheDocument()
-    expect(screen.getByText(/message me directly and i will check it/i)).toBeInTheDocument()
-
-    expect(screen.getByRole('link', { name: /message on whatsapp/i })).toHaveAttribute(
-      'href',
-      'https://wa.me/447867218194'
-    )
-    expect(screen.getByRole('link', { name: /hello@olgishcakes\.co\.uk/i })).toHaveAttribute(
-      'href',
-      'mailto:hello@olgishcakes.co.uk'
-    )
-    expect(screen.getByRole('link', { name: /\+44 786 721 8194/i })).toHaveAttribute(
-      'href',
-      'tel:+44 786 721 8194'
+    expect(container.textContent).not.toMatch(
+      /\b(?:i|me|my|mine|myself)\b|\bi['’](?:d|ll|m|ve)\b/i
     )
   })
 
-  it('outputs breadcrumb and page-level structured data blocks', () => {
+  it('states delivery timing and costs without making a universal arrival promise', () => {
+    render(<DeliveryPage />)
+
+    expect(
+      screen.getByText(/free standard uk delivery is included for suitable postal products/i)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/we'll confirm the preparation time, dispatch timing and expected delivery window/i)
+    ).toBeInTheDocument()
+    expect(screen.getByText(/be delivered locally or be collected/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/standard delivery is an estimate rather than a guaranteed arrival date/i)
+    ).toBeInTheDocument()
+    expect(screen.getByText(/tell you about any extra charge/i)).toBeInTheDocument()
+    expect(screen.queryByText(/next working day/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/2(?:-|–| to )3 working days/i)).not.toBeInTheDocument()
+  })
+
+  it('renders large DaisyUI actions for every delivery and policy route', () => {
+    const { container } = render(<DeliveryPage />)
+    const actionLinks = Array.from(container.querySelectorAll('a.btn'))
+
+    expect(actionLinks).toHaveLength(6)
+    actionLinks.forEach(link => {
+      expect(link).toHaveClass('btn')
+      expect(link).toHaveClass('min-h-11')
+    })
+
+    expect(screen.getByRole('link', { name: 'See cakes by post' })).toHaveAttribute(
+      'href',
+      '/cakes-by-post'
+    )
+    expect(screen.getByRole('link', { name: 'Ask about delivery' })).toHaveAttribute(
+      'href',
+      '/custom-cakes'
+    )
+    expect(screen.getByRole('link', { name: 'Message on WhatsApp' })).toHaveAttribute(
+      'href',
+      'https://wa.me/447867218194'
+    )
+    expect(screen.getByRole('link', { name: 'Email us' })).toHaveAttribute(
+      'href',
+      'mailto:hello@olgishcakes.co.uk'
+    )
+    expect(screen.getByRole('link', { name: /call \+44 786 721 8194/i })).toHaveAttribute(
+      'href',
+      'tel:+44 786 721 8194'
+    )
+    expect(screen.getByRole('link', { name: 'Read our terms' })).toHaveAttribute(
+      'href',
+      '/terms'
+    )
+  })
+
+  it('uses the shared cancellation and statutory-rights policies', () => {
+    render(<DeliveryPage />)
+
+    expect(screen.getByText(new RegExp(REFUND_BEFORE_WORK_POLICY, 'i'))).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(REFUND_AFTER_WORK_POLICY, 'i'))).toBeInTheDocument()
+    expect(screen.getByText(new RegExp(STATUTORY_RIGHTS_POLICY, 'i'))).toBeInTheDocument()
+    expect(
+      screen.getByText(/the remedy required by law, which may include a replacement or refund/i)
+    ).toBeInTheDocument()
+  })
+
+  it('outputs connected breadcrumb, webpage and bakery structured data', () => {
     const { container } = render(<DeliveryPage />)
     const blocks = parseJsonLdScripts(container)
     const breadcrumbBlock = blocks.find(block => block['@type'] === 'BreadcrumbList')
     const pageBlock = blocks.find(block => block['@type'] === 'WebPage')
     const bakeryBlock = blocks.find(block => block['@type'] === 'Bakery')
+    const breadcrumbReference = pageBlock?.breadcrumb as Record<string, unknown>
 
     expect(blocks).toHaveLength(3)
-    expect(breadcrumbBlock).toBeDefined()
-    expect(pageBlock).toBeDefined()
-    expect(bakeryBlock).toBeDefined()
+    expect(breadcrumbBlock?.['@id']).toBe('https://olgishcakes.co.uk/delivery#breadcrumb')
+    expect(breadcrumbReference['@id']).toBe(breadcrumbBlock?.['@id'])
     expect((breadcrumbBlock?.itemListElement as Array<Record<string, unknown>>)[1]?.name).toBe(
       'Delivery and returns'
     )
-    expect(pageBlock?.name).toBe('Delivery and Returns | Olgish Cakes')
+    expect(pageBlock?.name).toBe('Delivery and Returns')
     expect(bakeryBlock?.telephone).toBe('+44 786 721 8194')
     expect((bakeryBlock?.areaServed as Array<Record<string, unknown>>)[1]?.name).toBe('Yorkshire')
   })

@@ -7,7 +7,8 @@ import {
   Avatar,
 } from "@/lib/daisy-ui";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useQuery } from '@tanstack/react-query'
+import { Providers } from '@/app/providers'
 import { fetchTrustpilotReviews } from "@/app/lib/trustpilot";
 import { designTokens } from "@/lib/design-system";
 import {
@@ -34,26 +35,21 @@ interface TrustpilotReviewsProps {
 }
 
 export function TrustpilotReviews({ productName }: TrustpilotReviewsProps) {
-  const [reviews, setReviews] = useState<Review[] | null>(null);
+  return (
+    <Providers>
+      <TrustpilotReviewsInner productName={productName} />
+    </Providers>
+  )
+}
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadReviews() {
-      const data = await fetchTrustpilotReviews(productName, controller.signal);
-      if (controller.signal.aborted) {
-        return;
-      }
-
-      setReviews(data || null);
-    }
-
-    loadReviews();
-
-    return () => {
-      controller.abort();
-    };
-  }, [productName]);
+function TrustpilotReviewsInner({ productName }: TrustpilotReviewsProps) {
+  const reviewsQuery = useQuery<Review[] | null>({
+    queryKey: ['trustpilot-reviews', productName],
+    queryFn: ({ signal }) => fetchTrustpilotReviews(productName, signal),
+    retry: false,
+    staleTime: 60 * 60 * 1000
+  })
+  const reviews = reviewsQuery.data ?? null
 
   // Don't render anything if there are no reviews
   if (!reviews || reviews.length === 0) {
@@ -188,7 +184,7 @@ export function TrustpilotReviews({ productName }: TrustpilotReviewsProps) {
             fontStyle: "italic",
           }}
         >
-          These reviews are from verified purchases on Trustpilot
+          Reviews published on Trustpilot
         </BodyText>
       </Box>
     </DesignContainer>

@@ -389,23 +389,10 @@ describe('ui-components', () => {
       expect(screen.queryByText('From')).not.toBeInTheDocument()
     })
 
-    it('should include schema.org metadata', () => {
+    it('should not emit offer microdata without product-level evidence', () => {
       const { container } = render(<PriceDisplay price={30} />)
 
-      const priceMeta = container.querySelector('[itemprop="price"]')
-      const currencyMeta = container.querySelector('[itemprop="priceCurrency"]')
-      const availabilityMeta = container.querySelector('[itemprop="availability"]')
-
-      expect(priceMeta).toBeTruthy()
-      expect(currencyMeta).toBeTruthy()
-      expect(availabilityMeta).toBeTruthy()
-    })
-
-    it('should set price content attribute', () => {
-      const { container } = render(<PriceDisplay price={42.50} />)
-
-      const priceElement = container.querySelector('[itemprop="price"]')
-      expect(priceElement?.getAttribute('content')).toBe('42.5')
+      expect(container.querySelector('[itemprop]')).toBeNull()
     })
 
     it('should format whole numbers without decimals', () => {

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { generateCsrfToken, getCsrfTokenCookieName } from '@/lib/csrf'
+import { logger } from '@/lib/logger'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,12 +27,15 @@ export async function GET() {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 3600, // 1 hour
-      path: '/',
+      path: '/'
     })
 
     return response
   } catch (error) {
-    console.error('Failed to generate CSRF token', error)
+    logger.error('Failed to generate CSRF token', {
+      operation: 'csrf-token.generate',
+      ...toSafeOperationalError(error)
+    })
 
     return NextResponse.json(
       { error: 'Failed to generate CSRF token' },

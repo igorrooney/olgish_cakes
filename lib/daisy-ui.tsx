@@ -225,6 +225,15 @@ const responsiveDisplayClasses: Record<string, Record<string, string>> = {
     inline: 'md:inline',
     'inline-block': 'md:inline-block'
   },
+  tablet: {
+    none: 'tablet:hidden',
+    block: 'tablet:block',
+    flex: 'tablet:flex',
+    'inline-flex': 'tablet:inline-flex',
+    grid: 'tablet:grid',
+    inline: 'tablet:inline',
+    'inline-block': 'tablet:inline-block'
+  },
   lg: {
     none: 'lg:hidden',
     block: 'lg:block',

@@ -1,9 +1,13 @@
-import { getClient } from "@/sanity/lib/client";
-import { GiftHamper } from "@/types/giftHamper";
-import { getRevalidateTime } from "./fetchCakes";
-import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
-import { PRODUCTS_DISPLAY_ORDER_QUERY } from "@/lib/queries/productsDisplayOrder";
-import { GIFT_HAMPER_BY_SLUG_QUERY } from '@/lib/queries/giftHampers'
+import { getClient } from '@/sanity/lib/client'
+import { GiftHamper } from '@/types/giftHamper'
+import { getRevalidateTime } from './fetchCakes'
+import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
+import {
+  ALL_GIFT_HAMPERS_QUERY,
+  FEATURED_GIFT_HAMPERS_QUERY,
+  GIFT_HAMPER_BY_SLUG_QUERY
+} from '@/lib/queries/giftHampers'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 interface ProductReference {
   _ref: string
@@ -95,28 +99,7 @@ function extractGiftHampersAndOrder(
 }
 
 export async function getAllGiftHampers(preview = false): Promise<GiftHamper[]> {
-  const query = `{
-    "giftHampers": *[_type == "giftHamper"] | order(name asc, _createdAt desc) {
-      _id,
-      _createdAt,
-      name,
-      slug,
-      shortDescription,
-      description,
-      price,
-      images[] { _type, asset, alt, isMain, caption },
-      isFeatured,
-      "category": coalesce(category, collections[0]->name, "Gift Hampers"),
-      collections[]->{
-        _id,
-        name,
-        isFeatured
-      },
-      ingredients,
-      allergens
-    },
-    "displayOrder": ${PRODUCTS_DISPLAY_ORDER_QUERY}
-  }`;
+  const query = ALL_GIFT_HAMPERS_QUERY
 
   try {
     if (preview) {
@@ -140,12 +123,15 @@ export async function getAllGiftHampers(preview = false): Promise<GiftHamper[]> 
 
     return sortGiftHampersByDisplayOrder(giftHampers, references)
   } catch (error) {
-    console.error("Error fetching all gift hampers:", error);
-    return [];
+    console.error('Sanity read failed', {
+      operation: 'sanity.fetch-all-gift-hampers',
+      ...toSafeOperationalError(error)
+    })
+    return []
   }
 }
 
-export { getRevalidateTime };
+export { getRevalidateTime }
 
 export async function getGiftHamperBySlug(slug: string, preview = false): Promise<GiftHamper | null> {
   const query = GIFT_HAMPER_BY_SLUG_QUERY
@@ -161,29 +147,17 @@ export async function getGiftHamperBySlug(slug: string, preview = false): Promis
     const data = await cachedSanityFetch<GiftHamper | null>(query, { slug }, config)
     return data
   } catch (error) {
-    console.error("Error fetching gift hamper by slug:", error);
-    return null;
+    console.error('Sanity read failed', {
+      operation: 'sanity.fetch-gift-hamper-by-slug',
+      recordReference: slug,
+      ...toSafeOperationalError(error)
+    })
+    return null
   }
 }
 
 export async function getFeaturedGiftHampers(preview = false): Promise<GiftHamper[]> {
-  const query = `{
-    "giftHampers": *[_type == "giftHamper" && isFeatured == true] | order(name asc, _createdAt desc) {
-      _id,
-      _createdAt,
-      name,
-      slug,
-      price,
-      images[] { _type, asset, alt, isMain },
-      "category": coalesce(category, collections[0]->name, "Gift Hampers"),
-      collections[]->{
-        _id,
-        name,
-        isFeatured
-      }
-    },
-    "displayOrder": ${PRODUCTS_DISPLAY_ORDER_QUERY}
-  }`;
+  const query = FEATURED_GIFT_HAMPERS_QUERY
   
   try {
     if (preview) {
@@ -206,8 +180,11 @@ export async function getFeaturedGiftHampers(preview = false): Promise<GiftHampe
     } = extractGiftHampersAndOrder(data)
 
     return sortGiftHampersByDisplayOrder(giftHampers, references)
-  } catch (e) {
-    console.error("Error fetching featured hampers:", e);
-    return [];
+  } catch (error) {
+    console.error('Sanity read failed', {
+      operation: 'sanity.fetch-featured-gift-hampers',
+      ...toSafeOperationalError(error)
+    })
+    return []
   }
 }

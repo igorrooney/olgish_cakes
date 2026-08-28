@@ -23,8 +23,17 @@ import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo } from "react";
+import { useMutation } from '@tanstack/react-query'
+import { useAbortableRequest } from '@/app/hooks/useAbortableRequest'
+import { Providers } from '@/app/providers'
 import { csrfTokenLoadErrorMessage, fetchCsrfToken } from "@/app/services/csrfToken";
+import { SensitiveDataConsentFields } from '@/app/components/legal/SensitiveDataConsentFields'
+import {
+  sensitiveDataConsentError,
+  sensitiveDataConsentField
+} from '@/lib/legal/sensitive-data-consent'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 // Configure dayjs for British locale
 dayjs.locale("en-gb");
@@ -32,6 +41,27 @@ dayjs.locale("en-gb");
 const { colors, typography, spacing, borderRadius } = designTokens;
 
 const MotionBox = motion.create(Box);
+
+interface ContactRequestInput {
+  payload: FormData
+  signal: AbortSignal
+}
+
+async function submitContactRequest({ payload, signal }: ContactRequestInput) {
+  const csrfToken = await fetchCsrfToken(signal)
+  payload.append('csrfToken', csrfToken)
+
+  const response = await fetch('/api/contact', {
+    method: 'POST',
+    body: payload,
+    credentials: 'same-origin',
+    signal
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to send message')
+  }
+}
 
 export interface ContactFormData {
   name: string;
@@ -46,6 +76,8 @@ export interface ContactFormData {
   giftNote?: string;
   note?: string;
   designImage?: File;
+  dietaryHealthInformation: string;
+  dietaryHealthConsent: boolean;
 }
 
 interface ContactFormProps {
@@ -74,7 +106,15 @@ const formFieldAnimation = {
   transition: { duration: 0.3 },
 };
 
-export function ContactForm({
+export function ContactForm(props: ContactFormProps = {}) {
+  return (
+    <Providers>
+      <ContactFormInner {...props} />
+    </Providers>
+  )
+}
+
+function ContactFormInner({
   onSubmit,
   isSubmitting: externalIsSubmitting,
   submitStatus: externalSubmitStatus,
@@ -91,7 +131,7 @@ export function ContactForm({
   showGiftNote = false,
   showNote = false,
   suppressStructuredData = false,
-}: ContactFormProps = {}) {
+}: ContactFormProps) {
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     address: "",
@@ -104,17 +144,22 @@ export function ContactForm({
     message: "",
     giftNote: "",
     note: "",
+    dietaryHealthInformation: "",
+    dietaryHealthConsent: false,
   });
-  const [internalIsSubmitting, setInternalIsSubmitting] = useState(false);
   const [internalSubmitStatus, setInternalSubmitStatus] = useState<"success" | "error" | null>(
     null
   );
   const [internalErrorMessage, setInternalErrorMessage] = useState("There was an error sending your message. Please try again.");
+  const [dietaryHealthConsentError, setDietaryHealthConsentError] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const submitAbortControllerRef = useRef<AbortController | null>(null);
+  const submitRequest = useAbortableRequest()
+  const submitMutation = useMutation({
+    mutationFn: submitContactRequest
+  })
 
-  const isSubmitting = externalIsSubmitting ?? internalIsSubmitting;
+  const isSubmitting = externalIsSubmitting ?? submitMutation.isPending;
   const submitStatus = externalSubmitStatus ?? internalSubmitStatus;
 
   // Generate comprehensive structured data for contact form
@@ -138,10 +183,10 @@ export function ContactForm({
           description: "Authentic Ukrainian honey cakes made with love in Leeds",
           address: {
             "@type": "PostalAddress",
-            streetAddress: "Allerton Grange",
+            streetAddress: "15 Allerton Grange Avenue",
             addressLocality: "Leeds",
             addressRegion: "West Yorkshire",
-            postalCode: "LS17",
+            postalCode: "LS17 6PR",
             addressCountry: "GB",
           },
           contactPoint: {
@@ -192,10 +237,10 @@ export function ContactForm({
         description: "Authentic Ukrainian honey cakes made with love in Leeds",
         address: {
           "@type": "PostalAddress",
-          streetAddress: "Allerton Grange",
+          streetAddress: "15 Allerton Grange Avenue",
           addressLocality: "Leeds",
           addressRegion: "West Yorkshire",
-          postalCode: "LS17",
+          postalCode: "LS17 6PR",
           addressCountry: "GB",
         },
         areaServed: {
@@ -272,24 +317,23 @@ export function ContactForm({
   async function handleSubmit(event: React.FormEvent<HTMLElement>) {
     event.preventDefault();
 
+    if (formData.dietaryHealthInformation.trim().length > 0 && !formData.dietaryHealthConsent) {
+      setDietaryHealthConsentError(sensitiveDataConsentError);
+      window.requestAnimationFrame(() => {
+        document.getElementById(sensitiveDataConsentField)?.focus();
+      });
+      return;
+    }
+
     if (onSubmit) {
       await onSubmit(formData);
       return;
     }
 
-    setInternalIsSubmitting(true);
     setInternalSubmitStatus(null);
     setInternalErrorMessage("There was an error sending your message. Please try again.");
 
-    if (submitAbortControllerRef.current) {
-      submitAbortControllerRef.current.abort();
-    }
-
-    const controller = new AbortController();
-    submitAbortControllerRef.current = controller;
-
     try {
-      const csrfToken = await fetchCsrfToken(controller.signal);
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
       if (formData.address) {
@@ -319,19 +363,17 @@ export function ContactForm({
       if (formData.designImage) {
         formDataToSend.append("designImage", formData.designImage);
       }
-      formDataToSend.append("csrfToken", csrfToken);
+      const dietaryHealthInformation = formData.dietaryHealthInformation.trim();
+      if (dietaryHealthInformation.length > 0) {
+        formDataToSend.append("dietaryHealthInformation", dietaryHealthInformation);
+        formDataToSend.append("dietaryHealthConsent", String(formData.dietaryHealthConsent));
+      }
       formDataToSend.append("isOrderForm", isOrderForm.toString());
 
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        body: formDataToSend,
-        credentials: "same-origin",
-        signal: controller.signal,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to send message");
-      }
+      await submitMutation.mutateAsync({
+        payload: formDataToSend,
+        signal: submitRequest.start()
+      })
 
       setInternalSubmitStatus("success");
       setFormData({
@@ -344,14 +386,22 @@ export function ContactForm({
         cakeInterest: "",
         dateNeeded: null,
         message: "",
+        giftNote: "",
+        note: "",
+        dietaryHealthInformation: "",
+        dietaryHealthConsent: false,
       });
+      setDietaryHealthConsentError("");
       setPreviewUrl(null);
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
         return;
       }
 
-      console.error("Form submission error:", error);
+      console.error("Form submission failed", {
+        operation: "contact-form.submit",
+        ...toSafeOperationalError(error),
+      });
       if (
         error instanceof Error &&
         (
@@ -363,21 +413,8 @@ export function ContactForm({
         setInternalErrorMessage(csrfTokenLoadErrorMessage);
       }
       setInternalSubmitStatus("error");
-    } finally {
-      setInternalIsSubmitting(false);
-      if (submitAbortControllerRef.current === controller) {
-        submitAbortControllerRef.current = null;
-      }
     }
   }
-
-  useEffect(() => {
-    return () => {
-      if (submitAbortControllerRef.current) {
-        submitAbortControllerRef.current.abort();
-      }
-    };
-  }, []);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="en-gb">
@@ -573,7 +610,7 @@ export function ContactForm({
                 multiline
                 rows={3}
                 disabled={isSubmitting}
-                placeholder="Any special instructions, dietary requirements, or additional information..."
+                placeholder="Any special instructions, ordinary dietary preferences, or additional information. Use the separate field below for allergy or health information."
                 size="medium"
                 helperText="Please provide any special requirements or additional information for your order"
                 FormHelperTextProps={{
@@ -622,7 +659,7 @@ export function ContactForm({
                 disabled={isSubmitting}
                 placeholder={
                   isOrderForm
-                    ? "Tell us about your cake requirements, any special requests, or dietary restrictions..."
+                    ? "Tell us about your cake requirements, special requests, or ordinary dietary preferences. Use the separate field below for allergy or health information."
                     : "How can we help you?"
                 }
                 size="medium"
@@ -817,6 +854,32 @@ export function ContactForm({
               </MotionBox>
             )}
           </AnimatePresence>
+
+          <SensitiveDataConsentFields
+            information={formData.dietaryHealthInformation}
+            consent={formData.dietaryHealthConsent}
+            informationError={undefined}
+            consentError={dietaryHealthConsentError || undefined}
+            disabled={isSubmitting}
+            onInformationChange={(dietaryHealthInformation) => {
+              setFormData((current) => ({
+                ...current,
+                dietaryHealthInformation
+              }));
+              if (dietaryHealthInformation.trim().length === 0) {
+                setDietaryHealthConsentError("");
+              }
+            }}
+            onConsentChange={(dietaryHealthConsent) => {
+              setFormData((current) => ({
+                ...current,
+                dietaryHealthConsent
+              }));
+              if (dietaryHealthConsent) {
+                setDietaryHealthConsentError("");
+              }
+            }}
+          />
 
           {showButton && (
             <MotionBox {...formFieldAnimation} transition={{ delay: 0.7 }}>

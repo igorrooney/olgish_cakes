@@ -5,6 +5,7 @@ import {
   getLatestInstagramPosts,
   isRecoverableInstagramError
 } from '@/app/utils/fetchInstagramPosts'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 const buildCacheControlHeader = (revalidateSeconds: number) =>
   `public, s-maxage=${revalidateSeconds}, stale-while-revalidate=${revalidateSeconds}`
@@ -24,13 +25,16 @@ export async function GET(request: Request) {
       { headers: { 'Cache-Control': buildCacheControlHeader(revalidateSeconds) } }
     )
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
+    const safeError = toSafeOperationalError(error)
     if (isRecoverableInstagramError(error)) {
       const revalidateSeconds = getInstagramRevalidateSeconds()
 
       console.warn(
         'Instagram API route warning. Refresh INSTAGRAM_ACCESS_TOKEN if the token has expired.',
-        message
+        {
+          operation: 'instagram.posts.fetch',
+          ...safeError
+        }
       )
 
       return NextResponse.json(
@@ -39,7 +43,10 @@ export async function GET(request: Request) {
       )
     }
 
-    console.error('Instagram API route error:', message)
+    console.error('Instagram API route error', {
+      operation: 'instagram.posts.fetch',
+      ...safeError
+    })
     return NextResponse.json(
       { error: 'Unable to fetch Instagram posts' },
       { status: 500 }

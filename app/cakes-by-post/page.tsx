@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { CatalogFaqAccordion } from '../cakes/components/CatalogFaqAccordion'
 import type { TabletCake } from '../cakes/components/types'
 import { CatalogPageTemplate } from '../cakes/CatalogPageTemplate'
@@ -11,14 +12,9 @@ import {
   createCatalogMetadata,
   type ResolvedSearchParams
 } from '../cakes/catalogSeo'
-import { getAllTestimonialsStats } from '../utils/fetchTestimonials'
-import { buildAggregateRating } from '../utils/review-stats'
-import {
-  getMerchantReturnPolicy,
-  getOfferShippingDetails,
-  getPriceValidUntil
-} from '../utils/seo'
+import { getMerchantReturnPolicy } from '../utils/seo'
 import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 const baseUrl = 'https://olgishcakes.co.uk'
 const brandId = `${baseUrl}/#brand`
@@ -101,15 +97,12 @@ function createGiftHamperItemListStructuredData(giftHampers: TabletCake[]): Stru
                 '@type': 'Offer',
                 price: formatStructuredDataPrice(hamper.price, 0),
                 priceCurrency: 'GBP',
-                availability: 'https://schema.org/InStock',
-                priceValidUntil: getPriceValidUntil(30),
                 url: hamperUrl,
                 seller: {
                   '@type': 'Organization',
                   name: 'Olgish Cakes',
                   url: baseUrl
                 },
-                shippingDetails: getOfferShippingDetails(),
                 hasMerchantReturnPolicy: getMerchantReturnPolicy()
               }
             }
@@ -132,16 +125,17 @@ function resolveGiftHampersForStructuredData(catalogData: {
 }
 
 export default async function CakesByPostPage() {
-  const [catalogData, customCakesPriceCeilingHint, testimonialStats] = await Promise.all([
+  const [catalogData, customCakesPriceCeilingHint] = await Promise.all([
     getCatalogPageData('giftHampers'),
     getCatalogCustomCakesPriceCeiling().catch((error) => {
-      console.warn('Failed to fetch custom cakes price ceiling hint for gift hampers page:', error)
+      console.warn('Custom cake price ceiling hint fetch failed', {
+        operation: 'gift-hampers.price-ceiling.fetch',
+        ...toSafeOperationalError(error)
+      })
       return undefined
-    }),
-    getAllTestimonialsStats()
+    })
   ])
 
-  const aggregateRating = buildAggregateRating(testimonialStats)
   const giftHampersForStructuredData = resolveGiftHampersForStructuredData(catalogData)
   const localBusinessData: StructuredData = {
     '@context': 'https://schema.org',
@@ -152,17 +146,16 @@ export default async function CakesByPostPage() {
     email: 'hello@olgishcakes.co.uk',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Allerton Grange',
+      streetAddress: '15 Allerton Grange Avenue',
       addressLocality: 'Leeds',
-      postalCode: 'LS17',
+      postalCode: 'LS17 6PR',
       addressRegion: 'West Yorkshire',
       addressCountry: 'GB'
     },
     sameAs: [
       'https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB',
       'https://www.instagram.com/olgish_cakes/'
-    ],
-    ...(aggregateRating ? { aggregateRating } : {})
+    ]
   }
 
   return (
@@ -178,13 +171,32 @@ export default async function CakesByPostPage() {
       lazyCustomCakesPriceCeilingHint={customCakesPriceCeilingHint}
       lazyByPostCakesEndpoint='/api/catalog/by-post-cakes'
       postCatalogContent={(
-        <CatalogFaqAccordion
-          sectionId='cakes-by-post-faq-title'
-          title='Cakes by post FAQs'
-          intro='Quick answers about UK delivery, gifting options, and what to expect from cakes by post.'
-          mobileIntro='UK delivery and gifting FAQs for cakes by post.'
-          items={giftHampersCatalogFaqItems}
-        />
+        <>
+          <CatalogFaqAccordion
+            sectionId='cakes-by-post-faq-title'
+            title='Cakes by post FAQs'
+            intro='Quick answers about UK delivery, gifting options, and what to expect from cakes by post.'
+            mobileIntro='UK delivery and gifting FAQs for cakes by post.'
+            items={giftHampersCatalogFaqItems}
+          />
+          <aside
+            aria-label='Delivery and returns information'
+            className='mx-auto w-full max-w-5xl px-4 pb-16 tablet:px-0'
+          >
+            <div className='alert border border-base-300 bg-base-100 text-base-content shadow-sm'>
+              <div>
+                <p className='font-semibold'>Need delivery or returns details?</p>
+                <p className='mt-1 text-sm leading-6 text-base-content/75'>
+                  Read how UK post, local delivery, Leeds collection, cancellations and damaged
+                  orders are handled.
+                </p>
+              </div>
+              <Link href='/delivery' className='btn btn-outline min-h-11 font-semibold normal-case'>
+                Delivery and returns
+              </Link>
+            </div>
+          </aside>
+        </>
       )}
       localBusinessData={localBusinessData}
       additionalStructuredData={[

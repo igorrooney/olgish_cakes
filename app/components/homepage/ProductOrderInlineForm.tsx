@@ -1,7 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import Link from 'next/link'
+import { SensitiveDataConsentFields } from '@/app/components/legal/SensitiveDataConsentFields'
+import { useMemo, useRef, useState } from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
 import { EmailIcon } from '../icons/EmailIcon'
 import { PhoneIcon } from '../icons/PhoneIcon'
@@ -22,6 +24,13 @@ import {
   csrfTokenLoadErrorMessage,
   fetchCsrfToken
 } from '@/app/services/csrfToken'
+import { useAbortableRequest } from '@/app/hooks/useAbortableRequest'
+import { CURRENT_TERMS_VERSION } from '@/lib/legal/legal-config'
+import {
+  addSensitiveDataConsentIssue,
+  dietaryHealthConsentSchema,
+  dietaryHealthInformationSchema
+} from '@/lib/legal/sensitive-data-consent'
 
 const ukPostcodePattern = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i
 
@@ -67,6 +76,8 @@ const inlineOrderSchema = z.object({
     }),
   requirements: z.string().optional(),
   message: z.string().optional(),
+  dietaryHealthInformation: dietaryHealthInformationSchema,
+  dietaryHealthConsent: dietaryHealthConsentSchema,
   giftNote: z.string().trim().refine((value) => value.length <= 500, {
     message: 'Gift note must be 500 characters or fewer'
   })
@@ -91,6 +102,8 @@ const postalOrderFieldMessages = {
 
 function validateInlineOrderValues(values: InlineOrderValues, isPostalOrder: boolean) {
   return inlineOrderSchema.superRefine((data, ctx) => {
+    addSensitiveDataConsentIssue(data, ctx)
+
     if (!isPostalOrder) {
       return
     }
@@ -154,7 +167,31 @@ const initialFormState: InlineOrderValues = {
   date: '',
   requirements: '',
   message: '',
+  dietaryHealthInformation: '',
+  dietaryHealthConsent: false,
   giftNote: ''
+}
+
+interface InlineOrderMutationInput {
+  payload: FormData
+  signal: AbortSignal
+}
+
+async function submitInlineOrder({ payload, signal }: InlineOrderMutationInput) {
+  const csrfToken = await fetchCsrfToken(signal)
+
+  if (!csrfToken) {
+    throw new Error(csrfTokenLoadErrorMessage)
+  }
+
+  payload.append('csrfToken', csrfToken)
+
+  return fetch('/api/contact', {
+    method: 'POST',
+    body: payload,
+    credentials: 'same-origin',
+    signal
+  })
 }
 
 function formatPrice(value: number) {
@@ -217,7 +254,10 @@ export function ProductOrderInlineForm({
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasSubmittedSuccessfully, setHasSubmittedSuccessfully] = useState(false)
-  const abortControllerRef = useRef<AbortController | null>(null)
+  const request = useAbortableRequest()
+  const submitMutation = useMutation({
+    mutationFn: submitInlineOrder
+  })
   const designImageInputRef = useRef<HTMLInputElement | null>(null)
   const minDate = getTodayDateInputValue()
   const shouldFetchOccasionOptions = showOccasionField && occasionOptions === undefined
@@ -250,8 +290,8 @@ export function ProductOrderInlineForm({
     : 'bg-primary-500 hover:bg-primary-700'
   const buttonLabel = hasSubmittedSuccessfully ? 'Request sent' : 'Submit order'
   const successMessage = isPostalOrder
-    ? "Thank you, your cakes by post request has arrived safely. We'll check the delivery details and send the next steps within 24 hours."
-    : "Thank you, your order request has arrived safely. We'll review the details and get back to you within 24 hours."
+    ? "Thank you, your cakes by post request has arrived safely. We'll reply as soon as we can."
+    : "Thank you, your order request has arrived safely. We'll reply as soon as we can."
   const userRequestDetails = useMemo(() => {
     const value = requestMode === 'custom-design'
       ? formData.requirements?.trim()
@@ -272,14 +312,6 @@ export function ProductOrderInlineForm({
 
     return sections.join('\n')
   }, [contextLines, isPostalOrder, requestMode, userRequestDetails])
-
-  useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-      }
-    }
-  }, [])
 
   const focusFirstErrorField = (fieldErrors: Record<string, string>) => {
     const firstErrorField = formFieldOrder.find((field) => fieldErrors[field])
@@ -309,7 +341,11 @@ export function ProductOrderInlineForm({
     })
   }
 
-  const updateField = (field: keyof InlineOrderValues, value: string, clearError = false) => {
+  const updateField = (
+    field: Exclude<keyof InlineOrderValues, 'dietaryHealthConsent'>,
+    value: string,
+    clearError = false
+  ) => {
     if (hasSubmittedSuccessfully) {
       setHasSubmittedSuccessfully(false)
     }
@@ -381,21 +417,10 @@ export function ProductOrderInlineForm({
       return
     }
 
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort()
-    }
-    const controller = new AbortController()
-    abortControllerRef.current = controller
+    const signal = request.start()
 
     try {
-      const csrfToken = await fetchCsrfToken(controller.signal)
-
-      if (!csrfToken) {
-        throw new Error(csrfTokenLoadErrorMessage)
-      }
-
       const payload = new FormData()
-      payload.append('csrfToken', csrfToken)
       payload.append('name', parsed.data.fullName)
       payload.append('email', parsed.data.email)
       const normalizedPhone = parsed.data.phone.trim()
@@ -423,6 +448,11 @@ export function ProductOrderInlineForm({
         payload.append('dateNeeded', normalizedDate)
       }
       payload.append('message', fullMessage)
+      const dietaryHealthInformation = parsed.data.dietaryHealthInformation.trim()
+      if (dietaryHealthInformation.length > 0) {
+        payload.append('dietaryHealthInformation', dietaryHealthInformation)
+        payload.append('dietaryHealthConsent', String(parsed.data.dietaryHealthConsent))
+      }
       payload.append('requestMode', requestMode)
       payload.append('customerMessage', userRequestDetails)
       const normalizedGiftNote = parsed.data.giftNote.trim()
@@ -454,15 +484,24 @@ export function ProductOrderInlineForm({
         payload.append('designImage', designImage)
       }
 
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        body: payload,
-        credentials: 'same-origin',
-        signal: controller.signal
-      })
+      const response = await submitMutation.mutateAsync({ payload, signal })
 
       if (!response.ok) {
-        const errorData = (await response.json().catch(() => ({}))) as { error?: string, details?: string }
+        const errorData = (await response.json().catch(() => ({}))) as {
+          error?: string
+          details?: string
+          fieldErrors?: Record<string, string[] | undefined>
+        }
+        const serverFieldErrors = Object.fromEntries(
+          Object.entries(errorData.fieldErrors ?? {})
+            .filter((entry): entry is [string, string[]] => Boolean(entry[1]?.[0]))
+            .map(([field, messages]) => [field, messages[0]])
+        )
+        if (Object.keys(serverFieldErrors).length > 0) {
+          setErrors(serverFieldErrors)
+          focusFirstErrorField(serverFieldErrors)
+          return
+        }
         const serverMessage = typeof errorData.details === 'string' && errorData.details.length > 0
           ? errorData.details
           : typeof errorData.error === 'string' ? errorData.error : ''
@@ -734,6 +773,37 @@ export function ProductOrderInlineForm({
           </div>
         </div>
       ) : null}
+      <p className='font-body text-xs leading-5 text-base-content/70'>
+        Submitting this form sends a non-binding order request. We will send a final written offer after confirming
+        availability, details and price. A contract starts only when you accept that offer in writing or make the
+        requested payment. Read our{' '}
+        <Link
+          className='link link-primary'
+          href='/terms'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          terms (version {CURRENT_TERMS_VERSION})
+        </Link>.
+      </p>
+      <SensitiveDataConsentFields
+        information={formData.dietaryHealthInformation}
+        consent={formData.dietaryHealthConsent}
+        onInformationChange={(value) => {
+          updateField('dietaryHealthInformation', value, true)
+        }}
+        onConsentChange={(consent) => {
+          setFormData((current) => ({
+            ...current,
+            dietaryHealthConsent: consent
+          }))
+          clearFieldError('dietaryHealthConsent')
+        }}
+        informationError={errors.dietaryHealthInformation}
+        consentError={errors.dietaryHealthConsent}
+        disabled={isSubmitting}
+        className='text-xs leading-5'
+      />
       <button
         type='submit'
         className={`btn h-12 w-full rounded-full text-white shadow-btn tablet:h-12 ${buttonClassName}`}

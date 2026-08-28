@@ -4,7 +4,6 @@
  */
 
 import { Product, Review, WithContext } from "schema-dts";
-import { SKU_PADDING_LENGTH, SKU_PREFIX } from "./schema-constants";
 
 // Type guard for Offer objects
 interface OfferLike {
@@ -132,13 +131,7 @@ export function validateProductSchema(schema: WithContext<Product>): {
       errors.push('Missing or invalid priceCurrency (must be GBP)');
     }
 
-    if (!offer.availability) {
-      errors.push('Missing offer availability');
-    }
-
-    if (!offer.priceValidUntil) {
-      errors.push('Missing priceValidUntil date');
-    } else if (typeof offer.priceValidUntil === 'string') {
+    if (typeof offer.priceValidUntil === 'string') {
       // Validate date format and that it's in the future
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
       if (!dateRegex.test(offer.priceValidUntil)) {
@@ -154,35 +147,13 @@ export function validateProductSchema(schema: WithContext<Product>): {
     }
   }
 
-  // SKU validation with format checks
-  if (!schema.sku || typeof schema.sku !== 'string') {
-    errors.push('Missing or invalid SKU');
-  } else {
-    if (!schema.sku.startsWith(`${SKU_PREFIX}-`)) {
-      errors.push(`SKU must start with "${SKU_PREFIX}-"`);
-    }
-    // Expected format: OC-PRODUCTNAME-001
-    const skuParts = schema.sku.split('-');
-    if (skuParts.length < 3) {
-      errors.push('SKU format invalid (expected: OC-PRODUCTNAME-001)');
-    } else {
-      const numericPart = skuParts[skuParts.length - 1];
-      if (!/^\d{3}$/.test(numericPart)) {
-        errors.push(`SKU must end with ${SKU_PADDING_LENGTH} digits (e.g., 001)`);
-      }
-    }
-    if (schema.sku.length > 50) {
-      errors.push('SKU too long (maximum 50 characters)');
-    }
+  // Optional identifiers are validated only when backed by real product data.
+  if (schema.sku !== undefined && (typeof schema.sku !== 'string' || schema.sku.trim().length === 0)) {
+    errors.push('Invalid SKU')
   }
 
-  // MPN validation with format checks
-  if (!schema.mpn || typeof schema.mpn !== 'string') {
-    errors.push('Missing or invalid MPN');
-  } else if (schema.mpn.length < 3) {
-    errors.push('MPN too short (minimum 3 characters)');
-  } else if (schema.mpn.length > 70) {
-    errors.push('MPN too long (maximum 70 characters for Google Merchant Center)');
+  if (schema.mpn !== undefined && (typeof schema.mpn !== 'string' || schema.mpn.trim().length === 0)) {
+    errors.push('Invalid MPN')
   }
 
   // Brand is required

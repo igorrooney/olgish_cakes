@@ -2,7 +2,10 @@ import 'server-only'
 
 import { randomUUID } from 'crypto'
 import { getSupabaseAdminClient } from '@/lib/supabase-admin-client'
+import { logger } from '@/lib/logger'
 import { resolveCanonicalOrderType } from '@/lib/order-types'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
+import { getCustomCakeStorageBucket } from '@/lib/storage-buckets'
 import type {
   Order,
   OrderCustomer,
@@ -13,7 +16,8 @@ import type {
   OrderMetadata,
   OrderNote,
   OrderNoteImage,
-  OrderPricing
+  OrderPricing,
+  OrderRetentionEvidenceBasis
 } from '@/types/order'
 
 export const ordersTable = 'orders'
@@ -118,6 +122,14 @@ interface SupabaseOrderRow {
   payment_method?: string | null
   created_at: string
   updated_at: string
+  completed_at?: string | null
+  financial_year_ended_at?: string | null
+  retention_due_at?: string | null
+  dietary_health_retention_due_at?: string | null
+  dietary_health_erased_at?: string | null
+  legal_hold?: boolean | null
+  legal_hold_reason?: 'active-complaint' | 'legal-claim' | 'regulatory-request' | 'fraud-investigation' | 'other-necessary-hold' | null
+  legal_hold_review_at?: string | null
 }
 
 export interface SupabaseOrderInput {
@@ -258,7 +270,7 @@ const getMetadataDeliveryRecipientName = (metadata: unknown): string | undefined
     getTrimmedStringField(metadataRecord, 'recipientName')
 }
 
-const getOrderImageBucket = () => process.env.SUPABASE_ENQUIRY_BUCKET || 'custom-cake-enquiries'
+const getOrderImageBucket = getCustomCakeStorageBucket
 
 const isSupabaseFileAsset = (asset: { _type?: string } | undefined): boolean =>
   asset?._type === 'supabase-file'
@@ -425,7 +437,21 @@ export function mapSupabaseOrderRow(
     pricing: mapSupabaseOrderPricing(row),
     messages: relationalMessages ?? [],
     notes: relationalNotes ?? [],
-    metadata: asOrderMetadata(row.metadata)
+    metadata: asOrderMetadata(row.metadata),
+    retentionLifecycle: {
+      ...(row.completed_at ? { completedAt: row.completed_at } : {}),
+      ...(row.financial_year_ended_at ? { financialYearEndedAt: row.financial_year_ended_at } : {}),
+      ...(row.retention_due_at ? { retentionDueAt: row.retention_due_at } : {}),
+      ...(row.dietary_health_retention_due_at
+        ? { dietaryHealthRetentionDueAt: row.dietary_health_retention_due_at }
+        : {}),
+      ...(row.dietary_health_erased_at
+        ? { dietaryHealthErasedAt: row.dietary_health_erased_at }
+        : {}),
+      legalHold: row.legal_hold === true,
+      ...(row.legal_hold_reason ? { legalHoldReason: row.legal_hold_reason } : {}),
+      ...(row.legal_hold_review_at ? { legalHoldReviewAt: row.legal_hold_review_at } : {})
+    }
   }
 }
 
@@ -1029,15 +1055,136 @@ export async function updateSupabaseOrderMetadata(
   )
 }
 
-export async function deleteSupabaseOrder(id: string): Promise<void> {
+export type WithdrawOrderDietaryHealthInformationResult =
+  | { status: 'withdrawn', withdrawnAt: string }
+  | { status: 'already-withdrawn', withdrawnAt: string }
+  | { status: 'not-found' }
+  | { status: 'no-active-information' }
+
+export async function withdrawSupabaseOrderDietaryHealthInformation(
+  identifier: string
+): Promise<WithdrawOrderDietaryHealthInformationResult> {
   const supabase = getSupabaseAdminClient()
-  const { error } = await supabase
-    .from(ordersTable)
-    .delete()
-    .eq('id', id)
+  const { data, error } = await supabase
+    .rpc('withdraw_order_dietary_health_information', {
+      p_identifier: identifier
+    })
 
   if (error) {
-    throw new Error(`Failed to delete Supabase order: ${error.message}`)
+    throw new Error('Failed to withdraw Supabase order dietary-health information')
+  }
+
+  const row: unknown = Array.isArray(data) ? data[0] : data
+  if (!isRecord(row) || typeof row.status !== 'string') {
+    throw new Error('Failed to withdraw Supabase order dietary-health information')
+  }
+
+  if (row.status === 'not-found' || row.status === 'no-active-information') {
+    return { status: row.status }
+  }
+
+  if (
+    (row.status === 'withdrawn' || row.status === 'already-withdrawn') &&
+    typeof row.withdrawn_at === 'string' &&
+    row.withdrawn_at.length > 0
+  ) {
+    return {
+      status: row.status,
+      withdrawnAt: row.withdrawn_at
+    }
+  }
+
+  throw new Error('Failed to withdraw Supabase order dietary-health information')
+}
+
+export type RecordOrderRetentionCompletionResult = {
+  status: 'updated' | 'already-recorded'
+  completedAt: string
+  financialYearEndedAt: string
+  retentionDueAt: string
+}
+
+export class OrderRetentionLifecycleError extends Error {
+  code: string
+  status: number
+
+  constructor(code: string, status: number) {
+    super(code)
+    this.name = 'OrderRetentionLifecycleError'
+    this.code = code
+    this.status = status
+  }
+}
+
+const orderRetentionErrorStatuses: Record<string, number> = {
+  RETENTION_ORDER_NOT_FOUND: 404,
+  RETENTION_ORDER_NOT_TERMINAL: 409,
+  RETENTION_ORDER_LEGAL_HOLD_ACTIVE: 409,
+  RETENTION_DELETION_CLAIM_ACTIVE: 409,
+  RETENTION_ORDER_COMPLETION_DATE_INVALID: 400,
+  RETENTION_ORDER_CONFIRMATION_INVALID: 400,
+  RETENTION_ORDER_EVIDENCE_INVALID: 400,
+  RETENTION_ORDER_ALREADY_RECORDED: 409
+}
+
+const getOrderRetentionErrorCode = (error: unknown) => {
+  if (!isRecord(error)) {
+    return null
+  }
+  const message = error.message
+  if (typeof message !== 'string') {
+    return null
+  }
+
+  return Object.keys(orderRetentionErrorStatuses)
+    .find((code) => message.includes(code)) || null
+}
+
+export async function recordSupabaseOrderRetentionCompletion(input: {
+  orderReference: string
+  effectiveOn: string
+  evidenceBasis: OrderRetentionEvidenceBasis
+  confirmation: string
+}): Promise<RecordOrderRetentionCompletionResult> {
+  const supabase = getSupabaseAdminClient()
+  const { data, error } = await supabase.rpc('record_order_retention_completion', {
+    p_order_reference: input.orderReference,
+    p_effective_on: input.effectiveOn,
+    p_evidence_basis: input.evidenceBasis,
+    p_confirmation: input.confirmation
+  })
+
+  if (error) {
+    const code = getOrderRetentionErrorCode(error)
+
+    if (code) {
+      throw new OrderRetentionLifecycleError(code, orderRetentionErrorStatuses[code])
+    }
+
+    logger.error('Failed to record order retention completion', {
+      operation: 'orders.retention-lifecycle.record-completion',
+      recordReference: input.orderReference,
+      ...toSafeOperationalError(error)
+    })
+    throw new OrderRetentionLifecycleError('RETENTION_ORDER_COMPLETION_FAILED', 500)
+  }
+
+  const row: unknown = Array.isArray(data) ? data[0] : data
+  if (
+    !isRecord(row) ||
+    (row.status !== 'updated' && row.status !== 'already-recorded') ||
+    typeof row.completed_at !== 'string' ||
+    typeof row.financial_year_ended_at !== 'string' ||
+    typeof row.retention_due_at !== 'string'
+  ) {
+    throw new OrderRetentionLifecycleError('RETENTION_ORDER_COMPLETION_FAILED', 500)
+  }
+
+  return {
+    status: row.status,
+    completedAt: row.completed_at,
+    financialYearEndedAt: row.financial_year_ended_at,
+    retentionDueAt: row.retention_due_at
   }
 }
 

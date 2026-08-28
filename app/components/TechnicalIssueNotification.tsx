@@ -121,7 +121,7 @@ export function TechnicalIssueNotification() {
             >
               <Button
                 component={Link}
-                href="/get-custom-quote"
+                href="/custom-cakes"
                 variant="contained"
                 sx={{
                   backgroundColor: colors.primary.main,

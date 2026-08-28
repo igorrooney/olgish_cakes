@@ -26,16 +26,16 @@ describe('BUSINESS_CONSTANTS', () => {
   })
 
   describe('Address', () => {
-    it('should have empty street', () => {
-      expect(BUSINESS_CONSTANTS.ADDRESS.street).toBe('')
+    it('should have the public street address', () => {
+      expect(BUSINESS_CONSTANTS.ADDRESS.street).toBe('15 Allerton Grange Avenue')
     })
 
     it('should have city as Leeds', () => {
       expect(BUSINESS_CONSTANTS.ADDRESS.city).toBe('Leeds')
     })
 
-    it('should have empty postcode', () => {
-      expect(BUSINESS_CONSTANTS.ADDRESS.postcode).toBe('')
+    it('should have the public postcode', () => {
+      expect(BUSINESS_CONSTANTS.ADDRESS.postcode).toBe('LS17 6PR')
     })
 
     it('should have country as United Kingdom', () => {
@@ -58,36 +58,6 @@ describe('BUSINESS_CONSTANTS', () => {
 
     it('should have YouTube URL', () => {
       expect(BUSINESS_CONSTANTS.SOCIAL.youtube).toBe('https://www.youtube.com/channel/UCxv3i6tL5v5KZNjT1z1Rx1Q')
-    })
-  })
-
-  describe('Business Hours', () => {
-    it('should have Monday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.monday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Tuesday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.tuesday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Wednesday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.wednesday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Thursday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.thursday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Friday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.friday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Saturday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.saturday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Sunday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.sunday).toBe('Online orders: 24/7')
     })
   })
 

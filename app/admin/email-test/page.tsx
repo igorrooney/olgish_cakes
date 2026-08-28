@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { AdminAuthGuard } from '@/components/AdminAuthGuard'
 import { EmailTestPageClient } from './EmailTestPageClient'
 import { Providers } from '@/app/providers'
@@ -15,6 +15,10 @@ export const metadata: Metadata = {
 }
 
 export default async function EmailTestPage() {
+  if (process.env.NODE_ENV === 'production') {
+    notFound()
+  }
+
   const authenticated = await isAdminAuthenticated()
 
   if (!authenticated) {

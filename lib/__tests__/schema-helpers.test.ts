@@ -42,7 +42,7 @@ describe('schema-helpers', () => {
       expect(schemas[1]).toBeDefined()
     })
 
-    it('should include required fields (offers, review, aggregateRating)', () => {
+    it('uses offers without inventing review or aggregate-rating evidence', () => {
       const schemas = generatePageProductSchemas(
         mockProducts,
         'test-page',
@@ -55,10 +55,9 @@ describe('schema-helpers', () => {
         expect(validation.isValid).toBe(true)
         expect(validation.errors).toHaveLength(0)
 
-        // Verify all required fields are present
         expect(schema.offers).toBeDefined()
-        expect(schema.review).toBeDefined()
-        expect(schema.aggregateRating).toBeDefined()
+        expect(schema.review).toBeUndefined()
+        expect(schema.aggregateRating).toBeUndefined()
       })
     })
 
@@ -178,7 +177,7 @@ describe('schema-helpers', () => {
 
       expect(() => {
         generatePageProductSchemas([mockProducts[0]], 'test-page')
-      }).toThrow(/Invalid product schema/)
+      }).toThrow('Product structured data could not be generated safely')
 
       // Restore original implementation
       ;(generateProductSchema as jest.Mock).mockRestore()

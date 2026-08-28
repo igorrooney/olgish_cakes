@@ -82,7 +82,11 @@ describe('fetchMarketSchedule', () => {
 
       await getMarketSchedule()
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error fetching market schedule:', expect.any(Error))
+      expect(consoleSpy).toHaveBeenCalledWith('Sanity read failed', {
+        operation: 'sanity.market-schedule.fetch',
+        code: 'OPERATION_FAILED'
+      })
+      expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Fetch failed')
       consoleSpy.mockRestore()
     })
 
@@ -128,6 +132,9 @@ describe('fetchMarketSchedule', () => {
       const result = await getFeaturedMarketEvents(5)
 
       expect(result).toHaveLength(5)
+      const [query, params] = mockFetch.mock.calls[0]
+      expect(query).toContain('[0...$limit]')
+      expect(params.limit).toBe(5)
     })
 
     it('should filter featured events only', async () => {
@@ -153,7 +160,11 @@ describe('fetchMarketSchedule', () => {
 
       await getFeaturedMarketEvents()
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error fetching featured market events:', expect.any(Error))
+      expect(consoleSpy).toHaveBeenCalledWith('Sanity read failed', {
+        operation: 'sanity.market-schedule.fetch-featured',
+        code: 'OPERATION_FAILED'
+      })
+      expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Fetch failed')
       consoleSpy.mockRestore()
     })
   })
@@ -205,8 +216,9 @@ describe('fetchMarketSchedule', () => {
 
       await getUpcomingEvents(10)
 
-      const query = mockFetch.mock.calls[0][0]
-      expect(query).toContain('[0...10]')
+      const [query, params] = mockFetch.mock.calls[0]
+      expect(query).toContain('[0...$limit]')
+      expect(params.limit).toBe(10)
     })
 
     it('should return empty array on error', async () => {
@@ -348,7 +360,11 @@ describe('fetchMarketSchedule', () => {
 
       await searchMarketEvents()
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error searching market events:', expect.any(Error))
+      expect(consoleSpy).toHaveBeenCalledWith('Sanity read failed', {
+        operation: 'sanity.market-schedule.search',
+        code: 'OPERATION_FAILED'
+      })
+      expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Search failed')
       consoleSpy.mockRestore()
     })
   })

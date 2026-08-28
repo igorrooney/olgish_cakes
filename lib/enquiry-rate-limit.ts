@@ -6,6 +6,11 @@ export type EnquiryRateLimitScope =
   | 'contact-enquiry'
   | 'workshop-enquiry'
   | 'custom-cake-enquiry'
+  | 'admin-login'
+  | 'admin-health-withdrawal'
+  | 'admin-health-retention-schedule'
+  | 'admin-privacy-retention'
+  | 'admin-privacy-retention-run-details'
 
 type EnquiryRateLimitRpcRow = {
   allowed: boolean
@@ -14,20 +19,12 @@ type EnquiryRateLimitRpcRow = {
   reset_at: string
   retry_after_seconds: number
 }
-
 type EnquiryRateLimitConfig = {
   scope: EnquiryRateLimitScope
   identifier: string
   maxRequests: number
   windowMs: number
   now?: number
-}
-
-type CleanupConfig = {
-  now?: number
-  cleanupIntervalMs?: number
-  retentionMs?: number
-  force?: boolean
 }
 
 export type EnquiryRateLimitResult = {
@@ -44,10 +41,6 @@ type RpcError = {
 }
 
 type RateLimitClient = Pick<SupabaseAdminClient, 'rpc'>
-
-const DEFAULT_CLEANUP_INTERVAL_MS = 15 * 60 * 1000
-const DEFAULT_RETENTION_MS = 24 * 60 * 60 * 1000
-let lastCleanupAttemptAt = 0
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null
@@ -82,12 +75,24 @@ const parseResetAt = (value: string) => {
   return parsed
 }
 
-const buildCleanupBefore = (now: number, retentionMs: number) =>
-  new Date(now - retentionMs).toISOString()
-
 export const getEnquiryRateLimitIdentifier = (
   request: Pick<NextRequest, 'headers'>
 ) => {
+  const vercelForwardedFor = request.headers.get('x-vercel-forwarded-for')
+
+  if (vercelForwardedFor) {
+    const firstIp = vercelForwardedFor.split(',')[0]?.trim()
+
+    if (firstIp) {
+      return firstIp
+    }
+  }
+
+  const realIp = request.headers.get('x-real-ip')?.trim()
+  if (realIp) {
+    return realIp
+  }
+
   const forwardedFor = request.headers.get('x-forwarded-for')
 
   if (forwardedFor) {
@@ -98,8 +103,7 @@ export const getEnquiryRateLimitIdentifier = (
     }
   }
 
-  const realIp = request.headers.get('x-real-ip')?.trim()
-  return realIp || 'unknown'
+  return 'unknown'
 }
 
 export const applyEnquiryRateLimitHeaders = (
@@ -115,33 +119,6 @@ export const applyEnquiryRateLimitHeaders = (
   }
 
   return response
-}
-
-export const maybeCleanupEnquiryRateLimits = async (
-  supabase: RateLimitClient,
-  config: CleanupConfig = {}
-) => {
-  const now = config.now ?? Date.now()
-  const cleanupIntervalMs = config.cleanupIntervalMs ?? DEFAULT_CLEANUP_INTERVAL_MS
-  const retentionMs = config.retentionMs ?? DEFAULT_RETENTION_MS
-  const force = config.force ?? false
-
-  if (!force && (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID !== undefined)) {
-    return
-  }
-
-  if (!force && now - lastCleanupAttemptAt < cleanupIntervalMs) {
-    return
-  }
-
-  lastCleanupAttemptAt = now
-  const { error } = await supabase.rpc('cleanup_enquiry_rate_limits', {
-    p_before: buildCleanupBefore(now, retentionMs)
-  }) as { error: RpcError | null }
-
-  if (error) {
-    throw new Error(error.message || 'Failed to clean up enquiry rate limits')
-  }
 }
 
 export const takeEnquiryRateLimit = async (
@@ -162,10 +139,6 @@ export const takeEnquiryRateLimit = async (
     throw new Error(error.message || 'Failed to apply enquiry rate limit')
   }
 
-  void maybeCleanupEnquiryRateLimits(supabase).catch((cleanupError: unknown) => {
-    console.error('Failed to clean up enquiry rate limits', cleanupError)
-  })
-
   const row = parseRateLimitRow(data)
 
   return {
@@ -176,8 +149,4 @@ export const takeEnquiryRateLimit = async (
     retryAfterSeconds: row.retry_after_seconds,
     rateLimited: !row.allowed
   }
-}
-
-export const __resetEnquiryRateLimitStateForTests = () => {
-  lastCleanupAttemptAt = 0
 }

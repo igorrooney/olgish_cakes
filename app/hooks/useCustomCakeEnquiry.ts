@@ -12,7 +12,7 @@ import {
 type UseCustomCakeEnquiryOptions = UseMutationOptions<
   Record<string, unknown>,
   SubmissionError,
-  { submissionData: FormData; signal?: AbortSignal }
+  { submissionData: FormData; signal: AbortSignal }
 >
 
 export const useCustomCakeEnquiry = (options?: UseCustomCakeEnquiryOptions) => {
@@ -24,7 +24,7 @@ export const useCustomCakeEnquiry = (options?: UseCustomCakeEnquiryOptions) => {
   const submitMutation = useMutation<
     Record<string, unknown>,
     SubmissionError,
-    { submissionData: FormData; signal?: AbortSignal }
+    { submissionData: FormData; signal: AbortSignal }
   >({
     mutationFn: ({ submissionData, signal }) =>
       submitCustomCakeEnquiry(submissionData, signal),

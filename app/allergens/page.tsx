@@ -1,10 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BUSINESS_CONSTANTS, EMAIL_UTILS, PHONE_UTILS } from '@/lib/constants'
-import { getAllergensPageData } from '@/lib/allergens-page-data'
 import { ALLERGEN_CROSS_CONTACT_POLICY } from '@/lib/public-policies'
-
-type StructuredData = Record<string, unknown>
 
 type FaqItem = {
   question: string
@@ -14,22 +11,42 @@ type FaqItem = {
 const baseUrl = BUSINESS_CONSTANTS.BASE_URL
 const pageUrl = `${baseUrl}/allergens`
 const socialImageUrl = `${baseUrl}/images/olgish-cakes-logo-bakery-brand.png`
-const title = 'Allergens | Olgish Cakes'
+const title = 'Allergens'
+const socialTitle = 'Allergen information | Olgish Cakes'
 const description =
-  'Allergen information for Olgish Cakes, including kitchen handling, cross-contact, common ingredients and what to send before ordering.'
+  'Allergen information for Olgish Cakes, including kitchen handling, cross-contact and how we’ll check an exact cake or postal product before ordering.'
+
+const pageContainerClassName = 'mx-auto w-full max-w-4xl'
+const sectionClassName = 'px-4 py-8 tablet:px-10 tablet:py-12'
+const sectionTitleClassName =
+  'font-oldenburg text-3xl leading-tight text-primary-800 tablet:text-4xl'
+const articleTitleClassName =
+  'font-oldenburg text-2xl leading-tight text-primary-800 tablet:text-3xl'
+const bodyCopyClassName =
+  'max-w-3xl space-y-4 text-base leading-7 text-base-content/80 tablet:text-lg tablet:leading-8'
+const primaryButtonClassName =
+  'btn btn-primary min-h-11 rounded-full px-6 font-semibold normal-case'
+const secondaryButtonClassName =
+  'btn btn-outline min-h-11 rounded-full border-primary-300 px-5 font-semibold normal-case text-primary-800'
+const supportingLinkClassName =
+  'link link-primary inline-flex min-h-11 items-center py-2 text-sm font-semibold'
+const faqClassName =
+  'collapse group rounded-none border-b border-base-300 bg-transparent py-1 focus-within:relative focus-within:z-10'
 
 const allergenFaqs: FaqItem[] = [
   {
     question: 'Can you check a specific product before I order?',
-    answer: 'Yes. Send the exact cake or postal product you are considering and the allergen you need to avoid, and it can be checked before you place the order.'
+    answer:
+      'Yes. Send us the exact cake or postal product, the allergen or ingredient you need to avoid, and the date you need it. We’ll check the current recipe and supplier information before you order.'
   },
   {
     question: 'Can any product be guaranteed completely free from cross-contact?',
     answer: `No. ${ALLERGEN_CROSS_CONTACT_POLICY}`
   },
   {
-    question: 'Is a posted cake easier to check than a bespoke cake?',
-    answer: 'Usually yes. The cakes-by-post range is narrower and more consistent than bespoke celebration cakes, so it is often easier to check.'
+    question: 'Does vegan-friendly or gluten-friendly mean allergen-free?',
+    answer:
+      'No. These descriptions refer to recipe choices, not an allergen-free kitchen. Products may still be exposed to allergens handled in the kitchen, so please contact us before ordering.'
   }
 ]
 
@@ -41,7 +58,7 @@ export const metadata: Metadata = {
     canonical: pageUrl
   },
   openGraph: {
-    title,
+    title: socialTitle,
     description,
     url: pageUrl,
     siteName: BUSINESS_CONSTANTS.NAME,
@@ -52,15 +69,23 @@ export const metadata: Metadata = {
         url: socialImageUrl,
         width: 1200,
         height: 630,
-        alt: 'Olgish Cakes logo and bakery branding'
+        alt: 'Olgish Cakes logo and bakery branding',
+        type: 'image/png'
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title,
+    title: socialTitle,
     description,
-    images: [socialImageUrl]
+    images: [
+      {
+        url: socialImageUrl,
+        width: 1200,
+        height: 630,
+        alt: 'Olgish Cakes logo and bakery branding'
+      }
+    ]
   },
   robots: {
     index: true,
@@ -68,286 +93,210 @@ export const metadata: Metadata = {
   }
 }
 
-const toJsonLdScript = (value: StructuredData) => JSON.stringify(value).replace(/</g, '\\u003c')
-
-function buildBreadcrumbStructuredData(): StructuredData {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: baseUrl
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Allergens',
-        item: pageUrl
-      }
-    ]
-  }
-}
-
-function buildWebPageStructuredData(): StructuredData {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    '@id': `${pageUrl}#webpage`,
-    name: title,
-    description,
-    url: pageUrl,
-    isPartOf: {
-      '@id': `${baseUrl}/#website`
-    },
-    about: {
-      '@type': 'Thing',
-      name: 'Allergen information and cross-contact guidance'
-    },
-    breadcrumb: {
-      '@id': `${pageUrl}#breadcrumb`
-    }
-  }
-}
-
-function buildOrganizationStructuredData(): StructuredData {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Bakery',
-    '@id': `${baseUrl}/#organization`,
-    name: BUSINESS_CONSTANTS.NAME,
-    url: baseUrl,
-    telephone: BUSINESS_CONSTANTS.PHONE,
-    email: BUSINESS_CONSTANTS.EMAIL,
-    image: socialImageUrl,
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Leeds',
-      addressCountry: 'GB'
-    },
-    areaServed: {
-      '@type': 'Country',
-      name: 'United Kingdom'
-    }
-  }
-}
-
 function BulletList({ items }: { items: string[] }) {
   return (
-    <ul className='space-y-3'>
+    <ul className='list-disc space-y-3 pl-5 text-base leading-7 text-base-content/80 tablet:text-lg tablet:leading-8'>
       {items.map((item) => (
-        <li key={item} className='flex items-start gap-3'>
-          <span aria-hidden='true' className='mt-[0.65rem] h-px w-5 shrink-0 bg-primary-500' />
-          <span className='text-sm leading-6 text-base-content/80 tablet:text-[15px] tablet:leading-7'>
-            {item}
-          </span>
-        </li>
+        <li key={item}>{item}</li>
       ))}
     </ul>
   )
 }
 
-export default async function AllergensPage() {
-  const allergenData = await getAllergensPageData()
-  const nutExamples = allergenData.nutOrPeanutCakeNames.slice(0, 5)
-  const advisoryExamples = allergenData.advisoryAllergens
-
+function WarningIcon() {
   return (
-    <>
-      <script
-        type='application/ld+json'
-        dangerouslySetInnerHTML={{ __html: toJsonLdScript(buildBreadcrumbStructuredData()) }}
+    <svg
+      aria-hidden='true'
+      className='mt-0.5 h-5 w-5 shrink-0'
+      fill='none'
+      viewBox='0 0 24 24'
+      stroke='currentColor'
+      strokeWidth='2'
+    >
+      <path
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        d='M12 9v3.75m9.303 3.376c.866 1.5-.217 3.374-1.948 3.374H4.645c-1.73 0-2.813-1.874-1.948-3.374L10.052 3.38c.866-1.5 3.03-1.5 3.896 0l7.355 12.746ZM12 15.75h.008v.008H12v-.008Z'
       />
-      <script
-        type='application/ld+json'
-        dangerouslySetInnerHTML={{ __html: toJsonLdScript(buildWebPageStructuredData()) }}
-      />
-      <script
-        type='application/ld+json'
-        dangerouslySetInnerHTML={{ __html: toJsonLdScript(buildOrganizationStructuredData()) }}
-      />
-      <main className='min-h-screen bg-base-100 text-base-content'>
-        <section className='border-b border-base-200 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-primary-50)_24%,var(--color-base-100)_76%),var(--color-base-100))] px-4 py-8 tablet:px-10 tablet:py-12'>
-          <div className='homepage-container'>
-            <div className='mx-auto max-w-[900px]'>
-              <p className='text-xs font-semibold uppercase tracking-[0.18em] text-primary-700'>
-                Allergen information
+    </svg>
+  )
+}
+
+export default function AllergensPage() {
+  return (
+    <div className='min-h-screen bg-base-100 text-base-content'>
+      <section
+        aria-labelledby='allergens-page-title'
+        className='border-b border-base-200 bg-primary-50/30 px-4 py-8 tablet:px-10 tablet:py-12'
+      >
+        <div className={pageContainerClassName}>
+          <p className='text-xs font-semibold uppercase tracking-widest text-primary-700'>
+            Allergen information
+          </p>
+          <h1
+            id='allergens-page-title'
+            className='mt-3 max-w-2xl font-oldenburg text-4xl leading-tight text-primary-800 tablet:text-5xl'
+          >
+            Allergens and kitchen handling
+          </h1>
+          <div className={`mt-5 ${bodyCopyClassName}`}>
+            <p>
+              We use ingredients that contain allergens, including milk, eggs and wheat. Other
+              allergens vary by recipe and supplier.
+            </p>
+            <p>
+              If you have an allergy, intolerance or coeliac disease, please contact us before
+              ordering. We’ll check the exact product, current recipe and supplier information with
+              you.
+            </p>
+          </div>
+          <div className='alert alert-warning mt-6 w-full max-w-3xl items-start text-sm tablet:text-base'>
+            <WarningIcon />
+            <p>{ALLERGEN_CROSS_CONTACT_POLICY}</p>
+          </div>
+          <div className='mt-6 flex flex-wrap gap-3'>
+            <a
+              href={PHONE_UTILS.whatsappLink}
+              className={primaryButtonClassName}
+              target='_blank'
+              rel='noreferrer noopener'
+            >
+              Message us on WhatsApp
+            </a>
+            <a href={EMAIL_UTILS.mailtoLink} className={secondaryButtonClassName}>
+              Email us
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section
+        aria-labelledby='check-product-title'
+        className={sectionClassName}
+      >
+        <div className={`${pageContainerClassName} space-y-10`}>
+          <div>
+            <h2 id='check-product-title' className={sectionTitleClassName}>
+              Check the exact product
+            </h2>
+            <div className={`mt-5 ${bodyCopyClassName}`}>
+              <p>
+                Allergen information can change when a recipe, filling, decoration or supplier
+                ingredient changes. Please check the exact product instead of relying on a category
+                name or an earlier order.
               </p>
-              <h1 className='mt-3 max-w-[11ch] font-oldenburg text-[2.1rem] leading-[0.98] tracking-[0.02em] text-primary-800 tablet:max-w-none tablet:text-[3.2rem]'>
-                Allergens and kitchen handling
-              </h1>
-              <div className='mt-5 max-w-[68ch] space-y-4 text-[15px] leading-7 text-base-content/82 tablet:text-[17px] tablet:leading-8'>
-                <p>
-                  Milk, eggs and wheat are common across both celebration cakes and cakes by post.
-                </p>
-                <p>
-                  {ALLERGEN_CROSS_CONTACT_POLICY}
-                </p>
-                <p>
-                  If you have an allergy, intolerance or coeliac disease, please ask before
-                  ordering.
-                </p>
-              </div>
-              <div className='mt-6 flex flex-wrap gap-3'>
-                <a
-                  href={PHONE_UTILS.whatsappLink}
-                  className='inline-flex rounded-full border border-primary-500 bg-primary-500 px-6 py-3 text-sm font-semibold text-primary-content shadow-[0_10px_22px_color-mix(in_srgb,var(--color-primary-500)_22%,transparent)]'
-                  target='_blank'
-                  rel='noreferrer noopener'
-                >
-                  Message on WhatsApp
-                </a>
-                <a
-                  href={EMAIL_UTILS.mailtoLink}
-                  className='inline-flex rounded-full border border-primary-200 bg-base-100/90 px-4 py-3 text-sm font-semibold text-primary-800 underline decoration-primary-200 underline-offset-4'
-                >
-                  {BUSINESS_CONSTANTS.EMAIL}
-                </a>
-              </div>
             </div>
           </div>
-        </section>
 
-        <section className='px-4 py-8 tablet:px-10 tablet:py-12'>
-          <div className='homepage-container'>
-            <div className='mx-auto max-w-[900px] space-y-10'>
-              <section>
-                <h2 className='font-oldenburg text-[1.7rem] leading-[1.04] tracking-[0.02em] text-primary-800 tablet:text-[2.4rem]'>
-                  Common allergens in the current range
-                </h2>
-                <div className='mt-5 max-w-[68ch] space-y-4 text-[15px] leading-7 text-base-content/80 tablet:text-base tablet:leading-8'>
-                  <p>
-                    Most products in the range contain milk, eggs and wheat.
-                  </p>
-                  <p>
-                    That does not mean every product is the same. Ingredient details still need to
-                    be checked against the exact item you want to order.
-                  </p>
-                </div>
-              </section>
+          <div className='grid gap-8 tablet:grid-cols-2'>
+            <article aria-labelledby='bespoke-cakes-title'>
+              <h3 id='bespoke-cakes-title' className={articleTitleClassName}>
+                Bespoke cakes
+              </h3>
+              <div className='mt-4'>
+                <BulletList
+                  items={[
+                    'Tell us the cake design, flavour, filling and decoration you are considering.',
+                    'Bespoke details can change which ingredients are used.',
+                    'We’ll confirm what we can safely offer before you place the order.'
+                  ]}
+                />
+              </div>
+              <Link
+                href='/cakes'
+                prefetch={false}
+                className={`mt-4 ${supportingLinkClassName}`}
+              >
+                Browse cakes
+              </Link>
+            </article>
 
-              <section className='grid gap-8 tablet:grid-cols-2'>
-                <article>
-                  <h3 className='font-oldenburg text-[1.45rem] leading-[1.08] text-primary-800 tablet:text-[1.8rem]'>
-                    Cakes
-                  </h3>
-                  <div className='mt-4 max-w-[34ch] space-y-4 text-[15px] leading-7 text-base-content/80 tablet:text-base tablet:leading-8'>
-                    <p>
-                      Most celebration cakes contain milk, eggs and wheat.
-                    </p>
-                    <p>
-                      That is useful as a general guide, but it is still important to check the
-                      exact cake you want.
-                    </p>
-                  </div>
-                  <div className='mt-4'>
-                    <BulletList
-                      items={[
-                        nutExamples.length > 0
-                          ? `Some current cakes also contain nuts or peanuts, including ${nutExamples.join(', ')}.`
-                          : 'Please ask directly if nut or peanut exposure is a concern.',
-                        'Bespoke cakes can change with the filling, decoration and brief.',
-                        'The exact cake matters more than the category name.'
-                      ]}
-                    />
-                  </div>
-                  <Link
-                    href='/cakes'
-                    prefetch={false}
-                    className='mt-5 inline-flex text-sm font-semibold text-primary-800 underline decoration-primary-200 underline-offset-4'
-                  >
-                    Browse cakes
-                  </Link>
-                </article>
-
-                <article>
-                  <h3 className='font-oldenburg text-[1.45rem] leading-[1.08] text-primary-800 tablet:text-[1.8rem]'>
-                    Cakes by post
-                  </h3>
-                  <div className='mt-4 max-w-[34ch] space-y-4 text-[15px] leading-7 text-base-content/80 tablet:text-base tablet:leading-8'>
-                    <p>
-                      Posted products usually contain milk, eggs and wheat as well.
-                    </p>
-                    <p>
-                      It is often easier to check than a bespoke cake because the product mix is
-                      narrower and changes less.
-                    </p>
-                  </div>
-                  <div className='mt-4'>
-                    <BulletList
-                      items={[
-                        advisoryExamples.length > 0
-                          ? `Some products also carry advisory "may contain" notes for ${advisoryExamples.join(', ')}.`
-                          : 'If trace exposure is a concern, please ask before ordering.',
-                        'Some posted products may still carry trace-allergen warnings.'
-                      ]}
-                    />
-                  </div>
-                  <Link
-                    href='/cakes-by-post'
-                    prefetch={false}
-                    className='mt-5 inline-flex text-sm font-semibold text-primary-800 underline decoration-primary-200 underline-offset-4'
-                  >
-                    Browse cakes by post
-                  </Link>
-                </article>
-              </section>
-
-              <section>
-                <h2 className='font-oldenburg text-[1.7rem] leading-[1.04] tracking-[0.02em] text-primary-800 tablet:text-[2.4rem]'>
-                  Before you ask
-                </h2>
-                <div className='mt-5'>
-                  <BulletList
-                    items={[
-                      'The allergen you need to avoid.',
-                      'The exact product you are considering.',
-                      'Whether you are asking about cakes by post or a bespoke cake.',
-                      'The date you need it.'
-                    ]}
-                  />
-                </div>
-                <p className='mt-5 max-w-[68ch] text-[15px] leading-7 text-base-content/80 tablet:text-base tablet:leading-8'>
-                  Once that is clear, the ingredients can be checked and you can be told whether
-                  that product is suitable.
-                </p>
-              </section>
-
-              <section>
-                <h2 className='font-oldenburg text-[1.7rem] leading-[1.04] tracking-[0.02em] text-primary-800 tablet:text-[2.4rem]'>
-                  Common questions
-                </h2>
-                <div className='mt-6 border-t border-base-300'>
-                  {allergenFaqs.map((faq, index) => (
-                    <details
-                      key={faq.question}
-                      className='group border-b border-base-300 py-1'
-                      open={index === 0}
-                    >
-                      <summary className='flex cursor-pointer list-none items-start justify-between gap-4 py-4 marker:hidden tablet:py-5'>
-                        <span className='max-w-[42rem] text-[16px] font-semibold leading-7 text-base-content tablet:text-[17px]'>
-                          {faq.question}
-                        </span>
-                        <span
-                          aria-hidden='true'
-                          className='mt-[0.15rem] flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary-200 text-primary-700 transition-transform group-open:rotate-45'
-                        >
-                          +
-                        </span>
-                      </summary>
-                      <div className='max-w-[760px] pb-4 text-[15px] leading-7 text-base-content/80 tablet:pr-8 tablet:text-base tablet:leading-8'>
-                        <p>{faq.answer}</p>
-                      </div>
-                    </details>
-                  ))}
-                </div>
-              </section>
-            </div>
+            <article aria-labelledby='cakes-by-post-title'>
+              <h3 id='cakes-by-post-title' className={articleTitleClassName}>
+                Cakes by post
+              </h3>
+              <div className='mt-4'>
+                <BulletList
+                  items={[
+                    'Read the Ingredients section on the exact product page.',
+                    'Send us the product link and the allergen or ingredient you need to avoid.',
+                    'We’ll check the current recipe and any supplier “may contain” information with you.'
+                  ]}
+                />
+              </div>
+              <Link
+                href='/cakes-by-post'
+                prefetch={false}
+                className={`mt-4 ${supportingLinkClassName}`}
+              >
+                Browse cakes by post
+              </Link>
+            </article>
           </div>
-        </section>
-      </main>
-    </>
+        </div>
+      </section>
+
+      <section
+        aria-labelledby='what-to-send-title'
+        className={`bg-base-200/40 ${sectionClassName}`}
+      >
+        <div className={pageContainerClassName}>
+          <h2 id='what-to-send-title' className={sectionTitleClassName}>
+            What to send us
+          </h2>
+          <div className='mt-5 max-w-3xl'>
+            <BulletList
+              items={[
+                'The exact allergen or ingredient you need to avoid, even if it is not one of the 14 allergens covered by UK labelling rules.',
+                'The product link, cake design or flavour you are considering.',
+                'Whether you need a bespoke cake or a cake by post.',
+                'The date you need it.'
+              ]}
+            />
+          </div>
+          <p className='mt-5 max-w-3xl text-base leading-7 text-base-content/80 tablet:text-lg tablet:leading-8'>
+            For general information about the allergens covered by UK food labelling rules, read the{' '}
+            <a
+              href='https://www.food.gov.uk/business-guidance/allergen-guidance-for-food-businesses'
+              className={supportingLinkClassName}
+            >
+              Food Standards Agency’s allergen guidance
+            </a>
+            .
+          </p>
+        </div>
+      </section>
+
+      <section
+        aria-labelledby='allergen-questions-title'
+        className={sectionClassName}
+      >
+        <div className={pageContainerClassName}>
+          <h2 id='allergen-questions-title' className={sectionTitleClassName}>
+            Common questions
+          </h2>
+          <div className='mt-6 border-t border-base-300'>
+            {allergenFaqs.map((faq, index) => (
+              <details key={faq.question} className={faqClassName} open={index === 0}>
+                <summary className='collapse-title flex min-h-11 cursor-pointer list-none items-start justify-between gap-4 px-0 py-4 marker:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-600 tablet:py-5 [&::-webkit-details-marker]:hidden'>
+                  <span className='max-w-2xl text-base font-semibold leading-7 text-base-content tablet:text-lg'>
+                    {faq.question}
+                  </span>
+                  <span
+                    aria-hidden='true'
+                    className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary-300 text-primary-700 transition-transform group-open:rotate-45'
+                  >
+                    +
+                  </span>
+                </summary>
+                <div className='collapse-content max-w-3xl px-0 pb-4 text-base leading-7 text-base-content/80 tablet:pr-8 tablet:text-lg tablet:leading-8'>
+                  <p>{faq.answer}</p>
+                </div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
   )
 }

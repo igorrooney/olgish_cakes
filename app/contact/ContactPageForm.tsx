@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { SensitiveDataConsentFields } from '@/app/components/legal/SensitiveDataConsentFields'
 import { ValidatorInput } from '../components/homepage/ValidatorInput'
 import {
   buildContactPageEnquiryFormData,
@@ -71,7 +72,7 @@ export function ContactPageForm() {
   }
 
   const updateField = (
-    field: keyof ContactPageFormValues,
+    field: Exclude<keyof ContactPageFormValues, 'dietaryHealthConsent'>,
     value: string,
     shouldClearError = false
   ) => {
@@ -242,6 +243,22 @@ export function ContactPageForm() {
         hintText='A short note is fine. Include the main details so we can answer properly first time.'
         required
         onValueChange={(value) => updateField('message', value, true)}
+      />
+
+      <SensitiveDataConsentFields
+        information={formData.dietaryHealthInformation}
+        consent={formData.dietaryHealthConsent}
+        informationError={errors.dietaryHealthInformation}
+        consentError={errors.dietaryHealthConsent}
+        disabled={isSubmitting}
+        onInformationChange={(value) => {
+          updateField('dietaryHealthInformation', value, true)
+        }}
+        onConsentChange={(value) => {
+          setFormData((current) => ({ ...current, dietaryHealthConsent: value }))
+          resetSuccessState()
+          clearFieldError('dietaryHealthConsent')
+        }}
       />
 
       {errors.submit ? (

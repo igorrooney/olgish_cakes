@@ -1,6 +1,9 @@
 import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
 import type { MetadataRoute } from 'next'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
+import { SITEMAP_ARTICLES_QUERY } from '@/lib/queries/articles'
+import { SITEMAP_CAKES_QUERY } from '@/lib/queries/cakes'
+import { SITEMAP_GIFT_HAMPERS_QUERY } from '@/lib/queries/giftHampers'
 import { categoryLandingConfig } from './cakes/categoryLandingConfig'
 import { staticSitemapPages, toStaticSitemapEntry } from './sitemap-static-pages'
 
@@ -32,31 +35,18 @@ function getArticleLastModified(article: SitemapArticle) {
 }
 
 async function getCakes() {
-  const query = `*[_type == "cake" && !(slug.current match "test*") && !(slug.current match "*test*") && defined(slug.current)] {
-    slug,
-    _updatedAt
-  }`
   const config = getCacheConfig('sitemaps')
-  return cachedSanityFetch<SitemapCake[]>(query, {}, config)
+  return cachedSanityFetch<SitemapCake[]>(SITEMAP_CAKES_QUERY, {}, config)
 }
 
 async function getArticles() {
-  const query = `*[_type == "article" && coalesce(publishedAt, _createdAt) <= now() && !(slug.current match "test*") && !(slug.current match "*test*") && defined(slug.current)] {
-    slug,
-    _updatedAt,
-    "publishedAt": coalesce(publishedAt, _createdAt)
-  }`
   const config = getCacheConfig('sitemaps')
-  return cachedSanityFetch<SitemapArticle[]>(query, {}, config)
+  return cachedSanityFetch<SitemapArticle[]>(SITEMAP_ARTICLES_QUERY, {}, config)
 }
 
 async function getGiftHampers() {
-  const query = `*[_type == "giftHamper" && !(slug.current match "test*") && !(slug.current match "*test*") && defined(slug.current)] {
-    slug,
-    _updatedAt
-  }`
   const config = getCacheConfig('sitemaps')
-  return cachedSanityFetch<SitemapGiftHamper[]>(query, {}, config)
+  return cachedSanityFetch<SitemapGiftHamper[]>(SITEMAP_GIFT_HAMPERS_QUERY, {}, config)
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

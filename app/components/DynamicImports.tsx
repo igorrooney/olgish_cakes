@@ -30,14 +30,6 @@ export const DynamicCakeImageGallery = dynamic(
   }
 );
 
-export const DynamicCookieConsent = dynamic(
-  () => import("./CookieConsent").then(mod => ({ default: mod.default })),
-  {
-    loading: () => null, // No loading indicator for cookie consent
-    ssr: false,
-  }
-);
-
 export const DynamicDevTools = dynamic(
   () => import("./DevTools").then(mod => ({ default: mod.DevTools })),
   {

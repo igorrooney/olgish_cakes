@@ -36,14 +36,14 @@ export const coreStaticSitemapPages: StaticSitemapEntry[] = [
   createStaticSitemapEntry('/', '2026-03-03', 'daily', 1.0),
   createStaticSitemapEntry('/cakes', '2026-03-17', 'daily', 0.9),
   createStaticSitemapEntry('/cakes-by-post', '2026-03-12', 'daily', 0.88),
-  createStaticSitemapEntry('/get-custom-quote', '2026-03-17', 'weekly', 0.9),
+  createStaticSitemapEntry('/custom-cakes', '2026-07-29', 'weekly', 0.9),
   createStaticSitemapEntry('/contact', '2026-07-25', 'monthly', 0.8),
   createStaticSitemapEntry('/faqs', undefined, 'monthly', 0.72),
   createStaticSitemapEntry('/blog', '2025-10-04', 'weekly', 0.7)
 ]
 
 export const deliveryStaticSitemapPages: StaticSitemapEntry[] = [
-  createStaticSitemapEntry('/delivery', '2026-04-24', 'monthly', 0.65)
+  createStaticSitemapEntry('/delivery', '2026-07-26', 'monthly', 0.65)
 ]
 
 export const locationStaticSitemapPages: StaticSitemapEntry[] = []
@@ -51,7 +51,7 @@ export const locationStaticSitemapPages: StaticSitemapEntry[] = []
 export const eventStaticSitemapPages: StaticSitemapEntry[] = []
 
 export const dietaryStaticSitemapPages: StaticSitemapEntry[] = [
-  createStaticSitemapEntry('/allergens', '2026-04-25', 'monthly', 0.64)
+  createStaticSitemapEntry('/allergens', '2026-07-27', 'monthly', 0.64)
 ]
 
 export const educationalStaticSitemapPages: StaticSitemapEntry[] = [
@@ -65,9 +65,9 @@ export const serviceStaticSitemapPages: StaticSitemapEntry[] = []
 export const communityStaticSitemapPages: StaticSitemapEntry[] = []
 
 export const legalStaticSitemapPages: StaticSitemapEntry[] = [
-  createStaticSitemapEntry('/privacy', '2026-02-09', 'yearly', 0.3),
-  createStaticSitemapEntry('/terms', '2026-02-09', 'yearly', 0.3),
-  createStaticSitemapEntry('/cookies', '2026-02-09', 'yearly', 0.3)
+  createStaticSitemapEntry('/privacy', '2026-08-25', 'yearly', 0.3),
+  createStaticSitemapEntry('/terms', '2026-07-28', 'yearly', 0.3),
+  createStaticSitemapEntry('/cookies', '2026-07-28', 'yearly', 0.3)
 ]
 
 export const staticSitemapPages: StaticSitemapEntry[] = [

@@ -90,13 +90,13 @@ async function setupWebhook() {
         'content-type': 'application/json',
         authorization: `Bearer ${sanityToken}`
       },
-      body: JSON.stringify(webhookConfig)
+      body: JSON.stringify(webhookConfig),
+      signal: AbortSignal.timeout(30_000)
     }
   )
 
   if (!response.ok) {
-    const errorBody = await response.text()
-    throw new Error(`Failed to create webhook: ${response.status} ${errorBody}`)
+    throw new Error(`SANITY_WEBHOOK_HTTP_${response.status}`)
   }
 
   const webhook = await response.json()
@@ -108,7 +108,7 @@ async function setupWebhook() {
   }, null, 2))
 }
 
-setupWebhook().catch((error) => {
-  console.error('Webhook setup failed:', error)
+setupWebhook().catch(() => {
+  console.error('Webhook setup failed. No provider response details were logged.')
   process.exit(1)
 })

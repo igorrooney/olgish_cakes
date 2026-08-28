@@ -4,7 +4,14 @@ This guide explains how to set up automated Sanity backups using Vercel's cron j
 
 ## 📋 Overview
 
-Your Vercel cron jobs are now configured to run automated backups:
+The backup route handlers can be enabled as authenticated Vercel cron jobs. Add
+the schedules below to `vercel.json` only after confirming that the selected
+Vercel plan has sufficient execution time and durable backup storage.
+
+Every backup endpoint requires either Vercel's `Authorization: Bearer
+<CRON_SECRET>` header or an authenticated admin credential. Set a random
+`CRON_SECRET` of at least 16 characters in Vercel before enabling a schedule;
+Vercel then adds the bearer header automatically to its cron requests.
 
 ### 🕒 **Schedule Configuration**
 - **Daily Backup**: Every day at 2:00 AM UTC (`/api/backup-daily`)
@@ -18,7 +25,8 @@ Your Vercel cron jobs are now configured to run automated backups:
 
 ## 🔧 **Setup Complete**
 
-Your `vercel.json` now includes:
+To enable these jobs, add the following entries to the existing `crons` array in
+`vercel.json`:
 ```json
 {
   "crons": [
@@ -83,16 +91,16 @@ After deployment, check your Vercel dashboard:
 ### 3. Test the Endpoints
 ```bash
 # Test daily backup endpoint
-curl https://your-domain.vercel.app/api/backup-daily
+curl -H "Authorization: Bearer $CRON_SECRET" https://your-domain.vercel.app/api/backup-daily
 
 # Test weekly backup endpoint  
-curl https://your-domain.vercel.app/api/backup-weekly
+curl -H "Authorization: Bearer $CRON_SECRET" https://your-domain.vercel.app/api/backup-weekly
 
 # Test monthly backup endpoint
-curl https://your-domain.vercel.app/api/backup-monthly
+curl -H "Authorization: Bearer $CRON_SECRET" https://your-domain.vercel.app/api/backup-monthly
 
 # Check backup status
-curl https://your-domain.vercel.app/api/backup-status
+curl -H "Authorization: Bearer $CRON_SECRET" https://your-domain.vercel.app/api/backup-status
 ```
 
 ## 📊 **Monitoring & Logs**
@@ -105,7 +113,7 @@ curl https://your-domain.vercel.app/api/backup-status
 ### API Monitoring
 ```bash
 # Check backup status via API
-curl https://your-domain.vercel.app/api/backup-status | jq
+curl -H "Authorization: Bearer $CRON_SECRET" https://your-domain.vercel.app/api/backup-status | jq
 ```
 
 ### Response Format
@@ -113,9 +121,7 @@ curl https://your-domain.vercel.app/api/backup-status | jq
 {
   "success": true,
   "type": "daily",
-  "message": "Daily backup completed successfully",
-  "timestamp": "2024-01-15T02:00:00.000Z",
-  "output": "Backup execution output..."
+  "timestamp": "2026-08-24T02:00:00.000Z"
 }
 ```
 
@@ -128,6 +134,7 @@ Ensure these are set in your Vercel project:
 NEXT_PUBLIC_SANITY_PROJECT_ID=as9bci7b
 NEXT_PUBLIC_SANITY_DATASET=production
 SANITY_API_TOKEN=your_sanity_token_here
+CRON_SECRET=a_random_secret_of_at_least_16_characters
 ```
 
 ### Setting in Vercel Dashboard

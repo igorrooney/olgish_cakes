@@ -1,4 +1,7 @@
 import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
+import { SITEMAP_ARTICLE_IMAGES_QUERY } from '@/lib/queries/articles'
+import { SITEMAP_CAKE_IMAGES_QUERY } from '@/lib/queries/cakes'
+import { SITEMAP_GIFT_HAMPER_IMAGES_QUERY } from '@/lib/queries/giftHampers'
 import type { MetadataRoute } from 'next'
 import { getStaticSitemapLastModified } from './sitemap-static-pages'
 
@@ -130,89 +133,18 @@ function getBlogLastModified(post: BlogImageResult) {
 }
 
 async function getBlogImages() {
-  const query = `*[
-    _type == "article" &&
-    coalesce(publishedAt, _createdAt) <= now() &&
-    defined(slug.current) &&
-    slug.current != "test" &&
-    !slug.current match "test-*"
-  ] {
-    slug,
-    coverImage {
-      asset->{
-        _id,
-        url,
-        metadata {
-          dimensions
-        }
-      },
-      alt
-    },
-    cardImage {
-      asset->{
-        _id,
-        url,
-        metadata {
-          dimensions
-        }
-      },
-      alt
-    },
-    title,
-    "publishedAt": coalesce(publishedAt, _createdAt),
-    _updatedAt
-  }`
   const config = getCacheConfig('sitemaps')
-  return cachedSanityFetch<BlogImageResult[]>(query, {}, config)
+  return cachedSanityFetch<BlogImageResult[]>(SITEMAP_ARTICLE_IMAGES_QUERY, {}, config)
 }
 
 async function getCakeImages() {
-  const query = `*[
-    _type == "cake" &&
-    defined(slug.current) &&
-    slug.current != "test" &&
-    !slug.current match "test-*"
-  ] {
-    slug,
-    images[] {
-      asset->{
-        _id,
-        url,
-        metadata {
-          dimensions
-        }
-      },
-      alt
-    },
-    name,
-    _updatedAt
-  }`
   const config = getCacheConfig('sitemaps')
-  return cachedSanityFetch<CakeImageResult[]>(query, {}, config)
+  return cachedSanityFetch<CakeImageResult[]>(SITEMAP_CAKE_IMAGES_QUERY, {}, config)
 }
 
 async function getGiftHamperImages() {
-  const query = `*[
-    _type == "giftHamper" &&
-    defined(slug.current) &&
-    slug.current != "test" &&
-    !slug.current match "test-*"
-  ] {
-    slug,
-    images[] {
-      asset->{
-        _id,
-        url,
-        metadata {
-          dimensions
-        }
-      },
-      alt
-    },
-    _updatedAt
-  }`
   const config = getCacheConfig('sitemaps')
-  return cachedSanityFetch<GiftHamperImageResult[]>(query, {}, config)
+  return cachedSanityFetch<GiftHamperImageResult[]>(SITEMAP_GIFT_HAMPER_IMAGES_QUERY, {}, config)
 }
 
 export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
@@ -293,6 +225,13 @@ export default async function sitemapImages(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 1.0,
       images: [`${baseUrl}/images/olgish-cakes-logo-bakery-brand.png`]
+    },
+    {
+      url: `${baseUrl}/custom-cakes`,
+      lastModified: getStaticSitemapLastModified('/custom-cakes'),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+      images: [`${baseUrl}/homeHero/home-hero-cake-center.png`]
     }
   ]
 

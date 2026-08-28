@@ -31,7 +31,8 @@ const dropdownMenuListClassName =
   'menu menu-md !m-0 !p-0 items-start [&::before]:hidden [&>li]:w-full'
 const mobileMenuItemClassName =
   'w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans active:!bg-transparent'
-const quotePageHref = '/get-custom-quote#quote-form'
+const customCakesPageHref = '/custom-cakes'
+const quotePageHref = `${customCakesPageHref}#quote-form`
 
 const desktopDropdowns: DropdownConfig[] = [
   {
@@ -234,7 +235,7 @@ export function SiteHeaderClient() {
                 src='/design/mobile-home/navbar-logo.png'
                 alt='Olgish Cakes logo'
                 fill
-                sizes='(min-width: 768px) 64px, 48px'
+                sizes='(min-width: 1024px) 64px, 48px'
                 className='object-contain'
               />
             </div>
@@ -406,7 +407,7 @@ export function SiteHeaderClient() {
                 Cakes by post
               </HoverPrefetchLink>
               <HoverPrefetchLink
-                href='/cakes'
+                href={customCakesPageHref}
                 role='menuitem'
                 className={mobileMenuItemClassName}
                 onClick={() => setIsMenuOpen(false)}

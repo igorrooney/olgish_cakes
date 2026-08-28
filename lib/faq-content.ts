@@ -1,9 +1,9 @@
 import {
   ALLERGEN_CROSS_CONTACT_POLICY,
   DEPOSIT_AND_FINAL_PAYMENT_POLICY,
-  GIFT_HAMPER_REFUND_POLICY,
   REFUND_AFTER_WORK_POLICY,
-  REFUND_BEFORE_WORK_POLICY
+  REFUND_BEFORE_WORK_POLICY,
+  STATUTORY_RIGHTS_POLICY
 } from './public-policies'
 
 export type CanonicalFaq = {
@@ -44,7 +44,7 @@ export const CANONICAL_FAQS: readonly CanonicalFaq[] = [
   {
     legacyQuestion: 'What is your cancellation and refund policy?',
     question: 'What if I need to cancel or move my order?',
-    answer: `Please tell us as early as possible. ${REFUND_BEFORE_WORK_POLICY} ${REFUND_AFTER_WORK_POLICY} ${GIFT_HAMPER_REFUND_POLICY} If you need to move the date, we’ll check whether another slot is available.`,
+    answer: `Please tell us as early as possible. ${REFUND_BEFORE_WORK_POLICY} ${REFUND_AFTER_WORK_POLICY} ${STATUTORY_RIGHTS_POLICY} If you need to move the date, we’ll check whether another slot is available.`,
     policySensitive: true
   },
   {

@@ -3,6 +3,9 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 import { invalidateCache } from '@/app/utils/fetchCakes'
 import { categoryLandingCanonicalPaths } from '@/app/cakes/categoryLandingConfig'
 import { verifyAdminAuthToken } from '@/lib/admin/auth-token'
+import { logger } from '@/lib/logger'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
+import { isBearerTokenAuthorized } from '@/lib/security/internal-route'
 
 const publicPathsToRevalidate = [
   '/',
@@ -11,7 +14,7 @@ const publicPathsToRevalidate = [
   '/faqs',
   '/blog',
   '/allergens',
-  '/get-custom-quote',
+  '/custom-cakes',
   '/api/products',
   '/api/catalog/custom-cakes',
   '/api/catalog/by-post-cakes',
@@ -48,10 +51,7 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
     return true
   }
 
-  const authHeader = request.headers.get('authorization')
-  const expectedToken = process.env.ADMIN_SECRET_TOKEN?.trim()
-
-  return Boolean(expectedToken) && authHeader === `Bearer ${expectedToken}`
+  return isBearerTokenAuthorized(request, process.env.ADMIN_SECRET_TOKEN)
 }
 
 export async function POST(request: NextRequest) {
@@ -81,12 +81,14 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString()
     })
   } catch (error) {
-    console.error('Admin cache clear error:', error)
+    logger.error('Admin cache clear failed', {
+      operation: 'admin.clear-cache',
+      ...toSafeOperationalError(error)
+    })
     return NextResponse.json(
       {
         success: false,
-        error: 'Cache clear failed',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Cache clear failed'
       },
       { status: 500 }
     )

@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { CakePageClient, type CakePageClientData } from './CakePageClient'
 // Removed client-only CakeStructuredData; I'll render JSON-LD on the server for SEO
-import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from '@/app/utils/seo'
+import { getMerchantReturnPolicy, getOfferShippingDetails } from '@/app/utils/seo'
 import { ensureAbsoluteImageUrl, getSanityCdnImageUrl } from '@/lib/utils/image-url'
 import { resolveCakeBasePrice } from '@/lib/utils/cake-base-price'
 import { normalizeCmsTitle } from '@/lib/metadata'
@@ -13,6 +13,7 @@ import { urlFor } from '@/sanity/lib/image'
 import { resolveCakeDeliveryContent, type ResolvedCakeDeliveryContent } from './delivery-content'
 import { buildCatalogBackHref } from '../catalogNavigation'
 import type { CatalogProductDetailImage } from '../components/CatalogProductDetailLayout'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 type UrlForImage = Parameters<typeof urlFor>[0]
 type CakeGalleryImageInput = {
@@ -33,7 +34,10 @@ export async function generateStaticParams() {
         slug: cake.slug.current,
       }));
   } catch (error) {
-    console.error("Error generating static params for cakes:", error);
+    console.error("Cake static parameter generation failed", {
+      operation: "cakes.static-params.generate",
+      ...toSafeOperationalError(error),
+    });
     return [];
   }
 }
@@ -200,15 +204,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   // Use SEO fields if available, otherwise generate from content
   const metaTitle = isHoneyCake
-    ? (cake.seo?.metaTitle || `Buy Honey Cake Online | Authentic Ukrainian Medovik`)
+    ? (cake.seo?.metaTitle || 'Honey Cake (Medovik) | Olgish Cakes')
     : (cake.seo?.metaTitle || `${cake.name} | Olgish Cakes`);
   const normalizedMetaTitle = normalizeCmsTitle(metaTitle) || cake.name
 
   const metaDescription = isHoneyCake
-    ? (normalizeMetaDescription(cake.seo?.metaDescription) || `Buy authentic honey cake (Medovik) online. Traditional Ukrainian recipe, handmade in Leeds. Order online for same-day delivery across UK. From £40.`)
+    ? (normalizeMetaDescription(cake.seo?.metaDescription) ||
+      `Traditional Ukrainian honey cake (Medovik), handmade in Leeds. Prices start from £${formatStructuredDataPrice(cakeBasePrice, 0)}. Send an enquiry and we'll confirm collection or delivery for your date.`)
     : (normalizeMetaDescription(cake.seo?.metaDescription) ||
       normalizedShortDescription ||
-      `traditional Ukrainian honey cake - ${cake.name}. Freshly baked in Leeds with real recipes. Free UK delivery.`);
+      `Traditional Ukrainian honey cake - ${cake.name}, freshly baked in Leeds. Ask us to confirm collection or delivery for your date.`);
 
   const canonicalUrl = `https://olgishcakes.co.uk/cakes/${cake.slug.current}`;
 
@@ -238,7 +243,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         {
           url:
             cake.mainImage?.asset?.url ||
-            `https://olgishcakes.co.uk/images/cakes/${cake.slug.current}.jpg`,
+            'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png',
           width: 1200,
           height: 630,
           alt: `${cake.name} - ${cake.category} honey cake by Olgish Cakes`,
@@ -252,7 +257,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: metaDescription,
       images: [
         cake.mainImage?.asset?.url ||
-        `https://olgishcakes.co.uk/images/cakes/${cake.slug.current}.jpg`,
+        'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png',
       ],
       creator: "@olgish_cakes",
       site: "@olgish_cakes",
@@ -268,13 +273,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         "max-snippet": -1,
       },
     },
-    verification: {
-      google: "your-google-verification-code",
-    },
     other: {
       price: cakeBasePrice.toString(),
       priceCurrency: "GBP",
-      availability: "https://schema.org/InStock",
       brand: "Olgish Cakes",
       category: cake.category,
       "og:price:amount": cakeBasePrice.toString(),
@@ -309,15 +310,6 @@ export default async function CakePage({ params, searchParams }: PageProps) {
       resolvedDeliveryContent.shippingDetailsVisibleClaims
     )
     : undefined
-  const shouldLogShippingDetailsOmission = process.env.NODE_ENV !== 'production'
-
-  if (!shouldEmitShippingDetails && shouldLogShippingDetailsOmission) {
-    console.warn(
-      `[seo][${cake.slug.current}] Omitted Offer.shippingDetails due to delivery policy mismatch: ${resolvedDeliveryContent.shippingDetailsOmissionReason || 'unknown reason'}`
-    )
-  }
-
-  // Ensure image is always present and absolute for Product JSON-LD
   const primaryImage = getCakePrimaryImage(cake)
   const productImageUrl = (() => {
     if (primaryImage) {
@@ -326,14 +318,22 @@ export default async function CakePage({ params, searchParams }: PageProps) {
       return ensureAbsoluteImageUrl(imageUrl)
     }
 
-    return "https://olgishcakes.co.uk/images/placeholder-cake.jpg"
+    return undefined
   })()
+  const productDescription = cake.shortDescription
+    ? blocksToText(cake.shortDescription).trim()
+    : cake.description
+      ? blocksToText(cake.description).trim()
+      : ''
+  const hasProductStructuredData = Boolean(
+    productImageUrl && productDescription && cakeBasePrice > 0
+  )
   const cakePageClientData = getCakePageClientData(cake, resolvedDeliveryContent)
 
   return (
     <>
       {/* Server-rendered Product Structured Data (validates in GSC) */}
-      <script
+      {hasProductStructuredData ? <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: safeJsonLd({
@@ -341,9 +341,7 @@ export default async function CakePage({ params, searchParams }: PageProps) {
             "@type": "Product",
             "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}#product`,
             name: cake.name,
-            description:
-              cake.seo?.metaDescription ||
-              (cake.shortDescription ? blocksToText(cake.shortDescription) : `${cake.name} traditional Ukrainian honey cake`),
+            description: productDescription,
             image: productImageUrl,
             brand: {
               "@type": "Brand",
@@ -361,19 +359,13 @@ export default async function CakePage({ params, searchParams }: PageProps) {
                 addressCountry: "GB",
               },
             },
-            category: cake.category || "Ukrainian Honey Cake",
+            ...(cake.category ? { category: cake.category } : {}),
             url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-            sku: `cake_${cake._id}`,
-            gtin: `cake_${cake._id}`,
-            mpn: cake._id,
             offers: {
               "@type": "Offer",
               "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}#offer`,
               price: formatStructuredDataPrice(cakeBasePrice, 0),
               priceCurrency: "GBP",
-              availability: "https://schema.org/InStock",
-              condition: "https://schema.org/NewCondition",
-              priceValidUntil: getPriceValidUntil(30),
               url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
               image: productImageUrl,
               seller: {
@@ -383,21 +375,10 @@ export default async function CakePage({ params, searchParams }: PageProps) {
               },
               ...(shippingDetailsForStructuredData ? { shippingDetails: shippingDetailsForStructuredData } : {}),
               hasMerchantReturnPolicy: getMerchantReturnPolicy(),
-              eligibleTransactionVolume: {
-                "@type": "PriceSpecification",
-                price: formatStructuredDataPrice(cakeBasePrice, 0),
-                priceCurrency: "GBP",
-                valueAddedTaxIncluded: true,
-              },
-              acceptedPaymentMethod: [
-                "https://schema.org/CreditCard",
-                "https://schema.org/PaymentByTransfer",
-                "https://schema.org/PaymentByBankTransfer",
-              ],
             },
           }),
         }}
-      />
+      /> : null}
 
       {/* Additional Organization Schema */}
       <script
@@ -409,15 +390,14 @@ export default async function CakePage({ params, searchParams }: PageProps) {
             name: "Olgish Cakes",
             url: "https://olgishcakes.co.uk",
             logo: "https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png",
-            description:
-              "Real Ukrainian honey cakes made with love in Leeds. Traditional recipes, premium ingredients, and exceptional taste.",
+            description: "Ukrainian honey cakes and celebration cakes made in Leeds.",
             telephone: "+44 786 721 8194",
             email: "hello@olgishcakes.co.uk",
             address: {
               "@type": "PostalAddress",
-              streetAddress: "Allerton Grange",
+              streetAddress: "15 Allerton Grange Avenue",
               addressLocality: "Leeds",
-              postalCode: "LS17",
+              postalCode: "LS17 6PR",
               addressRegion: "West Yorkshire",
               addressCountry: "GB",
             },
@@ -429,36 +409,7 @@ export default async function CakePage({ params, searchParams }: PageProps) {
             sameAs: [
               "https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB",
               "https://www.instagram.com/olgish_cakes/",
-            ],
-            hasOfferCatalog: {
-              "@type": "OfferCatalog",
-              name: "Ukrainian Honey Cakes",
-              itemListElement: [
-                {
-                  "@type": "Offer",
-                  itemOffered: {
-                    "@type": "Product",
-                    name: cake.name,
-                    category: "Ukrainian Honey Cake",
-                    offers: {
-                      "@type": "Offer",
-                      price: formatStructuredDataPrice(cakeBasePrice, 0),
-                      priceCurrency: "GBP",
-                      availability: "https://schema.org/InStock",
-                      priceValidUntil: getPriceValidUntil(30),
-                      url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-                      seller: {
-                        "@type": "Organization",
-                        name: "Olgish Cakes",
-                        url: "https://olgishcakes.co.uk",
-                      },
-                      ...(shippingDetailsForStructuredData ? { shippingDetails: shippingDetailsForStructuredData } : {}),
-                      hasMerchantReturnPolicy: getMerchantReturnPolicy(),
-                    },
-                  },
-                },
-              ],
-            },
+            ]
           }),
         }}
       />

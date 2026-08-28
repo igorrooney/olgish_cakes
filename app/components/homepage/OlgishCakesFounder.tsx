@@ -37,7 +37,7 @@ export function OlgishCakesFounder() {
               src='/design/mobile-home/about-olga.png'
               alt='Olga, founder of Olgish Cakes'
               fill
-              sizes='(min-width: 768px) 440px, 324px'
+              sizes='(min-width: 1024px) 440px, 324px'
               loading='lazy'
               fetchPriority='low'
               quality={55}
@@ -58,9 +58,9 @@ export function OlgishCakesFounder() {
             <Image
               src='/design/bottom_right_corner.png'
               alt=''
-              width={79}
+              width={75}
               height={59}
-              style={{ width: '79px', height: '59px' }}
+              style={{ width: '75px', height: '59px' }}
               loading='lazy'
               fetchPriority='low'
               className='absolute right-[-9px] top-[352px] z-10 pointer-events-none tablet:bottom-[-12px] tablet:right-[-12px] tablet:top-auto'
@@ -82,7 +82,7 @@ export function OlgishCakesFounder() {
                 </a>
               </li>
               <li>
-                <a href='/get-custom-quote' className={linkClassName}>
+                <a href='/custom-cakes' className={linkClassName}>
                   <span>Custom cake enquiry</span>
                   <span className={arrowClassName} aria-hidden='true'>{'>'}</span>
                 </a>

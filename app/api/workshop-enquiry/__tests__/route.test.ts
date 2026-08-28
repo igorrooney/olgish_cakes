@@ -11,7 +11,9 @@ const mockSendEmail = jest.fn()
 const mockSendTelegramManagerNotification = jest.fn()
 const mockGetEmailTransportMode = jest.fn(() => 'disabled')
 const mockRequiresLiveEmailConfiguration = jest.fn(() => false)
-const mockInsert = jest.fn()
+const mockSingle = jest.fn()
+const mockSelect = jest.fn(() => ({ single: mockSingle }))
+const mockInsert = jest.fn(() => ({ select: mockSelect }))
 const mockFrom = jest.fn(() => ({ insert: mockInsert }))
 const mockCreateClient = jest.fn(() => ({
   from: mockFrom
@@ -120,7 +122,7 @@ describe('/api/workshop-enquiry', () => {
     mockRequiresLiveEmailConfiguration.mockReturnValue(false)
     mockSendEmail.mockResolvedValue(createSendResult())
     mockSendTelegramManagerNotification.mockResolvedValue({ sent: true, skipped: false })
-    mockInsert.mockResolvedValue({ error: null })
+    mockSingle.mockResolvedValue({ data: { id: 42 }, error: null })
   })
 
   afterEach(() => {
@@ -205,6 +207,83 @@ describe('/api/workshop-enquiry', () => {
       })
     ]))
     expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('rejects non-form request bodies before validation or persistence', async () => {
+    const request = new NextRequest('http://localhost/api/workshop-enquiry', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ fullName: 'Test User' })
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(415)
+    await expect(response.json()).resolves.toEqual({
+      error: 'Unsupported content type. Submit this form using multipart/form-data.'
+    })
+    expect(validateCsrfToken).not.toHaveBeenCalled()
+    expect(mockedTakeEnquiryRateLimit).not.toHaveBeenCalled()
+    expect(mockInsert).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['missing explicit consent', 'Severe egg allergy', null],
+    ['forged false consent', 'Coeliac disease', 'false'],
+    ['overlong health information', 'x'.repeat(2001), 'true']
+  ])('rejects %s before persistence', async (_case, information, consent) => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+    const request = new NextRequest('http://localhost/api/workshop-enquiry', {
+      method: 'POST',
+      body: buildFormData({
+        dietaryHealthInformation: information,
+        dietaryHealthConsent: consent
+      }),
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.31'
+      }
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(400)
+    expect(mockInsert).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+    expect(mockSendTelegramManagerNotification).not.toHaveBeenCalled()
+  })
+
+  it('stores server-authoritative consent evidence without sending the health content in notifications', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+    const information = 'Severe egg allergy'
+    const request = new NextRequest('http://localhost/api/workshop-enquiry', {
+      method: 'POST',
+      body: buildFormData({
+        dietaryHealthInformation: information,
+        dietaryHealthConsent: 'true'
+      }),
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.32'
+      }
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({
+      dietary_health_information: information,
+      dietary_health_consent: true,
+      dietary_health_consent_version: '2026-07-29',
+      dietary_health_consented_at: expect.any(String)
+    }))
+    expect(JSON.stringify(mockSendTelegramManagerNotification.mock.calls)).not.toContain(information)
+    expect(mockSendTelegramManagerNotification.mock.calls[0]?.[0]).not.toHaveProperty(
+      'hasDietaryHealthInformation'
+    )
+    expect(JSON.stringify(mockSendEmail.mock.calls)).not.toContain(information)
   })
 
   it('rejects malformed workshop dates before persistence', async () => {
@@ -322,7 +401,11 @@ describe('/api/workshop-enquiry', () => {
         location: 'Shoreditch, London',
         preferred_date: workshopTomorrowDate,
         decoration_theme: 'Soft florals',
-        brief: 'Office team social with a calm, polished decoration direction.'
+        brief: 'Office team social with a calm, polished decoration direction.',
+        dietary_health_information: null,
+        dietary_health_consent: false,
+        dietary_health_consent_version: null,
+        dietary_health_consented_at: null
       })
       expect(mockSendEmail).toHaveBeenCalledTimes(2)
       expect(mockSendEmail).toHaveBeenNthCalledWith(1, expect.objectContaining({
@@ -349,13 +432,9 @@ describe('/api/workshop-enquiry', () => {
       }))
       expect(mockSendTelegramManagerNotification).toHaveBeenCalledWith(expect.objectContaining({
         type: 'workshop-enquiry',
-        customerName: 'Test User',
-        customerEmail: 'test@example.com',
-        customerPhone: undefined,
+        recordReference: '42',
         dateNeeded: workshopTomorrowDate,
-        productName: 'Corporate event',
-        messagePreview: 'Office team social with a calm, polished decoration direction.',
-        adminPath: '/admin'
+        adminPath: '/admin/enquiries/workshop/42'
       }))
     } finally {
       jest.useRealTimers()
@@ -387,15 +466,17 @@ describe('/api/workshop-enquiry', () => {
     expect(mockSendEmail).toHaveBeenNthCalledWith(3, expect.objectContaining({
       templateId: 'workshop-enquiry-failure-alert',
       input: expect.objectContaining({
-        message: expect.stringContaining('admin-email: Admin send failed')
+        operation: 'workshop-enquiry.notification',
+        operationalCode: 'ADMIN_EMAIL_FAILED',
+        recordReference: '42'
       })
     }))
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Workshop enquiry notification failed',
-      {
-        operation: 'workshop-enquiry.notification',
-        step: 'admin-email'
-      }
+      expect.any(String),
+      expect.objectContaining({
+        operation: 'workshop-enquiry.notification.admin-email',
+        code: 'OPERATION_FAILED'
+      })
     )
   })
 
@@ -428,15 +509,17 @@ describe('/api/workshop-enquiry', () => {
     expect(mockSendEmail).toHaveBeenNthCalledWith(3, expect.objectContaining({
       templateId: 'workshop-enquiry-failure-alert',
       input: expect.objectContaining({
-        message: expect.stringContaining('customer-email: Customer send failed')
+        operation: 'workshop-enquiry.notification',
+        operationalCode: 'CUSTOMER_EMAIL_FAILED',
+        recordReference: '42'
       })
     }))
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Workshop enquiry notification failed',
-      {
-        operation: 'workshop-enquiry.notification',
-        step: 'customer-email'
-      }
+      expect.any(String),
+      expect.objectContaining({
+        operation: 'workshop-enquiry.notification.customer-email',
+        code: 'OPERATION_FAILED'
+      })
     )
     const serializedLogs = JSON.stringify(consoleErrorSpy.mock.calls)
 
@@ -493,10 +576,11 @@ describe('/api/workshop-enquiry', () => {
     expect(mockInsert).toHaveBeenCalledTimes(1)
     expect(mockSendEmail).toHaveBeenCalledTimes(3)
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Workshop enquiry failure alert failed',
+      expect.any(String),
       {
         operation: 'workshop-enquiry.failure-alert',
-        failedSteps: ['admin-email']
+        code: 'OPERATION_FAILED',
+        recordReference: '42'
       }
     )
   })
@@ -525,10 +609,11 @@ describe('/api/workshop-enquiry', () => {
     expect(mockInsert).toHaveBeenCalledTimes(1)
     expect(mockSendEmail).toHaveBeenCalledTimes(3)
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Workshop enquiry failure alert failed',
+      expect.any(String),
       {
         operation: 'workshop-enquiry.failure-alert',
-        failedSteps: ['admin-email', 'customer-email']
+        code: 'OPERATION_FAILED',
+        recordReference: '42'
       }
     )
   })
@@ -556,7 +641,7 @@ describe('/api/workshop-enquiry', () => {
 
   it('returns 500 when the Supabase insert fails and does not send emails', async () => {
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
-    mockInsert.mockResolvedValue({
+    mockSingle.mockResolvedValue({
       error: {
         message: 'Insert failed',
         code: '23502',
@@ -581,12 +666,10 @@ describe('/api/workshop-enquiry', () => {
     expect(data.error).toBe('Internal server error')
     expect(mockSendEmail).not.toHaveBeenCalled()
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Workshop enquiry insert failed',
+      expect.any(String),
       {
         operation: 'workshop_enquiries.insert',
-        table: 'workshop_enquiries',
-        errorName: null,
-        errorCode: '23502'
+        code: '23502'
       }
     )
     const serializedLogs = JSON.stringify(consoleErrorSpy.mock.calls)

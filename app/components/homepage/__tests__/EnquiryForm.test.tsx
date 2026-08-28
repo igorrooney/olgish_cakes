@@ -40,9 +40,9 @@ describe('EnquiryForm', () => {
     fireEvent.change(screen.getByLabelText(/full name:/i), { target: { value: 'John Doe' } })
     fireEvent.change(screen.getByLabelText(/email address:/i), { target: { value: 'john@example.com' } })
     fireEvent.change(screen.getByLabelText(/phone number:/i), { target: { value: '+44(0)7123456789' } })
-    fireEvent.change(screen.getByLabelText(/^address:$/i), { target: { value: '123 Test Street' } })
-    fireEvent.change(screen.getByLabelText(/^city:$/i), { target: { value: 'Leeds' } })
-    fireEvent.change(screen.getByLabelText(/^postcode:$/i), { target: { value: 'LS1 1AA' } })
+    fireEvent.change(screen.getByLabelText(/^address: \(optional\)$/i), { target: { value: '123 Test Street' } })
+    fireEvent.change(screen.getByLabelText(/^city: \(optional\)$/i), { target: { value: 'Leeds' } })
+    fireEvent.change(screen.getByLabelText(/^postcode: \(optional\)$/i), { target: { value: 'LS1 1AA' } })
     selectDate(getDateInputValue(1))
   }
 
@@ -98,9 +98,9 @@ describe('EnquiryForm', () => {
     expect(screen.getByLabelText(/full name:/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/email address:/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/phone number:/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^address:$/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^city:$/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/^postcode:$/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^address: \(optional\)$/i)).not.toBeRequired()
+    expect(screen.getByLabelText(/^city: \(optional\)$/i)).not.toBeRequired()
+    expect(screen.getByLabelText(/^postcode: \(optional\)$/i)).not.toBeRequired()
     expect(screen.getByLabelText(/when do you need it/i)).toBeInTheDocument()
   })
 
@@ -225,9 +225,9 @@ describe('EnquiryForm', () => {
     fireEvent.change(screen.getByLabelText(/full name:/i), { target: { value: 'A' } })
     fireEvent.change(screen.getByLabelText(/email address:/i), { target: { value: 'not-an-email' } })
     fireEvent.change(screen.getByLabelText(/phone number:/i), { target: { value: '123' } })
-    fireEvent.change(screen.getByLabelText(/^address:$/i), { target: { value: '123' } })
-    fireEvent.change(screen.getByLabelText(/^city:$/i), { target: { value: 'L' } })
-    fireEvent.change(screen.getByLabelText(/^postcode:$/i), { target: { value: 'BAD' } })
+    fireEvent.change(screen.getByLabelText(/^address: \(optional\)$/i), { target: { value: '123' } })
+    fireEvent.change(screen.getByLabelText(/^city: \(optional\)$/i), { target: { value: 'L' } })
+    fireEvent.change(screen.getByLabelText(/^postcode: \(optional\)$/i), { target: { value: 'BAD' } })
     selectDate(getDateInputValue(1))
 
     const submitButton = screen.getByRole('button', { name: /send enquiry/i })

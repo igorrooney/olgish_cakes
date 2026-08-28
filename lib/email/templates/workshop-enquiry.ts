@@ -1,5 +1,6 @@
 import type { EmailTemplateCommonInput, TemplateDefinition } from '../types'
 import {
+  buildOperationalAlertContent,
   buildCustomerFooterHtml,
   createDefaultScenarioInput,
   createTemplateDefinition,
@@ -60,7 +61,6 @@ const buildWorkshopCustomerContent = (input: EmailTemplateCommonInput): Customer
   addWorkshopCustomerRow(detailRows, 'Design type', input.designType)
   addWorkshopCustomerRow(detailRows, 'Group size', input.servings)
   addWorkshopCustomerRow(detailRows, 'Location', input.deliveryAddress)
-  addWorkshopCustomerRow(detailRows, 'Event brief', input.customerMessage)
 
   const summaryText = summaryRows.length > 0
     ? `Workshop enquiry summary\n${summaryRows.map((row) => `- ${row.label}: ${row.value}`).join('\n')}`
@@ -121,17 +121,12 @@ const failureAlertScenarios = [
   {
     id: 'default',
     label: 'Workshop enquiry failure alert (default)',
-    input: createDefaultScenarioInput({
-      titleOverride: 'Workshop Enquiry Alert: Test Customer',
-      productName: 'Cake Decorating Workshop',
-      productType: 'workshop',
-      orderType: 'workshop-enquiry',
-      occasion: 'Corporate event',
-      servings: '18 guests',
-      customerMessage: 'Office team social in central London. We would like a relaxed floral theme.',
-      message: 'Failed notifications:\nadmin-email: Transport did not accept admin email',
-      note: 'The enquiry was saved in the database successfully. Review notification logs and follow up manually if needed.'
-    })
+    input: {
+      operation: 'workshop-enquiry.notification',
+      operationalCode: 'ADMIN_EMAIL_FAILED',
+      recordReference: 'WORKSHOP-1001',
+      adminUrl: 'https://olgishcakes.co.uk/admin/enquiries/workshop/WORKSHOP-1001'
+    }
   }
 ]
 
@@ -164,6 +159,9 @@ export const workshopTemplateDefinitions: Record<string, TemplateDefinition<Emai
       intro: 'A workshop enquiry was saved, but one or more notification steps failed.',
       admin: true
     },
-    failureAlertScenarios
+    failureAlertScenarios,
+    {
+      adminContentBuilder: buildOperationalAlertContent
+    }
   )
 }

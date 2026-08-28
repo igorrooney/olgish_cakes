@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { client } from "@/sanity/lib/client";
+import { toSafeOperationalError } from "@/lib/security/safe-operational-error";
 
 interface UseSanityLiveOptions<T> {
   query: string;
@@ -60,7 +61,10 @@ export function useSanityLive<T>({
       },
       error: err => {
         if (mounted) {
-          console.error("Sanity live update error:", err);
+          console.error("Sanity live update failed", {
+            operation: "sanity.live-update",
+            ...toSafeOperationalError(err),
+          });
           setError(err);
         }
       },

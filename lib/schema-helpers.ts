@@ -7,7 +7,7 @@ import { Product, WithContext } from 'schema-dts'
 import { generateProductSchema } from '../app/utils/seo'
 import { BUSINESS_CONSTANTS } from './constants'
 import { validateProductHasRequiredFields } from './schema-validation'
-import { buildAggregateRating, type ReviewStats } from '@/app/utils/review-stats'
+import type { ReviewStats } from '@/app/utils/review-stats'
 
 export interface PageProductConfig {
   name: string
@@ -32,13 +32,7 @@ export function generatePageProductSchemas(
   reviewStats?: ReviewStats
 ): WithContext<Product>[] {
   const pageUrl = `${baseUrl}/${pagePath}`
-  const aggregateRating = buildAggregateRating(reviewStats)
-  const aggregateRatingData = aggregateRating
-    ? {
-        ratingValue: parseFloat(aggregateRating.ratingValue),
-        reviewCount: parseInt(aggregateRating.reviewCount, 10),
-      }
-    : undefined
+  void reviewStats
 
   return products.map((product) => {
     const schema = {
@@ -50,16 +44,17 @@ export function generatePageProductSchemas(
         price: product.price,
         currency: product.currency || 'GBP',
         category: product.category,
-        ...(aggregateRatingData ? { aggregateRating: aggregateRatingData } : {}),
       }),
     } as WithContext<Product>
 
     // Runtime validation for safety - catch issues early in development
     const validation = validateProductHasRequiredFields(schema)
     if (!validation.isValid) {
-      const errorMessage = `Invalid product schema for "${product.name}": ${validation.errors.join(', ')}`
-      console.error('[Schema Helpers]', errorMessage, { product, schema })
-      throw new Error(errorMessage)
+      console.error('[Schema Helpers]', {
+        operation: 'generate_product_schema',
+        code: 'SCHEMA_VALIDATION_FAILED'
+      })
+      throw new Error('Product structured data could not be generated safely')
     }
 
     return schema

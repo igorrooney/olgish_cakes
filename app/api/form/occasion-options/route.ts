@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { buildOccasionOptionsFromCollections } from '@/app/components/homepage/formOptions'
 import { getHomepageCollections } from '@/app/utils/fetchCollections'
+import { logger } from '@/lib/logger'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 export async function GET() {
   try {
@@ -17,7 +19,10 @@ export async function GET() {
       }
     )
   } catch (error) {
-    console.error('Failed to fetch occasion options:', error)
+    logger.error('Failed to fetch occasion options', {
+      operation: 'form.occasion-options.fetch',
+      ...toSafeOperationalError(error)
+    })
 
     return NextResponse.json(
       { error: 'Failed to fetch occasion options' },

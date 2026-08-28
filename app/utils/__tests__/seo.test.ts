@@ -1,5 +1,14 @@
-import { SEO_CONFIG, PRIMARY_KEYWORDS, LONG_TAIL_KEYWORDS, getOfferShippingDetails } from '../seo'
-import { defaultDeliveryMethod } from '@/types/deliveryPolicy'
+import {
+  SEO_CONFIG,
+  PRIMARY_KEYWORDS,
+  LONG_TAIL_KEYWORDS,
+  generateOrganizationSchema,
+  getOfferShippingDetails
+} from '../seo'
+import {
+  defaultDeliveryMethod,
+  defaultDeliveryPolicy
+} from '@/types/deliveryPolicy'
 
 describe('seo utilities', () => {
   describe('SEO_CONFIG', () => {
@@ -109,6 +118,17 @@ describe('seo utilities', () => {
     })
   })
 
+  describe('organization structured data', () => {
+    it('does not publish unsupported award, rating or same-day claims', () => {
+      const schema = generateOrganizationSchema()
+
+      expect(schema).not.toHaveProperty('award')
+      expect(schema).not.toHaveProperty('aggregateRating')
+      expect(schema).not.toHaveProperty('openingHoursSpecification')
+      expect(JSON.stringify(schema)).not.toMatch(/5[★-]?star|same-day delivery/i)
+    })
+  })
+
   describe('getOfferShippingDetails', () => {
     it('always includes required shipping fields for OfferShippingDetails', () => {
       const shippingDetails = getOfferShippingDetails(
@@ -147,7 +167,7 @@ describe('seo utilities', () => {
 
     it('includes delivery method when the claim is visible', () => {
       const shippingDetails = getOfferShippingDetails(
-        undefined,
+        defaultDeliveryPolicy,
         {
           timing: true,
           shippingCost: true,

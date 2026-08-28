@@ -5,6 +5,7 @@ import {
   getAdminEnquiryDetail,
   getAdminEnquiryHref,
   isAdminEnquiryType,
+  isValidAdminEnquiryRecordReference,
   listAdminEnquiries
 } from '../supabase-enquiries'
 
@@ -51,6 +52,19 @@ describe('supabase enquiries admin data', () => {
     expect(getAdminEnquiryHref('custom-cake', 42)).toBe('/admin/enquiries/custom-cake/42')
     expect(isAdminEnquiryType('workshop')).toBe(true)
     expect(isAdminEnquiryType('orders')).toBe(false)
+  })
+
+  it('validates record references against their database identifier types', () => {
+    expect(isValidAdminEnquiryRecordReference('contact', '42')).toBe(true)
+    expect(isValidAdminEnquiryRecordReference('workshop', '9223372036854775807')).toBe(true)
+    expect(isValidAdminEnquiryRecordReference('contact', '0')).toBe(false)
+    expect(isValidAdminEnquiryRecordReference('workshop', '9223372036854775808')).toBe(false)
+    expect(isValidAdminEnquiryRecordReference('contact', 'not-a-number')).toBe(false)
+    expect(isValidAdminEnquiryRecordReference(
+      'custom-cake',
+      '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+    )).toBe(true)
+    expect(isValidAdminEnquiryRecordReference('custom-cake', 'not-a-uuid')).toBe(false)
   })
 
   it('lists enquiries from all enquiry tables in newest-first order', async () => {
@@ -216,7 +230,7 @@ describe('supabase enquiries admin data', () => {
   })
 
   it('loads contact enquiry detail with saved attachment names', async () => {
-    mockFrom.mockReturnValue(createDetailQuery({
+    const query = createDetailQuery({
       id: 7,
       full_name: 'Contact Customer',
       email: 'contact@example.com',
@@ -231,9 +245,17 @@ describe('supabase enquiries admin data', () => {
       gift_note: null,
       referrer: 'homepage',
       attachment_names: ['brief.jpg'],
+      dietary_health_information: null,
+      dietary_health_consent: false,
+      dietary_health_consent_version: '2026-07-29',
+      dietary_health_consented_at: '2026-08-20T10:15:00.000Z',
+      dietary_health_withdrawn_at: null,
+      dietary_health_retention_due_at: '2027-02-20T10:15:00.000Z',
+      dietary_health_erased_at: '2027-02-20T10:30:00.000Z',
       created_at: '2026-05-04T09:00:00.000Z',
       updated_at: '2026-05-04T09:00:00.000Z'
-    }))
+    })
+    mockFrom.mockReturnValue(query)
 
     const detail = await getAdminEnquiryDetail('contact', '7')
 
@@ -241,10 +263,19 @@ describe('supabase enquiries admin data', () => {
       id: '7',
       type: 'contact',
       topic: 'Honey cake',
-      attachments: [{ label: 'brief.jpg' }]
+      attachments: [{ label: 'brief.jpg' }],
+      dietaryHealthEvidence: {
+        hasInformation: false,
+        consentVersion: '2026-07-29',
+        consentedAt: '2026-08-20T10:15:00.000Z',
+        retentionDueAt: '2027-02-20T10:15:00.000Z',
+        erasedAt: '2027-02-20T10:30:00.000Z'
+      }
     })
     expect(detail?.sections.some((section) => section.title === 'Message')).toBe(true)
     expect(detail?.summaryText).toContain('Can you make a honey cake?')
+    expect(query.select).toHaveBeenCalledWith(expect.stringContaining('dietary_health_retention_due_at'))
+    expect(query.select).toHaveBeenCalledWith(expect.stringContaining('dietary_health_erased_at'))
   })
 
   it('loads workshop enquiry detail and returns null when a row is missing', async () => {

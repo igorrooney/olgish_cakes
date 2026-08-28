@@ -57,7 +57,7 @@ Email: hello@olgishcakes.co.uk
 
 ### 2.3 Address & Service Area
 ```
-Business Address: Allerton Grange, Leeds, LS17, West Yorkshire
+Business Address: 15 Allerton Grange Avenue, Leeds, LS17 6PR, United Kingdom
 Service Areas: 
   - Leeds
   - Bradford

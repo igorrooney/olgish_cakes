@@ -1,16 +1,19 @@
 import { isAdminAuthenticated } from '@/lib/admin-auth'
 import { getCustomerEmailBcc } from '@/lib/email/customer-bcc'
 import { getEmailTransportMode, requiresLiveEmailConfiguration, sendEmail } from '@/lib/email/service'
+import { CURRENT_TERMS_VERSION } from '@/lib/legal/legal-config'
+import { getTermsEmailAttachment } from '@/lib/legal/terms-document'
 import { logger } from '@/lib/logger'
+import { ORDER_STATUS_LABELS } from '@/lib/order-constants'
 import { isCakesByPostOrderType, isCakesByPostProductType } from '@/lib/order-types'
 import {
-  deleteSupabaseOrder,
   getSupabaseOrderByIdentifier,
   updateSupabaseOrder,
   uploadSupabaseOrderNoteImage
 } from '@/lib/orders/supabase-orders'
 import type { Order, OrderItem, OrderNote, OrderNoteImage, OrderUpdate } from '@/types/order'
 import { NextRequest, NextResponse } from 'next/server'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 type DeliveryCourier = 'royal-mail' | 'evri'
 
@@ -30,7 +33,6 @@ function normalizeEmailOrderItems(items: OrderItem[] | undefined) {
     unitPrice: typeof item.unitPrice === 'number' && Number.isFinite(item.unitPrice) ? item.unitPrice : 0,
     totalPrice: typeof item.totalPrice === 'number' && Number.isFinite(item.totalPrice) ? item.totalPrice : 0,
     designType: item.designType,
-    specialInstructions: item.specialInstructions,
     filling: item.flavor,
     servings: item.size,
     productType: item.productType,
@@ -68,6 +70,26 @@ function getPostalOrderDescription(order: Order): 'cake by post order' | 'cake o
   return isCakesByPostSourceOrder(order) ? 'cake by post order' : 'cake order'
 }
 
+function getOrderAllergenStatement(order: Order): string | undefined {
+  const value = order.metadata?.allergenStatement
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined
+}
+
+function getCustomerFacingOfferDescription(order: Order): string | undefined {
+  const value = order.metadata?.customerFacingOfferDescription
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined
+}
+
+function hasWrittenAllergenLabel(order: Order): boolean {
+  return order.metadata?.allergenLabelIncluded === true
+}
+
+function hasCustomerAcceptedOffer(order: Order): boolean {
+  return order.metadata?.customerAcceptedOffer === true ||
+    order.pricing.paymentStatus === 'paid' ||
+    order.pricing.paymentStatus === 'partial'
+}
+
 function isCakesByPostSourceOrder(order: Order): boolean {
   const productTypes = order.items
     .map((item) => item.productType?.trim())
@@ -80,79 +102,18 @@ function isCakesByPostSourceOrder(order: Order): boolean {
   return isCakesByPostOrderType(order.orderType)
 }
 
-function isGeneratedProductSummary(value: string | undefined): boolean {
-  const normalizedValue = value?.trim().toLowerCase() || ''
-
-  return normalizedValue.includes('product:') &&
-    normalizedValue.includes('product type:') &&
-    normalizedValue.includes('price:')
-}
-
-function extractExplicitCustomerMessage(value: string | undefined): string | undefined {
-  const lines = value?.split(/\r?\n/) || []
-  const messageLine = lines.find((line) => {
-    const normalizedLine = line.trim().toLowerCase()
-    return normalizedLine.startsWith('message:') ||
-      normalizedLine.startsWith('customer message:') ||
-      normalizedLine.startsWith('requirements:')
-  })
-
-  if (!messageLine) {
-    return undefined
-  }
-
-  return messageLine.replace(/^(message|customer message|requirements):\s*/i, '').trim() || undefined
-}
-
-function resolveCustomerMessage(value: string | undefined): string | undefined {
-  const explicitMessage = extractExplicitCustomerMessage(value)
-  if (explicitMessage) {
-    return resolveCustomerMessage(explicitMessage)
-  }
-
-  const trimmedValue = value?.trim() || ''
-  const normalizedValue = trimmedValue.toLowerCase()
-
-  if (
-    trimmedValue.length === 0 ||
-    normalizedValue === 'message' ||
-    normalizedValue === 'test message' ||
-    isGeneratedProductSummary(trimmedValue)
-  ) {
-    return undefined
-  }
-
-  return trimmedValue
-}
-
-function getStringRecordField(record: Record<string, unknown>, key: string): string | undefined {
-  const value = record[key]
-
-  return typeof value === 'string' ? value : undefined
-}
-
-function getOrderMetadataCustomerMessage(order: Order): string | undefined {
-  if (!isRecord(order.metadata)) {
-    return undefined
-  }
-
-  const inlineOrderContext = isRecord(order.metadata.inlineOrderContext)
-    ? order.metadata.inlineOrderContext
-    : undefined
-
-  return getStringRecordField(inlineOrderContext || {}, 'customerMessage') ||
-    getStringRecordField(order.metadata, 'customerMessage')
-}
-
-function getStatusEmailCustomerMessage(order: Order, firstItem: Order['items'][number] | undefined): string | undefined {
-  return resolveCustomerMessage(firstItem?.specialInstructions) ||
-    resolveCustomerMessage(getOrderMetadataCustomerMessage(order)) ||
-    resolveCustomerMessage(order.messages?.find((message) => resolveCustomerMessage(message.message))?.message)
-}
-
 function getFormString(formData: FormData, key: string): string | undefined {
   const value = formData.get(key)
   return typeof value === 'string' ? value : undefined
+}
+
+function getFormBoolean(formData: FormData, key: string): boolean | undefined {
+  const value = formData.get(key)
+  if (value === null) {
+    return undefined
+  }
+
+  return value === 'true' || value === 'on' || value === '1'
 }
 
 function containsControlCharacter(value: string): boolean {
@@ -202,7 +163,7 @@ function getDeliveryAddressError(value: unknown): string | null {
   return null
 }
 
-function parseDeleteRequestBody(value: unknown): { password?: string, permanent?: boolean } {
+function parseDeleteRequestBody(value: unknown): { permanent?: boolean } {
   if (!value || typeof value !== 'object') {
     return {}
   }
@@ -210,7 +171,6 @@ function parseDeleteRequestBody(value: unknown): { password?: string, permanent?
   const record = value as Record<string, unknown>
 
   return {
-    password: typeof record.password === 'string' ? record.password : undefined,
     permanent: typeof record.permanent === 'boolean' ? record.permanent : undefined
   }
 }
@@ -337,6 +297,38 @@ function applyOrderUpdates(currentOrder: Order, updates: OrderUpdate): Order {
     nextOrder.pricing.total = updates.total
   }
 
+  if (updates.allergenStatement !== undefined) {
+    const allergenStatement = updates.allergenStatement.trim()
+    nextOrder.metadata = {
+      ...(nextOrder.metadata ?? {}),
+      allergenStatement,
+      allergenConfirmedAt: allergenStatement.length > 0 ? new Date().toISOString() : undefined
+    }
+  }
+
+  if (updates.customerFacingOfferDescription !== undefined) {
+    const customerFacingOfferDescription = updates.customerFacingOfferDescription.trim()
+    nextOrder.metadata = {
+      ...(nextOrder.metadata ?? {}),
+      customerFacingOfferDescription
+    }
+  }
+
+  if (updates.allergenLabelIncluded !== undefined) {
+    nextOrder.metadata = {
+      ...(nextOrder.metadata ?? {}),
+      allergenLabelIncluded: updates.allergenLabelIncluded
+    }
+  }
+
+  if (updates.customerAcceptedOffer !== undefined) {
+    nextOrder.metadata = {
+      ...(nextOrder.metadata ?? {}),
+      customerAcceptedOffer: updates.customerAcceptedOffer,
+      customerAcceptedAt: updates.customerAcceptedOffer ? new Date().toISOString() : undefined
+    }
+  }
+
   if (Array.isArray(updates.items)) {
     nextOrder.items = updates.items
       .filter((item) => typeof item.productName === 'string' && item.productName.trim().length > 0)
@@ -427,7 +419,10 @@ export async function GET(
 
     return NextResponse.json(order)
   } catch (error) {
-    logger.error('Failed to fetch order', error)
+    logger.error('Failed to fetch order', {
+      operation: 'orders.detail',
+      ...toSafeOperationalError(error)
+    })
     return NextResponse.json(
       { error: 'Failed to fetch order' },
       { status: 500 }
@@ -481,7 +476,11 @@ export async function PATCH(
         selectedCakeId: getFormString(formData, 'selectedCakeId'),
         selectedCakeName: getFormString(formData, 'selectedCakeName'),
         selectedCakeSize: getFormString(formData, 'selectedCakeSize'),
-        selectedDesignType: getFormString(formData, 'selectedDesignType')
+        selectedDesignType: getFormString(formData, 'selectedDesignType'),
+        customerFacingOfferDescription: getFormString(formData, 'customerFacingOfferDescription'),
+        allergenStatement: getFormString(formData, 'allergenStatement'),
+        allergenLabelIncluded: getFormBoolean(formData, 'allergenLabelIncluded'),
+        customerAcceptedOffer: getFormBoolean(formData, 'customerAcceptedOffer')
       }
 
       images = formData
@@ -513,6 +512,59 @@ export async function PATCH(
       }
     }
 
+    if (
+      updates.status !== undefined &&
+      (
+        typeof updates.status !== 'string' ||
+        !Object.prototype.hasOwnProperty.call(ORDER_STATUS_LABELS, updates.status)
+      )
+    ) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: 'Order status is invalid.' },
+        { status: 400 }
+      )
+    }
+
+    if (
+      updates.customerFacingOfferDescription !== undefined &&
+      typeof updates.customerFacingOfferDescription !== 'string'
+    ) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: 'Final-offer description must be text.' },
+        { status: 400 }
+      )
+    }
+
+    if (
+      updates.allergenStatement !== undefined &&
+      typeof updates.allergenStatement !== 'string'
+    ) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: 'Allergen information must be text.' },
+        { status: 400 }
+      )
+    }
+
+    if (
+      updates.customerAcceptedOffer !== undefined &&
+      typeof updates.customerAcceptedOffer !== 'boolean'
+    ) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: 'Customer acceptance must be true or false.' },
+        { status: 400 }
+      )
+    }
+
+    if (
+      updates.allergenLabelIncluded !== undefined &&
+      typeof updates.allergenLabelIncluded !== 'boolean'
+    ) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: 'Written allergen label confirmation must be true or false.' },
+        { status: 400 }
+      )
+    }
+
     const currentOrder = await getSupabaseOrderByIdentifier(id)
 
     if (!currentOrder) {
@@ -524,6 +576,74 @@ export async function PATCH(
 
     const nextOrder = applyOrderUpdates(currentOrder, updates)
 
+    if (
+      typeof updates.allergenStatement === 'string' &&
+      updates.allergenStatement.trim().length > 2000
+    ) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: 'Allergen information must be 2,000 characters or fewer.' },
+        { status: 400 }
+      )
+    }
+
+    if (
+      typeof updates.customerFacingOfferDescription === 'string' &&
+      updates.customerFacingOfferDescription.trim().length > 2000
+    ) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: 'Final-offer description must be 2,000 characters or fewer.' },
+        { status: 400 }
+      )
+    }
+
+    if (updates.status === 'confirmed' && !getCustomerFacingOfferDescription(nextOrder)) {
+      return NextResponse.json(
+        {
+          error: 'Final-offer description required',
+          details: 'Add the staff-authored customer-facing description before sending the final order offer.'
+        },
+        { status: 400 }
+      )
+    }
+
+    if (updates.status === 'confirmed' && !getOrderAllergenStatement(nextOrder)) {
+      return NextResponse.json(
+        {
+          error: 'Allergen information required',
+          details: 'Add the exact product-specific allergen statement before sending the final order offer.'
+        },
+        { status: 400 }
+      )
+    }
+
+    if (
+      updates.status !== undefined &&
+      ['ready-pickup', 'out-delivery', 'delivered', 'completed'].includes(updates.status) &&
+      !hasWrittenAllergenLabel(nextOrder)
+    ) {
+      return NextResponse.json(
+        {
+          error: 'Written allergen label required',
+          details: 'Confirm that the written product-specific allergen information is included with the food.'
+        },
+        { status: 400 }
+      )
+    }
+
+    if (
+      updates.status !== undefined &&
+      ['in-progress', 'ready-pickup', 'out-delivery', 'delivered', 'completed'].includes(updates.status) &&
+      !hasCustomerAcceptedOffer(nextOrder)
+    ) {
+      return NextResponse.json(
+        {
+          error: 'Customer acceptance required',
+          details: 'Record the customer’s written acceptance or a received payment before production or fulfilment.'
+        },
+        { status: 400 }
+      )
+    }
+
     if ((updates.note && updates.note.trim()) || images.length > 0) {
       const uploadedImages: OrderNoteImage[] = []
 
@@ -531,7 +651,11 @@ export async function PATCH(
         try {
           uploadedImages.push(await uploadSupabaseOrderNoteImage(currentOrder._id, imageFile))
         } catch (imageError) {
-          logger.error('Failed to upload image', imageError)
+          logger.error('Failed to upload image', {
+            operation: 'orders.note_image_upload',
+            recordReference: currentOrder.orderNumber,
+            ...toSafeOperationalError(imageError)
+          })
         }
       }
 
@@ -557,9 +681,12 @@ export async function PATCH(
       message: 'Order updated successfully'
     })
   } catch (error) {
-    logger.error('Failed to update order', error)
+    logger.error('Failed to update order', {
+      operation: 'orders.update',
+      ...toSafeOperationalError(error)
+    })
     return NextResponse.json(
-      { error: 'Failed to update order', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to update order' },
       { status: 500 }
     )
   }
@@ -590,36 +717,10 @@ export async function DELETE(
     }
 
     if (body.permanent) {
-      const password = body.password?.trim() || ''
-
-      if (!password) {
-        return NextResponse.json(
-          { error: 'Admin password is required' },
-          { status: 400 }
-        )
-      }
-
-      const adminPassword = process.env.ADMIN_PASSWORD
-      if (!adminPassword) {
-        return NextResponse.json(
-          { error: 'Admin password not configured' },
-          { status: 500 }
-        )
-      }
-
-      if (password !== adminPassword) {
-        return NextResponse.json(
-          { error: 'Invalid password' },
-          { status: 401 }
-        )
-      }
-
-      await deleteSupabaseOrder(currentOrder._id)
-
       return NextResponse.json({
-        success: true,
-        message: 'Order permanently deleted from Supabase'
-      })
+        error: 'Permanent deletion is available only for due records in the Privacy retention centre.',
+        code: 'RETENTION_CENTRE_REQUIRED'
+      }, { status: 409 })
     }
 
     const cancelledOrder = await updateSupabaseOrder({
@@ -640,9 +741,12 @@ export async function DELETE(
       message: 'Order cancelled successfully'
     })
   } catch (error) {
-    logger.error('Failed to delete order', error)
+    logger.error('Failed to delete order', {
+      operation: 'orders.delete',
+      ...toSafeOperationalError(error)
+    })
     return NextResponse.json(
-      { error: 'Failed to delete order', details: error instanceof Error ? error.message : 'Unknown error' },
+      { error: 'Failed to delete order' },
       { status: 500 }
     )
   }
@@ -652,21 +756,26 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
   const emailMode = getEmailTransportMode()
 
   if (requiresLiveEmailConfiguration(emailMode) && !process.env.RESEND_API_KEY) {
-    logger.error('RESEND_API_KEY not configured - skipping status update email')
+    logger.error('RESEND_API_KEY not configured - skipping status update email', {
+      operation: 'orders.status_email',
+      recordReference: order.orderNumber,
+      code: 'EMAIL_NOT_CONFIGURED'
+    })
     return
   }
 
   const isCakesByPostOrder = isCakesByPostSourceOrder(order)
+  const termsVersion = typeof order.metadata?.termsPresentedVersion === 'string'
+    ? order.metadata.termsPresentedVersion
+    : CURRENT_TERMS_VERSION
 
   const statusMessages = {
     confirmed: {
       subject: isCakesByPostOrder
-        ? `Order Request Confirmed #${order.orderNumber} - Olgish Cakes`
-        : `Order Confirmed #${order.orderNumber} - Olgish Cakes`,
-      heading: isCakesByPostOrder ? 'Order request confirmed' : 'Order confirmed',
-      message: isCakesByPostOrder
-        ? 'Great news, we\'ve confirmed your cakes by post request.'
-        : 'Great news! Your order has been confirmed and we\'ve started working on it. We\'ll keep you updated on progress.'
+        ? `Final Order Offer #${order.orderNumber} - Olgish Cakes`
+        : `Final Order Offer #${order.orderNumber} - Olgish Cakes`,
+      heading: 'Your final order offer',
+      message: `This email is our final written offer for the details and price shown below under terms version ${termsVersion}. Please accept it in writing or make the requested payment. Your contract starts only when you do so.`
     },
     'in-progress': {
       subject: `Order In Progress #${order.orderNumber} - Olgish Cakes`,
@@ -757,6 +866,9 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
       : newStatus
 
   try {
+    const termsAttachment = newStatus === 'confirmed'
+      ? await getTermsEmailAttachment(termsVersion)
+      : null
     const sendResult = await sendEmail({
       templateId: 'orders-status-update',
       input: {
@@ -780,15 +892,15 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
         designType: firstItem?.designType,
         filling: firstItem?.flavor,
         servings: firstItem?.size,
-        customerMessage: getStatusEmailCustomerMessage(order, firstItem),
+        customerFacingOfferDescription: getCustomerFacingOfferDescription(order),
         deliveryMethod: order.delivery.deliveryMethod,
         deliveryRecipientName: order.delivery.recipientName || order.customer.name,
         deliveryAddress: order.delivery.deliveryAddress,
         paymentMethod: order.pricing?.paymentMethod,
         paymentStatus: order.pricing?.paymentStatus,
+        allergenStatement: getOrderAllergenStatement(order),
         trackingNumber: order.delivery.trackingNumber || undefined,
         deliveryCourier: getDeliveryCourier(order) || 'evri',
-        giftNote: order.delivery.giftNote || undefined,
         titleOverride: statusInfo.subject,
         headingOverride: statusInfo.heading,
         statusMessage: statusInfo.message
@@ -797,14 +909,21 @@ async function sendStatusUpdateEmail(order: Order, newStatus: string) {
       message: {
         from: 'Olgish Cakes <hello@olgishcakes.co.uk>',
         to: order.customer.email,
-        bcc: getCustomerEmailBcc(process.env.ADMIN_BCC_EMAIL)
+        bcc: getCustomerEmailBcc(process.env.ADMIN_BCC_EMAIL),
+        ...(termsAttachment ? { attachments: [termsAttachment] } : {})
       }
     })
 
     if (sendResult.error) {
-      throw new Error(sendResult.error.message)
+      throw Object.assign(new Error('Status email was not accepted'), {
+        code: toSafeOperationalError(sendResult.error).code
+      })
     }
   } catch (emailError) {
-    logger.error('Failed to send status update email', emailError)
+    logger.error('Failed to send status update email', {
+      operation: 'orders.status_email',
+      recordReference: order.orderNumber,
+      ...toSafeOperationalError(emailError)
+    })
   }
 }

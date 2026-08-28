@@ -65,7 +65,7 @@ export function DeferredNonCriticalClientFeatures() {
         aria-hidden='true'
         aria-label='Scroll to top'
         title='Scroll to top'
-        className={`btn btn-circle btn-ghost fixed bottom-6 right-6 z-[1000] h-12 min-h-12 w-12 border border-white/20 bg-[linear-gradient(135deg,rgba(46,49,146,0.15)_0%,rgba(30,36,112,0.25)_100%)] p-0 text-white/90 shadow-[0_8px_32px_rgba(46,49,146,0.1),0_4px_16px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.1)] backdrop-blur-[20px] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:scale-105 hover:border-white/30 hover:bg-[linear-gradient(135deg,rgba(46,49,146,0.25)_0%,rgba(30,36,112,0.35)_100%)] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 active:scale-[0.98] ${hiddenScrollToTopClasses}`}
+        className={`btn btn-circle btn-ghost fixed bottom-6 right-6 z-[1000] hidden h-12 min-h-12 w-12 border border-white/20 bg-[linear-gradient(135deg,rgba(46,49,146,0.15)_0%,rgba(30,36,112,0.25)_100%)] p-0 text-white/90 shadow-[0_8px_32px_rgba(46,49,146,0.1),0_4px_16px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.3),inset_0_-1px_0_rgba(0,0,0,0.1)] backdrop-blur-[20px] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:scale-105 hover:border-white/30 hover:bg-[linear-gradient(135deg,rgba(46,49,146,0.25)_0%,rgba(30,36,112,0.35)_100%)] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 active:scale-[0.98] tablet:inline-flex ${hiddenScrollToTopClasses}`}
       >
         <svg
           aria-hidden='true'

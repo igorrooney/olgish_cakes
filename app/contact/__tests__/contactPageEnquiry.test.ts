@@ -27,7 +27,7 @@ describe('contactPageEnquiry service', () => {
     })
 
     await expect(
-      submitContactPageEnquiry(new FormData())
+      submitContactPageEnquiry(new FormData(), new AbortController().signal)
     ).rejects.toMatchObject({
       message: 'Validation failed. Please check the form fields.',
       fieldErrors: {
@@ -46,7 +46,7 @@ describe('contactPageEnquiry service', () => {
     })
 
     await expect(
-      submitContactPageEnquiry(new FormData())
+      submitContactPageEnquiry(new FormData(), new AbortController().signal)
     ).rejects.toThrow(
       'Something went wrong while sending your message. Please try again, or contact us directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
     )

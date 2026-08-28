@@ -1,3 +1,5 @@
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error';
+
 interface TrustpilotReview {
   id: string;
   consumer: {
@@ -21,7 +23,7 @@ const TRUSTPILOT_API_KEY = process.env.NEXT_PUBLIC_TRUSTPILOT_API_KEY;
 const TRUSTPILOT_BUSINESS_UNIT_ID = process.env.NEXT_PUBLIC_TRUSTPILOT_BUSINESS_UNIT_ID;
 const TRUSTPILOT_API_HOST = "https://api.trustpilot.com/v1";
 
-export async function fetchTrustpilotReviews(productName: string, signal?: AbortSignal) {
+export async function fetchTrustpilotReviews(productName: string, signal: AbortSignal) {
   // If Trustpilot is not configured, return null immediately
   if (!TRUSTPILOT_API_KEY || !TRUSTPILOT_BUSINESS_UNIT_ID ||
       TRUSTPILOT_API_KEY === 'your_api_key_here' ||
@@ -61,10 +63,13 @@ export async function fetchTrustpilotReviews(productName: string, signal?: Abort
     }));
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
-      return null;
+      throw error;
     }
 
-    console.error("Error fetching Trustpilot reviews:", error);
+    console.error("Trustpilot review fetch failed", {
+      operation: "trustpilot.reviews.fetch",
+      ...toSafeOperationalError(error),
+    });
     return null;
   }
 }

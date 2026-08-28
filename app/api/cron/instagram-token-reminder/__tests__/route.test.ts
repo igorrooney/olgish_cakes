@@ -7,6 +7,7 @@ import { GET, POST } from '../route'
 const mockSendEmail = jest.fn()
 const mockGetEmailTransportMode = jest.fn()
 const mockRequiresLiveEmailConfiguration = jest.fn()
+const mockLoggerError = jest.fn()
 
 jest.mock('@/lib/email/service', () => ({
   getEmailTransportMode: () => mockGetEmailTransportMode(),
@@ -14,7 +15,16 @@ jest.mock('@/lib/email/service', () => ({
   sendEmail: (...args: unknown[]) => mockSendEmail(...args)
 }))
 
-const createSendResult = (accepted = true, error: { message: string } | null = null) => ({
+jest.mock('@/lib/logger', () => ({
+  logger: {
+    error: (...args: unknown[]) => mockLoggerError(...args)
+  }
+}))
+
+const createSendResult = (
+  accepted = true,
+  error: { message: string, code?: string } | null = null
+) => ({
   mode: 'capture' as const,
   accepted,
   id: accepted ? 'email-id' : null,
@@ -269,11 +279,22 @@ describe('/api/cron/instagram-token-reminder', () => {
     const payload = await response.json()
 
     expect(response.status).toBe(500)
-    expect(payload).toEqual({ error: 'INSTAGRAM_TOKEN_EXPIRES_AT must be a valid ISO-8601 date' })
+    expect(payload).toEqual({
+      error: 'Instagram token reminder failed',
+      code: 'INSTAGRAM_TOKEN_EXPIRY_INVALID'
+    })
+    expect(mockLoggerError).toHaveBeenCalledWith('Instagram token reminder route failed', {
+      operation: 'instagram-token-reminder.run',
+      code: 'INSTAGRAM_TOKEN_EXPIRY_INVALID'
+    })
   })
 
-  it('returns 500 when the reminder email send fails', async () => {
-    mockSendEmail.mockResolvedValue(createSendResult(false, { message: 'Transport did not accept reminder email' }))
+  it('returns and logs no raw provider message when the reminder email send fails', async () => {
+    const sentinel = 'SENTINEL provider response with recipient details'
+    mockSendEmail.mockResolvedValue(createSendResult(false, {
+      message: sentinel,
+      code: 'EMAIL_PROVIDER_REJECTED'
+    }))
 
     const request = new NextRequest('http://localhost/api/cron/instagram-token-reminder', {
       headers: { authorization: 'Bearer cron-secret' }
@@ -284,5 +305,11 @@ describe('/api/cron/instagram-token-reminder', () => {
 
     expect(response.status).toBe(500)
     expect(payload).toEqual({ error: 'Failed to send Instagram token reminder' })
+    expect(JSON.stringify(payload)).not.toContain(sentinel)
+    expect(JSON.stringify(mockLoggerError.mock.calls)).not.toContain(sentinel)
+    expect(mockLoggerError).toHaveBeenCalledWith('Instagram token reminder email failed', {
+      operation: 'instagram-token-reminder.send',
+      code: 'EMAIL_PROVIDER_REJECTED'
+    })
   })
 })

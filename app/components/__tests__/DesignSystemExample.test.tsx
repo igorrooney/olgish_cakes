@@ -60,7 +60,14 @@ jest.mock('@/lib/ui-components', () => ({
       <div>{description}</div>
     </div>
   ),
-  StyledTextField: (props: MockProps) => <input data-testid="styled-textfield" {...props} />,
+  StyledTextField: ({ fullWidth, label, sx, ...props }: MockProps) => (
+    <input
+      data-testid="styled-textfield"
+      data-full-width={fullWidth === true ? 'true' : 'false'}
+      aria-label={typeof label === 'string' ? label : undefined}
+      {...props}
+    />
+  ),
   IngredientChip: ({ label, ...props }: MockProps) => <span data-testid="ingredient-chip" {...props}>{label}</span>,
   AllergenChip: ({ label, ...props }: MockProps) => <span data-testid="allergen-chip" {...props}>{label}</span>,
   CategoryChip: ({ label, ...props }: MockProps) => <span data-testid="category-chip" {...props}>{label}</span>,
@@ -119,7 +126,7 @@ describe('DesignSystemExample', () => {
     render(<DesignSystemExample />)
 
     expect(screen.getByTestId('feature-card')).toBeInTheDocument()
-    expect(screen.getByText('Free UK Delivery')).toBeInTheDocument()
+    expect(screen.getByText('UK delivery options')).toBeInTheDocument()
   })
 
   it('should render price display', () => {

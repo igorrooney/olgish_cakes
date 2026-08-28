@@ -29,6 +29,37 @@ jest.mock('@/lib/email/service', () => ({
 import { DELETE, PATCH } from '../route'
 
 describe('/api/orders/[id] PATCH', () => {
+  const makeComplianceOrder = () => ({
+    _id: 'order-compliance',
+    _createdAt: '2026-08-23T09:00:00.000Z',
+    _updatedAt: '2026-08-23T09:00:00.000Z',
+    orderNumber: 'OC-COMPLIANCE',
+    status: 'in-progress',
+    orderType: 'standard',
+    customer: {
+      name: 'Jane Doe',
+      email: 'jane@example.com',
+      phone: '07123456789'
+    },
+    items: [{
+      productName: 'Honey Cake',
+      quantity: 1,
+      unitPrice: 40,
+      totalPrice: 40
+    }],
+    delivery: { deliveryMethod: 'collection' },
+    pricing: {
+      total: 40,
+      paymentStatus: 'paid'
+    },
+    notes: [],
+    metadata: {
+      customerAcceptedOffer: true,
+      customerFacingOfferDescription: 'One handmade Honey Cake for collection.',
+      allergenStatement: 'Contains wheat (gluten), eggs and milk.'
+    }
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
     mockIsAdminAuthenticated.mockResolvedValue(true)
@@ -43,6 +74,94 @@ describe('/api/orders/[id] PATCH', () => {
         html: '<p>Status update html</p>'
       }
     })
+  })
+
+  it.each([
+    [{ status: 'production' }, 'Order status is invalid.'],
+    [{ status: 42 }, 'Order status is invalid.'],
+    [{ customerFacingOfferDescription: 42 }, 'Final-offer description must be text.'],
+    [{ allergenStatement: false }, 'Allergen information must be text.'],
+    [{ customerAcceptedOffer: 'true' }, 'Customer acceptance must be true or false.'],
+    [{ allergenLabelIncluded: 'true' }, 'Written allergen label confirmation must be true or false.']
+  ])('rejects malformed compliance updates before reading or persisting the order: %p', async (body, details) => {
+    const request = new NextRequest('http://localhost/api/orders/order-compliance', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    })
+
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: 'order-compliance' })
+    })
+
+    expect(response.status).toBe(400)
+    expect(await response.json()).toEqual({
+      error: 'Validation failed',
+      details
+    })
+    expect(mockGetSupabaseOrderByIdentifier).not.toHaveBeenCalled()
+    expect(mockUpdateSupabaseOrder).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    [
+      'customerFacingOfferDescription',
+      'Final-offer description must be 2,000 characters or fewer.'
+    ],
+    [
+      'allergenStatement',
+      'Allergen information must be 2,000 characters or fewer.'
+    ]
+  ] as const)('rejects an overlong %s value', async (field, details) => {
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(makeComplianceOrder())
+
+    const request = new NextRequest('http://localhost/api/orders/order-compliance', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [field]: 'x'.repeat(2001) })
+    })
+
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: 'order-compliance' })
+    })
+    const json = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(json).toEqual({
+      error: 'Validation failed',
+      details
+    })
+    expect(mockUpdateSupabaseOrder).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    'ready-pickup',
+    'out-delivery',
+    'delivered',
+    'completed'
+  ] as const)('blocks the %s fulfilment status without written allergen information', async (status) => {
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(makeComplianceOrder())
+
+    const request = new NextRequest('http://localhost/api/orders/order-compliance', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    })
+
+    const response = await PATCH(request, {
+      params: Promise.resolve({ id: 'order-compliance' })
+    })
+    const json = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(json).toEqual({
+      error: 'Written allergen label required',
+      details: 'Confirm that the written product-specific allergen information is included with the food.'
+    })
+    expect(mockUpdateSupabaseOrder).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
   it('sends full line-item array in status update email input', async () => {
@@ -104,7 +223,9 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'confirmed'
+        status: 'confirmed',
+        customerFacingOfferDescription: 'Two handmade cakes with floral piping and vanilla filling.',
+        allergenStatement: 'Contains wheat (gluten), eggs and milk.'
       })
     })
 
@@ -130,15 +251,25 @@ describe('/api/orders/[id] PATCH', () => {
       totalPrice: 40,
       designType: 'Floral piping',
       filling: 'Vanilla',
-      servings: 'Serves 8',
-      specialInstructions: 'No nuts'
+      servings: 'Serves 8'
     })
+    expect(sendCall.input.orderItems[0].specialInstructions).toBeUndefined()
+    expect(sendCall.input.customerFacingOfferDescription).toBe('Two handmade cakes with floral piping and vanilla filling.')
     expect(sendCall.input.orderItems[1]).toMatchObject({
       productName: 'Napoleon Slice',
       quantity: 1,
       unitPrice: 0,
       totalPrice: 15
     })
+    expect(sendCall.input.statusMessage).toContain('terms version 2026-07-28')
+    expect(sendCall.input.allergenStatement).toBe('Contains wheat (gluten), eggs and milk.')
+    expect(sendCall.message.attachments).toEqual([
+      expect.objectContaining({
+        filename: 'olgish-cakes-terms-2026-07-28.pdf',
+        contentType: 'application/pdf',
+        content: expect.any(Buffer)
+      })
+    ])
   })
 
   it('allows admins to clear an optional customer phone number', async () => {
@@ -264,7 +395,9 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'confirmed'
+        status: 'confirmed',
+        customerFacingOfferDescription: 'A gift hamper prepared for postal delivery.',
+        allergenStatement: 'Contains wheat (gluten), eggs and milk.'
       })
     })
 
@@ -276,14 +409,142 @@ describe('/api/orders/[id] PATCH', () => {
     expect(sendCall.templateId).toBe('orders-status-update')
     expect(sendCall.input).toMatchObject({
       productType: 'gift-hamper',
-      headingOverride: 'Order request confirmed',
-      titleOverride: 'Order Request Confirmed #26051220022842 - Olgish Cakes',
-      statusMessage: 'Great news, we\'ve confirmed your cakes by post request.',
-      giftNote: 'gift note test',
+      headingOverride: 'Your final order offer',
+      titleOverride: 'Final Order Offer #26051220022842 - Olgish Cakes',
+      statusMessage: 'This email is our final written offer for the details and price shown below under terms version 2026-07-28. Please accept it in writing or make the requested payment. Your contract starts only when you do so.',
+      customerFacingOfferDescription: 'A gift hamper prepared for postal delivery.',
+      allergenStatement: 'Contains wheat (gluten), eggs and milk.',
       deliveryAddress: '15 Allerton Grange Avenue, Leeds, LS17 6PR',
       paymentStatus: 'pending'
     })
     expect(sendCall.input.customerMessage).toBeUndefined()
+    expect(sendCall.input.giftNote).toBeUndefined()
+    expect(sendCall.input.orderItems[0].specialInstructions).toBeUndefined()
+    expect(JSON.stringify(sendCall.input)).not.toContain('gift note test')
+    expect(JSON.stringify(sendCall.input)).not.toContain('test message')
+    expect(sendCall.message.attachments[0]).toMatchObject({
+      filename: 'olgish-cakes-terms-2026-07-28.pdf',
+      contentType: 'application/pdf'
+    })
+  })
+
+  it('blocks a final offer without product-specific allergen information', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-03-01T10:00:00.000Z',
+      _updatedAt: '2026-03-01T10:00:00.000Z',
+      orderNumber: 'OC-2001',
+      status: 'new',
+      orderType: 'standard',
+      customer: {
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        phone: '07123456789'
+      },
+      items: [{ productName: 'Honey Cake', quantity: 1, totalPrice: 40 }],
+      delivery: { deliveryMethod: 'collection' },
+      pricing: { total: 40, paymentStatus: 'pending' },
+      notes: [],
+      metadata: {}
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        status: 'confirmed',
+        customerFacingOfferDescription: 'One handmade Honey Cake for collection.'
+      })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+    const json = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(json.error).toBe('Allergen information required')
+    expect(mockUpdateSupabaseOrder).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('blocks a final offer without a staff-authored customer-facing description', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-03-01T10:00:00.000Z',
+      _updatedAt: '2026-03-01T10:00:00.000Z',
+      orderNumber: 'OC-2001',
+      status: 'new',
+      orderType: 'standard',
+      customer: {
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        phone: '07123456789'
+      },
+      items: [{ productName: 'Honey Cake', quantity: 1, totalPrice: 40 }],
+      delivery: { deliveryMethod: 'collection' },
+      pricing: { total: 40, paymentStatus: 'pending' },
+      notes: [],
+      metadata: {}
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        status: 'confirmed',
+        allergenStatement: 'Contains wheat (gluten), eggs and milk.'
+      })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+    const json = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(json.error).toBe('Final-offer description required')
+    expect(mockUpdateSupabaseOrder).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
+  it('blocks production until the customer accepts or pays', async () => {
+    const currentOrder = {
+      _id: 'order-1',
+      _createdAt: '2026-03-01T10:00:00.000Z',
+      _updatedAt: '2026-03-01T10:00:00.000Z',
+      orderNumber: 'OC-2001',
+      status: 'confirmed',
+      orderType: 'standard',
+      customer: {
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        phone: '07123456789'
+      },
+      items: [{ productName: 'Honey Cake', quantity: 1, totalPrice: 40 }],
+      delivery: { deliveryMethod: 'collection' },
+      pricing: { total: 40, paymentStatus: 'pending' },
+      notes: [],
+      metadata: {
+        allergenStatement: 'Contains wheat (gluten), eggs and milk.'
+      }
+    }
+
+    mockGetSupabaseOrderByIdentifier.mockResolvedValueOnce(currentOrder)
+
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'in-progress' })
+    })
+
+    const response = await PATCH(request, { params: Promise.resolve({ id: 'order-1' }) })
+    const json = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(json.error).toBe('Customer acceptance required')
+    expect(mockUpdateSupabaseOrder).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
   it('passes cakes by post status email fields for in-progress orders', async () => {
@@ -360,6 +621,10 @@ describe('/api/orders/[id] PATCH', () => {
       statusMessage: 'Your cakes by post order is now being prepared.',
       paymentStatus: 'paid'
     })
+    expect(sendCall.input.giftNote).toBeUndefined()
+    expect(sendCall.input.orderItems[0].specialInstructions).toBeUndefined()
+    expect(JSON.stringify(sendCall.input)).not.toContain('gift note test')
+    expect(JSON.stringify(sendCall.input)).not.toContain('test message')
   })
 
   it('saves courier metadata and passes it into cakes by post out-for-delivery emails', async () => {
@@ -419,7 +684,8 @@ describe('/api/orders/[id] PATCH', () => {
       body: JSON.stringify({
         status: 'out-delivery',
         deliveryCourier: 'evri',
-        trackingNumber: 'H02X8A0022918652'
+        trackingNumber: 'H02X8A0022918652',
+        allergenLabelIncluded: true
       })
     })
 
@@ -503,7 +769,8 @@ describe('/api/orders/[id] PATCH', () => {
       body: JSON.stringify({
         status: 'out-delivery',
         deliveryCourier: 'royal-mail',
-        trackingNumber: '12345'
+        trackingNumber: '12345',
+        allergenLabelIncluded: true
       })
     })
 
@@ -585,7 +852,8 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'out-delivery'
+        status: 'out-delivery',
+        allergenLabelIncluded: true
       })
     })
 
@@ -598,7 +866,7 @@ describe('/api/orders/[id] PATCH', () => {
     expect(sendCall.input.statusMessage).toBe('Great news! Your order is out for local delivery and will be with you soon.')
   })
 
-  it('uses metadata customer message when item special instructions are empty', async () => {
+  it('does not echo a metadata customer message in a status email', async () => {
     const currentOrder = {
       _id: 'order-1',
       _createdAt: '2026-05-12T18:00:00.000Z',
@@ -655,7 +923,8 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'out-delivery'
+        status: 'out-delivery',
+        allergenLabelIncluded: true
       })
     })
 
@@ -664,10 +933,10 @@ describe('/api/orders/[id] PATCH', () => {
     expect(response.status).toBe(200)
 
     const sendCall = mockSendEmail.mock.calls[0]?.[0]
-    expect(sendCall.input.customerMessage).toBe('Please write Happy Birthday on the cake')
+    expect(sendCall.input.customerMessage).toBeUndefined()
   })
 
-  it('uses order message when item and metadata customer message are empty', async () => {
+  it('does not echo an order message in a status email', async () => {
     const currentOrder = {
       _id: 'order-1',
       _createdAt: '2026-05-12T18:00:00.000Z',
@@ -724,7 +993,8 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'out-delivery'
+        status: 'out-delivery',
+        allergenLabelIncluded: true
       })
     })
 
@@ -733,7 +1003,7 @@ describe('/api/orders/[id] PATCH', () => {
     expect(response.status).toBe(200)
 
     const sendCall = mockSendEmail.mock.calls[0]?.[0]
-    expect(sendCall.input.customerMessage).toBe('Please add candles')
+    expect(sendCall.input.customerMessage).toBeUndefined()
   })
 
   it('filters generated metadata customer message from status emails', async () => {
@@ -798,7 +1068,8 @@ describe('/api/orders/[id] PATCH', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        status: 'out-delivery'
+        status: 'out-delivery',
+        allergenLabelIncluded: true
       })
     })
 
@@ -850,7 +1121,8 @@ describe('/api/orders/[id] PATCH', () => {
       messages: [],
       notes: [],
       metadata: {
-        deliveryCourier: 'royal-mail'
+        deliveryCourier: 'royal-mail',
+        allergenLabelIncluded: true
       }
     }
 
@@ -927,7 +1199,8 @@ describe('/api/orders/[id] PATCH', () => {
       messages: [],
       notes: [],
       metadata: {
-        deliveryCourier: 'evri'
+        deliveryCourier: 'evri',
+        allergenLabelIncluded: true
       }
     }
 
@@ -1218,7 +1491,8 @@ describe('/api/orders/[id] PATCH', () => {
       },
       body: JSON.stringify({
         status: 'out-delivery',
-        trackingNumber: 'H02X8A0022918652'
+        trackingNumber: 'H02X8A0022918652',
+        allergenLabelIncluded: true
       })
     })
 
@@ -1346,7 +1620,8 @@ describe('/api/orders/[id] PATCH', () => {
       messages: [],
       notes: [],
       metadata: {
-        deliveryCourier: 'royal-mail'
+        deliveryCourier: 'royal-mail',
+        allergenLabelIncluded: true
       }
     }
 
@@ -1510,6 +1785,8 @@ describe('/api/orders/[id] PATCH', () => {
 
     const formData = new FormData()
     formData.append('status', 'confirmed')
+    formData.append('customerFacingOfferDescription', 'A gift hamper and a jar of local honey.')
+    formData.append('allergenStatement', 'Contains wheat (gluten), eggs and milk.')
     formData.append('itemPrice', '45')
     formData.append('totalPrice', '65')
     formData.append('selectedCakeId', 'hamper-1')
@@ -1679,7 +1956,6 @@ describe('/api/orders/[id] PATCH', () => {
 })
 
 describe('/api/orders/[id] DELETE', () => {
-  const originalAdminPassword = process.env.ADMIN_PASSWORD
   const currentOrder = {
     _id: 'order-1',
     _createdAt: '2026-03-01T10:00:00.000Z',
@@ -1710,7 +1986,6 @@ describe('/api/orders/[id] DELETE', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env.ADMIN_PASSWORD = 'correct-password'
     mockIsAdminAuthenticated.mockResolvedValue(true)
     mockGetSupabaseOrderByIdentifier.mockResolvedValue(currentOrder)
     mockDeleteSupabaseOrder.mockResolvedValue(undefined)
@@ -1723,11 +1998,27 @@ describe('/api/orders/[id] DELETE', () => {
     })
   })
 
-  afterAll(() => {
-    process.env.ADMIN_PASSWORD = originalAdminPassword
+  it('requires an authenticated admin session before reading the order', async () => {
+    mockIsAdminAuthenticated.mockResolvedValueOnce(false)
+    const request = new NextRequest('http://localhost/api/orders/order-1', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        permanent: true,
+        password: 'correct-password'
+      })
+    })
+
+    const response = await DELETE(request, { params: Promise.resolve({ id: 'order-1' }) })
+
+    expect(response.status).toBe(401)
+    expect(mockGetSupabaseOrderByIdentifier).not.toHaveBeenCalled()
+    expect(mockDeleteSupabaseOrder).not.toHaveBeenCalled()
   })
 
-  it('permanently deletes an order when the admin password is valid', async () => {
+  it('routes every permanent deletion through the selective retention centre', async () => {
     const request = new NextRequest('http://localhost/api/orders/order-1', {
       method: 'DELETE',
       headers: {
@@ -1742,48 +2033,11 @@ describe('/api/orders/[id] DELETE', () => {
     const response = await DELETE(request, { params: Promise.resolve({ id: 'order-1' }) })
     const body = await response.json()
 
-    expect(response.status).toBe(200)
+    expect(response.status).toBe(409)
     expect(body).toEqual({
-      success: true,
-      message: 'Order permanently deleted from Supabase'
+      error: 'Permanent deletion is available only for due records in the Privacy retention centre.',
+      code: 'RETENTION_CENTRE_REQUIRED'
     })
-    expect(mockDeleteSupabaseOrder).toHaveBeenCalledWith('order-1')
-    expect(mockUpdateSupabaseOrder).not.toHaveBeenCalled()
-  })
-
-  it('rejects permanent delete when the admin password is invalid', async () => {
-    const request = new NextRequest('http://localhost/api/orders/order-1', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        permanent: true,
-        password: 'wrong-password'
-      })
-    })
-
-    const response = await DELETE(request, { params: Promise.resolve({ id: 'order-1' }) })
-
-    expect(response.status).toBe(401)
-    expect(mockDeleteSupabaseOrder).not.toHaveBeenCalled()
-    expect(mockUpdateSupabaseOrder).not.toHaveBeenCalled()
-  })
-
-  it('rejects permanent delete when the admin password is missing', async () => {
-    const request = new NextRequest('http://localhost/api/orders/order-1', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        permanent: true
-      })
-    })
-
-    const response = await DELETE(request, { params: Promise.resolve({ id: 'order-1' }) })
-
-    expect(response.status).toBe(400)
     expect(mockDeleteSupabaseOrder).not.toHaveBeenCalled()
     expect(mockUpdateSupabaseOrder).not.toHaveBeenCalled()
   })

@@ -1,0 +1,560 @@
+{
+  "exportFormatVersion": 2,
+  "exportTime": "2026-07-29 20:53:40",
+  "containerVersion": {
+    "path": "accounts/6337715641/containers/242696071/versions/0",
+    "accountId": "6337715641",
+    "containerId": "242696071",
+    "containerVersionId": "0",
+    "container": {
+      "path": "accounts/6337715641/containers/242696071",
+      "accountId": "6337715641",
+      "containerId": "242696071",
+      "name": "olgishcakes",
+      "publicId": "GTM-5JZDTM8N",
+      "usageContext": [
+        "WEB"
+      ],
+      "fingerprint": "1770207779951",
+      "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/6337715641/containers/242696071/workspaces?apiLink=container",
+      "features": {
+        "supportUserPermissions": true,
+        "supportEnvironments": true,
+        "supportWorkspaces": true,
+        "supportGtagConfigs": false,
+        "supportBuiltInVariables": true,
+        "supportClients": false,
+        "supportFolders": true,
+        "supportTags": true,
+        "supportTemplates": true,
+        "supportTriggers": true,
+        "supportVariables": true,
+        "supportVersions": true,
+        "supportZones": true,
+        "supportTransformations": false
+      },
+      "tagIds": [
+        "GTM-5JZDTM8N"
+      ]
+    },
+    "tag": [
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "tagId": "6",
+        "name": "Google Analytics - Consent v2",
+        "type": "googtag",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "tagId",
+            "value": "G-QGQC58H2LD"
+          }
+        ],
+        "fingerprint": "1785358420322",
+        "firingTriggerId": [
+          "3",
+          "4"
+        ],
+        "tagFiringOption": "ONCE_PER_LOAD",
+        "monitoringMetadata": {
+          "type": "MAP"
+        },
+        "consentSettings": {
+          "consentStatus": "NEEDED",
+          "consentType": {
+            "type": "LIST",
+            "list": [
+              {
+                "type": "TEMPLATE",
+                "value": "analytics_storage"
+              }
+            ]
+          }
+        },
+        "notes": "Fires only when the canonical Google Analytics choice is true and analytics_storage is granted."
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "tagId": "8",
+        "name": "Microsoft Clarity - Consent v2",
+        "type": "cvt_MQDKZ",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "projectId",
+            "value": "vcraoykbas"
+          }
+        ],
+        "fingerprint": "1785358420322",
+        "firingTriggerId": [
+          "5",
+          "6"
+        ],
+        "tagFiringOption": "ONCE_PER_LOAD",
+        "monitoringMetadata": {
+          "type": "MAP"
+        },
+        "consentSettings": {
+          "consentStatus": "NOT_NEEDED"
+        },
+        "notes": "Initialises Clarity only when the canonical Microsoft Clarity choice is true.",
+        "priority": {
+          "type": "INTEGER",
+          "value": "100"
+        }
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "tagId": "9",
+        "name": "Microsoft Clarity - Consent API V2",
+        "type": "html",
+        "parameter": [
+          {
+            "type": "TEMPLATE",
+            "key": "html",
+            "value": "<script>\n(function () {\n  if (typeof window.clarity !== 'function') return\n\n  var clarityConsent = {{DLV - Consent - Microsoft Clarity}} === true\n  var adsConsent = {{DLV - Consent - Google Ads}} === true\n\n  window.clarity('consentv2', {\n    source: 'olgish-cakes',\n    ad_Storage: adsConsent ? 'granted' : 'denied',\n    analytics_Storage: clarityConsent ? 'granted' : 'denied'\n  })\n\n  if (!clarityConsent) {\n    window.clarity('consent', false)\n  }\n})()\n</script>"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "supportDocumentWrite",
+            "value": "false"
+          }
+        ],
+        "notes": "Updates Clarity consent on every canonical consent event and revokes consent on withdrawal. This tag does not load Clarity.",
+        "fingerprint": "1785358420322",
+        "firingTriggerId": [
+          "9",
+          "10"
+        ],
+        "tagFiringOption": "ONCE_PER_EVENT",
+        "monitoringMetadata": {
+          "type": "MAP"
+        },
+        "consentSettings": {
+          "consentStatus": "NOT_NEEDED"
+        }
+      }
+    ],
+    "trigger": [
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "triggerId": "3",
+        "name": "CE - Consent Ready - Google Analytics",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "olgish_consent_ready"
+              }
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - Consent - Google Analytics}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1785358420322"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "triggerId": "4",
+        "name": "CE - Consent Update - Google Analytics",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "olgish_consent_update"
+              }
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - Consent - Google Analytics}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1785358420322"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "triggerId": "5",
+        "name": "CE - Consent Ready - Microsoft Clarity",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "olgish_consent_ready"
+              }
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - Consent - Microsoft Clarity}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1785358420322"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "triggerId": "6",
+        "name": "CE - Consent Update - Microsoft Clarity",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "olgish_consent_update"
+              }
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - Consent - Microsoft Clarity}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1785358420322"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "triggerId": "7",
+        "name": "CE - Consent Ready - Google Ads",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "olgish_consent_ready"
+              }
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - Consent - Google Ads}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1785358420322"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "triggerId": "8",
+        "name": "CE - Consent Update - Google Ads",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "olgish_consent_update"
+              }
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - Consent - Google Ads}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1785358420322"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "triggerId": "9",
+        "name": "CE - Consent Ready - All Choices",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "olgish_consent_ready"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1785358420322"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "triggerId": "10",
+        "name": "CE - Consent Update - All Choices",
+        "type": "CUSTOM_EVENT",
+        "customEventFilter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{_event}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "olgish_consent_update"
+              }
+            ]
+          }
+        ],
+        "fingerprint": "1785358420322"
+      }
+    ],
+    "builtInVariable": [
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "type": "PAGE_URL",
+        "name": "Page URL"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "type": "PAGE_HOSTNAME",
+        "name": "Page Hostname"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "type": "PAGE_PATH",
+        "name": "Page Path"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "type": "REFERRER",
+        "name": "Referrer"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "type": "EVENT",
+        "name": "Event"
+      }
+    ],
+    "fingerprint": "1785358420322",
+    "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/6337715641/containers/242696071/versions/0?apiLink=version",
+    "customTemplate": [
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "templateId": "7",
+        "name": "Microsoft Clarity - Official",
+        "fingerprint": "1770317379043",
+        "templateData": "___TERMS_OF_SERVICE___\n\nBy creating or modifying this file you agree to Google Tag Manager's Community\nTemplate Gallery Developer Terms of Service available at\nhttps://developers.google.com/tag-manager/gallery-tos (or such other URL as\nGoogle may provide), as modified from time to time.\n\n\n___INFO___\n\n{\n  \"type\": \"TAG\",\n  \"id\": \"cvt_MQDKZ\",\n  \"version\": 1,\n  \"displayName\": \"Microsoft Clarity - Official\",\n  \"categories\": [\n    \"ANALYTICS\",\n    \"HEAT_MAP\",\n    \"SESSION_RECORDING\"\n  ],\n  \"brand\": {\n    \"id\": \"github.com_microsoft\",\n    \"displayName\": \"microsoft\",\n    \"thumbnail\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACABAMAAAAxEHz4AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAElBMVEUAAADyUCJ/ugAApO//uQD///8951e2AAAAAXRSTlMAQObYZgAAAAFiS0dEBfhv6ccAAAAHdElNRQfkCgUWITsZUDiiAAAAS0lEQVRo3u3MQQ3AIAAEsMuCAGZhCkiwgH9NOLj3Hq2A5q1m8nxVBAKBQCAQCAQCgUAgEPSAP9jVSsapBAKBQCAQCAQCgUAgEPTgAruK0CdlWNSzAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDIwLTEwLTA1VDIyOjMzOjU5KzAwOjAwPT1n8QAAACV0RVh0ZGF0ZTptb2RpZnkAMjAyMC0xMC0wNVQyMjozMzo1OSswMDowMExg300AAAAASUVORK5CYII\\u003d\"\n  },\n  \"description\": \"Clarity is a user behavior analytics tool, which helps you understand how users are interacting with your website. Supported features include:\\nSession Recordings\\nHeatmaps\\nML Insights\",\n  \"containerContexts\": [\n    \"WEB\"\n  ]\n}\n\n\n___TEMPLATE_PARAMETERS___\n\n[\n  {\n    \"type\": \"TEXT\",\n    \"name\": \"projectId\",\n    \"displayName\": \"Clarity Project Id\",\n    \"simpleValueType\": true,\n    \"help\": \"Copy your clarity project Id here. You can find it in the project Url from the browser. Example: https://clarity.microsoft.com/projects/view/\\\"projectId\\\"/\",\n    \"valueValidators\": [\n      {\n        \"type\": \"NON_EMPTY\",\n        \"errorMessage\": \"You must provide a clarity project Id\"\n      },\n      {\n        \"type\": \"REGEX\",\n        \"args\": [\n          \"[0-9a-z]+\"\n        ],\n        \"errorMessage\": \"Incorrect project Id. You can find it in the project Url from the browser. Example: https://clarity.microsoft.com/projects/view/\\\"projectId\\\"/\"\n      }\n    ]\n  },\n  {\n    \"type\": \"GROUP\",\n    \"name\": \"advanced\",\n    \"displayName\": \"Custom Options\",\n    \"groupStyle\": \"ZIPPY_CLOSED\",\n    \"subParams\": [\n      {\n        \"type\": \"GROUP\",\n        \"name\": \"custom_id\",\n        \"displayName\": \"Custom Identifiers\",\n        \"groupStyle\": \"NO_ZIPPY\",\n        \"subParams\": [\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"userId\",\n            \"displayName\": \"Custom Id\",\n            \"simpleValueType\": true,\n            \"help\": \"Custom id such as an email, can help you view the user journey across browsers and devices\",\n            \"valueHint\": \"user@domain.com\"\n          },\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"sessionId\",\n            \"displayName\": \"Session Id\",\n            \"simpleValueType\": true,\n            \"help\": \"Custom session id to help you filter for this session later\",\n            \"enablingConditions\": [\n              {\n                \"paramName\": \"userId\",\n                \"paramValue\": \"\",\n                \"type\": \"PRESENT\"\n              }\n            ],\n            \"valueHint\": \"custom-session-id\"\n          },\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"pageId\",\n            \"displayName\": \"Page Id\",\n            \"simpleValueType\": true,\n            \"help\": \"Custom page id to help you filter for this page later\",\n            \"enablingConditions\": [\n              {\n                \"paramName\": \"userId\",\n                \"paramValue\": \"\",\n                \"type\": \"PRESENT\"\n              }\n            ],\n            \"valueHint\": \"custom-page-id\"\n          },\n          {\n            \"type\": \"TEXT\",\n            \"name\": \"friendlyName\",\n            \"displayName\": \"Friendly Name\",\n            \"simpleValueType\": true,\n            \"help\": \"Friendly name for the user\",\n            \"enablingConditions\": [\n              {\n                \"paramName\": \"userId\",\n                \"paramValue\": \"\",\n                \"type\": \"PRESENT\"\n              }\n            ],\n            \"valueHint\": \"Mona\"\n          }\n        ],\n        \"help\": \"Custom Identifiers are informational data values about site visitors\",\n        \"enablingConditions\": []\n      },\n      {\n        \"type\": \"SIMPLE_TABLE\",\n        \"name\": \"custom_tag\",\n        \"displayName\": \"Custom Tag\",\n        \"simpleTableColumns\": [\n          {\n            \"defaultValue\": \"\",\n            \"displayName\": \"Key\",\n            \"name\": \"key\",\n            \"type\": \"TEXT\",\n            \"valueHint\": \"\"\n          },\n          {\n            \"defaultValue\": \"\",\n            \"displayName\": \"Value\",\n            \"name\": \"value\",\n            \"type\": \"TEXT\",\n            \"valueValidators\": [\n              {\n                \"type\": \"STRING_LENGTH\",\n                \"args\": [\n                  1,\n                  255\n                ]\n              }\n            ],\n            \"valueHint\": \"\"\n          }\n        ],\n        \"help\": \"Custom tags are customizable filters that allow you to analyze recordings and heatmaps in different directions\",\n        \"valueValidators\": []\n      }\n    ]\n  }\n]\n\n\n___SANDBOXED_JS_FOR_WEB_TEMPLATE___\n\n// Require the necessary APIs\nconst injectScript = require('injectScript');\nconst queryPermission = require('queryPermission');\nconst createArgumentsQueue = require('createArgumentsQueue');\nconst encodeUri = require('encodeUri');\n//const log = require('logToConsole');\n\n// Create clarity const\nconst clarity = createArgumentsQueue('clarity', 'clarity.q');\n\nconst customTags = data.custom_tag || [];\nconst friendlyName = data.friendlyName || '';\nconst sessionId = data.sessionId || '';\nconst pageId = data.pageId || '';\n\n// Reconstruct customer clarity script URL\nconst url = \"https://www.clarity.ms/tag/\"+encodeUri(data.projectId)+\"?ref=gtm\";\n\n// Handle Success\nconst onCustomerSuccess = () => {\n  data.gtmOnSuccess();\n};\n\n// Handle Failure\nconst onCustomerFailure = () => {\n  data.gtmOnFailure();\n};\n\n\n// If the URL input by the user matches the permissions set for the template,\n// inject the script with the onSuccess and onFailure methods as callbacks.\nif (queryPermission('inject_script', \"https://www.clarity.ms\")) {\n  for(var i=0; i < customTags.length; i++){\n    if(customTags[i].value) {\n      clarity('set', customTags[i].key, customTags[i].value);\n    }\n  }\n  \n  if(data.userId){\n    clarity(\"identify\", data.userId, sessionId, pageId, friendlyName);\n  }\n  \n  injectScript(url, onCustomerSuccess, onCustomerFailure);\n  \n} else {\n  data.gtmOnFailure();\n}\n\n\n___WEB_PERMISSIONS___\n\n[\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"inject_script\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"urls\",\n          \"value\": {\n            \"type\": 2,\n            \"listItem\": [\n              {\n                \"type\": 1,\n                \"string\": \"https://www.clarity.ms/*\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"access_globals\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"keys\",\n          \"value\": {\n            \"type\": 2,\n            \"listItem\": [\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"key\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"read\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"write\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"execute\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"clarity\"\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"key\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"read\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"write\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"execute\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"clarity.q\"\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  }\n                ]\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  }\n]\n\n\n___TESTS___\n\nscenarios: []\n\n\n___NOTES___\n\nCreated on 2/2/2021, 12:41:15 PM\n\n\n",
+        "galleryReference": {
+          "host": "github.com",
+          "owner": "microsoft",
+          "repository": "clarity-gtm-template",
+          "version": "d85d0a7070ff9e1626bb260dfa341653be7f3266",
+          "signature": "6d80fb063e54671b559a5692f7bfdedb1ae33ebbe20063c6515d68a895455b45",
+          "galleryTemplateId": "MQDKZ"
+        }
+      }
+    ],
+    "variable": [
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "variableId": "1",
+        "name": "DLV - Consent - Google Analytics",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "olgishConsent.googleAnalytics"
+          }
+        ],
+        "fingerprint": "1785358420322"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "variableId": "2",
+        "name": "DLV - Consent - Microsoft Clarity",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "olgishConsent.microsoftClarity"
+          }
+        ],
+        "fingerprint": "1785358420322"
+      },
+      {
+        "accountId": "6337715641",
+        "containerId": "242696071",
+        "variableId": "3",
+        "name": "DLV - Consent - Google Ads",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "olgishConsent.googleAds"
+          }
+        ],
+        "fingerprint": "1785358420322"
+      }
+    ]
+  }
+}

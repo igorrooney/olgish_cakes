@@ -1,11 +1,10 @@
 "use client";
 
-import { getMerchantReturnPolicy, getPriceValidUntil } from "@/app/utils/seo";
+import { getMerchantReturnPolicy } from "@/app/utils/seo";
 import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
 import { blocksToText, Cake } from "@/types/cake";
-import { useReviewStats } from "@/app/components/ReviewStatsProvider";
-import { buildAggregateRating } from "@/app/utils/review-stats";
+import { serializeJsonLd } from '@/lib/structured-data/serialize-json-ld'
 
 interface OrderModalStructuredDataProps {
   cake: Cake;
@@ -18,9 +17,6 @@ export function OrderModalStructuredData({
   designType,
   currentPrice,
 }: OrderModalStructuredDataProps) {
-  const reviewStats = useReviewStats();
-  const aggregateRating = buildAggregateRating(reviewStats);
-
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -40,7 +36,6 @@ export function OrderModalStructuredData({
       "@type": "Offer",
       price: formatStructuredDataPrice(currentPrice, 0),
       priceCurrency: "GBP",
-      availability: "https://schema.org/InStock",
       seller: {
         "@type": "Organization",
         name: "Olgish Cakes",
@@ -50,40 +45,6 @@ export function OrderModalStructuredData({
           addressLocality: "Leeds",
           addressCountry: "GB",
         },
-      },
-      priceValidUntil: getPriceValidUntil(30), // 30 days from now
-      deliveryLeadTime: {
-        "@type": "QuantitativeValue",
-        value: 7,
-        unitCode: "DAY",
-      },
-      shippingDetails: {
-        "@type": "OfferShippingDetails",
-        shippingRate: {
-          "@type": "MonetaryAmount",
-          value: 0,
-          currency: "GBP",
-        },
-        shippingDestination: {
-          "@type": "DefinedRegion",
-          addressCountry: "GB",
-        },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          handlingTime: {
-            "@type": "QuantitativeValue",
-            minValue: 0,
-            maxValue: 1,
-            unitCode: "DAY",
-          },
-          transitTime: {
-            "@type": "QuantitativeValue",
-            minValue: 1,
-            maxValue: 3,
-            unitCode: "DAY",
-          },
-        },
-        appliesToDeliveryMethod: "https://purl.org/goodrelations/v1#DeliveryModeMail",
       },
       hasMerchantReturnPolicy: getMerchantReturnPolicy(),
     },
@@ -124,47 +85,6 @@ export function OrderModalStructuredData({
         : "https://olgishcakes.co.uk/images/placeholder-cake.jpg";
     })(),
     url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-    ...(aggregateRating ? { aggregateRating } : {}),
-    review: [
-      {
-        "@type": "Review",
-        itemReviewed: {
-          "@id": `https://olgishcakes.co.uk/cakes/${cake.slug?.current || cake._id || 'cake'}#product`
-        },
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: "5",
-          bestRating: "5",
-          worstRating: "1",
-        },
-        author: {
-          "@type": "Person",
-          name: "Sarah Johnson",
-        },
-        reviewBody:
-          "Absolutely stunning cake! The quality and taste were exceptional. Highly recommend Olgish Cakes for any special occasion.",
-        datePublished: "2025-09-30",
-      },
-      {
-        "@type": "Review",
-        itemReviewed: {
-          "@id": `https://olgishcakes.co.uk/cakes/${cake.slug?.current || cake._id || 'cake'}#product`
-        },
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: "5",
-          bestRating: "5",
-          worstRating: "1",
-        },
-        author: {
-          "@type": "Person",
-          name: "Michael Davies",
-        },
-        reviewBody:
-          "Professional service from start to finish. The custom design exceeded our expectations and the delivery was perfect.",
-        datePublished: "2025-08-15",
-      },
-    ],
     serviceType: "Cake Design and Delivery",
     areaServed: {
       "@type": "City",
@@ -188,7 +108,7 @@ export function OrderModalStructuredData({
           itemOffered: {
             "@type": "Service",
             name: "Individual Cake Design",
-            description: "Custom cake design with personal consultation and unlimited revisions",
+            description: "Custom cake design with a personal consultation",
           },
           hasMerchantReturnPolicy: getMerchantReturnPolicy(),
         },
@@ -199,7 +119,7 @@ export function OrderModalStructuredData({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(structuredData) }}
     />
   );
 }

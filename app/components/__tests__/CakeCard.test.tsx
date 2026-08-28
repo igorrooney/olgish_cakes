@@ -44,12 +44,6 @@ jest.mock('@/types/cake', () => ({
   blocksToText: jest.fn((blocks) => 'Converted text from blocks')
 }))
 
-jest.mock('@/app/utils/seo', () => ({
-  getPriceValidUntil: jest.fn(() => '2026-01-01'),
-  getMerchantReturnPolicy: jest.fn(() => ({ '@type': 'MerchantReturnPolicy' })),
-  getOfferShippingDetails: jest.fn(() => ({ '@type': 'OfferShippingDetails' }))
-}))
-
 // Mock components
 jest.mock('@/app/components/RichTextRenderer', () => ({
   RichTextRenderer: ({ value }: MockProps) => <div data-testid="rich-text-renderer">{value}</div>
@@ -312,20 +306,12 @@ describe('CakeCard', () => {
   })
 
   describe('Structured Data', () => {
-    it('should include JSON-LD script', () => {
+    it('omits duplicate product structured data and microdata from list cards', () => {
       const { container } = render(<CakeCard cake={testCake} />)
 
-      const script = container.querySelector('script[type="application/ld+json"]')
-      expect(script).toBeTruthy()
-    })
-
-    it('should generate valid Product schema', () => {
-      const { container } = render(<CakeCard cake={testCake} />)
-
-      const script = container.querySelector('script')
-      const json = JSON.parse(script?.textContent || '{}')
-      expect(json['@type']).toBe('Product')
-      expect(json.name).toBe('Honey Cake')
+      expect(container.querySelector('script[type="application/ld+json"]')).toBeNull()
+      expect(container.querySelector('[itemscope]')).toBeNull()
+      expect(container.querySelector('[itemprop]')).toBeNull()
     })
   })
 

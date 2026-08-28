@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 interface StoredAdminLoginAttempt {
   key_hash: string
   failed_at: string
+  cleared_at?: string | null
 }
 
 const state = vi.hoisted(() => ({
@@ -20,42 +21,36 @@ vi.mock('@/lib/supabase/admin', () => ({
       return {
         select: () => ({
           eq: (_column: string, keyHash: string) => ({
-            gte: (_columnName: string, cutoffIso: string) => ({
-              order: () => ({
-                limit: (limit: number) => Promise.resolve({
-                  data: state.attempts
-                    .filter((attempt) => (
-                      attempt.key_hash === keyHash &&
-                      attempt.failed_at >= cutoffIso
-                    ))
-                    .sort((left, right) => right.failed_at.localeCompare(left.failed_at))
-                    .slice(0, limit),
-                  error: null
+            is: () => ({
+              gte: (_columnName: string, cutoffIso: string) => ({
+                order: () => ({
+                  limit: (limit: number) => Promise.resolve({
+                    data: state.attempts
+                      .filter((attempt) => (
+                        attempt.key_hash === keyHash &&
+                        !attempt.cleared_at &&
+                        attempt.failed_at >= cutoffIso
+                      ))
+                      .sort((left, right) => right.failed_at.localeCompare(left.failed_at))
+                      .slice(0, limit),
+                    error: null
+                  })
                 })
               })
             })
           })
         }),
-        delete: () => ({
+        update: (patch: { cleared_at?: string | null }) => ({
           eq: (_column: string, keyHash: string) => {
-            const clearAll = () => {
-              state.attempts = state.attempts.filter((attempt) => attempt.key_hash !== keyHash)
-              return { error: null }
-            }
-
             return {
-              lt: (_columnName: string, cutoffIso: string) => {
-                state.attempts = state.attempts.filter((attempt) => (
-                  attempt.key_hash !== keyHash ||
-                  attempt.failed_at >= cutoffIso
-                ))
-
+              is: () => {
+                state.attempts = state.attempts.map((attempt) =>
+                  attempt.key_hash === keyHash && !attempt.cleared_at
+                    ? { ...attempt, ...patch }
+                    : attempt
+                )
                 return Promise.resolve({ error: null })
-              },
-              then: (
-                onfulfilled?: ((value: { error: null }) => unknown) | null,
-                onrejected?: ((reason: unknown) => unknown) | null
-              ) => Promise.resolve(clearAll()).then(onfulfilled, onrejected)
+              }
             }
           }
         }),
@@ -114,6 +109,8 @@ describe('admin login throttling', () => {
     await clearAdminLoginFailures(key)
 
     expect((await getAdminLoginThrottle(key, now + 7)).isLocked).toBe(false)
+    expect(state.attempts).toHaveLength(5)
+    expect(state.attempts.every((attempt) => Boolean(attempt.cleared_at))).toBe(true)
   })
 
   it('validates configured admin credentials', () => {

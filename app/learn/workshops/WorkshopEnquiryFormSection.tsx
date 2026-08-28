@@ -5,12 +5,14 @@ export function WorkshopEnquiryFormSection() {
   return (
     <section
       id='workshop-enquiry-form'
-      className='relative z-10 scroll-mt-24 bg-base-100 px-4 py-6 tablet:px-10 tablet:py-12'
+      aria-labelledby='workshop-enquiry-form-heading'
+      tabIndex={-1}
+      className='relative z-10 scroll-mt-24 bg-base-100 px-4 py-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 tablet:px-10 tablet:py-12'
     >
       <div className='homepage-container'>
         <div className='grid gap-4 rounded-[24px] border border-primary/10 bg-base-100 p-4 shadow-sm small-laptop:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] tablet:gap-8 tablet:rounded-[28px] tablet:p-8'>
           <div className='max-w-[430px] self-start'>
-            <h2 className='font-oldenburg text-[1.75rem] leading-[1.04] tracking-[0.02em] text-primary-800 tablet:text-[2.4rem]'>
+            <h2 id='workshop-enquiry-form-heading' className='font-oldenburg text-[1.75rem] leading-[1.04] tracking-[0.02em] text-primary-800 tablet:text-[2.4rem]'>
               Tell us about the event
             </h2>
             <p className='mt-3 text-[14px] leading-6 text-base-content/80 tablet:mt-4 tablet:text-base tablet:leading-8'>

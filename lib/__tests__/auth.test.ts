@@ -97,9 +97,13 @@ describe('auth', () => {
 
         expect(result).toBeNull()
         expect(consoleErrorSpy).toHaveBeenCalledWith(
-          'JWT_SECRET environment variable error:',
-          'JWT_SECRET environment variable is required'
+          'JWT secret validation failed',
+          {
+            operation: 'auth.jwt-secret',
+            code: 'OPERATION_FAILED'
+          }
         )
+        expect(JSON.stringify(consoleErrorSpy.mock.calls)).not.toContain('JWT_SECRET environment variable is required')
         consoleErrorSpy.mockRestore()
       })
     })

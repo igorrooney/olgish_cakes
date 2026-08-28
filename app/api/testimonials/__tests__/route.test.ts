@@ -8,6 +8,14 @@ import {
 } from '@/app/utils/fetchTestimonials'
 import { GET } from '../route'
 
+const mockLoggerError = jest.fn()
+
+jest.mock('@/lib/logger', () => ({
+  logger: {
+    error: (...args: unknown[]) => mockLoggerError(...args)
+  }
+}))
+
 jest.mock('@/app/utils/fetchTestimonials', () => {
   class MockInvalidTestimonialsCursorError extends Error {}
 
@@ -92,17 +100,21 @@ describe('GET /api/testimonials', () => {
   })
 
   it('returns a generic 500 without exposing the upstream error', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
-    mockedGetTestimonialsPage.mockRejectedValue(
-      new Error('Sensitive Sanity failure')
-    )
+    const sentinel = 'PRIVATE_TESTIMONIAL_PROVIDER_MESSAGE'
+    mockedGetTestimonialsPage.mockRejectedValue(new Error(sentinel))
 
     const response = await GET(createRequest())
     const body = await response.json()
 
     expect(response.status).toBe(500)
     expect(body).toEqual({ error: 'Unable to retrieve testimonials' })
-    expect(JSON.stringify(body)).not.toContain('Sensitive')
-    consoleSpy.mockRestore()
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      'Failed to retrieve testimonials',
+      {
+        operation: 'testimonials.retrieve',
+        code: 'OPERATION_FAILED'
+      }
+    )
+    expect(JSON.stringify({ body, logs: mockLoggerError.mock.calls })).not.toContain(sentinel)
   })
 })

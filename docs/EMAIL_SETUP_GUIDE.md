@@ -35,6 +35,10 @@ Resend domain verification requires DNS records for SPF and DKIM. Missing DKIM i
 # Email Recipients (defaults to hello@olgishcakes.co.uk)
 CONTACT_EMAIL_TO=hello@olgishcakes.co.uk
 
+# Optional recipient for Telegram delivery-failure alerts.
+# Falls back to CONTACT_EMAIL_TO, then hello@olgishcakes.co.uk.
+TELEGRAM_FAILURE_ALERT_EMAIL=alerts@example.com
+
 # Application URL (for internal API calls)
 NEXTAUTH_URL=https://olgishcakes.co.uk
 # OR on Vercel, this is automatically set:
@@ -48,7 +52,7 @@ VERCEL_URL=olgishcakes.co.uk
 - **Behavior:** Sends email directly via Resend
 - **Emails sent:**
   1. Admin notification to `CONTACT_EMAIL_TO`
-  2. BCC to `igorrooney@gmail.com`
+  2. BCC to `ADMIN_BCC_EMAIL` when configured
 
 ### Order Forms (Cakes & Gift Hampers)
 - **Path:** `/api/contact` → `/api/orders`
@@ -57,7 +61,7 @@ VERCEL_URL=olgishcakes.co.uk
 - **Emails sent:**
   1. Customer confirmation with order details
   2. Admin notification with full order information
-  3. BCC to `igorrooney@gmail.com`
+  3. BCC to `ADMIN_BCC_EMAIL` when configured
 
 ## Testing Email Configuration
 
@@ -147,6 +151,7 @@ For **production deployment**, ensure these are set:
 - [ ] `RESEND_API_KEY` - From resend.com
 - [ ] `NEXTAUTH_URL` - Your production URL (https://olgishcakes.co.uk)
 - [ ] `CONTACT_EMAIL_TO` - Where admin emails go (default: hello@olgishcakes.co.uk)
+- [ ] `TELEGRAM_FAILURE_ALERT_EMAIL` - Optional Telegram delivery-failure alert recipient (falls back to `CONTACT_EMAIL_TO`)
 - [ ] `SANITY_API_TOKEN` - For creating orders in Sanity
 
 For **local development**:
@@ -204,12 +209,15 @@ EMAIL_TRANSPORT_MODE=capture
 
 # Real-send controls for /api/dev/email-test-send
 EMAIL_REAL_SEND_ENABLED=false
-EMAIL_TEST_RECIPIENT_ALLOWLIST=igorrooney@gmail.com,another@example.com
+EMAIL_TEST_RECIPIENT_ALLOWLIST=owner@example.com,another@example.com
 EMAIL_TEST_SUBJECT_PREFIX=[TEST]
 EMAIL_REAL_SEND_RATE_LIMIT_PER_HOUR=5
 ```
 
 ### Dev Endpoints
+
+Both endpoints are unavailable in production and return `404` before parsing or
+authentication. They are intended only for local/test environments.
 
 - `POST /api/dev/email-preview`
   - Requires authenticated admin session (`admin_auth_token` cookie).

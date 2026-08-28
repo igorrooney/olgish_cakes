@@ -28,4 +28,16 @@ describe('vercel.json cron config', () => {
       }
     ]))
   })
+
+  it('registers quarterly privacy-retention discovery without automatic deletion', () => {
+    const configPath = path.join(process.cwd(), 'vercel.json')
+    const parsedConfig = JSON.parse(readFileSync(configPath, 'utf8')) as VercelConfig
+
+    expect(parsedConfig.crons).toEqual(expect.arrayContaining([
+      {
+        path: '/api/cron/privacy-retention',
+        schedule: '0 8 1 3,6,9,12 *'
+      }
+    ]))
+  })
 })

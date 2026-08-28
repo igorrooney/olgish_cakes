@@ -74,6 +74,8 @@ export interface EmailTemplateCommonInput {
   headingOverride?: string
   statusMessage?: string
   paymentStatus?: string
+  allergenStatement?: string
+  customerFacingOfferDescription?: string
   orderItems?: Array<{
     productName?: string
     productId?: string
@@ -89,6 +91,10 @@ export interface EmailTemplateCommonInput {
   trackingNumber?: string
   adminUrl?: string
   approximateSubmittedFrom?: string
+  hasDietaryHealthInformation?: boolean
+  operation?: string
+  operationalCode?: string
+  recordReference?: string
 }
 
 export type ContactAdminInquiryInput = EmailTemplateCommonInput
@@ -182,7 +188,7 @@ export interface EmailSendResult {
   mode: SendMode
   accepted: boolean
   id: string | null
-  error: { message: string } | null
+  error: { message: string, code?: string, status?: number } | null
   rendered: RenderedEmail
 }
 

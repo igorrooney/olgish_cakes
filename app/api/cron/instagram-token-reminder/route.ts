@@ -9,15 +9,9 @@ import {
   getInstagramTokenExpiresAt,
   getInstagramTokenReminderStatus
 } from '@/lib/instagram-token-reminder'
-
-const getCronAuthorizationToken = () => process.env.CRON_SECRET
-
-const isAuthorized = (request: NextRequest) => {
-  const expectedToken = getCronAuthorizationToken()
-  const authHeader = request.headers.get('authorization')
-
-  return Boolean(expectedToken) && authHeader === `Bearer ${expectedToken}`
-}
+import { logger } from '@/lib/logger'
+import { isCronRequestAuthorized } from '@/lib/security/internal-route'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 const getEmailFromAddress = () =>
   process.env.NEXT_PUBLIC_EMAIL_FROM || 'Olgish Cakes <hello@olgishcakes.co.uk>'
@@ -107,7 +101,7 @@ const buildReminderNote = () => [
 
 async function handleRequest(request: NextRequest) {
   try {
-    if (!isAuthorized(request)) {
+    if (!isCronRequestAuthorized(request)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -168,11 +162,13 @@ async function handleRequest(request: NextRequest) {
     })
 
     if (!sendResult.accepted || sendResult.error) {
-      console.error('Instagram token reminder email failed', {
-        errorMessage: sendResult.error?.message || 'Transport did not accept reminder email',
-        expiresAt: reminderStatus.expiresAt,
-        daysRemaining: reminderStatus.daysRemaining,
-        isExpired: reminderStatus.isExpired
+      const safeError = sendResult.error
+        ? toSafeOperationalError(sendResult.error)
+        : { code: 'TRANSPORT_REJECTED' }
+
+      logger.error('Instagram token reminder email failed', {
+        operation: 'instagram-token-reminder.send',
+        ...safeError
       })
 
       return NextResponse.json(
@@ -188,9 +184,18 @@ async function handleRequest(request: NextRequest) {
       ...reminderStatus
     })
   } catch (error) {
-    console.error('Instagram token reminder route failed', error)
+    const safeError = toSafeOperationalError(error)
+
+    logger.error('Instagram token reminder route failed', {
+      operation: 'instagram-token-reminder.run',
+      ...safeError
+    })
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: 'Instagram token reminder failed',
+        code: safeError.code
+      },
       { status: 500 }
     )
   }
