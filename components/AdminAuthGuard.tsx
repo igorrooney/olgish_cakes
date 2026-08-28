@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAbortableRequest } from '@/app/hooks/useAbortableRequest'
 import { ErrorBoundary } from "./ErrorBoundary";
 
 interface AdminAuthGuardProps {
@@ -14,7 +16,10 @@ const navItems = [
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/enquiries", label: "Enquiries" },
   { href: "/admin/earnings", label: "Earnings" },
-  { href: "/admin/email-test", label: "Email test" }
+  { href: "/admin/privacy-retention", label: "Privacy retention" },
+  ...(process.env.NODE_ENV === 'production'
+    ? []
+    : [{ href: "/admin/email-test", label: "Email test" }])
 ];
 
 const externalItems = [
@@ -22,65 +27,62 @@ const externalItems = [
   { href: "/", label: "View Website" }
 ];
 
+async function fetchAdminAuthentication(signal: AbortSignal) {
+  const response = await fetch('/api/admin/auth', {
+    method: 'GET',
+    credentials: 'include',
+    signal
+  })
+
+  const data: unknown = await response.json()
+  const isAuthenticated = Boolean(
+    data &&
+    typeof data === 'object' &&
+    !Array.isArray(data) &&
+    (data as Record<string, unknown>).authenticated === true
+  )
+
+  return response.ok && isAuthenticated
+}
+
+async function logoutAdmin(signal: AbortSignal) {
+  await fetch('/api/admin/logout', {
+    method: 'POST',
+    credentials: 'include',
+    signal
+  })
+}
+
 export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname() || "/admin";
   const router = useRouter();
+  const queryClient = useQueryClient()
+  const logoutRequest = useAbortableRequest()
+  const authQuery = useQuery({
+    queryKey: ['admin-authentication'],
+    queryFn: ({ signal }) => fetchAdminAuthentication(signal),
+    retry: false,
+    staleTime: 0,
+    refetchOnWindowFocus: false
+  })
+  const logoutMutation = useMutation({
+    mutationFn: logoutAdmin,
+    onSettled: () => {
+      queryClient.removeQueries({ queryKey: ['admin-authentication'] })
+      router.push('/admin/auth')
+    }
+  })
+  const isLoading = authQuery.isPending
+  const isAuthenticated = authQuery.data === true
 
   useEffect(() => {
-    const controller = new AbortController()
-
-    const checkAuthStatus = async () => {
-      try {
-        const response = await fetch("/api/admin/auth", {
-          method: "GET",
-          credentials: "include",
-          signal: controller.signal
-        });
-
-        await response.json();
-        setIsAuthenticated(response.ok);
-      } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") {
-          return;
-        }
-
-        setIsAuthenticated(false);
-      } finally {
-        if (!controller.signal.aborted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    void checkAuthStatus();
-
-    return () => {
-      controller.abort();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isLoading && isAuthenticated === false) {
+    if (!isLoading && (authQuery.isError || !isAuthenticated)) {
       router.push("/admin/auth");
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [authQuery.isError, isAuthenticated, isLoading, router]);
 
-  const handleLogout = async () => {
-    const controller = new AbortController();
-
-    try {
-      await fetch("/api/admin/logout", {
-        method: "POST",
-        credentials: "include",
-        signal: controller.signal
-      });
-    } catch (error) {
-      console.error("Logout failed:", error);
-    } finally {
-      router.push("/admin/auth");
-    }
+  const handleLogout = () => {
+    logoutMutation.mutate(logoutRequest.start())
   };
 
   if (isLoading) {
@@ -152,15 +154,15 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
 
   return (
     <ErrorBoundary>
-      <div className="drawer min-h-screen bg-base-200 lg:drawer-open">
+      <div className="drawer min-h-screen bg-base-200 small-laptop:drawer-open">
         <input id="admin-shell-drawer" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex min-w-0 flex-col">
           <header className="sticky top-0 z-30 border-b border-base-300 bg-base-100/95 backdrop-blur">
-            <div className="flex h-16 items-center justify-between gap-3 px-4 lg:px-8">
+            <div className="flex h-16 items-center justify-between gap-3 px-4 small-laptop:px-8">
               <div className="flex min-w-0 items-center gap-3">
                 <label
                   htmlFor="admin-shell-drawer"
-                  className="btn btn-ghost btn-sm lg:hidden"
+                  className="btn btn-ghost btn-sm small-laptop:hidden"
                   aria-label="Open admin navigation"
                 >
                   Menu
@@ -178,13 +180,14 @@ export function AdminAuthGuard({ children }: AdminAuthGuardProps) {
                 type="button"
                 onClick={handleLogout}
                 className="btn btn-outline btn-sm"
+                disabled={logoutMutation.isPending}
               >
                 Logout
               </button>
             </div>
           </header>
 
-          <main className="min-w-0 flex-1 p-4 lg:p-8">
+          <main className="min-w-0 flex-1 p-4 small-laptop:p-8">
             <div className="mx-auto w-full max-w-7xl">
               {children}
             </div>

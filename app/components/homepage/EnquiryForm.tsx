@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { useCustomCakeEnquiry } from '@/app/hooks/useCustomCakeEnquiry'
-import { SensitiveDataConsentNotice } from '@/app/components/legal/SensitiveDataConsentNotice'
+import { SensitiveDataConsentFields } from '@/app/components/legal/SensitiveDataConsentFields'
 import {
   buildCustomCakeEnquiryFormData,
   customCakeEnquiryFallbackErrorMessage,
@@ -35,7 +35,9 @@ const formInitialState: FormValues = {
   postcode: '',
   occasion: '',
   date: '',
-  requirements: ''
+  requirements: '',
+  dietaryHealthInformation: '',
+  dietaryHealthConsent: false
 }
 
 interface EnquiryFormProps {
@@ -106,7 +108,7 @@ export function EnquiryForm({
   }
 
   const updateField = (
-    field: keyof FormValues,
+    field: Exclude<keyof FormValues, 'dietaryHealthConsent'>,
     value: string,
     shouldClearError = false
   ) => {
@@ -253,12 +255,11 @@ export function EnquiryForm({
             type='text'
             placeholder='Enter address line 1'
             value={formData.address}
-            label='Address:'
+            label='Address: (Optional)'
             icon={<AddressIcon />}
             showValidation={hasAttemptedSubmit}
             error={errors.address}
-            required
-            hintText='Enter your address'
+            hintText='Add an address if it helps us assess delivery'
             onValueChange={(value) => {
               updateField('address', value, true)
             }}
@@ -268,12 +269,11 @@ export function EnquiryForm({
             type='text'
             placeholder='Enter city'
             value={formData.city}
-            label='City:'
+            label='City: (Optional)'
             icon={<AddressIcon />}
             showValidation={hasAttemptedSubmit}
             error={errors.city}
-            required
-            hintText='Enter your city'
+            hintText='Add a city if it helps us assess delivery'
             onValueChange={(value) => {
               updateField('city', value, true)
             }}
@@ -283,12 +283,11 @@ export function EnquiryForm({
             type='text'
             placeholder='Enter postcode'
             value={formData.postcode}
-            label='Postcode:'
+            label='Postcode: (Optional)'
             icon={<AddressIcon />}
             showValidation={hasAttemptedSubmit}
             error={errors.postcode}
-            required
-            hintText='Enter your postcode'
+            hintText='Add a UK postcode if it helps us assess delivery'
             onValueChange={(value) => {
               updateField('postcode', value, true)
             }}
@@ -391,7 +390,22 @@ export function EnquiryForm({
               </div>
             </div>
           ) : null}
-          <SensitiveDataConsentNotice className='mb-3 text-xs leading-5' />
+          <SensitiveDataConsentFields
+            information={formData.dietaryHealthInformation}
+            consent={formData.dietaryHealthConsent}
+            informationError={errors.dietaryHealthInformation}
+            consentError={errors.dietaryHealthConsent}
+            disabled={isSubmitting}
+            onInformationChange={(value) => {
+              updateField('dietaryHealthInformation', value, true)
+            }}
+            onConsentChange={(value) => {
+              setFormData((current) => ({ ...current, dietaryHealthConsent: value }))
+              resetSuccessState()
+              clearFieldError('dietaryHealthConsent')
+            }}
+            className='mb-3'
+          />
           <button
             type='submit'
             className='btn h-12 w-full rounded-full bg-primary-500 text-white shadow-btn hover:bg-primary-700 tablet:h-12'

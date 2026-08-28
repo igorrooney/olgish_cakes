@@ -47,6 +47,9 @@ const createTestimonial = (overrides: Partial<Testimonial>): Testimonial => ({
   rating: 5,
   date: '2026-01-10',
   text: 'Beautiful and tasty.',
+  source: 'trustpilot',
+  sourceUrl: 'https://uk.trustpilot.com/reviews/example',
+  incentivised: false,
   ...overrides
 })
 
@@ -73,7 +76,10 @@ describe('Reviews', () => {
         customerName: 'Olha',
         rating: 5,
         date: '2026-01-10',
-        text: 'Beautiful and tasty.'
+        text: 'Beautiful and tasty.',
+        source: 'trustpilot',
+        sourceUrl: 'https://uk.trustpilot.com/reviews/example',
+        incentivised: false
       }],
       nextCursor: 'opaque-cursor'
     })
@@ -86,7 +92,7 @@ describe('Reviews', () => {
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-paginated', 'true')
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute(
       'data-review-fields',
-      '_id,customerName,date,rating,text'
+      '_id,customerName,date,incentivised,rating,source,sourceUrl,text'
     )
   })
 
@@ -118,6 +124,60 @@ describe('Reviews', () => {
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '8')
   })
 
+  it('shows reviews with a mismatched source URL without rendering the unsafe link', async () => {
+    const result = await Reviews({
+      testimonials: [createTestimonial({
+        source: 'trustpilot',
+        sourceUrl: 'https://www.google.com/maps/reviews/example'
+      })]
+    })
+
+    render(result as ReactElement)
+
+    expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '1')
+    expect(screen.getByTestId('reviews-carousel')).not.toHaveAttribute(
+      'data-review-fields',
+      expect.stringContaining('sourceUrl')
+    )
+  })
+
+  it('shows direct reviews with an external URL without rendering the unsafe link', async () => {
+    const result = await Reviews({
+      testimonials: [createTestimonial({
+        source: 'direct',
+        sourceUrl: 'https://example.com/direct-review'
+      })]
+    })
+
+    render(result as ReactElement)
+
+    expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '1')
+    expect(screen.getByTestId('reviews-carousel')).not.toHaveAttribute(
+      'data-review-fields',
+      expect.stringContaining('sourceUrl')
+    )
+  })
+
+  it('shows supplied reviews without an incentive classification', async () => {
+    const result = await Reviews({
+      testimonials: [createTestimonial({ incentivised: undefined })]
+    })
+
+    render(result as ReactElement)
+
+    expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '1')
+  })
+
+  it('shows URL-less external reviews without requiring attribution metadata', async () => {
+    const result = await Reviews({
+      testimonials: [createTestimonial({ sourceUrl: undefined })]
+    })
+
+    render(result as ReactElement)
+
+    expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-count', '1')
+  })
+
   it('renders a supplied paginated page without fetching static testimonials', async () => {
     const initialPage: PaginatedReviewsResponse = {
       reviews: [{
@@ -125,7 +185,10 @@ describe('Reviews', () => {
         customerName: 'Olha',
         rating: 4,
         date: '2026-01-10',
-        text: 'A lovely celebration cake.'
+        text: 'A lovely celebration cake.',
+        source: 'google',
+        sourceUrl: 'https://www.google.com/maps/reviews/example',
+        incentivised: false
       }],
       nextCursor: 'opaque-cursor'
     }
@@ -137,7 +200,7 @@ describe('Reviews', () => {
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute('data-paginated', 'true')
     expect(screen.getByTestId('reviews-carousel')).toHaveAttribute(
       'data-review-fields',
-      '_id,customerName,date,rating,text'
+      '_id,customerName,date,incentivised,rating,source,sourceUrl,text'
     )
   })
 

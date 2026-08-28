@@ -6,6 +6,10 @@ import { Cake } from "@/types/cake";
 import { OrderModalStructuredData } from "./OrderModalStructuredData";
 import { CheckCircleIcon, ErrorIcon } from "@/lib/daisy-ui";
 import { csrfTokenLoadErrorMessage, fetchCsrfToken } from "@/app/services/csrfToken";
+import { Providers } from '@/app/providers'
+import { useAbortableRequest } from '@/app/hooks/useAbortableRequest'
+import { useMutation } from '@tanstack/react-query'
+import { toSafeOperationalError } from "@/lib/security/safe-operational-error";
 import {
   Box,
   Button,
@@ -28,7 +32,7 @@ import {
   CircularProgress,
 } from "@/lib/daisy-ui";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AdapterDayjs } from "@/lib/daisy-ui";
 import { LocalizationProvider } from "@/lib/daisy-ui";
 import dayjs from "dayjs";
@@ -48,59 +52,74 @@ interface OrderModalProps {
   onDesignTypeChange: (type: "standard" | "individual") => void;
 }
 
+interface CakeOrderRequestInput {
+  payload: FormData
+  signal: AbortSignal
+}
+
+async function submitCakeOrderRequest({ payload, signal }: CakeOrderRequestInput) {
+  const csrfToken = await fetchCsrfToken(signal)
+
+  if (!csrfToken) {
+    throw new Error(csrfTokenLoadErrorMessage)
+  }
+
+  payload.append('csrfToken', csrfToken)
+  const response = await fetch('/api/contact', {
+    method: 'POST',
+    body: payload,
+    credentials: 'same-origin',
+    signal
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to send message')
+  }
+}
+
 export function OrderModal({
+  ...props
+}: OrderModalProps) {
+  return (
+    <Providers>
+      <OrderModalInner {...props} />
+    </Providers>
+  )
+}
+
+function OrderModalInner({
   open,
   onClose,
   cake,
   designType,
   onDesignTypeChange,
 }: OrderModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [_submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("There was an error sending your order. Please try again or contact us directly at hello@olgishcakes.co.uk");
-  const submitAbortControllerRef = useRef<AbortController | null>(null);
+  const {
+    abort: abortSubmit,
+    start: startSubmit
+  } = useAbortableRequest()
+  const submitMutation = useMutation({
+    mutationFn: submitCakeOrderRequest
+  })
+  const isSubmitting = submitMutation.isPending
 
   useEffect(() => {
     if (open) {
       return;
     }
 
-    if (submitAbortControllerRef.current) {
-      submitAbortControllerRef.current.abort();
-      submitAbortControllerRef.current = null;
-    }
-  }, [open]);
-
-  useEffect(() => {
-    return () => {
-      if (submitAbortControllerRef.current) {
-        submitAbortControllerRef.current.abort();
-      }
-    };
-  }, []);
+    abortSubmit()
+  }, [abortSubmit, open]);
 
   async function handleSubmit(formData: ContactFormData) {
-    setIsSubmitting(true);
     setErrorMessage("There was an error sending your order. Please try again or contact us directly at hello@olgishcakes.co.uk");
-    let controller: AbortController | null = null;
 
     try {
-      if (submitAbortControllerRef.current) {
-        submitAbortControllerRef.current.abort();
-      }
-
-      controller = new AbortController();
-      submitAbortControllerRef.current = controller;
-      const csrfToken = await fetchCsrfToken(controller.signal);
-
-      if (!csrfToken) {
-        throw new Error(csrfTokenLoadErrorMessage);
-      }
-
       const data = new FormData();
-      data.append("csrfToken", csrfToken);
       data.append("name", formData.name);
       data.append("email", formData.email);
       data.append("phone", formData.phone);
@@ -125,6 +144,11 @@ ${formData.message}
       if (formData.designImage) {
         data.append("designImage", formData.designImage);
       }
+      const dietaryHealthInformation = formData.dietaryHealthInformation.trim();
+      if (dietaryHealthInformation.length > 0) {
+        data.append("dietaryHealthInformation", dietaryHealthInformation);
+        data.append("dietaryHealthConsent", String(formData.dietaryHealthConsent));
+      }
 
       // Add order-specific fields for order creation
       data.append("isOrderForm", "true");
@@ -144,16 +168,10 @@ ${formData.message}
       data.append("deliveryNotes", "");
       data.append("paymentMethod", "cash-collection"); // Default payment method
 
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        body: data,
-        credentials: "same-origin",
-        signal: controller.signal,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to send message");
-      }
+      await submitMutation.mutateAsync({
+        payload: data,
+        signal: startSubmit()
+      })
 
       // Close the order modal and show success modal
       setSubmitStatus("success");
@@ -164,7 +182,10 @@ ${formData.message}
         return;
       }
 
-      console.error("Form submission error:", error);
+      console.error("Form submission failed", {
+        operation: "cake-order.submit",
+        ...toSafeOperationalError(error),
+      });
       setErrorMessage(
         error instanceof Error && (
           error.message === csrfTokenLoadErrorMessage ||
@@ -176,11 +197,6 @@ ${formData.message}
       );
       setSubmitStatus("error");
       setShowErrorModal(true);
-    } finally {
-      setIsSubmitting(false);
-      if (controller && submitAbortControllerRef.current === controller) {
-        submitAbortControllerRef.current = null;
-      }
     }
   }
 
@@ -301,7 +317,7 @@ ${formData.message}
                   >
                     <Alert severity="info" sx={{ mb: 2 }}>
                       <AlertTitle>Individual Design Service</AlertTitle>
-                      Includes personal consultation, custom design sketches, and unlimited
+                      Includes personal consultation, custom design sketches, and agreed design
                       revisions. Perfect for special occasions and unique requirements.
                     </Alert>
                     <Typography
@@ -316,8 +332,7 @@ ${formData.message}
                       }}
                     >
                       <strong>What's included:</strong> Design consultation, custom sketches,
-                      unlimited revisions, premium ingredients, professional photography, and
-                      delivery within Leeds area.
+                      agreed design revisions, premium ingredients, and delivery within Leeds area.
                     </Typography>
                   </MotionBox>
                 )}
@@ -364,7 +379,7 @@ ${formData.message}
               />
             </MotionBox>
 
-            {/* Professional Service Information */}
+            {/* Service information */}
             <MotionBox
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -385,13 +400,13 @@ ${formData.message}
                   variant="subtitle2"
                   sx={{ fontWeight: 600, color: "success.dark", mb: 1 }}
                 >
-                  Professional Service Guarantee
+                  Service information
                 </Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                  <Chip label="24h Response" color="success" variant="outlined" />
-                  <Chip label="Free Consultation" color="success" variant="outlined" />
+                  <Chip label="Personal reply" color="success" variant="outlined" />
+                  <Chip label="Personal consultation" color="success" variant="outlined" />
                   <Chip label="Leeds Delivery" color="success" variant="outlined" />
-                  <Chip label="Quality Guaranteed" color="success" variant="outlined" />
+                  <Chip label="Carefully handmade" color="success" variant="outlined" />
                 </Box>
               </Paper>
             </MotionBox>
@@ -469,7 +484,7 @@ ${formData.message}
                   What happens next?
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  • We'll review your requirements within 24 hours
+                  • We&apos;ll reply as soon as we can
                   <br />
                   • You'll receive a detailed quote and design consultation
                   <br />

@@ -16,6 +16,13 @@ import {
 } from '@/lib/enquiry-rate-limit'
 import { getSupabaseAdminClient } from '@/lib/supabase-admin-client'
 import { workshopEnquirySchema } from '@/lib/validation'
+import {
+  createSensitiveDataConsentEvidence,
+  parseDietaryHealthConsent
+} from '@/lib/legal/sensitive-data-consent'
+import { logger } from '@/lib/logger'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
+import { readRequiredFormData } from '@/lib/form-request'
 
 const RATE_LIMIT = 5
 const RATE_LIMIT_WINDOW = 60 * 1000
@@ -43,23 +50,9 @@ const resolveEventType = (value: string) => {
 }
 
 const logSupabaseInsertFailure = (error: unknown) => {
-  const errorRecord =
-    typeof error === 'object' && error !== null
-      ? error as Record<string, unknown>
-      : null
-
-  console.error('Workshop enquiry insert failed', {
+  logger.error('Workshop enquiry insert failed', {
     operation: 'workshop_enquiries.insert',
-    table: 'workshop_enquiries',
-    errorName: errorRecord?.name ?? null,
-    errorCode: errorRecord?.code ?? null
-  })
-}
-
-const logNotificationFailure = (step: NotificationError['step']) => {
-  console.error('Workshop enquiry notification failed', {
-    operation: 'workshop-enquiry.notification',
-    step
+    ...toSafeOperationalError(error)
   })
 }
 
@@ -68,23 +61,42 @@ type NotificationError = {
   message: string
 }
 
-const logFailureAlertFailure = (notificationErrors: NotificationError[]) => {
-  console.error('Workshop enquiry failure alert failed', {
+const notificationOperationByStep: Record<NotificationError['step'], string> = {
+  'admin-email': 'workshop-enquiry.notification.admin-email',
+  'customer-email': 'workshop-enquiry.notification.customer-email'
+}
+
+const getNotificationFailureAlertCode = (notificationErrors: NotificationError[]) => {
+  const failedSteps = new Set(notificationErrors.map((entry) => entry.step))
+  const adminFailed = failedSteps.has('admin-email')
+  const customerFailed = failedSteps.has('customer-email')
+
+  if (adminFailed && customerFailed) return 'ADMIN_AND_CUSTOMER_EMAIL_FAILED'
+  if (adminFailed) return 'ADMIN_EMAIL_FAILED'
+  if (customerFailed) return 'CUSTOMER_EMAIL_FAILED'
+  return 'NOTIFICATION_FAILED'
+}
+
+const logNotificationFailure = (entry: NotificationError, recordReference?: string) => {
+  logger.error('Workshop enquiry notification failed', {
+    operation: notificationOperationByStep[entry.step],
+    code: entry.message,
+    ...(recordReference ? { recordReference } : {})
+  })
+}
+
+const logFailureAlertFailure = (errorCode: string, recordReference?: string) => {
+  logger.error('Workshop enquiry failure alert failed', {
     operation: 'workshop-enquiry.failure-alert',
-    failedSteps: notificationErrors.map((entry) => entry.step)
+    code: errorCode,
+    ...(recordReference ? { recordReference } : {})
   })
 }
 
 const logWorkshopProcessingFailure = (error: unknown) => {
-  const errorRecord =
-    typeof error === 'object' && error !== null
-      ? error as Record<string, unknown>
-      : null
-
-  console.error('Workshop enquiry processing failed', {
+  logger.error('Workshop enquiry processing failed', {
     operation: 'workshop-enquiry.process',
-    errorName: errorRecord?.name ?? null,
-    errorCode: errorRecord?.code ?? null
+    ...toSafeOperationalError(error)
   })
 }
 
@@ -112,48 +124,25 @@ const getEmailFromAddress = () => {
 const canSendOperationalEmails = (emailMode: ReturnType<typeof getEmailTransportMode>) =>
   !requiresLiveEmailConfiguration(emailMode) || Boolean(process.env.RESEND_API_KEY)
 
-const buildFailureAlertMessage = (notificationErrors: NotificationError[]) =>
-  notificationErrors
-    .map((entry) => `${entry.step}: ${entry.message}`)
-    .join('\n')
-
 const sendFailureAlertEmail = async (params: {
-  customerName: string
-  customerEmail: string
-  customerPhone?: string
-  preferredDate: string
-  eventType: string
-  groupSize: string
-  location: string
-  decorationTheme?: string
-  brief: string
-  notificationErrors: NotificationError[]
+  recordReference?: string
+  failureCode: string
   emailMode: ReturnType<typeof getEmailTransportMode>
+  adminUrl: string
 }) => {
   const failureAlertResponse = await sendEmail({
     templateId: 'workshop-enquiry-failure-alert',
     input: {
-      customerName: params.customerName,
-      customerEmail: params.customerEmail,
-      customerPhone: params.customerPhone,
-      orderType: 'workshop-enquiry',
-      productName: 'Cake Decorating Workshop',
-      productType: 'workshop',
-      dateNeeded: params.preferredDate,
-      occasion: params.eventType,
-      servings: params.groupSize,
-      deliveryAddress: params.location,
-      designType: params.decorationTheme,
-      customerMessage: params.brief,
-      message: `Failed notifications:\n${buildFailureAlertMessage(params.notificationErrors)}`,
-      note: 'The enquiry was saved in the database successfully. Review notification logs and follow up manually if needed.'
+      operation: 'workshop-enquiry.notification',
+      operationalCode: params.failureCode,
+      recordReference: params.recordReference,
+      adminUrl: params.adminUrl
     },
     modeOverride: params.emailMode,
     message: {
       from: getEmailFromAddress(),
       to: getRecipientEmail(),
-      bcc: process.env.ADMIN_BCC_EMAIL || undefined,
-      replyTo: params.customerEmail
+      bcc: process.env.ADMIN_BCC_EMAIL || undefined
     }
   })
 
@@ -161,14 +150,21 @@ const sendFailureAlertEmail = async (params: {
     ? { sent: true as const }
     : {
         sent: false as const,
-        errorMessage: failureAlertResponse.error?.message || 'Transport did not accept failure alert email'
+        errorMessage: failureAlertResponse.error
+          ? toSafeOperationalError(failureAlertResponse.error).code
+          : 'EMAIL_NOT_ACCEPTED'
       }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const emailMode = getEmailTransportMode()
-    const body = await request.formData()
+    const formDataResult = await readRequiredFormData(request)
+    if (!formDataResult.ok) {
+      return formDataResult.response
+    }
+
+    const { formData: body } = formDataResult
     const submissionData = {
       fullName: getString(body.get('fullName')),
       email: getString(body.get('email')),
@@ -179,6 +175,8 @@ export async function POST(request: NextRequest) {
       preferredDate: getString(body.get('preferredDate')),
       decorationTheme: getString(body.get('decorationTheme')) || undefined,
       brief: getString(body.get('brief')),
+      dietaryHealthInformation: getString(body.get('dietaryHealthInformation')) || undefined,
+      dietaryHealthConsent: parseDietaryHealthConsent(body.get('dietaryHealthConsent')),
       csrfToken: getString(body.get('csrfToken'))
     }
 
@@ -224,8 +222,14 @@ export async function POST(request: NextRequest) {
     }
 
     const validated = workshopEnquirySchema.parse(submissionData)
+    const sensitiveDataEvidence = createSensitiveDataConsentEvidence(
+      validated.dietaryHealthInformation,
+      validated.dietaryHealthConsent === true
+    )
+    const hasDietaryHealthInformation =
+      sensitiveDataEvidence.dietaryHealthInformation !== null
     const resolvedEventType = resolveEventType(validated.eventType)
-    const { error: insertError } = await supabase
+    const { data: insertedEnquiry, error: insertError } = await supabase
       .from('workshop_enquiries')
       .insert({
         full_name: validated.fullName,
@@ -236,23 +240,32 @@ export async function POST(request: NextRequest) {
         location: validated.location,
         preferred_date: validated.preferredDate,
         decoration_theme: validated.decorationTheme || null,
-        brief: validated.brief
+        brief: validated.brief,
+        dietary_health_information: sensitiveDataEvidence.dietaryHealthInformation,
+        dietary_health_consent: sensitiveDataEvidence.dietaryHealthConsent,
+        dietary_health_consent_version: sensitiveDataEvidence.dietaryHealthConsentVersion,
+        dietary_health_consented_at: sensitiveDataEvidence.dietaryHealthConsentedAt
       })
+      .select('id')
+      .single()
 
     if (insertError) {
       logSupabaseInsertFailure(insertError)
       throw new Error('Failed to save workshop enquiry')
     }
 
+    const enquiryId = insertedEnquiry?.id ? String(insertedEnquiry.id) : null
+    const adminUrl = enquiryId
+      ? `${BUSINESS_CONSTANTS.BASE_URL}/admin/enquiries/workshop/${enquiryId}`
+      : `${BUSINESS_CONSTANTS.BASE_URL}/admin/enquiries`
+
     await sendTelegramManagerNotification({
       type: 'workshop-enquiry',
-      customerName: validated.fullName,
-      customerEmail: validated.email,
-      customerPhone: validated.phone || undefined,
+      recordReference: enquiryId || undefined,
       dateNeeded: validated.preferredDate,
-      productName: resolvedEventType,
-      messagePreview: validated.brief,
-      adminPath: '/admin'
+      adminPath: enquiryId
+        ? `/admin/enquiries/workshop/${enquiryId}`
+        : '/admin/enquiries'
     })
 
     const notificationErrors: NotificationError[] = []
@@ -271,9 +284,8 @@ export async function POST(request: NextRequest) {
           dateNeeded: validated.preferredDate,
           occasion: resolvedEventType,
           servings: validated.groupSize,
-          deliveryAddress: validated.location,
-          designType: validated.decorationTheme,
-          customerMessage: validated.brief
+          hasDietaryHealthInformation,
+          adminUrl
         },
         modeOverride: emailMode,
         message: {
@@ -289,13 +301,15 @@ export async function POST(request: NextRequest) {
       if (!adminEmailSent) {
         notificationErrors.push({
           step: 'admin-email',
-          message: adminEmailResponse.error?.message || 'Transport did not accept admin email'
+          message: adminEmailResponse.error
+            ? toSafeOperationalError(adminEmailResponse.error).code
+            : 'EMAIL_NOT_ACCEPTED'
         })
       }
     } catch (error) {
       notificationErrors.push({
         step: 'admin-email',
-        message: error instanceof Error ? error.message : 'Admin email request failed'
+        message: toSafeOperationalError(error).code
       })
     }
 
@@ -311,9 +325,6 @@ export async function POST(request: NextRequest) {
           dateNeeded: validated.preferredDate,
           occasion: resolvedEventType,
           servings: validated.groupSize,
-          deliveryAddress: validated.location,
-          designType: validated.decorationTheme,
-          customerMessage: validated.brief,
           nextSteps: [
             'We will review the date and location details first.',
             'If the workshop format is a fit, we will come back with the next practical steps.'
@@ -333,13 +344,15 @@ export async function POST(request: NextRequest) {
       if (!customerEmailSent) {
         notificationErrors.push({
           step: 'customer-email',
-          message: customerEmailResponse.error?.message || 'Transport did not accept customer email'
+          message: customerEmailResponse.error
+            ? toSafeOperationalError(customerEmailResponse.error).code
+            : 'EMAIL_NOT_ACCEPTED'
         })
       }
     } catch (error) {
       notificationErrors.push({
         step: 'customer-email',
-        message: error instanceof Error ? error.message : 'Customer email request failed'
+        message: toSafeOperationalError(error).code
       })
     }
 
@@ -347,27 +360,20 @@ export async function POST(request: NextRequest) {
 
     if (notificationErrors.length > 0) {
       notificationErrors.forEach((entry) => {
-        logNotificationFailure(entry.step)
+        logNotificationFailure(entry, enquiryId || undefined)
       })
 
       const failureAlertResult = await sendFailureAlertEmail({
-        customerName: validated.fullName,
-        customerEmail: validated.email,
-        customerPhone: validated.phone || undefined,
-        preferredDate: validated.preferredDate,
-        eventType: resolvedEventType,
-        groupSize: validated.groupSize,
-        location: validated.location,
-        decorationTheme: validated.decorationTheme,
-        brief: validated.brief,
-        notificationErrors,
-        emailMode
+        recordReference: enquiryId || undefined,
+        failureCode: getNotificationFailureAlertCode(notificationErrors),
+        emailMode,
+        adminUrl
       })
 
       failureAlertSent = failureAlertResult.sent
 
       if (!failureAlertResult.sent) {
-        logFailureAlertFailure(notificationErrors)
+        logFailureAlertFailure(failureAlertResult.errorMessage, enquiryId || undefined)
       }
     }
 

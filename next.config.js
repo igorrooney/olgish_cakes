@@ -22,11 +22,10 @@ const nextConfig = {
       },
     ],
     formats: ["image/avif", "image/webp"],
-    qualities: [45, 50, 54, 55, 56, 64, 75, 76, 78, 80, 82, 85, 90],
+    qualities: [45, 50, 54, 55, 56, 64, 72, 75, 76, 78, 80, 82, 85, 90],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
     deviceSizes: [384, 480, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
-    dangerouslyAllowLocalIP: process.env.NEXT_IMAGE_ALLOW_LOCAL_IP === "true",
     // Enhanced performance settings
     // Disable optimization in development to bypass private IP check
     unoptimized: process.env.NODE_ENV === "development",
@@ -68,7 +67,7 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               // unsafe-eval is development-only; production scripts must come from trusted origins.
-              `script-src 'self' ${process.env.NODE_ENV === "development" ? "'unsafe-eval' " : ""}'unsafe-inline' https://cdn.sanity.io https://*.googletagmanager.com https://*.google-analytics.com https://vercel.live https://va.vercel-scripts.com https://*.clarity.ms`,
+              `script-src 'self' ${process.env.NODE_ENV === "development" ? "'unsafe-eval' " : ""}'unsafe-inline' https://cdn.sanity.io https://core.sanity-cdn.com https://*.googletagmanager.com https://*.google-analytics.com https://vercel.live https://va.vercel-scripts.com https://*.clarity.ms`,
               // unsafe-inline required for Google Fonts and Sanity Studio styles
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://vercel.live",
               "img-src 'self' data: blob: https: http:",
@@ -107,6 +106,26 @@ const nextConfig = {
             key: "X-Robots-Tag",
             value: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
           },
+        ],
+      },
+      // Internal interfaces must never be cached or offered for indexing. These
+      // route-specific values intentionally override the public defaults above.
+      {
+        source: "/studio/:path*",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+      {
+        source: "/admin/:path*",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
         ],
       },
       {
@@ -387,7 +406,7 @@ const nextConfig = {
       },
       {
         source: "/order/amp",
-        destination: "/get-custom-quote",
+        destination: "/custom-cakes",
         permanent: true,
       },
       {
@@ -432,7 +451,12 @@ const nextConfig = {
       },
       {
         source: "/custom-cake-enquiry",
-        destination: "/get-custom-quote",
+        destination: "/custom-cakes",
+        permanent: true,
+      },
+      {
+        source: "/get-custom-quote",
+        destination: "/custom-cakes",
         permanent: true,
       },
       {
@@ -496,7 +520,7 @@ const nextConfig = {
         ],
         "/cakes"
       ),
-      ...createRedirects(["/order", "/order/leeds", "/cake-pricing"], "/get-custom-quote"),
+      ...createRedirects(["/order", "/order/leeds", "/cake-pricing"], "/custom-cakes"),
       {
         source: "/gift-hampers/:slug",
         destination: "/cakes-by-post/:slug",

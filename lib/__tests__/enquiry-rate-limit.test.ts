@@ -3,10 +3,8 @@
  */
 import { NextResponse } from 'next/server'
 import {
-  __resetEnquiryRateLimitStateForTests,
   applyEnquiryRateLimitHeaders,
   getEnquiryRateLimitIdentifier,
-  maybeCleanupEnquiryRateLimits,
   takeEnquiryRateLimit
 } from '../enquiry-rate-limit'
 
@@ -50,23 +48,6 @@ function createFakeRateLimitClient() {
       }
     }
 
-    if (fn === 'cleanup_enquiry_rate_limits') {
-      const beforeMs = Date.parse(String(args.p_before))
-      let deleted = 0
-
-      for (const [key, record] of counters.entries()) {
-        if (record.windowStartMs < beforeMs) {
-          counters.delete(key)
-          deleted += 1
-        }
-      }
-
-      return {
-        data: deleted,
-        error: null
-      }
-    }
-
     return {
       data: null,
       error: { message: `Unexpected RPC: ${fn}` }
@@ -77,25 +58,27 @@ function createFakeRateLimitClient() {
 }
 
 describe('enquiry-rate-limit', () => {
-  beforeEach(() => {
-    __resetEnquiryRateLimitStateForTests()
-  })
-
-  it('uses the first forwarded IP when one is present', () => {
+  it('prefers platform and proxy-controlled IP headers', () => {
     const identifier = getEnquiryRateLimitIdentifier({
       headers: new Headers({
+        'x-vercel-forwarded-for': '203.0.113.10, 203.0.113.11',
         'x-forwarded-for': '10.0.0.1, 192.168.0.1',
         'x-real-ip': '127.0.0.1'
       })
     })
 
-    expect(identifier).toBe('10.0.0.1')
+    expect(identifier).toBe('203.0.113.10')
   })
 
-  it('falls back to x-real-ip and then unknown', () => {
+  it('falls back through x-real-ip, x-forwarded-for and unknown', () => {
     const realIpIdentifier = getEnquiryRateLimitIdentifier({
       headers: new Headers({
         'x-real-ip': '127.0.0.1'
+      })
+    })
+    const forwardedIdentifier = getEnquiryRateLimitIdentifier({
+      headers: new Headers({
+        'x-forwarded-for': '10.0.0.1, 192.168.0.1'
       })
     })
     const unknownIdentifier = getEnquiryRateLimitIdentifier({
@@ -103,6 +86,7 @@ describe('enquiry-rate-limit', () => {
     })
 
     expect(realIpIdentifier).toBe('127.0.0.1')
+    expect(forwardedIdentifier).toBe('10.0.0.1')
     expect(unknownIdentifier).toBe('unknown')
   })
 
@@ -203,35 +187,6 @@ describe('enquiry-rate-limit', () => {
     expect(endOfWindow.currentCount).toBe(1)
     expect(nextWindow.currentCount).toBe(1)
     expect(nextWindow.remaining).toBe(4)
-  })
-
-  it('cleans up expired windows and keeps current ones', async () => {
-    const client = createFakeRateLimitClient()
-    const now = Date.parse('2026-12-25T12:00:00.000Z')
-
-    await takeEnquiryRateLimit(client, {
-      scope: 'workshop-enquiry',
-      identifier: '10.0.0.6',
-      maxRequests: 5,
-      windowMs: 60000,
-      now: now - (2 * 24 * 60 * 60 * 1000)
-    })
-    await takeEnquiryRateLimit(client, {
-      scope: 'workshop-enquiry',
-      identifier: '10.0.0.6',
-      maxRequests: 5,
-      windowMs: 60000,
-      now
-    })
-
-    await maybeCleanupEnquiryRateLimits(client, {
-      now,
-      retentionMs: 24 * 60 * 60 * 1000,
-      force: true
-    })
-
-    expect([...client.counters.keys()]).toHaveLength(1)
-    expect([...client.counters.keys()][0]).toContain('workshop-enquiry:10.0.0.6')
   })
 
   it('applies standard rate limit headers to responses', () => {

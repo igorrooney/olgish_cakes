@@ -16,6 +16,10 @@ import type {
   HomepageReview,
   PaginatedReviewsResponse
 } from '@/app/types/testimonial'
+import {
+  isReviewSource,
+  isReviewSourceUrl
+} from '@/lib/testimonials/review-source'
 import { CarouselNavButton } from './CarouselNavButton'
 
 export type { HomepageReview } from '@/app/types/testimonial'
@@ -250,7 +254,17 @@ const isHomepageReview = (value: unknown): value is HomepageReview => {
     Number.isFinite(review.rating) &&
     review.rating >= 1 &&
     review.rating <= 5 &&
-    (review.title === undefined || typeof review.title === 'string')
+    (review.title === undefined || typeof review.title === 'string') &&
+    isReviewSource(review.source) &&
+    (
+      review.sourceUrl === undefined ||
+      isReviewSourceUrl(review.source, review.sourceUrl)
+    ) &&
+    typeof review.incentivised === 'boolean' &&
+    (
+      review.incentiveDisclosure === undefined ||
+      typeof review.incentiveDisclosure === 'string'
+    )
 }
 
 const isPaginatedReviewsResponse = (
@@ -352,27 +366,23 @@ function CarouselControls({
   )
 }
 
-function StarRating() {
+function StarRating({ rating }: { rating: number }) {
+  const roundedRating = Math.round(rating)
+
   return (
-    <svg xmlns='http://www.w3.org/2000/svg' width='107' height='20' viewBox='0 0 107 20' fill='none'>
-      <g clipPath='url(#clip0_2136_116)'>
-        <path d='M20 0H0V20H20V0Z' fill='#219653' />
-        <path d='M41.6667 0H21.6667V20H41.6667V0Z' fill='#219653' />
-        <path d='M63.3333 0H43.3333V20H63.3333V0Z' fill='#219653' />
-        <path d='M85 0H65V20H85V0Z' fill='#219653' />
-        <path d='M106.667 0H86.6667V20H106.667V0Z' fill='#219653' />
-        <path d='M9.99973 13.4792L13.0414 12.7083L14.3122 16.625L9.99973 13.4792ZM16.9997 8.41667H11.6456L9.99973 3.375L8.35389 8.41667H2.99973L7.33306 11.5417L5.68723 16.5833L10.0206 13.4583L12.6872 11.5417L16.9997 8.41667Z' fill='white' />
-        <path d='M31.6664 13.4792L34.7081 12.7083L35.9789 16.625L31.6664 13.4792ZM38.6664 8.41667H33.3122L31.6664 3.375L30.0206 8.41667H24.6664L28.9997 11.5417L27.3539 16.5833L31.6872 13.4583L34.3539 11.5417L38.6664 8.41667Z' fill='white' />
-        <path d='M53.3331 13.4792L56.3747 12.7083L57.6456 16.625L53.3331 13.4792ZM60.3331 8.41667H54.9789L53.3331 3.375L51.6872 8.41667H46.3331L50.6664 11.5417L49.0206 16.5833L53.3539 13.4583L56.0206 11.5417L60.3331 8.41667Z' fill='white' />
-        <path d='M74.9997 13.4792L78.0414 12.7083L79.3122 16.625L74.9997 13.4792ZM81.9997 8.41667H76.6456L74.9997 3.375L73.3539 8.41667H67.9997L72.3331 11.5417L70.6872 16.5833L75.0206 13.4583L77.6872 11.5417L81.9997 8.41667Z' fill='white' />
-        <path d='M96.6664 13.4792L99.7081 12.7083L100.979 16.625L96.6664 13.4792ZM103.666 8.41667H98.3122L96.6664 3.375L95.0206 8.41667H89.6664L93.9997 11.5417L92.3539 16.5833L96.6872 13.4583L99.3539 11.5417L103.666 8.41667Z' fill='white' />
-      </g>
-      <defs>
-        <clipPath id='clip0_2136_116'>
-          <rect width='106.667' height='20' fill='white' />
-        </clipPath>
-      </defs>
-    </svg>
+    <div
+      className='rating rating-sm gap-0.5'
+      role='img'
+      aria-label={`${rating} out of 5 stars`}
+    >
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          aria-hidden='true'
+          className={`mask mask-star-2 h-5 w-5 ${star <= roundedRating ? 'bg-success' : 'bg-base-300'}`}
+          key={star}
+        />
+      ))}
+    </div>
   )
 }
 
@@ -420,7 +430,7 @@ function ReviewCard({ testimonial, reviewTextId, className }: ReviewCardProps) {
       <div className='flex h-full flex-col gap-3'>
         <div className='flex items-center justify-between'>
           <div>
-            <StarRating />
+            <StarRating rating={testimonial.rating} />
           </div>
           <time
             className='font-sans text-xs text-base-content'
@@ -472,6 +482,11 @@ function ReviewCard({ testimonial, reviewTextId, className }: ReviewCardProps) {
         <p className='font-sans text-sm font-bold text-base-content'>
           {displayName}
         </p>
+        {testimonial.incentivised && testimonial.incentiveDisclosure ? (
+          <p className='font-sans text-xs leading-5 text-base-content/80'>
+            {testimonial.incentiveDisclosure}
+          </p>
+        ) : null}
       </div>
     </div>
   )

@@ -13,19 +13,27 @@ This guide explains how to set up Google Merchant Center to automatically displa
   - Updated every hour automatically
   - Includes both cakes and gift hampers
 
-- **Test Feed**: `https://olgishcakes.co.uk/api/merchant-center/test`
+- **Development Test Feed**: `http://localhost:3000/api/merchant-center/test`
   - Limited products for testing (use `?limit=5` parameter)
   - No caching for immediate testing
+  - Returns `404` in production
 
-- **Validation**: `https://olgishcakes.co.uk/api/merchant-center/validate`
+- **Development Validation**: `http://localhost:3000/api/merchant-center/validate`
   - JSON validation report of all products
   - Checks for missing required fields
+  - Returns `404` in production
 
-### 2. Enhanced Structured Data
+### 2. Product Structured Data
 
-- Updated cake and hamper pages with Google Merchant Center compatible schema
-- Includes all required fields: price, availability, shipping, returns
-- Enhanced with GTIN, MPN, SKU identifiers
+- Cake and hamper pages expose product name, a real current price when available,
+  availability, brand, image and the published returns policy.
+- Item-level shipping is included only when the public product page contains the
+  matching destination, cost and timing claims. Otherwise, configure shipping in
+  Merchant Center at account level.
+- GTIN, MPN and SKU are optional and must be supplied only when they are real,
+  stable product identifiers used by the business. Never generate or guess them.
+- Reviews and aggregate ratings are omitted unless the exact product has approved,
+  source-specific evidence.
 
 ### 3. Automatic Updates
 
@@ -73,23 +81,29 @@ This guide explains how to set up Google Merchant Center to automatically displa
 ### Step 5: Set Up Shipping
 
 1. Go to **Tools & Settings** > **Shipping**
-2. Add shipping service:
-   - **Service name**: "Standard Delivery"
-   - **Rate**: "Free"
-   - **Delivery time**: "1-3 business days"
-   - **Countries**: United Kingdom
+2. Add a shipping service that exactly matches the current website and fulfilment
+   process:
+   - **Service name**: Use the actual service name.
+   - **Rate**: Use the real customer charge; do not select free shipping unless it
+     is genuinely available for every product and destination in scope.
+   - **Delivery time**: Use measured handling and transit times.
+   - **Countries**: Select only destinations currently served.
+3. Compare the account-level settings with the website and feed before every
+   release. If item-level shipping is omitted, these account settings are the
+   authoritative Merchant Center configuration.
 
-### Step 6: Set Up Taxes
+### Step 6: Check Price and Tax Treatment
 
-1. Go to **Tools & Settings** > **Tax**
-2. Add tax rules:
-   - **Country**: United Kingdom
-   - **Rate**: 20% (VAT)
-   - **Shipping taxed**: Yes
+1. For the UK feed, submit the total price the customer pays, including any tax
+   that legally applies to that product.
+2. Do not create a 20% VAT rule or describe VAT as included while Olgish Cakes is
+   not VAT registered.
+3. Revisit this configuration if the business registers for VAT or the legal tax
+   treatment changes.
 
 ### Step 7: Test Your Feed
 
-1. Use the test feed URL: `https://olgishcakes.co.uk/api/merchant-center/test?limit=5`
+1. Use the local test feed URL: `http://localhost:3000/api/merchant-center/test?limit=5`
 2. Validate with Google's feed validator
 3. Check for any errors or warnings
 
@@ -104,7 +118,8 @@ This guide explains how to set up Google Merchant Center to automatically displa
 ### Product Information Included
 
 - **Required fields**: ID, title, description, link, image, price, availability
-- **Enhanced data**: Brand, category, shipping, taxes, returns policy
+- **Additional data**: Brand, category and the published returns policy; shipping
+  only where supported by matching customer-facing claims
 - **SEO optimized**: Keywords, meta descriptions, structured data
 - **Local SEO**: Leeds and Yorkshire area targeting
 
@@ -131,8 +146,8 @@ This guide explains how to set up Google Merchant Center to automatically displa
 
 ### Validation Tools
 
-- **Feed validator**: Use `/api/merchant-center/validate` endpoint
-- **Test feed**: Use `/api/merchant-center/test?limit=5`
+- **Feed validator**: Use `http://localhost:3000/api/merchant-center/validate`
+- **Test feed**: Use `http://localhost:3000/api/merchant-center/test?limit=5`
 - **Google's validator**: Upload test feed to Google's tool
 
 ### Manual Cache Revalidation
@@ -143,6 +158,9 @@ If you need to force an immediate update:
 curl -X POST https://olgishcakes.co.uk/api/merchant-center/revalidate \
   -H "Authorization: Bearer YOUR_REVALIDATE_TOKEN"
 ```
+
+Do not place the revalidation token in a URL or query string. Production accepts
+authenticated `POST` requests only.
 
 ## Expected Results
 

@@ -86,8 +86,12 @@ describe('Instagram', () => {
     expect(screen.getByTestId('instagram-carousel')).toHaveAttribute('data-count', '1')
     expect(consoleWarnSpy).toHaveBeenCalledWith(
       'Instagram posts unavailable. Refresh INSTAGRAM_ACCESS_TOKEN if the token has expired.',
-      'Instagram API error (400): Error validating access token: Session has expired'
+      {
+        operation: 'instagram.posts.fetch-homepage',
+        code: 'OPERATION_FAILED'
+      }
     )
+    expect(JSON.stringify(consoleWarnSpy.mock.calls)).not.toContain('Session has expired')
 
     consoleWarnSpy.mockRestore()
   })

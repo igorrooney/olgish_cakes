@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 interface WebVitalsMetric {
   name: string
@@ -43,7 +44,10 @@ export function WebVitalsMonitor() {
         onTTFB(reportWebVitals)
       })
       .catch((error) => {
-        console.warn('Failed to load web-vitals:', error)
+        console.warn('Failed to load web-vitals', {
+          operation: 'web-vitals.load',
+          ...toSafeOperationalError(error)
+        })
       })
 
     return () => {

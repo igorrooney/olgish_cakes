@@ -1,10 +1,12 @@
 import { DesktopDropdown, type DropdownConfig } from './DesktopDropdown'
+import { MobileMenuDisclosure } from './MobileMenuDisclosure'
 
 const topNavItemClassName =
   'rounded-btn px-3 py-2 text-lg font-body text-base-content transition-colors whitespace-nowrap hover:bg-transparent hover:text-navigation active:!bg-transparent'
 const mobileMenuItemClassName =
   'w-full min-h-[36px] px-4 flex items-center rounded-btn text-base-content text-sm leading-none font-sans active:!bg-transparent'
-const quotePageHref = '/get-custom-quote#quote-form'
+const customCakesPageHref = '/custom-cakes'
+const quotePageHref = `${customCakesPageHref}#quote-form`
 
 const desktopDropdowns: DropdownConfig[] = [
   {
@@ -100,23 +102,18 @@ function CloseIcon() {
 
 function MobileMenu() {
   return (
-    <details className='group/mobile-menu'>
-      <summary
-        role='button'
-        aria-label='Menu'
-        aria-controls='mobile-menu'
-        aria-haspopup='true'
-        className='flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-btn bg-base-100 p-0 shadow-btn hover:bg-base-200 marker:hidden [&::-webkit-details-marker]:hidden'
-        style={{ minWidth: '48px', minHeight: '48px' }}
-      >
-        <MenuIcon />
-        <CloseIcon />
-      </summary>
-      <div
+    <MobileMenuDisclosure
+      trigger={(
+        <>
+          <MenuIcon />
+          <CloseIcon />
+        </>
+      )}
+    >
+      <nav
         id='mobile-menu'
-        role='menu'
         className='absolute left-0 right-0 top-full z-[60] overflow-visible rounded-b-box bg-base-100 shadow-xl tablet:hidden'
-        aria-label='Main navigation'
+        aria-label='Mobile navigation'
       >
         <div className='grid grid-cols-2 gap-2 p-2'>
           <div className='flex flex-col items-start'>
@@ -125,19 +122,19 @@ function MobileMenu() {
                 MENU
               </p>
             </div>
-            <a href='/cakes-by-post' role='menuitem' className={mobileMenuItemClassName}>
+            <a href='/cakes-by-post' className={mobileMenuItemClassName}>
               Cakes by post
             </a>
-            <a href='/cakes' role='menuitem' className={mobileMenuItemClassName}>
+            <a href={customCakesPageHref} className={mobileMenuItemClassName}>
               Custom cakes
             </a>
-            <a href={quotePageHref} role='menuitem' className={mobileMenuItemClassName}>
+            <a href={quotePageHref} className={mobileMenuItemClassName}>
               Get a quote
             </a>
-            <a href='/faqs' role='menuitem' className={mobileMenuItemClassName}>
+            <a href='/faqs' className={mobileMenuItemClassName}>
               FAQs
             </a>
-            <a href='/contact' role='menuitem' className={mobileMenuItemClassName}>
+            <a href='/contact' className={mobileMenuItemClassName}>
               Contact
             </a>
           </div>
@@ -147,16 +144,16 @@ function MobileMenu() {
                 LEARN
               </p>
             </div>
-            <a href='/blog' role='menuitem' className={mobileMenuItemClassName}>
+            <a href='/blog' className={mobileMenuItemClassName}>
               Articles
             </a>
-            <a href='/learn/workshops' role='menuitem' className={mobileMenuItemClassName}>
+            <a href='/learn/workshops' className={mobileMenuItemClassName}>
               Workshops
             </a>
           </div>
         </div>
-      </div>
-    </details>
+      </nav>
+    </MobileMenuDisclosure>
   )
 }
 

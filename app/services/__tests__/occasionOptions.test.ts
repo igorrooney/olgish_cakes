@@ -51,7 +51,7 @@ describe('fetchOccasionOptions', () => {
       json: async () => ({})
     })
 
-    await expect(fetchOccasionOptions()).rejects.toThrow('Failed to fetch occasion options')
+    await expect(fetchOccasionOptions(new AbortController().signal)).rejects.toThrow('Failed to fetch occasion options')
   })
 
   it('throws when payload shape is invalid', async () => {
@@ -62,6 +62,6 @@ describe('fetchOccasionOptions', () => {
       json: async () => ({ occasionOptions: null })
     })
 
-    await expect(fetchOccasionOptions()).rejects.toThrow('Invalid occasion options response')
+    await expect(fetchOccasionOptions(new AbortController().signal)).rejects.toThrow('Invalid occasion options response')
   })
 })

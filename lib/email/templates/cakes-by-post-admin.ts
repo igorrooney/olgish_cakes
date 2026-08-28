@@ -76,19 +76,6 @@ function buildSummaryRows(input: EmailTemplateCommonInput): CustomerRow[] {
   return rows
 }
 
-function buildNotesRows(input: EmailTemplateCommonInput): CustomerRow[] {
-  const rows: CustomerRow[] = []
-
-  row(rows, 'Notes', input.customerMessage)
-  row(rows, 'Gift note', input.giftNote)
-  row(rows, 'Additional note', input.note)
-  if (Array.isArray(input.attachmentNames) && input.attachmentNames.length > 0) {
-    row(rows, 'Attachments', input.attachmentNames.join(', '))
-  }
-
-  return rows
-}
-
 function buildContextRows(input: EmailTemplateCommonInput): CustomerRow[] {
   const rows: CustomerRow[] = []
 
@@ -106,7 +93,6 @@ export const buildCakesByPostAdminContent: AdminEmailContentBuilder = (input) =>
   const customerRows = buildCustomerRows(input)
   const deliveryRows = buildDeliveryRows(input)
   const summaryRows = buildSummaryRows(input)
-  const notesRows = buildNotesRows(input)
   const contextRows = buildContextRows(input)
 
   return {
@@ -114,14 +100,12 @@ export const buildCakesByPostAdminContent: AdminEmailContentBuilder = (input) =>
       rowsText('Ordered by', customerRows),
       rowsText('Delivery details', deliveryRows),
       rowsText('Order summary', summaryRows),
-      rowsText('Customer notes', notesRows),
       rowsText('Request context', contextRows)
     ].filter((section) => section.length > 0).join('\n\n'),
     bodyHtml: [
       renderCustomerCard('Ordered by', customerRows),
       renderCustomerCard('Delivery details', deliveryRows),
       renderCustomerCard('Order summary', summaryRows),
-      renderCustomerCard('Customer notes', notesRows),
       renderCustomerCard('Request context', contextRows)
     ].join('')
   }

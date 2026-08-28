@@ -34,6 +34,21 @@ export interface TempDocumentSizeIssue {
   reason: 'mismatch' | 'too_large'
 }
 
+export interface TempStorageEntry {
+  name: string
+  path: string
+  isManaged: boolean
+  timestamp: string | null
+}
+
+export interface TempStoragePage {
+  entries: TempStorageEntry[]
+  nextCursor: string | null
+  hasNext: boolean
+}
+
+export const TEMP_STORAGE_PAGE_SIZE = 100
+
 function buildUploadPath(fileName: string): string {
   const today = new Date().toISOString().slice(0, 10)
   return `incoming/${today}/${randomUUID()}-${sanitizeFileName(fileName)}`
@@ -147,58 +162,82 @@ export async function deleteTempImages(bucket: string, paths: string[]): Promise
   }
 }
 
-export async function listOldTempImagePaths(
+export async function listTempImagePage(
   bucket: string,
-  cutoff: Date,
-  prefix = 'incoming'
-): Promise<string[]> {
-  const supabase = getSupabaseAdmin()
-  const paths: string[] = []
-  const pageSize = 1000
-
-  async function visit(currentPrefix: string): Promise<void> {
-    let offset = 0
-
-    while (true) {
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .list(currentPrefix, {
-          limit: pageSize,
-          offset,
-          sortBy: { column: 'name', order: 'asc' }
-        })
-
-      if (error) {
-        throw new Error(`Could not list temporary image files: ${error.message}`)
-      }
-
-      const entries = data ?? []
-
-      await Promise.all(entries.map(async (entry) => {
-        const childPath = `${currentPrefix}/${entry.name}`
-        const isFolder = entry.id === null
-
-        if (isFolder) {
-          await visit(childPath)
-          return
-        }
-
-        const timestamp = entry.updated_at ?? entry.created_at ?? entry.last_accessed_at
-
-        if (timestamp && new Date(timestamp) < cutoff) {
-          paths.push(childPath)
-        }
-      }))
-
-      if (entries.length < pageSize) {
-        break
-      }
-
-      offset += pageSize
-    }
+  prefix: string,
+  cursor: string | null,
+  limit: number,
+  signal: AbortSignal
+): Promise<TempStoragePage> {
+  if (
+    prefix !== 'incoming' ||
+    !(
+      cursor === null ||
+      (
+        typeof cursor === 'string' &&
+        cursor.length > 0 &&
+        cursor.length <= 4096 &&
+        !cursor.includes('\0')
+      )
+    ) ||
+    !Number.isInteger(limit) ||
+    limit < 1 ||
+    limit > TEMP_STORAGE_PAGE_SIZE
+  ) {
+    throw new Error('EVENT_PHOTO_STORAGE_LIST_FAILED')
   }
 
-  await visit(prefix)
+  const { data, error } = await getSupabaseAdmin().storage
+    .from(bucket)
+    .listV2({
+      prefix: `${prefix}/`,
+      limit,
+      ...(cursor ? { cursor } : {}),
+      with_delimiter: false,
+      sortBy: { column: 'name', order: 'asc' }
+    }, { signal })
 
-  return paths
+  if (
+    error ||
+    !data ||
+    typeof data.hasNext !== 'boolean' ||
+    !Array.isArray(data.folders) ||
+    !Array.isArray(data.objects) ||
+    data.folders.length !== 0 ||
+    data.objects.length > limit ||
+    (
+      data.hasNext &&
+      (
+        typeof data.nextCursor !== 'string' ||
+        data.nextCursor.length === 0 ||
+        data.nextCursor.length > 4096 ||
+        data.nextCursor.includes('\0')
+      )
+    )
+  ) {
+    throw new Error('EVENT_PHOTO_STORAGE_LIST_FAILED')
+  }
+
+  if (data.objects.some((entry) => (
+    typeof entry.name !== 'string' ||
+    entry.name.length === 0 ||
+    entry.name.length > 1024 ||
+    !entry.name.startsWith('incoming/')
+  ))) {
+    throw new Error('EVENT_PHOTO_STORAGE_LIST_FAILED')
+  }
+
+  return {
+    entries: data.objects.map((entry) => ({
+      name: entry.name.slice('incoming/'.length),
+      path: entry.name,
+      isManaged: (
+        /^incoming\/(?:[0-9]{4}-[0-9]{2}-[0-9]{2}\/)?[^/\\]+$/.test(entry.name) &&
+        !entry.name.includes('..')
+      ),
+      timestamp: entry.updated_at ?? entry.created_at ?? entry.last_accessed_at ?? null
+    })),
+    nextCursor: data.hasNext ? data.nextCursor ?? null : null,
+    hasNext: data.hasNext
+  }
 }

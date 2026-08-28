@@ -178,7 +178,7 @@ export async function Bestsellers() {
       </div>
       <div className="relative flex justify-end z-1 mr-5 tablet:hidden">
         <Link
-          href="/cakes"
+          href="/custom-cakes"
           prefetch={false}
           className="flex items-center gap-2 text-black"
         >

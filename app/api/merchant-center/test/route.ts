@@ -1,148 +1,115 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getAllCakes } from "@/app/utils/fetchCakes";
-import { getAllGiftHampers } from "@/app/utils/fetchGiftHampers";
-import { blocksToText, type Cake, type CakeImage } from "@/types/cake";
-import type { GiftHamper, GiftHamperImage } from "@/types/giftHamper";
+import { getAllCakes } from '@/app/utils/fetchCakes'
+import { getAllGiftHampers } from '@/app/utils/fetchGiftHampers'
+import {
+  generateCakeMerchantItem,
+  generateGiftHamperMerchantItem
+} from '@/lib/merchant-center/feed-items'
+import {
+  isProductionEnvironment,
+  productionRouteNotFound
+} from '@/lib/security/internal-route'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
+import { urlFor } from '@/sanity/lib/image'
+import { NextRequest, NextResponse } from 'next/server'
 
-// Google Merchant Center Feed Test Endpoint
+interface MerchantImage {
+  asset?: {
+    _ref?: string
+  }
+}
+
+const baseUrl = 'https://olgishcakes.co.uk'
+const defaultLimit = 5
+const maximumLimit = 50
+
+function buildImageUrl(image: MerchantImage) {
+  const imageReference = image.asset?._ref
+
+  if (!imageReference) {
+    return ''
+  }
+
+  return urlFor(imageReference).width(800).height(800).url()
+}
+
+function getLimit(requestUrl: URL) {
+  const requestedLimit = Number.parseInt(requestUrl.searchParams.get('limit') || '', 10)
+
+  if (!Number.isInteger(requestedLimit) || requestedLimit < 1) {
+    return defaultLimit
+  }
+
+  return Math.min(requestedLimit, maximumLimit)
+}
+
+function isGeneratedItem(item: string | null): item is string {
+  return item !== null
+}
+
 export async function GET(request: NextRequest) {
-  try {
-    const url = new URL(request.url);
-    const limit = parseInt(url.searchParams.get('limit') || '5');
-    const type = url.searchParams.get('type') || 'all'; // all, cakes, hampers
+  if (isProductionEnvironment()) {
+    return productionRouteNotFound()
+  }
 
+  try {
+    const requestUrl = new URL(request.url)
+    const limit = getLimit(requestUrl)
+    const type = requestUrl.searchParams.get('type') || 'all'
     const [cakes, giftHampers] = await Promise.all([
       getAllCakes(),
-      getAllGiftHampers(),
-    ]);
+      getAllGiftHampers()
+    ])
+    const cakeItems = type === 'cakes' || type === 'all'
+      ? cakes
+          .map((cake) => generateCakeMerchantItem(cake, baseUrl, buildImageUrl))
+          .filter(isGeneratedItem)
+      : []
+    const hamperItems = type === 'hampers' || type === 'all'
+      ? giftHampers
+          .map((hamper) => generateGiftHamperMerchantItem(hamper, baseUrl, buildImageUrl))
+          .filter(isGeneratedItem)
+      : []
+    const items = type === 'all'
+      ? [
+          ...cakeItems.slice(0, Math.ceil(limit / 2)),
+          ...hamperItems.slice(0, Math.floor(limit / 2))
+        ]
+      : [...cakeItems, ...hamperItems].slice(0, limit)
 
-    const testProducts = [];
-
-    if (type === 'cakes' || type === 'all') {
-      testProducts.push(...cakes.slice(0, type === 'cakes' ? limit : Math.ceil(limit / 2)));
-    }
-
-    if (type === 'hampers' || type === 'all') {
-      testProducts.push(...giftHampers.slice(0, type === 'hampers' ? limit : Math.ceil(limit / 2)));
-    }
-
-    const baseUrl = "https://olgishcakes.co.uk";
-
-    // Generate test XML feed with limited products
     const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>
-    <title>Olgish Cakes - Test Feed (${testProducts.length} products)</title>
+    <title>Olgish Cakes - Test Feed (${items.length} products)</title>
     <link>${baseUrl}</link>
     <description>Test feed for Google Merchant Center validation</description>
     <language>en-GB</language>
     <lastBuildDate>${new Date().toISOString()}</lastBuildDate>
 
-    ${testProducts.map(product => {
-      if ('pricing' in product) {
-        return generateCakeItem(product, baseUrl);
-      } else {
-        return generateHamperItem(product, baseUrl);
-      }
-    }).join('\n')}
+    ${items.join('\n')}
 
   </channel>
-</rss>`;
+</rss>`
 
     return new NextResponse(xmlContent, {
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'no-cache', // Don't cache test feeds
-      },
-    });
-
+        'Cache-Control': 'no-cache'
+      }
+    })
   } catch (error) {
-    console.error('Error generating test merchant center feed:', error);
+    const safeError = toSafeOperationalError(error)
+
+    console.error('Merchant Center test feed failed', {
+      operation: 'merchant-center-test-feed',
+      ...safeError
+    })
+
     return NextResponse.json(
-      { error: 'Failed to generate test product feed' },
+      {
+        error: 'Failed to generate test product feed',
+        code: safeError.code
+      },
       { status: 500 }
-    );
+    )
   }
-}
-
-// Helper functions (copied from main feed for test endpoint)
-function generateCakeItem(cake: Cake, baseUrl: string): string {
-  const productUrl = `${baseUrl}/cakes/${cake.slug.current}`;
-
-  // Get the best available image
-  const mainImage = cake.mainImage?.asset?._ref
-    ? cake.mainImage
-    : cake.designs?.standard?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
-      cake.designs?.standard?.find((img: CakeImage) => img.asset?._ref) ||
-      cake.designs?.standard?.[0] ||
-      cake.designs?.individual?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
-      cake.designs?.individual?.find((img: CakeImage) => img.asset?._ref) ||
-      cake.designs?.individual?.[0] ||
-      // Fallback to images array (for legacy data like Honey Cake)
-      cake.images?.find((img: CakeImage) => img.asset?._ref) ||
-      cake.images?.[0];
-
-  const imageUrl = mainImage?.asset?._ref
-    ? `https://cdn.sanity.io/images/${mainImage.asset._ref.replace('image-', '').replace('-800x800-jpg', '')}/800x800.jpg`
-    : `${baseUrl}/images/placeholder-cake.jpg`;
-
-  const price = cake.pricing?.standard || 25;
-  const availability = 'in stock';
-  const description = blocksToText(cake.shortDescription || cake.description) ||
-    `Traditional Ukrainian honey cake - ${cake.name}. Handmade with authentic recipes in Leeds.`;
-
-  return `
-    <item>
-      <g:id>cake_${cake._id}</g:id>
-      <g:title>${escapeXml(cake.name)} - Traditional Ukrainian Honey Cake</g:title>
-      <g:description>${escapeXml(description)}</g:description>
-      <g:link>${productUrl}</g:link>
-      <g:image_link>${imageUrl}</g:image_link>
-      <g:price>${price} GBP</g:price>
-      <g:availability>${availability}</g:availability>
-      <g:condition>new</g:condition>
-      <g:brand>Olgish Cakes</g:brand>
-      <g:product_type>Food &amp; Drink &gt; Bakery &gt; Cakes</g:product_type>
-      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Baked Goods</g:google_product_category>
-    </item>`;
-}
-
-function generateHamperItem(hamper: GiftHamper, baseUrl: string): string {
-  const productUrl = `${baseUrl}/cakes-by-post/${hamper.slug?.current || hamper._id}`;
-
-  // Get the best available image
-  const mainImage = hamper.images?.find((img: GiftHamperImage) => img.asset?._ref) ||
-    hamper.images?.[0];
-
-  const imageUrl = mainImage?.asset?._ref
-    ? `https://cdn.sanity.io/images/${mainImage.asset._ref.replace('image-', '').replace('-800x800-jpg', '')}/800x800.jpg`
-    : `${baseUrl}/images/placeholder-hamper.jpg`;
-
-  const price = hamper.price || 35;
-  const description = blocksToText(hamper.shortDescription || hamper.description || []) ||
-    `Beautiful Ukrainian gift hamper - ${hamper.name}. Perfect for special occasions.`;
-
-  return `
-    <item>
-      <g:id>hamper_${hamper._id}</g:id>
-      <g:title>${escapeXml(hamper.name)} - Ukrainian Gift Hamper</g:title>
-      <g:description>${escapeXml(description)}</g:description>
-      <g:link>${productUrl}</g:link>
-      <g:image_link>${imageUrl}</g:image_link>
-      <g:price>${price} GBP</g:price>
-      <g:availability>in stock</g:availability>
-      <g:condition>new</g:condition>
-      <g:brand>Olgish Cakes</g:brand>
-      <g:product_type>Food &amp; Drink &gt; Gift Baskets &gt; Food Gift Baskets</g:product_type>
-      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Gift Baskets</g:google_product_category>
-    </item>`;
-}
-
-function escapeXml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 }

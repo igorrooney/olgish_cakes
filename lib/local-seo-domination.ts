@@ -85,7 +85,7 @@ export function generateGMBOptimization() {
       primary: "Bakery",
       secondary: ["Custom Cake Designer", "Wedding Cake Service", "Catering Service"],
     },
-    description: `Award-winning Ukrainian bakery in Leeds specializing in authentic honey cakes, custom wedding cakes, and traditional Eastern European desserts. Using traditional family recipes passed down through generations, we create bespoke cakes for weddings, birthdays, and special occasions. Same-day delivery available throughout Leeds and West Yorkshire. Book your free consultation today!`,
+    description: `Ukrainian bakery in Leeds specialising in honey cakes, custom wedding cakes and traditional desserts. We create bespoke cakes for weddings, birthdays and special occasions, with delivery availability confirmed for each order.`,
 
     attributes: [
       "Women-owned business",
@@ -124,9 +124,9 @@ export function generateGMBOptimization() {
     services: [
       {
         name: "Cake Consultation",
-        description: "Free consultation to design your perfect custom cake",
+        description: "Enquiry to discuss your custom cake requirements",
         duration: "30 minutes",
-        price: "Free",
+        price: "Confirmed with your offer",
       },
       {
         name: "Cake Delivery",
@@ -204,8 +204,8 @@ export const CITATION_STRATEGY = {
 
   citationFormat: {
     businessName: "Olgish Cakes",
-    address: "123 Example Street, Leeds, West Yorkshire, LS1 1XX", // Replace with actual
-    phone: "+44 113 XXX XXXX", // Replace with actual
+    address: "15 Allerton Grange Avenue, Leeds, West Yorkshire, LS17 6PR",
+    phone: "+44 786 721 8194",
     website: "https://olgishcakes.co.uk",
     email: "hello@olgishcakes.co.uk",
     description: "Ukrainian bakery specializing in authentic honey cakes and custom designs",
@@ -219,19 +219,19 @@ export function generateLocalContentStrategy() {
     locationPages: [
       {
         url: "/cakes",
-        title: "Custom Cakes Leeds | Ukrainian Bakery | Same Day Delivery",
+        title: "Custom Cakes Leeds | Ukrainian Bakery | Olgish Cakes",
         targetKeywords: ["cakes leeds", "custom cakes leeds", "cake delivery leeds"],
         content: {
           heroSection: "Premium cake delivery throughout Leeds",
           serviceAreas: "City Centre, Headingley, Chapel Allerton, Roundhay...",
           localTestimonials: "Testimonials from Leeds customers",
           landmarks: "Near Leeds City Centre, University of Leeds, Leeds Castle",
-          deliveryInfo: "Same-day delivery throughout Leeds postal districts",
+          deliveryInfo: "Delivery availability confirmed for each Leeds order",
         },
       },
       {
         url: "/wedding-cakes",
-        title: "Wedding Cakes Leeds | Bespoke Designs | Free Consultation",
+        title: "Wedding Cakes Leeds | Bespoke Designs | Olgish Cakes",
         targetKeywords: [
           "wedding cakes leeds",
           "bridal cakes leeds",
@@ -335,7 +335,7 @@ export const LOCAL_LINK_BUILDING = {
       
       Hi [Name],
       
-      I hope this message finds you well. I'm reaching out from Olgish Cakes, Leeds' premier Ukrainian bakery specializing in bespoke wedding and celebration cakes.
+      I hope this message finds you well. We’re reaching out from Olgish Cakes, a Ukrainian bakery in Leeds specialising in bespoke wedding and celebration cakes.
       
       We'd love to discuss a partnership opportunity with [Venue Name]. Many of our clients are already choosing your beautiful venue for their special occasions, and we believe a formal partnership could benefit both our businesses.
       
@@ -393,8 +393,7 @@ export function generateReviewStrategy() {
       timing: [
         "24 hours after successful delivery",
         "1 week after wedding/event completion",
-        "Follow-up with satisfied consultation clients",
-        "During peak satisfaction moments",
+        "Use the same neutral follow-up process for every eligible customer",
       ],
       methods: [
         "Personalized email with direct review links",
@@ -403,11 +402,11 @@ export function generateReviewStrategy() {
         "In-person requests during consultations",
         "Social media story prompts",
       ],
-      incentives: [
-        "10% discount on next order for verified reviews",
-        "Entry into monthly cake giveaway",
-        "Featured customer spotlight",
-        "Exclusive access to new products",
+      reviewRequestPrinciples: [
+        "Never offer discounts, prizes or other benefits in exchange for a review",
+        "Do not ask only customers expected to leave positive feedback",
+        "Invite honest feedback without suggesting a rating or wording",
+        "Disclose any exceptional incentivised review clearly before publication",
       ],
     },
 

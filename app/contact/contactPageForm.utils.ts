@@ -1,6 +1,11 @@
 import { z } from 'zod'
 import { getTodayDateInputValue, isDateOnOrAfterToday } from '../components/homepage/mobileForm.utils'
 import type { ContactPageEnquirySubmission } from './contactPageEnquiry'
+import {
+  addSensitiveDataConsentIssue,
+  dietaryHealthConsentSchema,
+  dietaryHealthInformationSchema
+} from '@/lib/legal/sensitive-data-consent'
 
 type ChoiceOption = {
   label: string
@@ -80,7 +85,11 @@ export const contactPageFormSchema = z.object({
       message: dateMinErrorMessage
     }),
   message: z.string().trim().min(12, 'Please add a little more detail').max(2000),
+  dietaryHealthInformation: dietaryHealthInformationSchema,
+  dietaryHealthConsent: dietaryHealthConsentSchema,
   csrfToken: z.string().min(1, 'CSRF token is required')
+}).superRefine((values, context) => {
+  addSensitiveDataConsentIssue(values, context)
 })
 
 export type ContactPageFormValues = {
@@ -90,6 +99,8 @@ export type ContactPageFormValues = {
   enquiryType: string
   dateNeeded: string
   message: string
+  dietaryHealthInformation: string
+  dietaryHealthConsent: boolean
 }
 
 export const getContactPageInitialValues: ContactPageFormValues = {
@@ -98,7 +109,9 @@ export const getContactPageInitialValues: ContactPageFormValues = {
   phone: '',
   enquiryType: '',
   dateNeeded: '',
-  message: ''
+  message: '',
+  dietaryHealthInformation: '',
+  dietaryHealthConsent: false
 }
 
 export const getContactPageFieldOrder = [
@@ -107,7 +120,9 @@ export const getContactPageFieldOrder = [
   'phone',
   'enquiryType',
   'dateNeeded',
-  'message'
+  'message',
+  'dietaryHealthInformation',
+  'dietaryHealthConsent'
 ] as const
 
 export const getContactPageMinDate = () => getTodayDateInputValue()
@@ -121,6 +136,8 @@ export const buildContactPageSubmission = (
   phone: values.phone.trim() || undefined,
   cakeInterest: values.enquiryType.trim(),
   message: values.message.trim(),
+  dietaryHealthInformation: values.dietaryHealthInformation.trim() || undefined,
+  dietaryHealthConsent: values.dietaryHealthConsent,
   dateNeeded: values.dateNeeded.trim() || undefined,
   referrer: '/contact',
   csrfToken

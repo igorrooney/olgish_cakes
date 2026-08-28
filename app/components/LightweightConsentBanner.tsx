@@ -35,7 +35,7 @@ export function LightweightConsentBanner() {
                 Cookie policy
               </a>
             </div>
-            <p id='cookie-banner-description' className='mt-1 text-sm leading-5 text-base-content'>
+            <p id='cookie-banner-description' className='mt-1 text-sm leading-5 [font-family:var(--font-system)]'>
               {consentBannerDescription}
             </p>
           </div>

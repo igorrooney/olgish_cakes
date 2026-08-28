@@ -69,6 +69,47 @@ const publicArticleVisibilityFilter = `
   coalesce(publishedAt, _createdAt) <= now()
 `
 
+export const SITEMAP_ARTICLES_QUERY = `
+  *[_type == "article" && coalesce(publishedAt, _createdAt) <= now() && !(slug.current match "test*") && !(slug.current match "*test*") && defined(slug.current)] {
+    slug,
+    _updatedAt,
+    "publishedAt": coalesce(publishedAt, _createdAt)
+  }
+`
+
+export const SITEMAP_ARTICLE_IMAGES_QUERY = `*[
+  _type == "article" &&
+  coalesce(publishedAt, _createdAt) <= now() &&
+  defined(slug.current) &&
+  slug.current != "test" &&
+  !slug.current match "test-*"
+] {
+  slug,
+  coverImage {
+    asset->{
+      _id,
+      url,
+      metadata {
+        dimensions
+      }
+    },
+    alt
+  },
+  cardImage {
+    asset->{
+      _id,
+      url,
+      metadata {
+        dimensions
+      }
+    },
+    alt
+  },
+  title,
+  "publishedAt": coalesce(publishedAt, _createdAt),
+  _updatedAt
+}`
+
 const articleArchiveFields = `
   _id,
   title,

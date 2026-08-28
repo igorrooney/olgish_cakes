@@ -2118,6 +2118,76 @@ describe('CatalogProductDetailLayout', () => {
     historyBackSpy.mockRestore()
   })
 
+  it('moves focus into the revealed order region and restores it after Escape or Back', () => {
+    function OrderFocusHarness() {
+      const [isOpen, setIsOpen] = React.useState(false)
+
+      return (
+        <CatalogProductDetailLayout
+          backHref='/cakes'
+          backLabel='Back to product'
+          categoryLabel='Cakes by post'
+          title='Christmas Gift Box & Card'
+          priceText='\u00A38.50'
+          keyPoints={['Freshly baked and packed']}
+          ctaLabel='Add to cart +'
+          onCtaClick={() => setIsOpen(true)}
+          orderContent={<button type='button'>Order field</button>}
+          isOrderFormOpen={isOpen}
+          onBackToProduct={() => setIsOpen(false)}
+          images={galleryImages}
+          sections={sections}
+        />
+      )
+    }
+
+    render(<OrderFocusHarness />)
+
+    const orderTrigger = screen.getByRole('button', { name: 'Add to cart +' })
+    orderTrigger.focus()
+    fireEvent.click(orderTrigger)
+
+    const orderRegion = screen.getByRole('region', { name: 'Order Christmas Gift Box & Card' })
+    expect(orderRegion).toHaveFocus()
+
+    fireEvent.keyDown(orderRegion, { key: 'Escape' })
+
+    expect(screen.getByRole('button', { name: 'Add to cart +' })).toHaveFocus()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add to cart +' }))
+    expect(screen.getByRole('region', { name: 'Order Christmas Gift Box & Card' })).toHaveFocus()
+
+    fireEvent.click(screen.getByRole('link', { name: 'Back to product' }))
+
+    expect(screen.getByRole('button', { name: 'Add to cart +' })).toHaveFocus()
+  })
+
+  it('does not close the order region when a nested control handles Escape', () => {
+    const onBackToProduct = jest.fn()
+
+    renderLayout(
+      jest.fn(),
+      '\u00A38.50',
+      galleryImages,
+      'Back to product',
+      <input
+        aria-label='Nested control'
+        onKeyDown={(event) => {
+          if (event.key === 'Escape') {
+            event.preventDefault()
+          }
+        }}
+      />,
+      true,
+      onBackToProduct
+    )
+
+    fireEvent.keyDown(screen.getByRole('textbox', { name: 'Nested control' }), { key: 'Escape' })
+
+    expect(onBackToProduct).not.toHaveBeenCalled()
+    expect(screen.getByRole('region', { name: 'Order Christmas Gift Box & Card' })).toBeInTheDocument()
+  })
+
   it('applies tokenized CTA button styles without duplicate daisyUI defaults', () => {
     renderLayout()
 

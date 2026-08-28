@@ -114,7 +114,7 @@ describe('next.config redirects', () => {
     ]))
   })
 
-  it('redirects the retired custom cake enquiry page to the get custom quote page', async () => {
+  it('redirects retired custom-cake URLs to the canonical custom-cakes page', async () => {
     if (!nextConfig.redirects) {
       throw new Error('Expected nextConfig.redirects to be defined')
     }
@@ -124,7 +124,12 @@ describe('next.config redirects', () => {
     expect(redirects).toEqual(expect.arrayContaining([
       {
         source: '/custom-cake-enquiry',
-        destination: '/get-custom-quote',
+        destination: '/custom-cakes',
+        permanent: true
+      },
+      {
+        source: '/get-custom-quote',
+        destination: '/custom-cakes',
         permanent: true
       }
     ]))
@@ -183,9 +188,9 @@ describe('next.config redirects', () => {
       { source: '/cake-gallery', destination: '/cakes', permanent: true },
       { source: '/cake-in-leeds', destination: '/cakes', permanent: true },
       { source: '/search', destination: '/cakes', permanent: true },
-      { source: '/order', destination: '/get-custom-quote', permanent: true },
-      { source: '/order/leeds', destination: '/get-custom-quote', permanent: true },
-      { source: '/cake-pricing', destination: '/get-custom-quote', permanent: true },
+      { source: '/order', destination: '/custom-cakes', permanent: true },
+      { source: '/order/leeds', destination: '/custom-cakes', permanent: true },
+      { source: '/cake-pricing', destination: '/custom-cakes', permanent: true },
       { source: '/gift-hampers', destination: '/cakes-by-post', permanent: true },
       { source: '/honey-cake', destination: '/cakes/honey-cake', permanent: true },
       { source: '/best-cakes-for-birthdays', destination: '/blog', permanent: true },
@@ -233,4 +238,42 @@ describe('next.config redirects', () => {
       }
     ]))
   })
+})
+
+describe('next.config security headers', () => {
+  it('allows only the exact Sanity Studio bridge script origin', async () => {
+    if (!nextConfig.headers) {
+      throw new Error('Expected nextConfig.headers to be defined')
+    }
+
+    const headerRules = await nextConfig.headers()
+    const globalRule = headerRules.find((rule) => rule.source === '/(.*)')
+    const contentSecurityPolicy = globalRule?.headers.find(
+      (header) => header.key === 'Content-Security-Policy'
+    )?.value
+
+    expect(contentSecurityPolicy).toContain(
+      'script-src \'self\' \'unsafe-inline\' https://cdn.sanity.io https://core.sanity-cdn.com'
+    )
+    expect(contentSecurityPolicy).not.toContain('https://*.sanity-cdn.com')
+  })
+
+  it.each(['/studio/:path*', '/admin/:path*'])(
+    'keeps %s private and non-cacheable',
+    async (source) => {
+      if (!nextConfig.headers) {
+        throw new Error('Expected nextConfig.headers to be defined')
+      }
+
+      const headerRules = await nextConfig.headers()
+      const internalRule = headerRules.find((rule) => rule.source === source)
+
+      expect(internalRule?.headers).toEqual(expect.arrayContaining([
+        { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+        { key: 'Pragma', value: 'no-cache' },
+        { key: 'Expires', value: '0' },
+        { key: 'X-Robots-Tag', value: 'noindex, nofollow' }
+      ]))
+    }
+  )
 })

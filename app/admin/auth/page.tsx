@@ -1,47 +1,83 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation } from '@tanstack/react-query'
 import { useRouter } from "next/navigation";
+import { useAbortableRequest } from '@/app/hooks/useAbortableRequest'
 import { Lock as LockIcon } from "@/lib/daisy-ui";
+
+interface AdminLoginInput {
+  username: string
+  password: string
+  signal: AbortSignal
+}
+
+interface AdminLoginResponse {
+  success?: boolean
+  error?: string
+}
+
+async function authenticateAdmin({ username, password, signal }: AdminLoginInput) {
+  let response: Response
+
+  try {
+    response = await fetch('/api/admin/auth', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username, password }),
+      signal
+    })
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw error
+    }
+
+    throw new Error('Login failed. Please try again.')
+  }
+
+  const data = await response.json().catch((): AdminLoginResponse => ({}))
+
+  if (!response.ok || !data.success) {
+    throw new Error(data.error || 'Invalid credentials')
+  }
+}
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const controller = new AbortController();
-
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await fetch("/api/admin/auth", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-        signal: controller.signal,
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        // Cookie is automatically set by the server
-        // Redirect to admin dashboard
-        router.push("/admin");
-      } else {
-        setError(data.error || "Invalid credentials");
+  const request = useAbortableRequest()
+  const loginMutation = useMutation({
+    mutationFn: authenticateAdmin,
+    onMutate: () => {
+      setError('')
+    },
+    onSuccess: () => {
+      router.push('/admin')
+    },
+    onError: (mutationError) => {
+      if (mutationError instanceof DOMException && mutationError.name === 'AbortError') {
+        return
       }
-    } catch {
-      setError("Login failed. Please try again.");
-    } finally {
-      setLoading(false);
+
+      setError(mutationError instanceof Error
+        ? mutationError.message
+        : 'Login failed. Please try again.')
     }
+  })
+  const loading = loginMutation.isPending
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    loginMutation.mutate({
+      username,
+      password,
+      signal: request.start()
+    })
   };
 
   return (
@@ -58,7 +94,12 @@ export default function AdminLoginPage() {
         </div>
 
         <div className="card bg-base-100 border border-base-300 shadow-sm">
-          <form className="card-body gap-4" onSubmit={handleSubmit}>
+          <form
+            action='/api/admin/auth'
+            method='post'
+            className="card-body gap-4"
+            onSubmit={handleSubmit}
+          >
             {error && (
               <div className="alert alert-error" role="alert">
                 <span>{error}</span>

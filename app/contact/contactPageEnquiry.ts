@@ -11,6 +11,8 @@ export type ContactPageEnquirySubmission = {
   phone?: string
   cakeInterest: string
   message: string
+  dietaryHealthInformation?: string
+  dietaryHealthConsent: boolean
   dateNeeded?: string
   referrer: string
 }
@@ -133,6 +135,8 @@ export const buildContactPageEnquiryFormData = (values: ContactPageEnquirySubmis
   Object.entries(values).forEach(([key, value]) => {
     if (typeof value === 'string' && value.length > 0) {
       submissionData.append(key, value)
+    } else if (typeof value === 'boolean') {
+      submissionData.append(key, value ? 'true' : 'false')
     }
   })
 
@@ -141,7 +145,7 @@ export const buildContactPageEnquiryFormData = (values: ContactPageEnquirySubmis
 
 export const submitContactPageEnquiry = async (
   submissionData: FormData,
-  signal?: AbortSignal
+  signal: AbortSignal
 ) => {
   const response = await fetch('/api/contact', {
     method: 'POST',

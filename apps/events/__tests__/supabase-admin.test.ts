@@ -36,7 +36,7 @@ describe('Supabase admin client configuration', () => {
     )
   })
 
-  it('prefers the private Supabase URL and supports custom temp bucket names', async () => {
+  it('prefers the private Supabase URL and rejects custom temp bucket names', async () => {
     process.env.SUPABASE_URL = 'https://private.supabase.co'
     process.env.EVENT_PHOTO_TEMP_BUCKET = 'custom-event-bucket'
     const { getEventPhotoBucket, getSupabaseAdmin } = await import('@/lib/supabase/admin')
@@ -48,7 +48,9 @@ describe('Supabase admin client configuration', () => {
       'service-role-key',
       expect.any(Object)
     )
-    expect(getEventPhotoBucket()).toBe('custom-event-bucket')
+    expect(() => getEventPhotoBucket()).toThrow(
+      'EVENT_PHOTO_TEMP_BUCKET must use the canonical bucket'
+    )
   })
 
   it('uses the default temp bucket when no override is configured', async () => {

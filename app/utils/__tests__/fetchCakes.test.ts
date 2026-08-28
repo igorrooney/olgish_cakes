@@ -240,7 +240,11 @@ describe('fetchCakes', () => {
 
       await getAllCakes()
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error fetching all cakes:', expect.any(Error))
+      expect(consoleSpy).toHaveBeenCalledWith('Sanity read failed', {
+        operation: 'sanity.fetch-all-cakes',
+        code: 'OPERATION_FAILED'
+      })
+      expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Fetch failed')
       consoleSpy.mockRestore()
     })
 
@@ -306,7 +310,11 @@ describe('fetchCakes', () => {
 
       await getFeaturedCakes()
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error fetching featured cakes:', expect.any(Error))
+      expect(consoleSpy).toHaveBeenCalledWith('Sanity read failed', {
+        operation: 'sanity.fetch-featured-cakes',
+        code: 'OPERATION_FAILED'
+      })
+      expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Fetch failed')
       consoleSpy.mockRestore()
     })
   })
@@ -493,7 +501,11 @@ describe('fetchCakes', () => {
       const result = await getCakesFeaturedOffer()
 
       expect(result).toBeNull()
-      expect(consoleSpy).toHaveBeenCalledWith('Error fetching cakes featured offer:', expect.any(Error))
+      expect(consoleSpy).toHaveBeenCalledWith('Sanity read failed', {
+        operation: 'sanity.fetch-cakes-featured-offer',
+        code: 'OPERATION_FAILED'
+      })
+      expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Fetch failed')
       consoleSpy.mockRestore()
     })
   })

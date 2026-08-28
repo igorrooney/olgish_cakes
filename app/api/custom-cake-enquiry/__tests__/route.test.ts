@@ -108,6 +108,7 @@ describe('/api/custom-cake-enquiry', () => {
     process.env.RESEND_API_KEY = 'test-key'
     process.env.NEXT_PUBLIC_EMAIL_FROM = 'hello@olgishcakes.co.uk'
     process.env.CONTACT_EMAIL_TO = 'admin@example.com'
+    process.env.TELEGRAM_FAILURE_ALERT_EMAIL = 'alerts@example.com'
     process.env.SUPABASE_URL = 'https://example.supabase.co'
     process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
     process.env.SUPABASE_ENQUIRY_BUCKET = 'custom-cake-enquiries'
@@ -282,14 +283,67 @@ describe('/api/custom-cake-enquiry', () => {
     }))
     expect(mockSendTelegramManagerNotification).toHaveBeenCalledWith(expect.objectContaining({
       type: 'custom-cake-enquiry',
-      customerName: 'Test User',
-      customerEmail: 'test@example.com',
-      customerPhone: '+44(0)7123456789',
+      recordReference: '42',
       dateNeeded: '2026-12-25',
-      productName: 'Birthday',
-      messagePreview: expect.stringContaining('Brief: Blue florals and vanilla sponge.'),
       adminPath: '/admin/enquiries/custom-cake/42'
     }))
+    expect(mockSendTelegramManagerNotification.mock.calls[0]?.[0]).not.toHaveProperty('productName')
+  })
+
+  it.each([
+    ['missing explicit consent', 'Severe nut allergy', null],
+    ['forged false consent', 'Coeliac disease', 'false'],
+    ['overlong health information', 'x'.repeat(2001), 'true']
+  ])('rejects %s before persistence', async (_case, information, consent) => {
+    const formData = buildFormData({
+      dietaryHealthInformation: information,
+      dietaryHealthConsent: consent
+    })
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.31'
+      }
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(400)
+    expect(mockInsert).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+    expect(mockSendTelegramManagerNotification).not.toHaveBeenCalled()
+  })
+
+  it('stores server-authoritative consent evidence without sending the health content in notifications', async () => {
+    const information = 'Severe nut allergy'
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: buildFormData({
+        dietaryHealthInformation: information,
+        dietaryHealthConsent: 'true'
+      }),
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.32'
+      }
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({
+      dietary_health_information: information,
+      dietary_health_consent: true,
+      dietary_health_consent_version: '2026-07-29',
+      dietary_health_consented_at: expect.any(String)
+    }))
+    expect(JSON.stringify(mockSendTelegramManagerNotification.mock.calls)).not.toContain(information)
+    expect(mockSendTelegramManagerNotification.mock.calls[0]?.[0]).not.toHaveProperty(
+      'hasDietaryHealthInformation'
+    )
+    expect(JSON.stringify(mockSendEmail.mock.calls)).not.toContain(information)
   })
 
   it('rejects submissions when both email and phone are blank', async () => {
@@ -403,7 +457,6 @@ describe('/api/custom-cake-enquiry', () => {
         orderType: 'custom-cake-enquiry',
         dateNeeded: '2026-12-25',
         occasion: 'Birthday',
-        customerMessage: expect.stringContaining('Blue florals'),
         nextSteps: [
           'We\'ll check the date, your notes and the delivery details.',
           'We\'ll reply with availability, any questions, and a quote if we can make it for that date.',
@@ -413,7 +466,7 @@ describe('/api/custom-cake-enquiry', () => {
     }))
   })
 
-  it('emails Igor when Telegram manager notification fails', async () => {
+  it('emails the configured alert recipient when Telegram manager notification fails', async () => {
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
     mockSendTelegramManagerNotification.mockResolvedValueOnce({
       sent: false,
@@ -442,28 +495,57 @@ describe('/api/custom-cake-enquiry', () => {
       templateId: 'custom-cake-enquiry-failure-alert',
       subjectPrefix: '[Telegram alert]',
       message: expect.objectContaining({
-        to: 'igorrooney@gmail.com',
-        replyTo: 'test@example.com'
+        to: 'alerts@example.com'
       }),
       input: expect.objectContaining({
-        customerName: 'Test User',
-        customerEmail: 'test@example.com',
-        customerPhone: '+44(0)7123456789',
-        address: '123 Test St',
-        city: 'Leeds',
-        postcode: 'LS1 1AA',
-        occasion: 'Birthday',
-        customerMessage: expect.stringContaining('Blue florals'),
-        message: expect.stringContaining('Telegram manager notification failed:\nfetch failed'),
-        note: expect.stringContaining('hosting network egress'),
+        operation: 'custom-cake-enquiry.notification.telegram-manager',
+        operationalCode: 'OPERATION_FAILED',
+        recordReference: '42',
         adminUrl: 'https://olgishcakes.co.uk/admin/enquiries/custom-cake/42'
       })
     }))
+    const failureAlertCall = mockSendEmail.mock.calls.find(
+      ([params]) => params.templateId === 'custom-cake-enquiry-failure-alert'
+    )?.[0]
+
+    expect(JSON.stringify(failureAlertCall)).not.toContain('Test User')
+    expect(JSON.stringify(failureAlertCall)).not.toContain('test@example.com')
+    expect(JSON.stringify(failureAlertCall)).not.toContain('123 Test St')
     expect(mockSendEmail).toHaveBeenCalledWith(expect.objectContaining({
       templateId: 'custom-cake-enquiry-admin'
     }))
     expect(mockSendEmail).toHaveBeenCalledWith(expect.objectContaining({
       templateId: 'custom-cake-enquiry-customer'
+    }))
+  })
+
+  it('falls back to the business recipient when no Telegram alert recipient is configured', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
+    delete process.env.TELEGRAM_FAILURE_ALERT_EMAIL
+    mockSendTelegramManagerNotification.mockResolvedValueOnce({
+      sent: false,
+      skipped: false,
+      error: 'fetch failed'
+    })
+
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: buildFormData(),
+      headers: {
+        Cookie: 'csrf-token=valid-token',
+        'x-forwarded-for': '10.0.0.34'
+      }
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(200)
+    expect(mockSendEmail).toHaveBeenCalledWith(expect.objectContaining({
+      templateId: 'custom-cake-enquiry-failure-alert',
+      subjectPrefix: '[Telegram alert]',
+      message: expect.objectContaining({
+        to: 'admin@example.com'
+      })
     }))
   })
 
@@ -577,6 +659,30 @@ describe('/api/custom-cake-enquiry', () => {
     expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
+  it('rejects invalid CSRF before exposing email configuration state', async () => {
+    ;(validateCsrfToken as jest.Mock).mockReturnValue(false)
+    process.env.RESEND_API_KEY = ''
+    mockGetEmailTransportMode.mockReturnValue('live')
+    mockRequiresLiveEmailConfiguration.mockReturnValue(true)
+
+    const request = new NextRequest('http://localhost/api/custom-cake-enquiry', {
+      method: 'POST',
+      body: buildFormData(),
+      headers: {
+        Cookie: 'csrf-token=invalid-cookie-token',
+        'x-forwarded-for': '10.0.0.41'
+      }
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(403)
+    await expect(response.json()).resolves.toEqual({ error: 'Invalid CSRF token' })
+    expect(mockInsert).not.toHaveBeenCalled()
+    expect(mockUpload).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
+  })
+
   it('returns 500 before uploading a reference image when live email is not configured', async () => {
     ;(validateCsrfToken as jest.Mock).mockReturnValue(true)
     process.env.RESEND_API_KEY = ''
@@ -634,14 +740,16 @@ describe('/api/custom-cake-enquiry', () => {
     expect(mockSendEmail).toHaveBeenNthCalledWith(3, expect.objectContaining({
       templateId: 'custom-cake-enquiry-failure-alert',
       input: expect.objectContaining({
-        message: expect.stringContaining('admin-email: Send failed')
+        operation: 'custom-cake-enquiry.notification',
+        operationalCode: 'ADMIN_EMAIL_FAILED',
+        recordReference: '42'
       })
     }))
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Custom cake enquiry notification failed',
+      expect.any(String),
       expect.objectContaining({
-        step: 'admin-email',
-        errorMessage: 'Send failed'
+        operation: 'custom-cake-enquiry.notification.admin-email',
+        code: 'OPERATION_FAILED'
       })
     )
   })
@@ -673,14 +781,16 @@ describe('/api/custom-cake-enquiry', () => {
     expect(mockSendEmail).toHaveBeenNthCalledWith(3, expect.objectContaining({
       templateId: 'custom-cake-enquiry-failure-alert',
       input: expect.objectContaining({
-        message: expect.stringContaining('customer-email: Customer send failed')
+        operation: 'custom-cake-enquiry.notification',
+        operationalCode: 'CUSTOMER_EMAIL_FAILED',
+        recordReference: '42'
       })
     }))
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Custom cake enquiry notification failed',
+      expect.any(String),
       expect.objectContaining({
-        step: 'customer-email',
-        errorMessage: 'Customer send failed'
+        operation: 'custom-cake-enquiry.notification.customer-email',
+        code: 'OPERATION_FAILED'
       })
     )
   })
@@ -711,12 +821,9 @@ describe('/api/custom-cake-enquiry', () => {
     expect(mockSendEmail).toHaveBeenNthCalledWith(3, expect.objectContaining({
       templateId: 'custom-cake-enquiry-failure-alert',
       input: expect.objectContaining({
-        message: expect.stringContaining('admin-email: Admin send failed')
-      })
-    }))
-    expect(mockSendEmail).toHaveBeenNthCalledWith(3, expect.objectContaining({
-      input: expect.objectContaining({
-        message: expect.stringContaining('customer-email: Customer send failed')
+        operation: 'custom-cake-enquiry.notification',
+        operationalCode: 'ADMIN_AND_CUSTOMER_EMAIL_FAILED',
+        recordReference: '42'
       })
     }))
   })
@@ -745,10 +852,10 @@ describe('/api/custom-cake-enquiry', () => {
     expect(data.error).toBe('Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.')
     expect(mockSendEmail).toHaveBeenCalledTimes(3)
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Custom cake enquiry failure alert failed',
+      expect.any(String),
       expect.objectContaining({
-        errorMessage: 'Failure alert send failed',
-        failedSteps: ['admin-email']
+        code: 'OPERATION_FAILED',
+        recordReference: '42'
       })
     )
   })
@@ -777,10 +884,10 @@ describe('/api/custom-cake-enquiry', () => {
     expect(data.error).toBe('Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.')
     expect(mockSendEmail).toHaveBeenCalledTimes(3)
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Custom cake enquiry failure alert failed',
+      expect.any(String),
       expect.objectContaining({
-        errorMessage: 'Failure alert send failed',
-        failedSteps: ['admin-email', 'customer-email']
+        code: 'OPERATION_FAILED',
+        recordReference: '42'
       })
     )
   })
@@ -814,10 +921,10 @@ describe('/api/custom-cake-enquiry', () => {
       templateId: 'custom-cake-enquiry-failure-alert'
     }))
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Custom cake enquiry failure alert failed',
+      expect.any(String),
       expect.objectContaining({
-        errorMessage: 'Failure alert send failed',
-        failedSteps: ['admin-email']
+        code: 'OPERATION_FAILED',
+        recordReference: '42'
       })
     )
   })
@@ -909,18 +1016,9 @@ describe('/api/custom-cake-enquiry', () => {
       reference_image_type: 'image/jpeg',
       reference_image_size: 5
     }))
-    expect(mockSendEmail).toHaveBeenNthCalledWith(1, expect.objectContaining({
-      message: expect.objectContaining({
-        attachments: expect.arrayContaining([
-          expect.objectContaining({ filename: 'reference.jpg' })
-        ])
-      })
-    }))
+    expect(mockSendEmail.mock.calls[0]?.[0]?.message?.attachments).toBeUndefined()
     expect(mockSendEmail).toHaveBeenNthCalledWith(2, expect.objectContaining({
       templateId: 'custom-cake-enquiry-customer',
-      input: expect.objectContaining({
-        attachmentNames: ['reference.jpg']
-      }),
       message: expect.objectContaining({
         attachments: []
       })
@@ -1034,21 +1132,10 @@ describe('/api/custom-cake-enquiry', () => {
     expect(mockRemove).not.toHaveBeenCalled()
     expect(mockSendEmail).not.toHaveBeenCalled()
     expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Supabase insert failed',
+      expect.any(String),
       expect.objectContaining({
         operation: 'custom_cake_enquiries.insert',
-        table: 'custom_cake_enquiries',
-        errorCode: 'PGRST204',
-        errorMessage: 'Insert failed',
-        expectedColumns: expect.arrayContaining([
-          'full_name',
-          'reference_image_bucket',
-          'reference_image_size'
-        ]),
-        troubleshootingHints: expect.arrayContaining([
-          'Verify the custom_cake_enquiries table exists in Supabase.',
-          'A missing or renamed column is a likely cause of this insert failure.'
-        ])
+        code: 'PGRST204'
       })
     )
   })

@@ -8,6 +8,7 @@ import PrivacyPolicyPage, { metadata as privacyMetadata } from '@/app/privacy/pa
 import TermsOfServicePage, { metadata as termsMetadata } from '../page'
 import {
   CURRENT_LEGAL_DATE_ISO,
+  CURRENT_PRIVACY_DATE_ISO,
   CURRENT_TERMS_PDF_PATH,
   CURRENT_TERMS_VERSION
 } from '@/lib/legal/legal-config'
@@ -29,6 +30,10 @@ afterEach(() => {
 })
 
 describe('legal pages', () => {
+  it('publishes the dietary-health minimisation privacy-policy version', () => {
+    expect(CURRENT_PRIVACY_DATE_ISO).toBe('2026-08-25')
+  })
+
   it('renders complete, actionable and versioned terms without adding a nested main landmark', () => {
     const { container } = render(<TermsOfServicePage />)
 
@@ -74,11 +79,12 @@ describe('legal pages', () => {
   it.each([
     ['privacy', <PrivacyPolicyPage />, 12],
     ['cookies', <CookiePolicyPage />, 10]
-  ])('adds section navigation, current dates and full contacts to %s', (_name, page, sectionCount) => {
+  ])('adds section navigation, current dates and full contacts to %s', (name, page, sectionCount) => {
     const { container } = render(page)
+    const expectedDate = name === 'privacy' ? CURRENT_PRIVACY_DATE_ISO : CURRENT_LEGAL_DATE_ISO
 
     expect(container.querySelector('main')).not.toBeInTheDocument()
-    expect(container.querySelector(`time[datetime="${CURRENT_LEGAL_DATE_ISO}"]`)).toBeInTheDocument()
+    expect(container.querySelector(`time[datetime="${expectedDate}"]`)).toBeInTheDocument()
     expect(container.querySelectorAll('article > section[id]')).toHaveLength(sectionCount)
     expect(screen.getAllByRole('navigation', { name: 'Page sections' })).toHaveLength(2)
     expect(screen.getByText(/15 Allerton Grange Avenue/)).toBeInTheDocument()
@@ -93,6 +99,9 @@ describe('legal pages', () => {
 
     expect(screen.getByText(/supabase, for storing enquiries/i)).toBeInTheDocument()
     expect(screen.getByText(/normally six years/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/server-controlled 30-day period|permanent erasure 30 days later/i)).not.toHaveLength(0)
+    expect(screen.getByText(/server-recorded erasure time/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/specific legal hold pauses scheduled erasure/i)).not.toHaveLength(0)
     expect(screen.getByText('Your right to object')).toBeInTheDocument()
     expect(screen.getByText(/International Data Transfer Agreement/i)).toBeInTheDocument()
   })

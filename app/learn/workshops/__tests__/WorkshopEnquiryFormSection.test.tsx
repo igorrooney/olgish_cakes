@@ -37,5 +37,8 @@ describe('WorkshopEnquiryFormSection', () => {
     expect(screen.getByRole('form', { name: /workshop enquiry/i })).toBeInTheDocument()
     expect(screen.getByLabelText(/^full name$/i)).toBeInTheDocument()
     expect(screen.queryByTestId('workshop-enquiry-form-placeholder')).not.toBeInTheDocument()
+    const section = document.getElementById('workshop-enquiry-form')
+    expect(section).toHaveAttribute('tabindex', '-1')
+    expect(section).toHaveAttribute('aria-labelledby', 'workshop-enquiry-form-heading')
   })
 })

@@ -5,12 +5,12 @@ import { MAX_FILE_BYTES } from '@/lib/constants'
 const {
   createSignedUploadUrlMock,
   downloadMock,
-  listMock,
+  listV2Mock,
   removeMock
 } = vi.hoisted(() => ({
   createSignedUploadUrlMock: vi.fn(),
   downloadMock: vi.fn(),
-  listMock: vi.fn(),
+  listV2Mock: vi.fn(),
   removeMock: vi.fn()
 }))
 
@@ -21,7 +21,7 @@ vi.mock('@/lib/supabase/admin', () => ({
       from: () => ({
         createSignedUploadUrl: createSignedUploadUrlMock,
         download: downloadMock,
-        list: listMock,
+        listV2: listV2Mock,
         remove: removeMock
       })
     }
@@ -33,7 +33,7 @@ import {
   deleteTempImages,
   downloadTempDocuments,
   findInvalidTempDocumentSize,
-  listOldTempImagePaths
+  listTempImagePage
 } from '@/lib/storage'
 
 describe('storage cleanup helpers', () => {
@@ -43,7 +43,7 @@ describe('storage cleanup helpers', () => {
     vi.setSystemTime(new Date('2026-05-20T12:00:00.000Z'))
     createSignedUploadUrlMock.mockReset()
     downloadMock.mockReset()
-    listMock.mockReset()
+    listV2Mock.mockReset()
     removeMock.mockReset()
   })
 
@@ -110,47 +110,173 @@ describe('storage cleanup helpers', () => {
     expect(removeMock).toHaveBeenNthCalledWith(2, paths.slice(1000))
   })
 
-  it('paginates through large storage folders', async () => {
+  it('lists exactly one bounded storage page with stable name ordering', async () => {
     const oldTimestamp = '2026-05-19T00:00:00.000Z'
-    const firstPage = Array.from({ length: 1000 }, (_, index) => ({
-      id: `file-${index}`,
-      name: `photo-${index}.jpg`,
-      created_at: oldTimestamp,
-      updated_at: null,
-      last_accessed_at: null
-    }))
-    const secondPage = [
-      {
-        id: 'file-1000',
-        name: 'photo-1000.jpg',
-        created_at: oldTimestamp,
-        updated_at: null,
-        last_accessed_at: null
-      }
-    ]
+    const signal = new AbortController().signal
+    listV2Mock.mockResolvedValue({
+      data: {
+        hasNext: true,
+        nextCursor: 'next-page-cursor',
+        folders: [],
+        objects: [
+          {
+            id: 'file-1',
+            name: 'incoming/2026-05-18/nested-photo.jpg',
+            metadata: { size: 10 },
+            created_at: oldTimestamp,
+            updated_at: null,
+            last_accessed_at: null
+          },
+          {
+            id: 'file-2',
+            name: 'incoming/photo.jpg',
+            metadata: { size: 10 },
+            created_at: oldTimestamp,
+            updated_at: null,
+            last_accessed_at: null
+          }
+        ]
+      },
+      error: null
+    })
 
-    listMock
-      .mockResolvedValueOnce({ data: firstPage, error: null })
-      .mockResolvedValueOnce({ data: secondPage, error: null })
-
-    const paths = await listOldTempImagePaths(
+    const page = await listTempImagePage(
       'event-photo-temp-uploads',
-      new Date('2026-05-20T00:00:00.000Z'),
-      'incoming'
+      'incoming',
+      'current-page-cursor',
+      2,
+      signal
     )
 
-    expect(listMock).toHaveBeenNthCalledWith(1, 'incoming', {
-      limit: 1000,
-      offset: 0,
-      sortBy: { column: 'name', order: 'asc' }
+    expect(listV2Mock).toHaveBeenCalledTimes(1)
+    expect(listV2Mock).toHaveBeenCalledWith(
+      {
+        prefix: 'incoming/',
+        limit: 2,
+        cursor: 'current-page-cursor',
+        with_delimiter: false,
+        sortBy: { column: 'name', order: 'asc' }
+      },
+      { signal }
+    )
+    expect(page).toEqual({
+      entries: [
+        {
+          name: '2026-05-18/nested-photo.jpg',
+          path: 'incoming/2026-05-18/nested-photo.jpg',
+          isManaged: true,
+          timestamp: oldTimestamp
+        },
+        {
+          name: 'photo.jpg',
+          path: 'incoming/photo.jpg',
+          isManaged: true,
+          timestamp: oldTimestamp
+        }
+      ],
+      hasNext: true,
+      nextCursor: 'next-page-cursor'
     })
-    expect(listMock).toHaveBeenNthCalledWith(2, 'incoming', {
-      limit: 1000,
-      offset: 1000,
-      sortBy: { column: 'name', order: 'asc' }
+  })
+
+  it('keeps a file with missing metadata as a file', async () => {
+    listV2Mock.mockResolvedValue({
+      data: {
+        hasNext: false,
+        folders: [],
+        objects: [{
+          id: 'file-without-metadata',
+          name: 'incoming/photo.jpg',
+          metadata: null,
+          created_at: '2026-05-19T00:00:00.000Z',
+          updated_at: null,
+          last_accessed_at: null
+        }]
+      },
+      error: null
     })
-    expect(paths).toHaveLength(1001)
-    expect(paths).toContain('incoming/photo-1000.jpg')
+
+    await expect(listTempImagePage(
+      'event-photo-temp-uploads',
+      'incoming',
+      null,
+      100,
+      new AbortController().signal
+    )).resolves.toEqual({
+      entries: [{
+        name: 'photo.jpg',
+        path: 'incoming/photo.jpg',
+        isManaged: true,
+        timestamp: '2026-05-19T00:00:00.000Z'
+      }],
+      hasNext: false,
+      nextCursor: null
+    })
+  })
+
+  it('rejects unbounded requests and skips unsafe objects without stalling the cursor', async () => {
+    await expect(listTempImagePage(
+      'event-photo-temp-uploads',
+      'incoming/2026-05-18/nested',
+      null,
+      100,
+      new AbortController().signal
+    )).rejects.toThrow('EVENT_PHOTO_STORAGE_LIST_FAILED')
+    await expect(listTempImagePage(
+      'event-photo-temp-uploads',
+      'incoming',
+      null,
+      101,
+      new AbortController().signal
+    )).rejects.toThrow('EVENT_PHOTO_STORAGE_LIST_FAILED')
+
+    listV2Mock.mockResolvedValue({
+      data: {
+        hasNext: false,
+        folders: [],
+        objects: [{
+          id: 'file-1',
+          name: 'incoming/../private.jpg',
+          metadata: { size: 10 },
+          created_at: '2026-05-19T00:00:00.000Z',
+          updated_at: null,
+          last_accessed_at: null
+        }]
+      },
+      error: null
+    })
+    await expect(listTempImagePage(
+      'event-photo-temp-uploads',
+      'incoming',
+      null,
+      100,
+      new AbortController().signal
+    )).resolves.toEqual({
+      entries: [{
+        name: '../private.jpg',
+        path: 'incoming/../private.jpg',
+        isManaged: false,
+        timestamp: '2026-05-19T00:00:00.000Z'
+      }],
+      hasNext: false,
+      nextCursor: null
+    })
+
+    listV2Mock.mockResolvedValue({
+      data: {
+        hasNext: true,
+        folders: [],
+        objects: []
+      },
+      error: null
+    })
+    await expect(listTempImagePage(
+      'event-photo-temp-uploads',
+      'incoming',
+      null,
+      100,
+      new AbortController().signal
+    )).rejects.toThrow('EVENT_PHOTO_STORAGE_LIST_FAILED')
   })
 
   it('accepts downloaded files that match their signed size', () => {
@@ -248,10 +374,13 @@ describe('storage cleanup helpers', () => {
       ['incoming/photo.jpg']
     )).rejects.toThrow('Could not delete temporary image files: remove denied')
 
-    listMock.mockResolvedValue({ data: null, error: { message: 'list denied' } })
-    await expect(listOldTempImagePaths(
+    listV2Mock.mockResolvedValue({ data: null, error: { message: 'list denied' } })
+    await expect(listTempImagePage(
       'event-photo-temp-uploads',
-      new Date('2026-05-20T00:00:00.000Z')
-    )).rejects.toThrow('Could not list temporary image files: list denied')
+      'incoming',
+      null,
+      100,
+      new AbortController().signal
+    )).rejects.toThrow('EVENT_PHOTO_STORAGE_LIST_FAILED')
   })
 })

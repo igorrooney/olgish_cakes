@@ -1,81 +1,63 @@
-import { NextRequest, NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
+import { revalidateTag } from 'next/cache'
+import { NextRequest } from 'next/server'
+import {
+  isBearerTokenAuthorized,
+  isProductionEnvironment,
+  privateJsonResponse,
+  productionRouteNotFound
+} from '@/lib/security/internal-route'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
-// Google Merchant Center Feed Revalidation Endpoint
-export async function POST(request: NextRequest) {
+function isAuthorized(request: NextRequest): boolean {
+  return isBearerTokenAuthorized(
+    request,
+    process.env.MERCHANT_CENTER_REVALIDATE_TOKEN
+  )
+}
+
+function revalidateMerchantCenterFeed(): void {
+  revalidateTag('cakes', 'max')
+  revalidateTag('cakes-by-post', 'max')
+  revalidateTag('gift-hampers', 'max')
+  revalidateTag('merchant-center-feed', 'max')
+}
+
+async function handleRevalidation(request: NextRequest) {
+  if (!isAuthorized(request)) {
+    return privateJsonResponse({ error: 'Unauthorized' }, 401)
+  }
+
   try {
-    // Check for authorization header
-    const authHeader = request.headers.get('authorization');
-    const expectedToken = process.env.MERCHANT_CENTER_REVALIDATE_TOKEN;
+    revalidateMerchantCenterFeed()
 
-    if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Revalidate cache tags for product feeds
-    revalidateTag('cakes', 'max');
-    revalidateTag('cakes-by-post', 'max');
-    revalidateTag('gift-hampers', 'max');
-    revalidateTag('merchant-center-feed', 'max');
-
-    // Log the revalidation
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn('Merchant Center feed cache revalidated at:', new Date().toISOString());
-    }
-
-    return NextResponse.json({
+    return privateJsonResponse({
       success: true,
       message: 'Merchant Center feed cache revalidated successfully',
-      timestamp: new Date().toISOString(),
-    });
-
+      timestamp: new Date().toISOString()
+    })
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.error('Error revalidating merchant center feed:', error);
-    }
-    return NextResponse.json(
-      { error: 'Failed to revalidate feed cache' },
-      { status: 500 }
-    );
+    const safeError = toSafeOperationalError(error)
+
+    console.error('Merchant Center revalidation failed', {
+      operation: 'merchant-center-revalidate',
+      ...safeError
+    })
+
+    return privateJsonResponse({
+      error: 'Failed to revalidate feed cache',
+      code: safeError.code
+    }, 500)
   }
 }
 
-// GET endpoint for manual revalidation (for testing)
+export async function POST(request: NextRequest) {
+  return handleRevalidation(request)
+}
+
 export async function GET(request: NextRequest) {
-  try {
-    const url = new URL(request.url);
-    const token = url.searchParams.get('token');
-    const expectedToken = process.env.MERCHANT_CENTER_REVALIDATE_TOKEN;
-
-    if (!expectedToken || token !== expectedToken) {
-      return NextResponse.json(
-        { error: 'Invalid or missing token' },
-        { status: 401 }
-      );
-    }
-
-    // Revalidate cache tags
-    revalidateTag('cakes', 'max');
-    revalidateTag('cakes-by-post', 'max');
-    revalidateTag('gift-hampers', 'max');
-    revalidateTag('merchant-center-feed', 'max');
-
-    return NextResponse.json({
-      success: true,
-      message: 'Merchant Center feed cache revalidated successfully',
-      timestamp: new Date().toISOString(),
-    });
-
-  } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
-      console.error('Error revalidating merchant center feed:', error);
-    }
-    return NextResponse.json(
-      { error: 'Failed to revalidate feed cache' },
-      { status: 500 }
-    );
+  if (isProductionEnvironment()) {
+    return productionRouteNotFound()
   }
+
+  return handleRevalidation(request)
 }

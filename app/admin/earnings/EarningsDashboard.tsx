@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 interface EarningsData {
   currentMonth: number
@@ -180,12 +182,38 @@ function getGrowthPercentage(earnings: EarningsData): number {
   return ((earnings.currentMonth - earnings.lastMonth) / earnings.lastMonth) * 100
 }
 
+async function fetchEarnings(signal: AbortSignal): Promise<EarningsData> {
+  const response = await fetch('/api/admin/earnings', {
+    credentials: 'include',
+    signal
+  })
+  const data = await response.json() as Partial<EarningsData> & { error?: string }
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Failed to fetch earnings data')
+  }
+
+  return {
+    ...initialEarnings,
+    ...data,
+    historicalMonthlyData: data.historicalMonthlyData || []
+  }
+}
+
 export function EarningsDashboard() {
-  const [earnings, setEarnings] = useState<EarningsData>(initialEarnings)
-  const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([])
   const [selectedMonth, setSelectedMonth] = useState('all')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const earningsQuery = useQuery({
+    queryKey: ['admin-earnings'],
+    queryFn: ({ signal }) => fetchEarnings(signal),
+    retry: false,
+    staleTime: 30 * 1000
+  })
+  const earnings = earningsQuery.data ?? initialEarnings
+  const monthlyData = earnings.historicalMonthlyData
+  const loading = earningsQuery.isPending || (earningsQuery.isFetching && !earningsQuery.data)
+  const error = earningsQuery.error instanceof Error
+    ? earningsQuery.error.message
+    : earningsQuery.isError ? 'Failed to fetch earnings data' : ''
 
   const monthOptions = useMemo(() => generateMonthOptions(), [])
   const selectedData = useMemo(() => {
@@ -194,53 +222,14 @@ export function EarningsDashboard() {
   const growthPercentage = useMemo(() => getGrowthPercentage(earnings), [earnings])
   const trendClass = growthPercentage >= 0 ? 'text-success' : 'text-error'
 
-  const fetchEarnings = async (signal?: AbortSignal) => {
-    try {
-      setLoading(true)
-      setError('')
-
-      const response = await fetch('/api/admin/earnings', {
-        credentials: 'include',
-        signal
-      })
-      const data = await response.json() as Partial<EarningsData> & { error?: string }
-
-      if (!response.ok) {
-        setError(data.error || 'Failed to fetch earnings data')
-        return
-      }
-
-      const nextEarnings: EarningsData = {
-        ...initialEarnings,
-        ...data,
-        historicalMonthlyData: data.historicalMonthlyData || []
-      }
-
-      setEarnings(nextEarnings)
-      setMonthlyData(nextEarnings.historicalMonthlyData)
-    } catch (fetchError) {
-      if (fetchError instanceof DOMException && fetchError.name === 'AbortError') {
-        return
-      }
-
-      console.error('Error fetching earnings:', fetchError)
-      setError('Failed to fetch earnings data')
-    } finally {
-      if (!signal?.aborted) {
-        setLoading(false)
-      }
-    }
-  }
-
   useEffect(() => {
-    const controller = new AbortController()
-
-    void fetchEarnings(controller.signal)
-
-    return () => {
-      controller.abort()
+    if (earningsQuery.error) {
+      console.error('Earnings request failed', {
+        operation: 'admin.earnings.fetch',
+        ...toSafeOperationalError(earningsQuery.error)
+      })
     }
-  }, [])
+  }, [earningsQuery.error])
 
   const exportCsv = () => {
     const csvData: Array<Array<string | number>> = [
@@ -298,7 +287,7 @@ export function EarningsDashboard() {
             type='button'
             className='btn btn-outline btn-sm'
             onClick={() => {
-              void fetchEarnings()
+              void earningsQuery.refetch()
             }}
           >
             Refresh

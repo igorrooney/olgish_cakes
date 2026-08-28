@@ -1,18 +1,14 @@
 "use client";
 
-import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
 import { designTokens } from "@/lib/design-system";
 import { Box, CardContent, Typography } from "@/lib/daisy-ui";
 import { OutlineButton, PriceDisplay, ProductCard } from "@/lib/ui-components";
 import { getSanityCdnImageUrl } from "@/lib/utils/image-url";
-import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
 import { Cake, blocksToText } from "@/types/cake";
 import Image from "next/image";
 import Link from "next/link";
 import { memo, useCallback, useMemo, useState } from "react";
-import { useReviewStats } from "./ReviewStatsProvider";
-import { formatRatingValue, formatReviewCount } from "@/app/utils/review-stats";
 
 const { colors, typography, spacing, borderRadius, shadows } = designTokens;
 
@@ -24,20 +20,6 @@ interface CakeCardProps {
 const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardProps): React.JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const price = cake.pricing?.standard || 0;
-  const reviewStats = useReviewStats();
-  const ratingValue = formatRatingValue(reviewStats.averageRating);
-  const reviewCount = formatReviewCount(reviewStats.count);
-  const aggregateRating = useMemo(() => {
-    return reviewStats.count > 0
-      ? {
-          "@type": "AggregateRating",
-          ratingValue,
-          reviewCount,
-          bestRating: "5",
-          worstRating: "1",
-        }
-      : null;
-  }, [ratingValue, reviewCount, reviewStats.count]);
 
   // Memoize expensive computations
   const mainImage = useMemo(() => {
@@ -81,123 +63,9 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
       cake.shortDescription && cake.shortDescription.length > 0
         ? ` - ${blocksToText(cake.shortDescription)}`
         : "";
-    const keywords = " traditional Ukrainian cake, letterbox delivery, cake by post UK";
     const location = " by Olgish Cakes in Leeds, Yorkshire";
-    return `${baseAlt}${description}${keywords}${location}`;
+    return `${baseAlt}${description}${location}`;
   }, [cake.name, cake.category, cake.shortDescription]);
-
-  // Enhanced structured data for better SEO
-  const structuredData = useMemo(
-    () => ({
-      "@context": "https://schema.org",
-      "@type": "Product",
-      "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-      name: cake.name,
-      description: cake.shortDescription
-        ? blocksToText(cake.shortDescription)
-        : cake.description && blocksToText(cake.description)
-        ? blocksToText(cake.description).substring(0, 200)
-        : `${cake.name} - Traditional Ukrainian honey cake made with love in Leeds. Handcrafted using authentic Ukrainian recipes with premium ingredients. Perfect for birthdays, celebrations, and special occasions.`,
-      category: cake.category || "Ukrainian Honey Cake",
-      brand: {
-        "@type": "Brand",
-        name: "Olgish Cakes",
-        url: "https://olgishcakes.co.uk",
-      },
-      manufacturer: {
-        "@type": "Organization",
-        name: "Olgish Cakes",
-        url: "https://olgishcakes.co.uk",
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: "Leeds",
-          addressRegion: "West Yorkshire",
-          addressCountry: "GB",
-        },
-      },
-      offers: {
-        "@type": "Offer",
-        price: formatStructuredDataPrice(price, 0),
-        priceCurrency: "GBP",
-        availability: "https://schema.org/InStock",
-        priceValidUntil: getPriceValidUntil(30),
-        url: `https://olgishcakes.co.uk/cakes/${cake.slug.current}`,
-        seller: {
-          "@type": "Organization",
-          name: "Olgish Cakes",
-          url: "https://olgishcakes.co.uk",
-        },
-        areaServed: {
-          "@type": "City",
-          name: "Leeds",
-        },
-        deliveryLeadTime: {
-          "@type": "QuantitativeValue",
-          value: "1",
-          unitCode: "DAY",
-        },
-        shippingDetails: getOfferShippingDetails(),
-        hasMerchantReturnPolicy: getMerchantReturnPolicy(),
-      },
-      image: {
-        "@type": "ImageObject",
-        url: imageUrl,
-        width: 800,
-        height: 800,
-        alt: imageAltText,
-      },
-      additionalProperty: [
-        {
-          "@type": "PropertyValue",
-          name: "Size",
-          value: cake.size || "Standard",
-        },
-        {
-          "@type": "PropertyValue",
-          name: "Ingredients",
-          value: cake.ingredients?.join(", ") || "Traditional Ukrainian ingredients",
-        },
-      ],
-      ...(aggregateRating ? { aggregateRating } : {}),
-      review: [
-        {
-          "@type": "Review",
-          itemReviewed: {
-            "@id": `https://olgishcakes.co.uk/cakes/${cake.slug.current}#product`
-          },
-          author: {
-            "@type": "Person",
-            name: "Sarah M.",
-          },
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: "5",
-            bestRating: "5",
-            worstRating: "1",
-          },
-          reviewBody: `Amazing ${cake.name}! The taste is incredible and the service was perfect. Highly recommend!`,
-          datePublished: "2025-09-30",
-        },
-      ],
-      // Local business context
-      isRelatedTo: {
-        "@type": "LocalBusiness",
-        name: "Olgish Cakes",
-        url: "https://olgishcakes.co.uk",
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: "Leeds",
-          addressRegion: "West Yorkshire",
-          addressCountry: "GB",
-        },
-        areaServed: {
-          "@type": "City",
-          name: "Leeds",
-        },
-      },
-    }),
-    [aggregateRating, cake, price, imageUrl, imageAltText]
-  );
 
   // Memoize event handlers
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
@@ -215,8 +83,6 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
       }}
       role="article"
       aria-label={`Cake card for ${cake.name} - ${cake.category}`}
-      itemScope
-      itemType="https://schema.org/Product"
       // Enhanced accessibility attributes
       tabIndex={0}
       onKeyDown={(e: React.KeyboardEvent) => {
@@ -226,30 +92,11 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         }
       }}
     >
-      {/* Enhanced Structured Data with more comprehensive schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
-        }}
-      />
-
-      {/* AggregateRating microdata for Product list cards */}
-      {aggregateRating && (
-        <Box itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating" sx={{ display: "none" }}>
-          <meta itemProp="ratingValue" content={ratingValue} />
-          <meta itemProp="reviewCount" content={reviewCount} />
-          <meta itemProp="bestRating" content="5" />
-          <meta itemProp="worstRating" content="1" />
-        </Box>
-      )}
-
       {/* Image Container with Overlay */}
       <Link
         href={`/cakes/${cake.slug.current}`}
         style={{ textDecoration: "none" }}
         aria-label={`View details for ${cake.name} - ${cake.category}`}
-        itemProp="url"
         // Enhanced link attributes for SEO
         rel="canonical"
         title={`${cake.name} - ${cake.category} | Olgish Cakes Leeds`}
@@ -264,9 +111,6 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
           role="img"
           aria-label={imageAltText}
           // Enhanced image container attributes
-          itemProp="image"
-          itemScope
-          itemType="https://schema.org/ImageObject"
         >
           <Image
             src={imageUrl}
@@ -283,7 +127,6 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
             placeholder="blur"
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
             loading={variant === "featured" ? "eager" : "lazy"}
-            itemProp="contentUrl"
             // Enhanced image attributes for SEO
             title={`${cake.name} - ${cake.category} by Olgish Cakes Leeds`}
             decoding="async"
@@ -353,9 +196,6 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
             price={price}
             size="large"
             label="From"
-            itemProp="offers"
-            itemScope
-            itemType="https://schema.org/Offer"
           />
         </Box>
 
@@ -363,7 +203,6 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         <Typography
           variant="h6"
           component="h3"
-          itemProp="name"
           sx={{
             fontFamily: typography.fontFamily.display,
             color: colors.text.primary,
@@ -382,26 +221,6 @@ const CakeCard = memo(function CakeCard({ cake, variant = "catalog" }: CakeCardP
         >
           {cake.name}
         </Typography>
-
-        {/* Enhanced hidden description for SEO with more context */}
-        {cake.shortDescription && (
-          <Typography
-            variant="body2"
-            itemProp="description"
-            sx={{
-              position: "absolute",
-              left: "-9999px",
-              width: "1px",
-              height: "1px",
-              overflow: "hidden",
-            }}
-            aria-hidden="true"
-          >
-            {blocksToText(cake.shortDescription)} - Traditional Ukrainian {cake.category} made with
-            love in Leeds, Yorkshire. Perfect for special occasions. Order now from Olgish Cakes for
-            authentic Ukrainian baking.
-          </Typography>
-        )}
 
         {/* Action Button with enhanced accessibility */}
         <Link href={`/cakes/${cake.slug.current}`} style={{ textDecoration: 'none', display: 'block' }}>

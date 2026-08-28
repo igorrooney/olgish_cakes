@@ -13,15 +13,19 @@ type AggregateRatingSchema = {
 
 export const DEFAULT_REVIEW_STATS: ReviewStats = {
   count: 0,
-  averageRating: 5
+  averageRating: 0
 }
 
 export function normalizeReviewStats(stats?: ReviewStats): ReviewStats {
   if (!stats) return { ...DEFAULT_REVIEW_STATS }
 
-  const count = Number.isFinite(stats.count) && stats.count > 0 ? stats.count : 0
+  const count = Number.isFinite(stats.count) && stats.count > 0
+    ? Math.trunc(stats.count)
+    : 0
   const averageRating =
-    Number.isFinite(stats.averageRating) && stats.averageRating > 0
+    Number.isFinite(stats.averageRating) &&
+    stats.averageRating >= 1 &&
+    stats.averageRating <= 5
       ? stats.averageRating
       : DEFAULT_REVIEW_STATS.averageRating
 
@@ -29,19 +33,23 @@ export function normalizeReviewStats(stats?: ReviewStats): ReviewStats {
 }
 
 export function formatRatingValue(averageRating: number): string {
-  const safeRating = Number.isFinite(averageRating) && averageRating > 0 ? averageRating : DEFAULT_REVIEW_STATS.averageRating
+  const safeRating = Number.isFinite(averageRating) &&
+    averageRating >= 1 &&
+    averageRating <= 5
+    ? averageRating
+    : DEFAULT_REVIEW_STATS.averageRating
   return safeRating.toFixed(1)
 }
 
 export function formatReviewCount(count: number): string {
-  const safeCount = Number.isFinite(count) && count > 0 ? count : 0
+  const safeCount = Number.isFinite(count) && count > 0 ? Math.trunc(count) : 0
   return safeCount.toString()
 }
 
 export function buildAggregateRating(stats?: ReviewStats): AggregateRatingSchema | null {
   const normalized = normalizeReviewStats(stats)
 
-  if (normalized.count <= 0) {
+  if (normalized.count <= 0 || normalized.averageRating < 1) {
     return null
   }
 

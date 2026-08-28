@@ -17,7 +17,7 @@ export const faqItems = [
   {
     question: 'Do you deliver cakes across the UK?',
     answer:
-      'Yes, selected cakes can go by post across the UK. I\'ll confirm the best option when you place your order.'
+      'Yes, selected cakes can go by post across the UK. We\'ll confirm the best option when you place your order.'
   },
   {
     question: 'Can you make custom birthday or wedding cakes?',

@@ -273,7 +273,7 @@ export default function ContactPage() {
                     Ask a question
                   </ContactFormScrollLink>
                   <Link
-                    href='/get-custom-quote'
+                    href='/custom-cakes'
                     prefetch={false}
                     className='btn btn-outline h-11 border-primary-300 bg-base-100/92 px-6 text-sm font-semibold normal-case text-primary-700 tablet:h-14 tablet:min-w-[220px] tablet:text-base'
                   >
@@ -349,7 +349,7 @@ export default function ContactPage() {
                   <ContactBulletList items={quickQuestionPrompts} />
                 </div>
                 <Link
-                  href='/get-custom-quote'
+                  href='/custom-cakes'
                   prefetch={false}
                   className='mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary-700 underline decoration-primary-200 underline-offset-4'
                 >

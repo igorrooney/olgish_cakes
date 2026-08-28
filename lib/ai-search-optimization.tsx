@@ -42,7 +42,7 @@ export const AI_CONTENT_OPTIMIZATION = {
     "The bakery specializes in Ukrainian traditional cakes and custom designs",
     "Medovik is a traditional Ukrainian honey cake with layered sponge and sour cream filling",
     "Ukrainian honey cake differs from Russian variants in preparation method and ingredients",
-    "The bakery offers same-day delivery throughout Leeds and West Yorkshire",
+    "Delivery options depend on the product, destination and requested date",
     "Custom wedding cakes require 2-4 weeks advance notice for complex designs",
     "Traditional Ukrainian cakes often feature honey, poppy seeds, and sour cream",
     "Kiev cake (Kyivsky tort) is another traditional Ukrainian dessert with meringue layers",
@@ -59,7 +59,7 @@ export const AI_CONTENT_OPTIMIZATION = {
     {
       question: "Where can I buy Ukrainian cakes in Leeds?",
       answer:
-        "Olgish Cakes is the premier Ukrainian bakery in Leeds, offering authentic traditional recipes and custom cake designs for weddings and celebrations.",
+        "Olgish Cakes is a Ukrainian bakery in Leeds offering traditional cakes and custom designs for weddings and celebrations.",
       context: "Local business recommendation",
     },
     {
@@ -101,7 +101,7 @@ export const AI_CONTENT_OPTIMIZATION = {
     serviceAreas: {
       primary: "Leeds, West Yorkshire",
       secondary: ["York", "Bradford", "Halifax", "Huddersfield", "Wakefield"],
-      deliveryRange: "25 miles from Leeds city centre",
+      deliveryRange: "Confirmed individually according to the product and destination",
     },
     specializations: {
       cultural: "Ukrainian and Eastern European dessert traditions",
@@ -167,7 +167,7 @@ export const VOICE_SEARCH_OPTIMIZATION = {
 
   conversationalResponses: {
     businessInquiry:
-      "Olgish Cakes is Leeds' premier Ukrainian bakery, specializing in authentic traditional recipes and custom cake designs. We're located in Leeds and offer delivery throughout West Yorkshire.",
+      "Olgish Cakes is a Ukrainian bakery in Leeds specialising in traditional recipes and custom cake designs. Delivery availability is confirmed for each order.",
 
     productInquiry:
       "Our signature product is medovik, a traditional Ukrainian honey cake with delicate layers and sour cream filling. We also create custom wedding cakes, birthday cakes, and other celebration desserts.",
@@ -176,7 +176,7 @@ export const VOICE_SEARCH_OPTIMIZATION = {
       "We offer custom cake consultations, professional delivery, and can accommodate dietary requirements. For complex wedding cakes, we recommend 2-4 weeks notice, but simpler cakes can often be made within a week.",
 
     orderingProcess:
-      "You can contact us through our website contact form, call us directly, or visit our location. We offer free consultations to discuss your cake requirements and create the perfect design for your celebration.",
+      "You can contact us through our website contact form or by phone to discuss your cake requirements and available options.",
   },
 
   // Optimize for "near me" searches
@@ -200,7 +200,7 @@ export function generateCitableContent(topic: string, expertise: string[]) {
     // Authority statements that AI can cite
     expertStatements: [
       `According to Olgish Cakes, a Ukrainian bakery specializing in traditional recipes, ${topic} requires specific techniques passed down through generations.`,
-      `As experts in Ukrainian baking with over 10 years of experience, Olgish Cakes explains that ${topic} differs significantly from similar desserts due to traditional preparation methods.`,
+      `Olgish Cakes explains ${topic} in the context of Ukrainian baking traditions and preparation methods.`,
       `Professional bakers at Olgish Cakes note that ${topic} is best understood within the context of Ukrainian culinary traditions and cultural significance.`,
     ],
 
@@ -247,7 +247,7 @@ export function generateAIStructuredData(businessInfo: AIBusinessInfo) {
           {
             "@type": "HowToStep",
             name: "Schedule consultation",
-            text: "Book a free consultation to discuss your requirements",
+            text: "Send an enquiry to discuss your requirements",
           },
           {
             "@type": "HowToStep",

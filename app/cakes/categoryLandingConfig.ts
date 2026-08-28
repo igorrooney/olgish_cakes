@@ -134,7 +134,7 @@ interface CatalogCategoryLandingSource {
 }
 
 const categoryLandingLastSignificantUpdate = '2026-03-17'
-const customQuotePagePath = '/get-custom-quote' as const
+const customQuotePagePath = '/custom-cakes' as const
 const cakesPagePath = '/cakes' as const
 const defaultHeroPrimaryAction = {
   href: customQuotePagePath,

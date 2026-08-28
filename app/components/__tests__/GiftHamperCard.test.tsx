@@ -30,17 +30,6 @@ jest.mock('@/types/cake', () => ({
   blocksToText: jest.fn((blocks) => 'Hamper description text')
 }))
 
-jest.mock('@/app/utils/seo', () => ({
-  getPriceValidUntil: jest.fn(() => '2026-01-01'),
-  getOfferShippingDetails: jest.fn(() => ({ '@type': 'OfferShippingDetails' })),
-  getMerchantReturnPolicy: jest.fn(() => ({ '@type': 'MerchantReturnPolicy' }))
-}))
-
-jest.mock('@/lib/schema-constants', () => ({
-  DEFAULT_RATING: { defaultValue: '5.0' },
-  BRAND_ID: 'https://olgishcakes.co.uk/#brand'
-}))
-
 jest.mock('@/lib/constants', () => ({
   BUSINESS_CONSTANTS: {
     NAME: 'Olgish Cakes',
@@ -244,135 +233,12 @@ describe('GiftHamperCard', () => {
   })
 
   describe('Structured Data', () => {
-    it('should include JSON-LD script', () => {
+    it('omits duplicate product structured data and microdata from list cards', () => {
       const { container } = render(<GiftHamperCard hamper={mockHamper} />)
 
-      const script = container.querySelector('script[type="application/ld+json"]')
-      expect(script).toBeTruthy()
-    })
-
-    it('should generate valid Product schema with @graph format', () => {
-      const { container } = render(<GiftHamperCard hamper={mockHamper} />)
-
-      const script = container.querySelector('script')
-      const json = JSON.parse(script?.textContent || '{}')
-      
-      // Should use @graph format
-      expect(json['@graph']).toBeDefined()
-      expect(Array.isArray(json['@graph'])).toBe(true)
-      
-      // Should have Product in @graph
-      const product = json['@graph'].find((entity: UnknownRecord) => entity['@type'] === 'Product')
-      expect(product).toBeDefined()
-    })
-
-    it('should include allergens when available', () => {
-      const { container } = render(<GiftHamperCard hamper={mockHamper} />)
-
-      const script = container.querySelector('script')
-      const json = JSON.parse(script?.textContent || '{}')
-      const product = json['@graph']?.find((entity: UnknownRecord) => entity['@type'] === 'Product')
-      expect(product?.containsAllergens).toEqual(['Nuts'])
-    })
-
-    it('should not include allergens when empty', () => {
-      const hamperWithoutAllergens = { ...mockHamper, allergens: [] }
-
-      const { container } = render(<GiftHamperCard hamper={hamperWithoutAllergens} />)
-
-      const script = container.querySelector('script')
-      const json = JSON.parse(script?.textContent || '{}')
-      const product = json['@graph']?.find((entity: UnknownRecord) => entity['@type'] === 'Product')
-      expect(product?.containsAllergens).toBeUndefined()
-    })
-
-    describe('Brand Field Duplication Prevention', () => {
-      it('should use @graph format for structured data', () => {
-        const { container } = render(<GiftHamperCard hamper={mockHamper} />)
-
-        const script = container.querySelector('script[type="application/ld+json"]')
-        expect(script).toBeDefined()
-        
-        const json = JSON.parse(script?.textContent || '{}')
-        
-        // Should use @graph format to prevent duplicate brand fields
-        expect(json['@graph']).toBeDefined()
-        expect(Array.isArray(json['@graph'])).toBe(true)
-      })
-
-      it('should have exactly one Brand entity in @graph', () => {
-        const { container } = render(<GiftHamperCard hamper={mockHamper} />)
-
-        const script = container.querySelector('script[type="application/ld+json"]')
-        const json = JSON.parse(script?.textContent || '{}')
-        const graph = json['@graph'] || []
-        
-        // Count Brand entities
-        const brandEntities = graph.filter((entity: UnknownRecord) => entity['@type'] === 'Brand')
-        
-        // Should have exactly one Brand entity
-        expect(brandEntities).toHaveLength(1)
-        
-        // Brand should have unique @id
-        expect(brandEntities[0]['@id']).toBe('https://olgishcakes.co.uk/#brand')
-        expect(brandEntities[0].name).toBe('Olgish Cakes')
-      })
-
-      it('should reference brand by @id in product, not inline object', () => {
-        const { container } = render(<GiftHamperCard hamper={mockHamper} />)
-
-        const script = container.querySelector('script[type="application/ld+json"]')
-        const json = JSON.parse(script?.textContent || '{}')
-        const graph = json['@graph'] || []
-        
-        // Find Product
-        const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
-        expect(product).toBeDefined()
-        
-        // Brand should be a reference by @id, not an inline object
-        expect(product.brand).toBeDefined()
-        expect(product.brand['@id']).toBe('https://olgishcakes.co.uk/#brand')
-        
-        // Should NOT have inline brand object with @type
-        expect(product.brand['@type']).toBeUndefined()
-        expect(product.brand.name).toBeUndefined()
-      })
-
-      it('should NOT have duplicate brand fields in structured data', () => {
-        const { container } = render(<GiftHamperCard hamper={mockHamper} />)
-
-        const script = container.querySelector('script[type="application/ld+json"]')
-        const json = JSON.parse(script?.textContent || '{}')
-        const graph = json['@graph'] || []
-        
-        // Find Product
-        const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
-        expect(product).toBeDefined()
-        
-        // Check if brand is an inline object (has @type) - should be false
-        const hasInlineBrand = product.brand && product.brand['@type'] === 'Brand'
-        expect(hasInlineBrand).toBe(false)
-      })
-
-      it('should have consistent brand @id in product structured data', () => {
-        const { container } = render(<GiftHamperCard hamper={mockHamper} />)
-
-        const script = container.querySelector('script[type="application/ld+json"]')
-        const json = JSON.parse(script?.textContent || '{}')
-        const graph = json['@graph'] || []
-        
-        // Find Brand entity
-        const brandEntity = graph.find((entity: UnknownRecord) => entity['@type'] === 'Brand')
-        expect(brandEntity).toBeDefined()
-        const brandId = brandEntity['@id']
-        
-        // Find Product
-        const product = graph.find((entity: UnknownRecord) => entity['@type'] === 'Product')
-        expect(product).toBeDefined()
-        
-        // Verify product references the same brand @id
-        expect(product.brand['@id']).toBe(brandId)
-      })
+      expect(container.querySelector('script[type="application/ld+json"]')).toBeNull()
+      expect(container.querySelector('[itemscope]')).toBeNull()
+      expect(container.querySelector('[itemprop]')).toBeNull()
     })
   })
 

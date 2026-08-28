@@ -1,42 +1,26 @@
 "use client";
 
-import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
-import { BUSINESS_CONSTANTS } from "@/lib/constants";
 import { designTokens } from "@/lib/design-system";
 import { Box, Typography } from "@/lib/daisy-ui";
-import { BRAND_ID, DEFAULT_RATING } from "@/lib/schema-constants";
 import { OutlineButton, PriceDisplay, ProductCard } from "@/lib/ui-components";
 import { getSanityCdnImageUrl } from "@/lib/utils/image-url";
-import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
 import { urlFor } from "@/sanity/lib/image";
 import { blocksToText } from "@/types/cake";
 import { GiftHamper } from "@/types/giftHamper";
 import Image from "next/image";
 import Link from "next/link";
 import { memo, useCallback, useMemo, useState } from "react";
-import type { Brand, Graph, Product } from "schema-dts";
 
 const { colors, typography, spacing } = designTokens;
-
-// Centralized default testimonial stats - matches DEFAULT_REVIEWS length and rating
-const DEFAULT_TESTIMONIAL_STATS = {
-  count: 2,  // Matches DEFAULT_REVIEWS length in structured-data-defaults
-  averageRating: parseFloat(DEFAULT_RATING.defaultValue),
-};
 
 interface GiftHamperCardProps {
   hamper: GiftHamper;
   variant?: "featured" | "catalog";
-  testimonialStats?: {
-    count: number;
-    averageRating: number;
-  };
 }
 
 const GiftHamperCard = memo(function GiftHamperCard({
   hamper,
   variant = "catalog",
-  testimonialStats = DEFAULT_TESTIMONIAL_STATS,
 }: GiftHamperCardProps): React.JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const price = hamper.price || 0;
@@ -77,105 +61,6 @@ const GiftHamperCard = memo(function GiftHamperCard({
     return `${baseAlt}${description}${location}`;
   }, [hamper.name, hamper.category, hamper.shortDescription]);
 
-  const structuredData = useMemo(
-    (): Graph => ({
-      "@context": "https://schema.org",
-      "@graph": [
-        // Single Brand entity referenced by the product
-        {
-          "@type": "Brand",
-          "@id": BRAND_ID,
-          name: BUSINESS_CONSTANTS.NAME,
-          url: BUSINESS_CONSTANTS.WEBSITE,
-          logo: `${BUSINESS_CONSTANTS.WEBSITE}/images/olgish-cakes-logo-bakery-brand.png`
-        } as Brand,
-        // Product referencing the brand by @id
-        {
-          "@type": "Product",
-          "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}#product`,
-          name: hamper.name,
-          description: hamper.shortDescription
-            ? blocksToText(hamper.shortDescription)
-            : `${hamper.name} gift hamper`,
-          category: hamper.category || "Gift Hamper",
-          sku: `OC-HAMPER-${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
-          mpn: `${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase()}-${hamper.price || 'QUOTE'}`,
-          brand: { "@id": BRAND_ID },
-          image: [imageUrl],
-          ...(hamper.allergens && hamper.allergens.length > 0 && {
-            containsAllergens: hamper.allergens,
-            additionalProperty: [{
-              "@type": "PropertyValue",
-              name: "Allergens",
-              value: hamper.allergens.join(", ")
-            }]
-          }),
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: testimonialStats.averageRating.toFixed(1),
-            reviewCount: testimonialStats.count.toString(),
-            bestRating: "5",
-            worstRating: "1",
-          },
-          review: [
-            {
-              "@type": "Review",
-              itemReviewed: {
-                "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}#product`
-              },
-              reviewRating: {
-                "@type": "Rating",
-                ratingValue: "5",
-                bestRating: "5",
-                worstRating: "1"
-              },
-              author: {
-                "@type": "Person",
-                name: "Emily R."
-              },
-              reviewBody: `Beautiful ${hamper.name}! The quality is outstanding and the presentation is perfect. Highly recommend!`,
-              datePublished: "2025-09-30"
-            },
-            {
-              "@type": "Review",
-              itemReviewed: {
-                "@id": `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}#product`
-              },
-              reviewRating: {
-                "@type": "Rating",
-                ratingValue: "5",
-                bestRating: "5",
-                worstRating: "1"
-              },
-              author: {
-                "@type": "Person",
-                name: "James K."
-              },
-              reviewBody: `Excellent gift hamper with amazing treats. The recipient was absolutely delighted!`,
-              datePublished: "2025-08-15"
-            }
-          ],
-          offers: {
-            "@type": "Offer",
-            price: formatStructuredDataPrice(price, 0),
-            priceCurrency: "GBP",
-            availability: "https://schema.org/InStock",
-            priceValidUntil: getPriceValidUntil(30),
-            url: `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || hamper._id}`,
-            seller: {
-              "@type": "Organization",
-              name: "Olgish Cakes",
-              url: "https://olgishcakes.co.uk",
-            },
-            shippingDetails: getOfferShippingDetails(),
-            hasMerchantReturnPolicy: getMerchantReturnPolicy(),
-          },
-        } as Product
-      ]
-    }),
-    [hamper, price, imageUrl, testimonialStats.averageRating, testimonialStats.count]
-  );
-
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
 
@@ -186,27 +71,11 @@ const GiftHamperCard = memo(function GiftHamperCard({
       sx={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}
       role="article"
       aria-label={`Gift hamper card for ${hamper.name}`}
-      itemScope
-      itemType="https://schema.org/Product"
     >
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\u003c') }}
-      />
-
-      {/* AggregateRating microdata for Product list cards */}
-      <Box itemProp="aggregateRating" itemScope itemType="https://schema.org/AggregateRating" sx={{ display: "none" }}>
-        <meta itemProp="ratingValue" content={testimonialStats.averageRating.toFixed(1)} />
-        <meta itemProp="reviewCount" content={testimonialStats.count.toString()} />
-        <meta itemProp="bestRating" content="5" />
-        <meta itemProp="worstRating" content="1" />
-      </Box>
-
       <Link
         href={`/cakes-by-post/${hamper.slug?.current || hamper._id}`}
         style={{ textDecoration: "none" }}
         aria-label={`View details for ${hamper.name}`}
-        itemProp="url"
       >
         <Box
           sx={{
@@ -233,7 +102,6 @@ const GiftHamperCard = memo(function GiftHamperCard({
             placeholder="blur"
             blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
             loading={variant === "featured" ? "eager" : "lazy"}
-            itemProp="image"
           />
 
           <Box
@@ -262,16 +130,12 @@ const GiftHamperCard = memo(function GiftHamperCard({
             price={price}
             size="large"
             label="From"
-            itemProp="offers"
-            itemScope
-            itemType="https://schema.org/Offer"
           />
         </Box>
 
         <Typography
           variant="h6"
           component="h3"
-          itemProp="name"
           sx={{
             fontFamily: typography.fontFamily.display,
             color: colors.text.primary,
@@ -286,22 +150,6 @@ const GiftHamperCard = memo(function GiftHamperCard({
         >
           {hamper.name}
         </Typography>
-
-        {hamper.shortDescription && (
-          <Typography
-            variant="body2"
-            itemProp="description"
-            sx={{
-              position: "absolute",
-              left: "-9999px",
-              width: "1px",
-              height: "1px",
-              overflow: "hidden",
-            }}
-          >
-            {blocksToText(hamper.shortDescription)}
-          </Typography>
-        )}
 
         <Link href={`/cakes-by-post/${hamper.slug?.current || hamper._id}`} style={{ textDecoration: 'none', display: 'block' }}>
           <OutlineButton

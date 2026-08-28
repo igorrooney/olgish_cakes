@@ -66,7 +66,11 @@ describe('fetchFaqs', () => {
       const result = await getFaqs()
 
       expect(result).toEqual([])
-      expect(consoleSpy).toHaveBeenCalledWith('Unexpected result format:', { notAnArray: true })
+      expect(consoleSpy).toHaveBeenCalledWith('Unexpected FAQ result format', {
+        operation: 'sanity.faq.fetch',
+        code: 'INVALID_RESPONSE_SHAPE'
+      })
+      expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('notAnArray')
 
       consoleSpy.mockRestore()
     })
@@ -86,7 +90,11 @@ describe('fetchFaqs', () => {
 
       await expect(getFaqs()).rejects.toThrow('Fetch failed')
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error fetching FAQs:', expect.any(Error))
+      expect(consoleSpy).toHaveBeenCalledWith('Sanity read failed', {
+        operation: 'sanity.faq.fetch',
+        code: 'OPERATION_FAILED'
+      })
+      expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Fetch failed')
 
       consoleSpy.mockRestore()
     })
@@ -198,9 +206,13 @@ describe('fetchFaqs', () => {
         }
       ])
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Skipping malformed FAQ record:',
-        expect.objectContaining({ _id: 'faq-2' })
+        'Malformed FAQ record skipped',
+        {
+          operation: 'sanity.faq.normalize',
+          code: 'INVALID_RECORD'
+        }
       )
+      expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('faq-2')
 
       consoleSpy.mockRestore()
     })

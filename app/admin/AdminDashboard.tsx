@@ -1,8 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { AdminAuthGuard } from '@/components/AdminAuthGuard'
+import { useAbortableRequest } from '@/app/hooks/useAbortableRequest'
 import type { Order } from '@/types/order'
 
 interface OrdersResponse {
@@ -49,6 +51,19 @@ const needsActionStatuses = ['new', 'confirmed', 'in-progress']
 const activeStatuses = [...needsActionStatuses, 'ready-pickup', 'out-delivery']
 const completedStatuses = ['completed', 'delivered']
 
+const failedDashboardStats: QuickStats = {
+  totalOrders: 0,
+  needsActionOrders: 0,
+  activeOrders: 0,
+  completedOrders: 0,
+  totalRevenue: 0,
+  currentMonthRevenue: 0,
+  averageOrderValue: 0,
+  recentOrders: [],
+  nextDueOrder: null,
+  systemStatus: 'error'
+}
+
 const adminResources: AdminResource[] = [
   {
     title: 'Orders',
@@ -81,6 +96,14 @@ const adminResources: AdminResource[] = [
     label: 'Test emails',
     eyebrow: 'Quality',
     metric: 'Message checks'
+  },
+  {
+    title: 'Privacy retention',
+    description: 'Review due records, choose exactly what to remove, manage legal holds and record owner reviews.',
+    href: '/admin/privacy-retention',
+    label: 'Review retention',
+    eyebrow: 'Privacy',
+    metric: 'Deletion control'
   },
   {
     title: 'Content Studio',
@@ -171,6 +194,58 @@ const getNextDueOrder = (orders: Order[]) => {
   return withDates[0] ?? null
 }
 
+async function fetchDashboardStats(signal: AbortSignal): Promise<QuickStats> {
+  const [ordersResponse, earningsResponse] = await Promise.all([
+    fetch('/api/orders', {
+      credentials: 'include',
+      signal
+    }),
+    fetch('/api/admin/earnings', {
+      credentials: 'include',
+      signal
+    })
+  ])
+
+  if (!ordersResponse.ok) {
+    throw new Error('Failed to fetch orders')
+  }
+
+  if (!earningsResponse.ok) {
+    throw new Error('Failed to fetch earnings')
+  }
+
+  const ordersData = await ordersResponse.json() as OrdersResponse
+  const earningsData = await earningsResponse.json() as EarningsResponse
+  const orders = ordersData.orders ?? []
+
+  return {
+    totalOrders: orders.length,
+    needsActionOrders: orders.filter((order) => needsActionStatuses.includes(order.status)).length,
+    activeOrders: orders.filter((order) => activeStatuses.includes(order.status)).length,
+    completedOrders: orders.filter((order) => completedStatuses.includes(order.status)).length,
+    totalRevenue: earningsData.totalRevenue ?? 0,
+    currentMonthRevenue: earningsData.currentMonth ?? 0,
+    averageOrderValue: earningsData.averageOrderValue ?? 0,
+    recentOrders: orders.slice(0, 5),
+    nextDueOrder: getNextDueOrder(orders),
+    systemStatus: 'healthy'
+  }
+}
+
+async function revalidateWebsiteCache(signal: AbortSignal) {
+  const response = await fetch('/api/admin/clear-cache', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include',
+    signal,
+    body: JSON.stringify({ pattern: '*' })
+  })
+
+  return response.ok
+}
+
 function DashboardSkeleton() {
   return (
     <div className='grid gap-6' aria-label='Loading dashboard'>
@@ -188,86 +263,34 @@ function DashboardSkeleton() {
 }
 
 export function AdminDashboard() {
-  const [stats, setStats] = useState<QuickStats | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
-  const [cacheClearing, setCacheClearing] = useState(false)
-
-  useEffect(() => {
-    const controller = new AbortController()
-
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-
-        const [ordersResponse, earningsResponse] = await Promise.all([
-          fetch('/api/orders', {
-            credentials: 'include',
-            signal: controller.signal
-          }),
-          fetch('/api/admin/earnings', {
-            credentials: 'include',
-            signal: controller.signal
-          })
-        ])
-
-        if (!ordersResponse.ok) {
-          throw new Error('Failed to fetch orders')
-        }
-
-        if (!earningsResponse.ok) {
-          throw new Error('Failed to fetch earnings')
-        }
-
-        const ordersData = await ordersResponse.json() as OrdersResponse
-        const earningsData = await earningsResponse.json() as EarningsResponse
-        const orders = ordersData.orders ?? []
-
-        setStats({
-          totalOrders: orders.length,
-          needsActionOrders: orders.filter((order) => needsActionStatuses.includes(order.status)).length,
-          activeOrders: orders.filter((order) => activeStatuses.includes(order.status)).length,
-          completedOrders: orders.filter((order) => completedStatuses.includes(order.status)).length,
-          totalRevenue: earningsData.totalRevenue ?? 0,
-          currentMonthRevenue: earningsData.currentMonth ?? 0,
-          averageOrderValue: earningsData.averageOrderValue ?? 0,
-          recentOrders: orders.slice(0, 5),
-          nextDueOrder: getNextDueOrder(orders),
-          systemStatus: 'healthy'
-        })
-      } catch (fetchError) {
-        if (fetchError instanceof DOMException && fetchError.name === 'AbortError') {
-          return
-        }
-
-        setError('Dashboard data could not be loaded. Try refreshing the page or open Orders directly.')
-        setStats({
-          totalOrders: 0,
-          needsActionOrders: 0,
-          activeOrders: 0,
-          completedOrders: 0,
-          totalRevenue: 0,
-          currentMonthRevenue: 0,
-          averageOrderValue: 0,
-          recentOrders: [],
-          nextDueOrder: null,
-          systemStatus: 'error'
-        })
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false)
-        }
-      }
+  const cacheRequest = useAbortableRequest()
+  const dashboardQuery = useQuery({
+    queryKey: ['admin-dashboard'],
+    queryFn: ({ signal }) => fetchDashboardStats(signal),
+    retry: false,
+    staleTime: 30 * 1000
+  })
+  const cacheMutation = useMutation({
+    mutationFn: revalidateWebsiteCache,
+    onMutate: () => {
+      setNotice(null)
+    },
+    onSuccess: (wasRevalidated) => {
+      setNotice(wasRevalidated
+        ? 'Website cache revalidated. Public pages can rebuild with fresh content.'
+        : 'Cache could not be revalidated.')
+    },
+    onError: () => {
+      setNotice('Cache could not be revalidated.')
     }
-
-    void fetchDashboardData()
-
-    return () => {
-      controller.abort()
-    }
-  }, [])
+  })
+  const stats = dashboardQuery.data ?? (dashboardQuery.isError ? failedDashboardStats : null)
+  const loading = dashboardQuery.isPending
+  const error = dashboardQuery.isError
+    ? 'Dashboard data could not be loaded. Try refreshing the page or open Orders directly.'
+    : null
+  const cacheClearing = cacheMutation.isPending
 
   const nextDueOrder = stats?.nextDueOrder ?? null
 
@@ -298,29 +321,8 @@ export function AdminDashboard() {
     }
   ], [stats])
 
-  const handleClearCache = async () => {
-    const controller = new AbortController()
-
-    setNotice(null)
-    setCacheClearing(true)
-
-    try {
-      const response = await fetch('/api/admin/clear-cache', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        signal: controller.signal,
-        body: JSON.stringify({ pattern: '*' })
-      })
-
-      setNotice(response.ok ? 'Website cache revalidated. Public pages can rebuild with fresh content.' : 'Cache could not be revalidated.')
-    } catch {
-      setNotice('Cache could not be revalidated.')
-    } finally {
-      setCacheClearing(false)
-    }
+  const handleClearCache = () => {
+    cacheMutation.mutate(cacheRequest.start())
   }
 
   return (

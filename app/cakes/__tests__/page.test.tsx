@@ -380,7 +380,8 @@ describe('CakesPage', () => {
   it('renders page when optional by-post price hint fetch fails', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
     try {
-      mockedGetAllGiftHampers.mockRejectedValueOnce(new Error('By-post hint fetch failed'))
+      const providerSentinel = 'PRIVATE_BY_POST_HINT_FAILURE'
+      mockedGetAllGiftHampers.mockRejectedValueOnce(new Error(providerSentinel))
 
       const page = await CakesPage()
       renderCakesPage(page)
@@ -393,9 +394,13 @@ describe('CakesPage', () => {
       ).toBeInTheDocument()
       expect(screen.getByRole('link', { name: /View details for Sample Honey Cake/i })).toBeInTheDocument()
       expect(warnSpy).toHaveBeenCalledWith(
-        'Failed to fetch by-post cakes price ceiling hint for cakes page:',
-        expect.any(Error)
+        'Cake price ceiling hint fetch failed',
+        {
+          operation: 'cakes.price-ceiling.fetch',
+          code: 'OPERATION_FAILED'
+        }
       )
+      expect(JSON.stringify(warnSpy.mock.calls)).not.toContain(providerSentinel)
     } finally {
       warnSpy.mockRestore()
     }
@@ -711,7 +716,7 @@ describe('CakesPage', () => {
 
     const ukDeliveryButton = screen.getByRole('button', { name: 'Can any cake be delivered across the UK?' })
     fireEvent.click(ukDeliveryButton)
-    expect(screen.getByText('Yes. Any cake can be delivered across the UK by agreement. During ordering, put all requests in the Requirements field in the order form so I can confirm the cake type, date, delivery details, and cost.')).toBeInTheDocument()
+    expect(screen.getByText('Yes. Any cake can be delivered across the UK by agreement. During ordering, put all requests in the Requirements field in the order form so we can confirm the cake type, date, delivery details, and cost.')).toBeInTheDocument()
 
     const corporateClientsButton = screen.getByRole('button', { name: 'Do you work with corporate clients and events?' })
     fireEvent.click(corporateClientsButton)

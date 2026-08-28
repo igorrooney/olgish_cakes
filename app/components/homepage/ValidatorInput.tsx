@@ -10,6 +10,7 @@ import {
   type RefObject,
 } from 'react'
 import { DesignSystemDatePicker } from '@/app/components/forms/DesignSystemDatePicker'
+import { FormFieldError } from '@/app/components/forms/FormFieldError'
 
 type SelectOption = {
   label: string
@@ -107,9 +108,6 @@ const tokenizedInputStyle = (hasError: boolean) => ({
     ? 'var(--color-error)'
     : 'color-mix(in srgb, var(--d-color-base-content) calc(var(--u-opacity-stroke-20) * 100%), transparent)',
 })
-
-const errorCardClassName =
-  'mt-2 flex items-start gap-2 rounded-md border border-error/30 bg-error/10 px-3 py-2 text-sm text-error'
 
 const selectPanelClassName =
   'absolute left-0 right-0 top-[calc(100%+0.5rem)] z-[1060] overflow-hidden rounded-[24px] border border-base-300 bg-[linear-gradient(180deg,_#FFFBEB_0%,_#FFFFFF_100%)] p-2 shadow-[0px_12px_30px_rgba(15,23,42,0.12)]'
@@ -467,26 +465,12 @@ function SelectField({
 }
 
 function renderErrorCard(id: string, error?: string) {
-  if (!error) {
-    return null
-  }
-
   return (
-    <div className={errorCardClassName} id={getErrorId(id)} role='alert' aria-live='assertive'>
-      <span
-        className='mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center'
-        aria-hidden='true'
-      >
-        <svg viewBox='0 0 20 20' fill='currentColor' className='h-4 w-4'>
-          <path
-            fillRule='evenodd'
-            d='M10 2a8 8 0 100 16 8 8 0 000-16zm0 4a1 1 0 00-1 1v4a1 1 0 102 0V7a1 1 0 00-1-1zm0 9a1.25 1.25 0 100-2.5A1.25 1.25 0 0010 15z'
-            clipRule='evenodd'
-          />
-        </svg>
-      </span>
-      <span>{error}</span>
-    </div>
+    <FormFieldError
+      id={getErrorId(id)}
+      message={error}
+      className='mt-2'
+    />
   )
 }
 

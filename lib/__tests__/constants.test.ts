@@ -61,36 +61,6 @@ describe('BUSINESS_CONSTANTS', () => {
     })
   })
 
-  describe('Business Hours', () => {
-    it('should have Monday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.monday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Tuesday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.tuesday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Wednesday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.wednesday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Thursday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.thursday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Friday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.friday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Saturday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.saturday).toBe('Online orders: 24/7')
-    })
-
-    it('should have Sunday hours', () => {
-      expect(BUSINESS_CONSTANTS.HOURS.sunday).toBe('Online orders: 24/7')
-    })
-  })
-
   describe('Type Safety', () => {
     it('should have readonly properties at compile time', () => {
       // Type check - this would fail at compile time if not readonly

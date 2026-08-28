@@ -351,6 +351,7 @@
 }
 
 :root {
+  --font-system: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --background: #FFFBEB;
   --foreground: #171717;
 }
@@ -365,6 +366,7 @@
   --color-primary-700: #252774;
   --color-primary-800: #181A4E;
   --color-accent-50: #FFEBE5;
+  --color-error: #D04436;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

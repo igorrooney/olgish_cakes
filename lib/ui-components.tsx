@@ -29,7 +29,6 @@ import {
   ExpandMoreIcon,
 } from "@/lib/daisy-ui";
 import { designTokens } from "./design-system";
-import { getPriceValidUntil } from "@/app/utils/seo";
 
 const { colors, typography, spacing, borderRadius, shadows, components } = designTokens;
 
@@ -556,8 +555,6 @@ export const PriceDisplay = ({
       )}
       <Typography
         component="span"
-        itemProp="price"
-        content={price.toString()}
         sx={{
           color: colors.primary.main,
           ...sizeStyles[size],
@@ -566,9 +563,6 @@ export const PriceDisplay = ({
       >
         {priceText}
       </Typography>
-      <meta itemProp="priceCurrency" content="GBP" />
-      <meta itemProp="availability" content="https://schema.org/InStock" />
-      <meta itemProp="priceValidUntil" content={getPriceValidUntil(30)} />
     </Box>
   );
 };

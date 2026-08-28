@@ -7,13 +7,16 @@ import { useOrderFormPrefetch } from '../useOrderFormPrefetch'
 import {
   fetchOccasionOptions
 } from '@/app/services/occasionOptions'
+import { getQueryClient } from '@/app/providers'
 
 jest.mock('@/app/components/homepage/ProductOrderInlineFormWithProviders', () => ({
   ProductOrderInlineFormWithProviders: () => null
 }))
 
 jest.mock('@/app/services/occasionOptions', () => ({
-  fetchOccasionOptions: jest.fn()
+  fetchOccasionOptions: jest.fn(),
+  occasionOptionsQueryKey: ['occasion-options'],
+  occasionOptionsStaleTimeMs: 1000 * 60 * 30
 }))
 
 type IdleWindow = Window & {
@@ -43,6 +46,7 @@ function HookHarness({ prefetchOccasionOptions }: { prefetchOccasionOptions: boo
 
 describe('useOrderFormPrefetch', () => {
   beforeEach(() => {
+    getQueryClient().clear()
     mockedFetchOccasionOptions.mockReset()
     mockedFetchOccasionOptions.mockResolvedValue([])
     idleWindow.requestIdleCallback = originalRequestIdleCallback
@@ -98,5 +102,33 @@ describe('useOrderFormPrefetch', () => {
     fireEvent.mouseEnter(screen.getByRole('button', { name: 'Trigger order intent' }))
 
     expect(mockedFetchOccasionOptions).not.toHaveBeenCalled()
+  })
+
+  it('cancels the prefetched query when the consumer unmounts', async () => {
+    let requestSignal: AbortSignal | undefined
+
+    mockedFetchOccasionOptions.mockImplementation((signal) => {
+      requestSignal = signal
+
+      return new Promise<never>((_resolve, reject) => {
+        signal.addEventListener('abort', () => {
+          reject(new DOMException('The operation was aborted.', 'AbortError'))
+        })
+      })
+    })
+
+    const { unmount } = render(<HookHarness prefetchOccasionOptions={true} />)
+
+    fireEvent.mouseEnter(screen.getByRole('button', { name: 'Trigger order intent' }))
+
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    expect(requestSignal?.aborted).toBe(false)
+
+    unmount()
+
+    expect(requestSignal?.aborted).toBe(true)
   })
 })

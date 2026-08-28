@@ -156,6 +156,74 @@ describe('email transport', () => {
     })
 
     expect(result.accepted).toBe(false)
-    expect(result.error?.message).toContain('RESEND_API_KEY')
+    expect(result.error).toEqual({
+      message: 'Email delivery is not configured',
+      code: 'EMAIL_TRANSPORT_NOT_CONFIGURED'
+    })
+  })
+
+  it('does not expose a provider response body in returned errors', async () => {
+    mockSend.mockResolvedValue({
+      data: null,
+      error: {
+        name: 'validation_error',
+        message: 'SENTINEL-PROVIDER-BODY',
+        statusCode: 422,
+        details: 'SENTINEL-CUSTOMER-CONTENT'
+      }
+    })
+
+    const result = await deliverEmail({
+      mode: 'live',
+      templateId: 'orders-status-update',
+      message: {
+        from: 'test@example.com',
+        to: 'john@example.com',
+        subject: 'A'
+      },
+      rendered: {
+        subject: 'Subject',
+        text: 'Text',
+        html: '<p>Html</p>'
+      }
+    })
+
+    expect(result.error).toEqual({
+      message: 'Email delivery failed',
+      code: 'validation_error',
+      status: 422
+    })
+    expect(JSON.stringify(result.error)).not.toContain('SENTINEL-PROVIDER-BODY')
+    expect(JSON.stringify(result.error)).not.toContain('SENTINEL-CUSTOMER-CONTENT')
+  })
+
+  it('does not expose a thrown provider exception in returned errors', async () => {
+    mockSend.mockRejectedValue(Object.assign(
+      new Error('SENTINEL-PROVIDER-EXCEPTION'),
+      { code: 'ETIMEDOUT', status: 503, responseBody: 'SENTINEL-RESPONSE-BODY' }
+    ))
+
+    const result = await deliverEmail({
+      mode: 'live',
+      templateId: 'orders-status-update',
+      message: {
+        from: 'test@example.com',
+        to: 'john@example.com',
+        subject: 'A'
+      },
+      rendered: {
+        subject: 'Subject',
+        text: 'Text',
+        html: '<p>Html</p>'
+      }
+    })
+
+    expect(result.error).toEqual({
+      message: 'Email delivery failed',
+      code: 'ETIMEDOUT',
+      status: 503
+    })
+    expect(JSON.stringify(result.error)).not.toContain('SENTINEL-PROVIDER-EXCEPTION')
+    expect(JSON.stringify(result.error)).not.toContain('SENTINEL-RESPONSE-BODY')
   })
 })

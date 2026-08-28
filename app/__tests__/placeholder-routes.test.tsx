@@ -19,33 +19,31 @@ describe("placeholder routes", () => {
     jest.clearAllMocks();
   });
 
-  it("renders the top-level custom cakes placeholder with live onward links", async () => {
+  it("renders a remaining top-level placeholder with live onward links", async () => {
     const view = await PlaceholderRoutePage({
-      params: Promise.resolve({ placeholderSlug: "custom-cakes" }),
+      params: Promise.resolve({ placeholderSlug: "farmers-markets" }),
     });
 
     render(view);
 
     expect(
-      screen.getByRole("heading", { name: /custom cake details are coming soon/i })
+      screen.getByRole("heading", { name: /market dates and visit details are coming soon/i })
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /browse celebration cakes/i })).toHaveAttribute(
+    expect(screen.getByText(/we are still putting together the full market calendar/i)).toBeInTheDocument();
+    expect(screen.queryByText(/contact me/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /ask about the next market/i })).toHaveAttribute(
       "href",
-      "/cakes"
-    );
-    expect(screen.getByRole("link", { name: /send a custom brief/i })).toHaveAttribute(
-      "href",
-      "/get-custom-quote#quote-form"
+      "/contact"
     );
   });
 
   it("generates metadata for top-level placeholder pages", async () => {
     const metadata = await generateTopLevelMetadata({
-      params: Promise.resolve({ placeholderSlug: "allergens" }),
+      params: Promise.resolve({ placeholderSlug: "farmers-markets" }),
     });
 
-    expect(metadata.title).toBe("Detailed allergen guidance is coming soon");
-    expect(metadata.alternates?.canonical).toBe("https://olgishcakes.co.uk/allergens");
+    expect(metadata.title).toBe("Market dates and visit details are coming soon");
+    expect(metadata.alternates?.canonical).toBe("https://olgishcakes.co.uk/farmers-markets");
     expect(metadata.robots?.index).toBe(false);
     expect(typeof metadata.robots === "object" && "googleBot" in metadata.robots
       ? metadata.robots.googleBot?.index

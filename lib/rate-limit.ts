@@ -8,6 +8,7 @@ import {
 } from './enquiry-rate-limit'
 import { logger } from './logger'
 import { getSupabaseAdminClient } from './supabase-admin-client'
+import { toSafeOperationalError } from './security/safe-operational-error'
 
 // The in-memory store is a development fallback. Public production endpoints opt
 // into the atomic Supabase limiter with distributedScope.
@@ -90,7 +91,8 @@ const checkDistributedRateLimit = async (
   if (!isSupabaseRateLimitConfigured()) {
     if (process.env.NODE_ENV === 'production') {
       logger.error('Distributed rate limiter is not configured', {
-        scope: options.distributedScope
+        operation: `rate_limit.${options.distributedScope}.take`,
+        code: 'DISTRIBUTED_LIMITER_NOT_CONFIGURED'
       })
       return createRateLimitUnavailableResponse()
     }
@@ -113,8 +115,8 @@ const checkDistributedRateLimit = async (
     return result
   } catch (error) {
     logger.error('Distributed rate limiter failed', {
-      error,
-      scope: options.distributedScope
+      operation: `rate_limit.${options.distributedScope}.take`,
+      ...toSafeOperationalError(error)
     })
     return createRateLimitUnavailableResponse()
   }

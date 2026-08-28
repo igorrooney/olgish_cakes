@@ -12,14 +12,9 @@ import {
   createCatalogMetadata,
   type ResolvedSearchParams
 } from '../cakes/catalogSeo'
-import { getAllTestimonialsStats } from '../utils/fetchTestimonials'
-import { buildAggregateRating } from '../utils/review-stats'
-import {
-  getMerchantReturnPolicy,
-  getOfferShippingDetails,
-  getPriceValidUntil
-} from '../utils/seo'
+import { getMerchantReturnPolicy } from '../utils/seo'
 import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 const baseUrl = 'https://olgishcakes.co.uk'
 const brandId = `${baseUrl}/#brand`
@@ -102,15 +97,12 @@ function createGiftHamperItemListStructuredData(giftHampers: TabletCake[]): Stru
                 '@type': 'Offer',
                 price: formatStructuredDataPrice(hamper.price, 0),
                 priceCurrency: 'GBP',
-                availability: 'https://schema.org/InStock',
-                priceValidUntil: getPriceValidUntil(30),
                 url: hamperUrl,
                 seller: {
                   '@type': 'Organization',
                   name: 'Olgish Cakes',
                   url: baseUrl
                 },
-                shippingDetails: getOfferShippingDetails(),
                 hasMerchantReturnPolicy: getMerchantReturnPolicy()
               }
             }
@@ -133,16 +125,17 @@ function resolveGiftHampersForStructuredData(catalogData: {
 }
 
 export default async function CakesByPostPage() {
-  const [catalogData, customCakesPriceCeilingHint, testimonialStats] = await Promise.all([
+  const [catalogData, customCakesPriceCeilingHint] = await Promise.all([
     getCatalogPageData('giftHampers'),
     getCatalogCustomCakesPriceCeiling().catch((error) => {
-      console.warn('Failed to fetch custom cakes price ceiling hint for gift hampers page:', error)
+      console.warn('Custom cake price ceiling hint fetch failed', {
+        operation: 'gift-hampers.price-ceiling.fetch',
+        ...toSafeOperationalError(error)
+      })
       return undefined
-    }),
-    getAllTestimonialsStats()
+    })
   ])
 
-  const aggregateRating = buildAggregateRating(testimonialStats)
   const giftHampersForStructuredData = resolveGiftHampersForStructuredData(catalogData)
   const localBusinessData: StructuredData = {
     '@context': 'https://schema.org',
@@ -162,8 +155,7 @@ export default async function CakesByPostPage() {
     sameAs: [
       'https://www.facebook.com/p/Olgish-Cakes-61557043820222/?locale=en_GB',
       'https://www.instagram.com/olgish_cakes/'
-    ],
-    ...(aggregateRating ? { aggregateRating } : {})
+    ]
   }
 
   return (

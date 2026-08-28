@@ -22,11 +22,11 @@ jest.mock('@/app/utils/fetchGiftHampers', () => ({
 }))
 
 jest.mock('@/sanity/lib/image', () => ({
-  urlFor: jest.fn((image: { asset?: { _ref: string } }) => ({
+  urlFor: jest.fn((image: string | { asset?: { _ref: string } }) => ({
     width: () => ({
       height: () => ({
-        url: () => image?.asset?._ref 
-          ? `https://cdn.sanity.io/images/${image.asset._ref}/800x800.jpg`
+        url: () => (typeof image === 'string' ? image : image?.asset?._ref)
+          ? `https://cdn.sanity.io/images/${typeof image === 'string' ? image : image.asset?._ref}/800x800.jpg`
           : 'https://olgishcakes.co.uk/images/placeholder-cake.jpg'
       })
     })
@@ -44,8 +44,15 @@ const mockGetAllCakes = getAllCakes as jest.MockedFunction<typeof getAllCakes>
 const mockGetAllGiftHampers = getAllGiftHampers as jest.MockedFunction<typeof getAllGiftHampers>
 
 describe('Merchant Center Feed Route', () => {
+  let consoleErrorSpy: jest.SpyInstance
+
   beforeEach(() => {
     jest.clearAllMocks()
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined)
+  })
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore()
   })
 
   const baseUrl = 'https://olgishcakes.co.uk'
@@ -55,7 +62,12 @@ describe('Merchant Center Feed Route', () => {
     _createdAt: '2025-01-01',
     name: 'Test Cake',
     slug: { current: 'test-cake' },
-    description: [],
+    description: [
+      {
+        _type: 'block',
+        children: [{ text: 'A genuine product description from Sanity.' }]
+      }
+    ],
     shortDescription: [],
     size: '6',
     pricing: { standard: 30, individual: 35 },
@@ -74,6 +86,12 @@ describe('Merchant Center Feed Route', () => {
     _createdAt: '2025-01-01',
     name: 'Test Hamper',
     slug: { current: 'test-hamper' },
+    description: [
+      {
+        _type: 'block',
+        children: [{ text: 'A genuine hamper description from Sanity.' }]
+      }
+    ],
     price: 35,
     category: 'Gift Hamper',
     ...overrides
@@ -192,7 +210,7 @@ describe('Merchant Center Feed Route', () => {
       expect(xml).toContain('image-individual-123')
     })
 
-    it('should use placeholder image when no images available', async () => {
+    it('should exclude products without a genuine image', async () => {
       const cake: Cake = createMockCake({
         mainImage: undefined,
         designs: { standard: [], individual: [] },
@@ -206,8 +224,8 @@ describe('Merchant Center Feed Route', () => {
       const response = await GET(request)
       const xml = await response.text()
 
-      expect(xml).toContain('<g:image_link>')
-      expect(xml).toContain('placeholder-cake.jpg')
+      expect(xml).not.toContain('<item>')
+      expect(xml).not.toContain('placeholder-cake.jpg')
     })
 
     it('should include <g:image_link> for gift hampers', async () => {
@@ -489,9 +507,204 @@ describe('Merchant Center Feed Route', () => {
     })
   })
 
+  describe('Merchant data accuracy', () => {
+    const mainImage = {
+      _type: 'image' as const,
+      asset: {
+        _ref: 'image-merchant-123',
+        url: 'https://example.com/image.jpg'
+      }
+    }
+
+    it('uses only genuine product content and omits fabricated optional attributes', async () => {
+      mockGetAllCakes.mockResolvedValue([createMockCake({ mainImage })])
+      mockGetAllGiftHampers.mockResolvedValue([])
+
+      const response = await GET()
+      const xml = await response.text()
+
+      expect(xml).toContain('<g:title>Test Cake</g:title>')
+      expect(xml).toContain('<g:description>A genuine product description from Sanity.</g:description>')
+      expect(xml).toContain('<g:price>30.00 GBP</g:price>')
+      expect(xml).toContain('<g:availability>in_stock</g:availability>')
+      expect(xml).not.toContain('Traditional Ukrainian Honey Cake</g:title>')
+      expect(xml).not.toContain('Free delivery across Leeds')
+      expect(xml).not.toContain('<g:shipping>')
+      expect(xml).not.toContain('<g:tax>')
+      expect(xml).not.toContain('<g:sale_price>')
+      expect(xml).not.toContain('<g:sale_price_effective_date>')
+      expect(xml).not.toContain('<g:installment>')
+      expect(xml).not.toContain('<g:loyalty_points>')
+      expect(xml).not.toContain('<g:additional_image_link>')
+      expect(xml).not.toContain('<g:energy_efficiency_class>')
+      expect(xml).not.toContain('<g:size>')
+      expect(xml).not.toContain('<g:color>')
+      expect(xml).not.toContain('<g:material>')
+      expect(xml).not.toContain('<g:pattern>')
+      expect(xml).not.toContain('<g:multipack>')
+    })
+
+    it('renders only a complete explicit global shipping policy', async () => {
+      mockGetAllCakes.mockResolvedValue([
+        createMockCake({
+          mainImage,
+          cakesDeliverySection: {
+            policy: {
+              dispatchMinDays: 2,
+              dispatchMaxDays: 4,
+              shippingFeeGbp: 6.5,
+              shippingDestinationCountry: 'GB',
+              deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+            }
+          }
+        })
+      ])
+      mockGetAllGiftHampers.mockResolvedValue([])
+
+      const response = await GET()
+      const xml = await response.text()
+
+      expect(xml).toContain('<g:shipping>')
+      expect(xml).toContain('<g:country>GB</g:country>')
+      expect(xml).toContain('<g:price>6.50 GBP</g:price>')
+      expect(xml).toContain('<g:min_handling_time>2</g:min_handling_time>')
+      expect(xml).toContain('<g:max_handling_time>4</g:max_handling_time>')
+    })
+
+    it('normalizes legacy UK shipping policy values to the ISO country code GB', async () => {
+      mockGetAllCakes.mockResolvedValue([
+        createMockCake({
+          mainImage,
+          cakesDeliverySection: {
+            policy: {
+              dispatchMinDays: 2,
+              dispatchMaxDays: 4,
+              shippingFeeGbp: 6.5,
+              shippingDestinationCountry: 'UK',
+              deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+            }
+          }
+        })
+      ])
+      mockGetAllGiftHampers.mockResolvedValue([])
+
+      const response = await GET()
+      const xml = await response.text()
+
+      expect(xml).toContain('<g:country>GB</g:country>')
+      expect(xml).not.toContain('<g:country>UK</g:country>')
+    })
+
+    it('omits shipping policies outside the supported UK market', async () => {
+      mockGetAllCakes.mockResolvedValue([
+        createMockCake({
+          mainImage,
+          cakesDeliverySection: {
+            policy: {
+              dispatchMinDays: 2,
+              dispatchMaxDays: 4,
+              shippingFeeGbp: 6.5,
+              shippingDestinationCountry: 'DE',
+              deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+            }
+          }
+        })
+      ])
+      mockGetAllGiftHampers.mockResolvedValue([])
+
+      const response = await GET()
+      const xml = await response.text()
+
+      expect(xml).toContain('<item>')
+      expect(xml).not.toContain('<g:shipping>')
+    })
+
+    it('omits item shipping when a selected custom policy is incomplete', async () => {
+      mockGetAllCakes.mockResolvedValue([
+        createMockCake({
+          mainImage,
+          deliverySection: {
+            policySource: 'custom',
+            customPolicy: {
+              dispatchMinDays: 2,
+              shippingFeeGbp: 0,
+              shippingDestinationCountry: 'GB',
+              deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+            }
+          },
+          cakesDeliverySection: {
+            policy: {
+              dispatchMinDays: 2,
+              dispatchMaxDays: 3,
+              shippingFeeGbp: 0,
+              shippingDestinationCountry: 'GB',
+              deliveryMethod: 'https://purl.org/goodrelations/v1#DeliveryModeMail'
+            }
+          }
+        })
+      ])
+      mockGetAllGiftHampers.mockResolvedValue([])
+
+      const response = await GET()
+      const xml = await response.text()
+
+      expect(xml).toContain('<item>')
+      expect(xml).not.toContain('<g:shipping>')
+    })
+
+    it('excludes products whose required CMS data is missing or invalid', async () => {
+      mockGetAllCakes.mockResolvedValue([
+        createMockCake({ _id: 'missing-price', mainImage, pricing: { standard: 0, individual: 0 } }),
+        createMockCake({ _id: 'missing-description', mainImage, description: [], shortDescription: [] }),
+        createMockCake({ _id: 'missing-slug', mainImage, slug: { current: '' } })
+      ])
+      mockGetAllGiftHampers.mockResolvedValue([
+        createMockHamper({
+          _id: 'missing-hamper-image',
+          images: undefined
+        })
+      ])
+
+      const response = await GET()
+      const xml = await response.text()
+
+      expect(xml).not.toContain('<item>')
+      expect(xml).not.toContain('25.00 GBP')
+      expect(xml).not.toContain('35.00 GBP')
+      expect(xml).not.toContain('placeholder')
+    })
+
+    it('keeps gift hamper title, description and price aligned with Sanity', async () => {
+      mockGetAllCakes.mockResolvedValue([])
+      mockGetAllGiftHampers.mockResolvedValue([
+        createMockHamper({
+          name: 'Real & Special Hamper',
+          price: 42.5,
+          images: [
+            {
+              asset: { _ref: 'hamper-merchant-image' },
+              isMain: true
+            }
+          ]
+        })
+      ])
+
+      const response = await GET()
+      const xml = await response.text()
+
+      expect(xml).toContain('<g:title>Real &amp; Special Hamper</g:title>')
+      expect(xml).toContain('<g:description>A genuine hamper description from Sanity.</g:description>')
+      expect(xml).toContain('<g:price>42.50 GBP</g:price>')
+      expect(xml).not.toContain('Ukrainian Gift Hamper</g:title>')
+    })
+  })
+
   describe('Error handling', () => {
     it('should return 500 error when data fetching fails', async () => {
-      mockGetAllCakes.mockRejectedValue(new Error('Fetch failed'))
+      const sentinel = 'SENTINEL raw Sanity response and credentials'
+      mockGetAllCakes.mockRejectedValue(
+        Object.assign(new Error(sentinel), { code: 'SANITY_FETCH_FAILED' })
+      )
       mockGetAllGiftHampers.mockResolvedValue([])
 
       const request = new NextRequest(`${baseUrl}/api/merchant-center/feed`)
@@ -500,6 +713,10 @@ describe('Merchant Center Feed Route', () => {
 
       expect(response.status).toBe(500)
       expect(json.error).toBe('Failed to generate product feed')
+      expect(json.code).toBe('SANITY_FETCH_FAILED')
+      expect(json).not.toHaveProperty('details')
+      expect(JSON.stringify(json)).not.toContain(sentinel)
+      expect(JSON.stringify(consoleErrorSpy.mock.calls)).not.toContain(sentinel)
     })
 
     it('should handle partial failures gracefully', async () => {
@@ -557,7 +774,7 @@ describe('Merchant Center Feed Route', () => {
       const response = await GET(request)
       const xml = await response.text()
 
-      expect(xml).toContain('<g:availability>in stock</g:availability>')
+      expect(xml).toContain('<g:availability>in_stock</g:availability>')
     })
 
     it('should ignore removed cake availability overrides and keep in stock output', async () => {
@@ -575,7 +792,7 @@ describe('Merchant Center Feed Route', () => {
       const response = await GET(request)
       const xml = await response.text()
 
-      expect(xml).toContain('<g:availability>in stock</g:availability>')
+      expect(xml).toContain('<g:availability>in_stock</g:availability>')
     })
   })
 })

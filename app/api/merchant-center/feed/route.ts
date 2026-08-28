@@ -1,34 +1,52 @@
-import { getAllCakes } from "@/app/utils/fetchCakes";
-import { getAllGiftHampers } from "@/app/utils/fetchGiftHampers";
-import { urlFor } from "@/sanity/lib/image";
-import { Cake, CakeImage } from "@/types/cake";
-import { GiftHamper, GiftHamperImage } from "@/types/giftHamper";
-import { unstable_cache } from "next/cache";
-import { NextResponse } from "next/server";
+import { getAllCakes } from '@/app/utils/fetchCakes'
+import { getAllGiftHampers } from '@/app/utils/fetchGiftHampers'
+import {
+  generateCakeMerchantItem,
+  generateGiftHamperMerchantItem
+} from '@/lib/merchant-center/feed-items'
+import { privateJsonResponse } from '@/lib/security/internal-route'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
+import { urlFor } from '@/sanity/lib/image'
+import { unstable_cache } from 'next/cache'
+import { NextResponse } from 'next/server'
 
-interface RichTextChild {
-  text: string;
-  [key: string]: unknown;
+interface MerchantImage {
+  asset?: {
+    _ref?: string
+  }
 }
 
-interface RichTextBlock {
-  _type: string;
-  children?: RichTextChild[];
-  [key: string]: unknown;
+const baseUrl = 'https://olgishcakes.co.uk'
+
+function buildImageUrl(image: MerchantImage) {
+  const imageReference = image.asset?._ref
+
+  if (!imageReference) {
+    return ''
+  }
+
+  return urlFor(imageReference).width(800).height(800).url()
 }
 
-// Cached function to generate the product feed
+function isGeneratedItem(item: string | null): item is string {
+  return item !== null
+}
+
 const generateProductFeed = unstable_cache(
   async () => {
     const [cakes, giftHampers] = await Promise.all([
       getAllCakes(),
-      getAllGiftHampers(),
-    ]);
+      getAllGiftHampers()
+    ])
+    const cakeItems = cakes
+      .map((cake) => generateCakeMerchantItem(cake, baseUrl, buildImageUrl))
+      .filter(isGeneratedItem)
+    const hamperItems = giftHampers
+      .map((hamper) => generateGiftHamperMerchantItem(hamper, baseUrl, buildImageUrl))
+      .filter(isGeneratedItem)
+    const items = [...cakeItems, ...hamperItems]
 
-    const baseUrl = "https://olgishcakes.co.uk";
-
-    // Generate XML feed
-    const xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+    return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>
     <title>Olgish Cakes - Ukrainian Bakery Products</title>
@@ -37,227 +55,38 @@ const generateProductFeed = unstable_cache(
     <language>en-GB</language>
     <lastBuildDate>${new Date().toISOString()}</lastBuildDate>
 
-    ${cakes.map(cake => generateCakeItem(cake, baseUrl)).join('\n')}
-    ${giftHampers.map(hamper => generateHamperItem(hamper, baseUrl)).join('\n')}
+    ${items.join('\n')}
 
   </channel>
-</rss>`;
-
-    return xmlContent;
+</rss>`
   },
-  ['merchant-center-feed'],
+  ['merchant-center-feed-v2'],
   {
     tags: ['cakes', 'cakes-by-post', 'merchant-center-feed']
   }
-);
+)
 
-// Google Merchant Center Product Feed XML Generator
 export async function GET() {
   try {
-    const xmlContent = await generateProductFeed();
+    const xmlContent = await generateProductFeed()
 
     return new NextResponse(xmlContent, {
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=0, s-maxage=0',
-      },
-    });
-
+        'Cache-Control': 'public, max-age=0, s-maxage=0'
+      }
+    })
   } catch (error) {
-    console.error('Error generating merchant center feed:', error);
-    console.error('Error details:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-    return NextResponse.json(
-      {
-        error: 'Failed to generate product feed',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
-      { status: 500 }
-    );
+    const safeError = toSafeOperationalError(error)
+
+    console.error('Merchant Center feed generation failed', {
+      operation: 'merchant-center-feed',
+      ...safeError
+    })
+
+    return privateJsonResponse({
+      error: 'Failed to generate product feed',
+      code: safeError.code
+    }, 500)
   }
-}
-
-function generateCakeItem(cake: Cake, baseUrl: string): string {
-  const productUrl = `${baseUrl}/cakes/${cake.slug.current}`;
-
-  // Enhanced image detection - try multiple sources
-  const mainImage: CakeImage | undefined = cake.mainImage?.asset?._ref
-    ? (cake.mainImage as CakeImage)
-    : cake.designs?.standard?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
-      cake.designs?.standard?.find((img: CakeImage) => img.asset?._ref) ||
-      cake.designs?.standard?.[0] ||
-      cake.designs?.individual?.find((img: CakeImage) => img.isMain && img.asset?._ref) ||
-      cake.designs?.individual?.find((img: CakeImage) => img.asset?._ref) ||
-      cake.designs?.individual?.[0] ||
-      // Fallback to images array (for legacy data like Honey Cake)
-      cake.images?.find((img: CakeImage) => img.asset?._ref) ||
-      cake.images?.[0];
-
-  const imageUrl = mainImage?.asset?._ref
-    ? escapeXml(urlFor(mainImage).width(800).height(800).url())
-    : `${baseUrl}/images/placeholder-cake.jpg`;
-
-  const price = cake.pricing?.standard || cake.pricing?.individual || 25;
-  const availability = 'in stock'
-
-  // Handle description properly (could be array or string)
-  let description = Array.isArray(cake.shortDescription)
-    ? cake.shortDescription.map((block: RichTextBlock) => block.children?.map((child: RichTextChild) => child.text).join('') || '').join(' ')
-    : Array.isArray(cake.description)
-    ? cake.description.map((block: RichTextBlock) => block.children?.map((child: RichTextChild) => child.text).join('') || '').join(' ')
-    : (typeof cake.shortDescription === 'string' ? cake.shortDescription : '') || (typeof cake.description === 'string' ? cake.description : '') || '';
-
-  // Enhance description for SEO if too short
-  if (!description || description.length < 100) {
-    const enhancedDescription = `${cake.name} - Traditional Ukrainian honey cake handmade with authentic recipes in Leeds, Yorkshire. Perfect for birthdays, celebrations, and special occasions. Available in various sizes with custom designs. Free delivery across Leeds and surrounding areas.`;
-    description = description ? `${description} ${enhancedDescription}` : enhancedDescription;
-  }
-
-  return `
-    <item>
-      <g:id>cake_${cake._id}</g:id>
-      <g:title>${escapeXml(cake.name)} - Traditional Ukrainian Honey Cake</g:title>
-      <g:description>${escapeXml(description)}</g:description>
-      <g:link>${productUrl}</g:link>
-      <g:image_link>${imageUrl}</g:image_link>
-      <g:price>${price} GBP</g:price>
-      <g:availability>${availability}</g:availability>
-      <g:condition>new</g:condition>
-      <g:brand>Olgish Cakes</g:brand>
-      <g:product_type>Food &amp; Drink &gt; Bakery &gt; Cakes</g:product_type>
-      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Baked Goods</g:google_product_category>
-      <g:custom_label_0>Ukrainian</g:custom_label_0>
-      <g:custom_label_1>Traditional</g:custom_label_1>
-      <g:custom_label_2>Handmade</g:custom_label_2>
-      <g:custom_label_3>Leeds Bakery</g:custom_label_3>
-      <g:shipping>
-        <g:country>GB</g:country>
-        <g:service>Standard delivery</g:service>
-        <g:price>0.00 GBP</g:price>
-      </g:shipping>
-      <g:tax>
-        <g:country>GB</g:country>
-        <g:rate>20</g:rate>
-        <g:tax_ship>y</g:tax_ship>
-      </g:tax>
-      ${cake.ingredients ? `<g:additional_image_link>${imageUrl}</g:additional_image_link>` : ''}
-      <g:age_group>all</g:age_group>
-      <g:gender>all</g:gender>
-      <g:size>${escapeXml(cake.size || '6')} inch</g:size>
-      <g:color>Traditional</g:color>
-      <g:material>Fresh ingredients</g:material>
-      <g:pattern>Traditional Ukrainian design</g:pattern>
-      <g:item_group_id>cake_${escapeXml(cake.category || 'honey-cake')}</g:item_group_id>
-      <g:adult>no</g:adult>
-      <g:multipack>1</g:multipack>
-      <g:is_bundle>no</g:is_bundle>
-      <g:energy_efficiency_class>not_applicable</g:energy_efficiency_class>
-      <g:min_energy_efficiency_class>not_applicable</g:min_energy_efficiency_class>
-      <g:max_energy_efficiency_class>not_applicable</g:max_energy_efficiency_class>
-      <g:unit_pricing_measure>each</g:unit_pricing_measure>
-      <g:unit_pricing_base_measure>1</g:unit_pricing_base_measure>
-      <g:sale_price>${price} GBP</g:sale_price>
-      <g:sale_price_effective_date>${new Date().toISOString().split('T')[0]}T00:00:00+00:00/${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}T23:59:59+00:00</g:sale_price_effective_date>
-      <g:installment>
-        <g:months>1</g:months>
-        <g:amount>${price} GBP</g:amount>
-      </g:installment>
-      <g:loyalty_points>
-        <g:name>Olgish Cakes Loyalty</g:name>
-        <g:points_value>${Math.round(price)}</g:points_value>
-        <g:ratio>1</g:ratio>
-      </g:loyalty_points>
-    </item>`;
-}
-
-function generateHamperItem(hamper: GiftHamper, baseUrl: string): string {
-  const productUrl = `${baseUrl}/cakes-by-post/${hamper.slug?.current || hamper._id}`;
-  const mainImage: GiftHamperImage | undefined = hamper.images?.find((img: GiftHamperImage) => img.isMain && img.asset?._ref) ||
-                   hamper.images?.find((img: GiftHamperImage) => img.asset?._ref) ||
-                   hamper.images?.[0];
-
-  const imageUrl = mainImage?.asset?._ref
-    ? escapeXml(urlFor(mainImage).width(800).height(800).url())
-    : `${baseUrl}/images/placeholder-hamper.jpg`;
-
-  const price = hamper.price || 35;
-
-  // Handle description properly (could be array or string)
-  let description = Array.isArray(hamper.shortDescription)
-    ? hamper.shortDescription.map((block: RichTextBlock) => block.children?.map((child: RichTextChild) => child.text).join('') || '').join(' ')
-    : Array.isArray(hamper.description)
-    ? hamper.description.map((block: RichTextBlock) => block.children?.map((child: RichTextChild) => child.text).join('') || '').join(' ')
-    : (typeof hamper.shortDescription === 'string' ? hamper.shortDescription : '') || (typeof hamper.description === 'string' ? hamper.description : '') || '';
-
-  // Enhance description for SEO if too short
-  if (!description || description.length < 100) {
-    const enhancedDescription = `${hamper.name} - Beautiful Ukrainian gift hamper handmade with authentic recipes in Leeds, Yorkshire. Perfect for special occasions, birthdays, anniversaries, and celebrations. Thoughtfully curated selection of traditional treats. Free delivery across Leeds and surrounding areas.`;
-    description = description ? `${description} ${enhancedDescription}` : enhancedDescription;
-  }
-
-  return `
-    <item>
-      <g:id>hamper_${hamper._id}</g:id>
-      <g:title>${escapeXml(hamper.name)} - Ukrainian Gift Hamper</g:title>
-      <g:description>${escapeXml(description)}</g:description>
-      <g:link>${productUrl}</g:link>
-      <g:image_link>${imageUrl}</g:image_link>
-      <g:price>${price} GBP</g:price>
-      <g:availability>in stock</g:availability>
-      <g:condition>new</g:condition>
-      <g:brand>Olgish Cakes</g:brand>
-      <g:product_type>Food &amp; Drink &gt; Gift Baskets &gt; Food Gift Baskets</g:product_type>
-      <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Gift Baskets</g:google_product_category>
-      <g:custom_label_0>Ukrainian</g:custom_label_0>
-      <g:custom_label_1>Gift Hamper</g:custom_label_1>
-      <g:custom_label_2>Handmade</g:custom_label_2>
-      <g:custom_label_3>Leeds Bakery</g:custom_label_3>
-      <g:shipping>
-        <g:country>GB</g:country>
-        <g:service>Standard delivery</g:service>
-        <g:price>0.00 GBP</g:price>
-      </g:shipping>
-      <g:tax>
-        <g:country>GB</g:country>
-        <g:rate>20</g:rate>
-        <g:tax_ship>y</g:tax_ship>
-      </g:tax>
-      <g:age_group>all</g:age_group>
-      <g:gender>all</g:gender>
-      <g:color>Traditional</g:color>
-      <g:material>Premium ingredients</g:material>
-      <g:pattern>Ukrainian traditional</g:pattern>
-      <g:item_group_id>hamper_${escapeXml(hamper.category || 'gift-hamper')}</g:item_group_id>
-      <g:adult>no</g:adult>
-      <g:multipack>1</g:multipack>
-      <g:is_bundle>yes</g:is_bundle>
-      <g:energy_efficiency_class>not_applicable</g:energy_efficiency_class>
-      <g:min_energy_efficiency_class>not_applicable</g:min_energy_efficiency_class>
-      <g:max_energy_efficiency_class>not_applicable</g:max_energy_efficiency_class>
-      <g:unit_pricing_measure>each</g:unit_pricing_measure>
-      <g:unit_pricing_base_measure>1</g:unit_pricing_base_measure>
-      <g:sale_price>${price} GBP</g:sale_price>
-      <g:sale_price_effective_date>${new Date().toISOString().split('T')[0]}T00:00:00+00:00/${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}T23:59:59+00:00</g:sale_price_effective_date>
-      <g:installment>
-        <g:months>1</g:months>
-        <g:amount>${price} GBP</g:amount>
-      </g:installment>
-      <g:loyalty_points>
-        <g:name>Olgish Cakes Loyalty</g:name>
-        <g:points_value>${Math.round(price)}</g:points_value>
-        <g:ratio>1</g:ratio>
-      </g:loyalty_points>
-    </item>`;
-}
-
-function escapeXml(text: string | undefined | null): string {
-  if (!text) return '';
-  return String(text)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 }

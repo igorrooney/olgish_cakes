@@ -1,4 +1,7 @@
+import 'server-only'
+
 import { jwtVerify } from 'jose'
+import { getAdminJwtSecret } from './jwt-secret.server'
 
 interface AdminAuthConfig {
   adminUsername: string
@@ -7,9 +10,15 @@ interface AdminAuthConfig {
 
 function getAdminAuthConfig(): AdminAuthConfig | null {
   const adminUsername = process.env.ADMIN_USERNAME?.trim()
-  const jwtSecret = process.env.JWT_SECRET?.trim()
 
-  if (!adminUsername || !jwtSecret) {
+  if (!adminUsername) {
+    return null
+  }
+
+  let jwtSecret: string
+  try {
+    jwtSecret = getAdminJwtSecret()
+  } catch {
     return null
   }
 

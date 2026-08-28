@@ -20,6 +20,7 @@
 import { generateAllProductSchemas } from "../lib/product-schemas.js";
 import { batchValidateProductSchemas, validateMPNUniqueness } from "../lib/schema-validation.js";
 import { MAX_PRODUCTS_FOR_SCHEMA } from "../lib/schema-constants.js";
+import { SCHEMA_VALIDATION_CAKES_QUERY } from '../lib/queries/cakes.js'
 import { createBlogArchiveBreadcrumbStructuredData } from '../lib/blog-archive-structured-data.js'
 import { validateSchema } from './validate-structured-data.js'
 import * as fs from 'fs';
@@ -117,34 +118,13 @@ async function fetchRealCakesFromSanity() {
     console.log('📡 Fetching real data from Sanity...');
     const fetchStartTime = performance.now();
     
-    // Fetch cakes and testimonial stats
-    const [cakes, testimonials] = await Promise.all([
-      client.fetch(`
-        *[_type == "cake"] | order(name asc) [0...${MAX_PRODUCTS_FOR_SCHEMA}] {
-          _id,
-          name,
-          slug,
-          pricing,
-          allergens,
-          ingredients,
-          mainImage {
-            asset-> {
-              url
-            }
-          },
-          description
-        }
-      `),
-      client.fetch(`*[_type == "testimonial"] { rating }`)
-    ]);
-    
-    // Calculate testimonial stats
-    const count = testimonials.length;
-    const averageRating = count > 0 
-      ? testimonials.reduce((sum: number, t: { rating: number }) => sum + (t.rating || 0), 0) / count
-      : 5.0;
-    
-    const stats = { count, averageRating };
+    const cakes = await client.fetch(
+      SCHEMA_VALIDATION_CAKES_QUERY,
+      { limit: MAX_PRODUCTS_FOR_SCHEMA }
+    )
+    const stats = { count: 0, averageRating: 0 }
+    const count = stats.count
+    const averageRating = stats.averageRating
     
     const fetchTime = performance.now() - fetchStartTime;
     console.log(`✅ Fetched ${cakes.length} cakes and ${count} testimonials in ${fetchTime.toFixed(2)}ms`);
@@ -188,7 +168,7 @@ async function validateAllSchemas() {
       stats = realData.stats;
     } else {
       cakes = mockCakes;
-      stats = { count: 16, averageRating: 4.8 };
+      stats = { count: 0, averageRating: 0 };
       console.log(`📊 Using ${mockCakes.length} mock cakes for validation...\n`);
     }
 

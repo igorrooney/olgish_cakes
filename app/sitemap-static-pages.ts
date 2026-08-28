@@ -36,7 +36,7 @@ export const coreStaticSitemapPages: StaticSitemapEntry[] = [
   createStaticSitemapEntry('/', '2026-03-03', 'daily', 1.0),
   createStaticSitemapEntry('/cakes', '2026-03-17', 'daily', 0.9),
   createStaticSitemapEntry('/cakes-by-post', '2026-03-12', 'daily', 0.88),
-  createStaticSitemapEntry('/get-custom-quote', '2026-03-17', 'weekly', 0.9),
+  createStaticSitemapEntry('/custom-cakes', '2026-07-29', 'weekly', 0.9),
   createStaticSitemapEntry('/contact', '2026-07-25', 'monthly', 0.8),
   createStaticSitemapEntry('/faqs', undefined, 'monthly', 0.72),
   createStaticSitemapEntry('/blog', '2025-10-04', 'weekly', 0.7)
@@ -65,7 +65,7 @@ export const serviceStaticSitemapPages: StaticSitemapEntry[] = []
 export const communityStaticSitemapPages: StaticSitemapEntry[] = []
 
 export const legalStaticSitemapPages: StaticSitemapEntry[] = [
-  createStaticSitemapEntry('/privacy', '2026-07-28', 'yearly', 0.3),
+  createStaticSitemapEntry('/privacy', '2026-08-25', 'yearly', 0.3),
   createStaticSitemapEntry('/terms', '2026-07-28', 'yearly', 0.3),
   createStaticSitemapEntry('/cookies', '2026-07-28', 'yearly', 0.3)
 ]

@@ -74,4 +74,25 @@ describe('CatalogPageTemplate', () => {
     expect(mockedCakesTabletCatalog.mock.calls[0][0].cakes).toHaveLength(8)
     expect(mockedCakesTabletCatalog.mock.calls[0][0].cakes[7]?.href).toBe('/cakes/cake-8')
   })
+
+  it('does not advertise unsupported round-the-clock opening hours', () => {
+    const { container } = render(
+      <CatalogPageTemplate
+        variant='cakes'
+        heading='Traditional Ukrainian Cakes Leeds'
+        intro='Browse handmade Ukrainian cakes.'
+        canonicalPath='/cakes'
+        localBusinessDescription='Handmade cakes in Leeds.'
+        catalogData={createCatalogData([])}
+        initialFilterDefaults={{ byPost: false, custom: true }}
+      />
+    )
+    const scripts = container.querySelectorAll('script[type="application/ld+json"]')
+    const bakeryScript = Array.from(scripts).find((script) =>
+      script.textContent?.includes('"@type":"Bakery"')
+    )
+    const bakeryJsonLd = JSON.parse(bakeryScript?.textContent || '{}')
+
+    expect(bakeryJsonLd.openingHours).toBeUndefined()
+  })
 })

@@ -55,7 +55,11 @@ describe('fetchCollections', () => {
     const result = await getHomepageCollections()
 
     expect(result).toEqual([])
-    expect(consoleSpy).toHaveBeenCalledWith('Error fetching homepage collections:', expect.any(Error))
+    expect(consoleSpy).toHaveBeenCalledWith('Sanity read failed', {
+      operation: 'sanity.fetch-homepage-cake-collections',
+      code: 'OPERATION_FAILED'
+    })
+    expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Fetch failed')
     consoleSpy.mockRestore()
   })
 
@@ -206,7 +210,11 @@ describe('fetchCollections', () => {
     const result = await getHomepageCollections()
 
     expect(result.map((collection) => collection._id)).toEqual(['collection-2', 'collection-1'])
-    expect(consoleSpy).toHaveBeenCalledWith('Error fetching collections display order settings:', expect.any(Error))
+    expect(consoleSpy).toHaveBeenCalledWith('Sanity read failed', {
+      operation: 'sanity.fetch-collection-display-order',
+      code: 'OPERATION_FAILED'
+    })
+    expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Fetch failed')
     consoleSpy.mockRestore()
   })
 
@@ -228,7 +236,11 @@ describe('fetchCollections', () => {
     const result = await getHomepageGiftHamperCollections()
 
     expect(result).toEqual([])
-    expect(consoleSpy).toHaveBeenCalledWith('Error fetching homepage gift hamper collections:', expect.any(Error))
+    expect(consoleSpy).toHaveBeenCalledWith('Sanity read failed', {
+      operation: 'sanity.fetch-homepage-gift-hamper-collections',
+      code: 'OPERATION_FAILED'
+    })
+    expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Fetch failed')
     consoleSpy.mockRestore()
   })
 
@@ -314,7 +326,11 @@ describe('fetchCollections', () => {
     const result = await getHomepageGiftHamperCollections()
 
     expect(result.map((collection) => collection._id)).toEqual(['gift-2', 'gift-1'])
-    expect(consoleSpy).toHaveBeenCalledWith('Error fetching collections display order settings:', expect.any(Error))
+    expect(consoleSpy).toHaveBeenCalledWith('Sanity read failed', {
+      operation: 'sanity.fetch-collection-display-order',
+      code: 'OPERATION_FAILED'
+    })
+    expect(JSON.stringify(consoleSpy.mock.calls)).not.toContain('Fetch failed')
     consoleSpy.mockRestore()
   })
 })

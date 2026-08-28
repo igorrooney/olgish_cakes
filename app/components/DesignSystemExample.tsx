@@ -89,8 +89,8 @@ export function DesignSystemExample() {
             <Grid item xs={12} md={6}>
               <FeatureCard
                 icon={<LocalShippingIcon />}
-                title="Free UK Delivery"
-                description="All orders include free delivery across the United Kingdom with tracking."
+                title="UK delivery options"
+                description="Tracked UK delivery is available for suitable postal products; other orders may be collected or delivered by arrangement."
               />
             </Grid>
           </Grid>
@@ -154,7 +154,7 @@ export function DesignSystemExample() {
 
           <StyledAccordion title="Delivery Information">
             <BodyText sx={{ mb: spacing.md }}>
-              We offer free UK delivery on all orders. Delivery typically takes 3-5 working days.
+              Delivery options and timings vary by product, destination and agreed fulfilment date.
             </BodyText>
             <BodyText>
               For guaranteed delivery on a specific date, please contact us directly.
@@ -194,7 +194,7 @@ export function DesignSystemExample() {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: spacing.md }}>
             <RatingBadge rating={5} />
-            <BodyText>Excellent! 5-star rating from our customers</BodyText>
+            <BodyText>Read customer feedback from its original source</BodyText>
           </Box>
         </Box>
 

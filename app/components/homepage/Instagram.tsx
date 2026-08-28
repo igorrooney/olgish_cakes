@@ -6,6 +6,7 @@ import {
 } from '@/app/utils/fetchInstagramPosts'
 import { DeferredInstagramCarousel } from './DeferredInstagramCarousel'
 import { mapInstagramPostToCarouselPost } from './instagramCarouselContent'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 const instagramProfileUrl = 'https://www.instagram.com/olgish_cakes/'
 const instagramProfileName = 'Olgish Cakes'
@@ -30,14 +31,20 @@ export async function Instagram({ limit }: InstagramProps = {}) {
   try {
     posts = await getLatestInstagramPosts({ limit: resolvedLimit })
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
+    const safeError = toSafeOperationalError(error)
     if (isRecoverableInstagramError(error)) {
       console.warn(
         'Instagram posts unavailable. Refresh INSTAGRAM_ACCESS_TOKEN if the token has expired.',
-        message
+        {
+          operation: 'instagram.posts.fetch-homepage',
+          ...safeError
+        }
       )
     } else {
-      console.error('Error fetching Instagram posts:', message)
+      console.error('Instagram posts fetch failed', {
+        operation: 'instagram.posts.fetch-homepage',
+        ...safeError
+      })
     }
   }
 

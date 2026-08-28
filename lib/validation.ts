@@ -1,4 +1,9 @@
 import { z } from 'zod'
+import {
+  addSensitiveDataConsentIssue,
+  dietaryHealthConsentSchema,
+  dietaryHealthInformationSchema
+} from '@/lib/legal/sensitive-data-consent'
 
 // UK phone number validation
 // Validates UK phone numbers in various formats
@@ -139,16 +144,20 @@ export const contactFormSchema = z.object({
   note: optionalContactText(2000, 'Note'),
   giftNote: optionalContactText(500, 'Gift note'),
   referrer: optionalContactText(500, 'Referrer'),
+  dietaryHealthInformation: dietaryHealthInformationSchema,
+  dietaryHealthConsent: dietaryHealthConsentSchema,
   isOrderForm: z.boolean().optional()
-}).refine((data) => {
+}).superRefine((data, context) => {
+  addSensitiveDataConsentIssue(data, context)
+
   // Message is required if not an order form
   if (!data.isOrderForm && (!data.message || data.message.trim().length < 10)) {
-    return false
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Message must be at least 10 characters when not submitting an order',
+      path: ['message']
+    })
   }
-  return true
-}, {
-  message: 'Message must be at least 10 characters when not submitting an order',
-  path: ['message']
 })
 
 // Quote form validation
@@ -189,7 +198,11 @@ export const workshopEnquirySchema = z.object({
     }),
   decorationTheme: z.string().trim().max(160).optional(),
   brief: z.string().trim().min(12, 'Please add a few details about the event').max(2000),
+  dietaryHealthInformation: dietaryHealthInformationSchema,
+  dietaryHealthConsent: dietaryHealthConsentSchema,
   csrfToken: z.string().min(1, 'CSRF token is required')
+}).superRefine((values, context) => {
+  addSensitiveDataConsentIssue(values, context)
 })
 
 // Order validation

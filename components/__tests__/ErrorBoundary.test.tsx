@@ -102,14 +102,15 @@ describe('ErrorBoundary', () => {
       expect(screen.getByText('Something went wrong')).toBeInTheDocument()
     })
 
-    it('should display error message', () => {
+    it('does not display raw error details', () => {
       render(
         <ErrorBoundary>
           <ThrowError shouldThrow={true} />
         </ErrorBoundary>
       )
 
-      expect(screen.getByText('Test error')).toBeInTheDocument()
+      expect(screen.queryByText('Test error')).not.toBeInTheDocument()
+      expect(screen.getByText('An unexpected error occurred')).toBeInTheDocument()
     })
 
     it('should show default message for errors without message', () => {
@@ -261,7 +262,7 @@ describe('ErrorBoundary', () => {
       )
 
       // Should catch error and update state
-      expect(screen.getByText('Test error')).toBeInTheDocument()
+      expect(screen.getByText('An unexpected error occurred')).toBeInTheDocument()
     })
 
     it('should call componentDidCatch', () => {
@@ -285,7 +286,7 @@ describe('ErrorBoundary', () => {
       )
 
       const typography = screen.getAllByTestId('typography')
-      const errorMessage = typography.find(t => t.textContent === 'Test error')
+      const errorMessage = typography.find(t => t.textContent === 'An unexpected error occurred')
       expect(errorMessage).toBeInTheDocument()
     })
 

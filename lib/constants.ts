@@ -28,17 +28,6 @@ export const BUSINESS_CONSTANTS = {
     facebook: 'https://facebook.com/olgishcakes',
     whatsapp: 'https://wa.me/447867218194',
     youtube: 'https://www.youtube.com/channel/UCxv3i6tL5v5KZNjT1z1Rx1Q'
-  },
-  
-  // Business Hours (if needed in the future)
-  HOURS: {
-    monday: 'Online orders: 24/7',
-    tuesday: 'Online orders: 24/7',
-    wednesday: 'Online orders: 24/7',
-    thursday: 'Online orders: 24/7',
-    friday: 'Online orders: 24/7',
-    saturday: 'Online orders: 24/7',
-    sunday: 'Online orders: 24/7'
   }
 } as const
 

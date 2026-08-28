@@ -59,11 +59,19 @@ export function LegalPageNavigation({
   )
 }
 
-export function LegalLastUpdated() {
+type LegalLastUpdatedProps = {
+  date?: string
+  dateTime?: string
+}
+
+export function LegalLastUpdated({
+  date = CURRENT_LEGAL_DATE,
+  dateTime = CURRENT_LEGAL_DATE_ISO
+}: LegalLastUpdatedProps = {}) {
   return (
     <p className='font-sans text-xs uppercase tracking-[0.2em] text-base-content/60'>
       Last updated:{' '}
-      <time dateTime={CURRENT_LEGAL_DATE_ISO}>{CURRENT_LEGAL_DATE}</time>
+      <time dateTime={dateTime}>{date}</time>
     </p>
   )
 }

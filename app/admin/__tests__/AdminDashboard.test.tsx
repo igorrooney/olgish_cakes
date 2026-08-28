@@ -2,6 +2,7 @@
  * @jest-environment jsdom
  */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AdminDashboard } from '../AdminDashboard'
 import type { Order } from '@/types/order'
 import type { AnchorHTMLAttributes, ReactNode } from 'react'
@@ -44,6 +45,21 @@ const makeOrder = (overrides: Partial<Order>): Order => ({
 
 let mockFetch: jest.MockedFunction<typeof fetch>
 
+const renderDashboard = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false }
+    }
+  })
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <AdminDashboard />
+    </QueryClientProvider>
+  )
+}
+
 describe('AdminDashboard', () => {
   beforeEach(() => {
     global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>
@@ -72,7 +88,7 @@ describe('AdminDashboard', () => {
         })
       } as Response)
 
-    render(<AdminDashboard />)
+    renderDashboard()
 
     expect(screen.getByLabelText('Loading dashboard')).toBeInTheDocument()
 
@@ -100,6 +116,7 @@ describe('AdminDashboard', () => {
     })
     expect(screen.getByRole('link', { name: 'Open enquiries' })).toHaveAttribute('href', '/admin/enquiries')
     expect(screen.getByRole('link', { name: 'View earnings' })).toHaveAttribute('href', '/admin/earnings')
+    expect(screen.getByRole('link', { name: 'Review retention' })).toHaveAttribute('href', '/admin/privacy-retention')
     expect(screen.getAllByText('#OC-1001')).toHaveLength(2)
     expect(screen.getAllByText('Jane Customer').length).toBeGreaterThan(0)
   })
@@ -115,7 +132,7 @@ describe('AdminDashboard', () => {
         json: async () => ({ totalRevenue: 0, currentMonth: 0, averageOrderValue: 0 })
       } as Response)
 
-    render(<AdminDashboard />)
+    renderDashboard()
 
     await waitFor(() => {
       expect(screen.getByText('No recent orders')).toBeInTheDocument()
@@ -153,7 +170,7 @@ describe('AdminDashboard', () => {
         json: async () => ({ totalRevenue: 480, currentMonth: 120, averageOrderValue: 80 })
       } as Response)
 
-    render(<AdminDashboard />)
+    renderDashboard()
 
     await waitFor(() => {
       expect(screen.getByText('Next due')).toBeInTheDocument()
@@ -174,7 +191,7 @@ describe('AdminDashboard', () => {
         json: async () => ({ totalRevenue: 0 })
       } as Response)
 
-    render(<AdminDashboard />)
+    renderDashboard()
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent('Dashboard data could not be loaded')
@@ -198,7 +215,7 @@ describe('AdminDashboard', () => {
         json: async () => ({ success: true })
       } as Response)
 
-    render(<AdminDashboard />)
+    renderDashboard()
 
     const button = await screen.findByRole('button', { name: 'Revalidate cache' })
     fireEvent.click(button)

@@ -18,6 +18,14 @@ jest.mock('@/lib/admin/auth-token', () => ({
   verifyAdminAuthToken: jest.fn()
 }))
 
+const mockLoggerError = jest.fn()
+
+jest.mock('@/lib/logger', () => ({
+  logger: {
+    error: (...args: unknown[]) => mockLoggerError(...args)
+  }
+}))
+
 import { NextRequest } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { GET, POST } from '../route'
@@ -117,9 +125,10 @@ describe('/api/admin/clear-cache', () => {
     expect(invalidateCache).not.toHaveBeenCalled()
   })
 
-  it('returns 500 when cache invalidation fails', async () => {
+  it('returns a generic 500 and never logs raw invalidation details', async () => {
     verifyAdminAuthToken.mockResolvedValue(true)
-    invalidateCache.mockRejectedValue(new Error('boom'))
+    const sentinel = 'PRIVATE_CACHE_PROVIDER_MESSAGE'
+    invalidateCache.mockRejectedValue(new Error(sentinel))
 
     const request = new NextRequest('http://localhost/api/admin/clear-cache', {
       method: 'POST',
@@ -135,8 +144,15 @@ describe('/api/admin/clear-cache', () => {
     expect(response.status).toBe(500)
     expect(json).toEqual({
       success: false,
-      error: 'Cache clear failed',
-      details: 'boom'
+      error: 'Cache clear failed'
     })
+    expect(mockLoggerError).toHaveBeenCalledWith(
+      'Admin cache clear failed',
+      {
+        operation: 'admin.clear-cache',
+        code: 'OPERATION_FAILED'
+      }
+    )
+    expect(JSON.stringify({ json, logs: mockLoggerError.mock.calls })).not.toContain(sentinel)
   })
 })

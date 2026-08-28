@@ -1,87 +1,17 @@
-import { groq } from "next-sanity";
 import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
+import {
+  buildMarketScheduleSearchQuery,
+  FEATURED_SCHEDULE_QUERY,
+  MARKET_SCHEDULE_QUERY,
+  UPCOMING_SCHEDULE_QUERY
+} from '@/lib/queries/marketSchedule'
 import type {
   MarketSchedule,
   MarketSchedulePreview,
   UpcomingEvent,
   MarketScheduleFilters,
 } from "@/app/types/marketSchedule";
-
-// GROQ query for basic market schedule data
-const MARKET_SCHEDULE_QUERY = groq`
-  *[_type == "marketSchedule" && active == true] | order(date asc) {
-    _id,
-    title,
-    location,
-    googleMapsUrl,
-    date,
-    startTime,
-    endTime,
-    description,
-    specialOffers,
-    website,
-    contactInfo,
-    featured,
-    active,
-    weatherDependent,
-    image {
-      asset-> {
-        _ref,
-        _type,
-        url
-      },
-      alt,
-      hotspot,
-      crop
-    }
-  }
-`;
-
-// GROQ query for featured events
-const FEATURED_SCHEDULE_QUERY = groq`
-  *[_type == "marketSchedule" && active == true && featured == true] | order(date asc) {
-    _id,
-    title,
-    location,
-    googleMapsUrl,
-    date,
-    startTime,
-    endTime,
-    description,
-    specialOffers,
-    website,
-    contactInfo,
-    featured,
-    active,
-    weatherDependent,
-    image {
-      asset-> {
-        _ref,
-        _type,
-        url
-      },
-      alt,
-      hotspot,
-      crop
-    }
-  }
-`;
-
-// GROQ query for upcoming events (next 30 days)
-const UPCOMING_SCHEDULE_QUERY = groq`
-  *[_type == "marketSchedule" && active == true && date >= $today && date <= $futureDate] | order(date asc) {
-    _id,
-    title,
-    location,
-    date,
-    startTime,
-    endTime,
-    featured,
-    active,
-    description,
-    specialOffers
-  }
-`;
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 /**
  * Fetch all active market schedule events
@@ -96,7 +26,10 @@ export async function getMarketSchedule(): Promise<MarketSchedule[]> {
     );
     return schedule || [];
   } catch (error) {
-    console.error("Error fetching market schedule:", error);
+    console.error("Sanity read failed", {
+      operation: "sanity.market-schedule.fetch",
+      ...toSafeOperationalError(error),
+    });
     return [];
   }
 }
@@ -108,13 +41,16 @@ export async function getFeaturedMarketEvents(limit: number = 3): Promise<Market
   try {
     const config = getCacheConfig('marketSchedule')
     const events = await cachedSanityFetch<MarketSchedule[]>(
-      `${FEATURED_SCHEDULE_QUERY}[0...${limit}]`,
+      FEATURED_SCHEDULE_QUERY,
       { limit },
       config
     );
     return events || [];
   } catch (error) {
-    console.error("Error fetching featured market events:", error);
+    console.error("Sanity read failed", {
+      operation: "sanity.market-schedule.fetch-featured",
+      ...toSafeOperationalError(error),
+    });
     return [];
   }
 }
@@ -129,14 +65,17 @@ export async function getUpcomingEvents(limit: number = 5): Promise<UpcomingEven
 
     const config = getCacheConfig('marketSchedule')
     const events = await cachedSanityFetch<MarketSchedulePreview[]>(
-      `${UPCOMING_SCHEDULE_QUERY}[0...${limit}]`,
+      UPCOMING_SCHEDULE_QUERY,
       { today, futureDate, limit },
       config
     );
 
     return (events || []).map(event => enhanceEventWithDateInfo(event));
   } catch (error) {
-    console.error("Error fetching upcoming events:", error);
+    console.error("Sanity read failed", {
+      operation: "sanity.market-schedule.fetch-upcoming",
+      ...toSafeOperationalError(error),
+    });
     return [];
   }
 }
@@ -148,43 +87,36 @@ export async function searchMarketEvents(
   filters: MarketScheduleFilters = {}
 ): Promise<MarketSchedule[]> {
   try {
-    let query = '*[_type == "marketSchedule" && active == true';
     const params: Record<string, string> = {};
-
-    if (filters.featured) {
-      query += " && featured == true";
-    }
 
     if (filters.upcoming) {
       const today = new Date().toISOString().split("T")[0];
-      query += " && date >= $today";
       params.today = today;
     }
 
     if (filters.dateFrom) {
-      query += " && date >= $dateFrom";
       params.dateFrom = filters.dateFrom;
     }
 
     if (filters.dateTo) {
-      query += " && date <= $dateTo";
       params.dateTo = filters.dateTo;
     }
 
     if (filters.location) {
-      query += " && location match $location";
       params.location = `*${filters.location}*`;
     }
 
-    query += "] | order(date asc) {";
-    query += MARKET_SCHEDULE_QUERY.split("] {")[1];
+    const query = buildMarketScheduleSearchQuery(filters)
 
     const config = getCacheConfig('marketSchedule')
     const events = await cachedSanityFetch<MarketSchedule[]>(query, params, config);
 
     return events || [];
   } catch (error) {
-    console.error("Error searching market events:", error);
+    console.error("Sanity read failed", {
+      operation: "sanity.market-schedule.search",
+      ...toSafeOperationalError(error),
+    });
     return [];
   }
 }
@@ -241,7 +173,10 @@ export async function getNextUpcomingEvent(): Promise<UpcomingEvent | null> {
     const events = await getUpcomingEvents(1);
     return events.length > 0 ? events[0] : null;
   } catch (error) {
-    console.error("Error fetching next upcoming event:", error);
+    console.error("Sanity read failed", {
+      operation: "sanity.market-schedule.fetch-next",
+      ...toSafeOperationalError(error),
+    });
     return null;
   }
 }

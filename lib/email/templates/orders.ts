@@ -29,6 +29,8 @@ const cakesByPostConfirmedInput = createDefaultScenarioInput({
   paymentStatus: 'pending',
   referrer: 'cakes-by-post',
   status: 'confirmed',
+  customerFacingOfferDescription: 'Test final offer: one personalised cake card for postal delivery.',
+  allergenStatement: 'TEST PRODUCT ONLY — Contains WHEAT (gluten), EGG and MILK.',
   message: 'test message',
   note: undefined,
   giftNote: 'test gift note',
@@ -66,6 +68,8 @@ const statusUpdateScenarios = [
       status: 'confirmed',
       titleOverride: 'Final Order Offer #OC-2026-1001 - Olgish Cakes',
       headingOverride: 'Your final order offer',
+      customerFacingOfferDescription: 'Test final offer: one handmade honey cake for collection.',
+      allergenStatement: 'TEST PRODUCT ONLY — Contains WHEAT (gluten), EGG and MILK.',
       statusMessage: 'This is our final written offer. Please accept it in writing or make the requested payment before the contract starts.'
     })
   },

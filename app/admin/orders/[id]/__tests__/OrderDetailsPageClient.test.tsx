@@ -158,6 +158,129 @@ describe('OrderDetailsPageClient', () => {
     expect(screen.getByRole('link', { name: 'Back to orders' })).toHaveAttribute('href', '/admin/orders')
   })
 
+  it('renders active dietary-health consent evidence and the withdrawal control', async () => {
+    const healthInformation = 'Sentinel dietary-health information for authorised staff only.'
+    mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder({
+      metadata: {
+        dietaryHealthInformation: healthInformation,
+        dietaryHealthConsent: true,
+        dietaryHealthConsentVersion: '2026-07-29',
+        dietaryHealthConsentedAt: '2026-08-20T10:15:00.000Z'
+      },
+      retentionLifecycle: {
+        dietaryHealthRetentionDueAt: '2027-02-20T10:15:00.000Z',
+        legalHold: false
+      }
+    })))
+
+    renderWithQueryClient(<OrderDetailsPageClient orderId='26042009000001' />)
+
+    await waitFor(() => {
+      expect(screen.getByText(healthInformation)).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('Protected dietary health information')).toBeInTheDocument()
+    expect(screen.getByText('2026-07-29')).toBeInTheDocument()
+    expect(screen.getByText('Health-information retention deadline:')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Record consent withdrawal' })).toBeInTheDocument()
+    expect(screen.queryByText('The information was erased after consent was withdrawn.')).not.toBeInTheDocument()
+  })
+
+  it('offers server-now scheduling only after a terminal order status', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder({
+      status: 'completed',
+      metadata: {
+        dietaryHealthInformation: 'Protected information',
+        dietaryHealthConsent: true,
+        dietaryHealthConsentVersion: '2026-07-29',
+        dietaryHealthConsentedAt: '2026-08-20T10:15:00.000Z'
+      },
+      retentionLifecycle: {
+        legalHold: false
+      }
+    })))
+
+    renderWithQueryClient(<OrderDetailsPageClient orderId='26042009000001' />)
+
+    expect(await screen.findByRole('button', {
+      name: 'Start 30-day health retention period'
+    })).toBeInTheDocument()
+  })
+
+  it('does not treat refunded payment alone as terminal for health scheduling', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder({
+      status: 'pending',
+      pricing: {
+        subtotal: 138,
+        deliveryFee: 0,
+        discount: 0,
+        total: 138,
+        paymentStatus: 'refunded',
+        paymentMethod: 'card'
+      },
+      metadata: {
+        dietaryHealthInformation: 'Protected information',
+        dietaryHealthConsent: true,
+        dietaryHealthConsentVersion: '2026-07-29',
+        dietaryHealthConsentedAt: '2026-08-20T10:15:00.000Z'
+      },
+      retentionLifecycle: {
+        legalHold: false
+      }
+    })))
+
+    renderWithQueryClient(<OrderDetailsPageClient orderId='26042009000001' />)
+
+    await waitFor(() => {
+      expect(screen.getByText('Protected information')).toBeInTheDocument()
+    })
+    expect(screen.queryByRole('button', {
+      name: 'Start 30-day health retention period'
+    })).not.toBeInTheDocument()
+  })
+
+  it('renders withdrawn dietary-health evidence without another withdrawal control', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder({
+      metadata: {
+        dietaryHealthConsent: false,
+        dietaryHealthConsentVersion: '2026-07-29',
+        dietaryHealthConsentedAt: '2026-08-20T10:15:00.000Z',
+        dietaryHealthWithdrawnAt: '2026-08-21T11:30:00.000Z'
+      }
+    })))
+
+    renderWithQueryClient(<OrderDetailsPageClient orderId='26042009000001' />)
+
+    expect(await screen.findByText('The information was erased after consent was withdrawn.')).toBeInTheDocument()
+    expect(screen.getByText('Withdrawn at:')).toBeInTheDocument()
+    expect(screen.getByText('2026-07-29')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Record consent withdrawal' })).not.toBeInTheDocument()
+  })
+
+  it('labels scheduled dietary-health erasure separately from consent withdrawal', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder({
+      metadata: {
+        dietaryHealthConsent: false,
+        dietaryHealthConsentVersion: '2026-07-29',
+        dietaryHealthConsentedAt: '2026-08-20T10:15:00.000Z'
+      },
+      retentionLifecycle: {
+        dietaryHealthRetentionDueAt: '2027-02-20T10:15:00.000Z',
+        dietaryHealthErasedAt: '2027-02-20T10:30:00.000Z',
+        legalHold: false
+      }
+    })))
+
+    renderWithQueryClient(<OrderDetailsPageClient orderId='26042009000001' />)
+
+    expect(await screen.findByText(/erased under the scheduled retention policy/i)).toBeInTheDocument()
+    expect(screen.getByText(/This is not a consent-withdrawal record\./)).toBeInTheDocument()
+    expect(screen.getByText('Health-information retention deadline:')).toBeInTheDocument()
+    expect(screen.getByText('Retention erasure completed at:')).toBeInTheDocument()
+    expect(screen.queryByText('The information was erased after consent was withdrawn.')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Record consent withdrawal' })).not.toBeInTheDocument()
+  })
+
   it('normalizes ISO date values for the date input', async () => {
     mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder({
       delivery: {
@@ -873,13 +996,8 @@ describe('OrderDetailsPageClient', () => {
     expect(screen.queryByText('Using buyer name because no separate recipient was stored.')).not.toBeInTheDocument()
   })
 
-  it('permanently deletes the order and returns to the orders list', async () => {
-    mockFetch
-      .mockResolvedValueOnce(jsonResponse(makeOrder()))
-      .mockResolvedValueOnce(jsonResponse({
-        success: true,
-        message: 'Order permanently deleted from Supabase'
-      }))
+  it('routes permanent deletion through the selective privacy retention centre', async () => {
+    mockFetch.mockResolvedValueOnce(jsonResponse(makeOrder()))
 
     renderWithQueryClient(<OrderDetailsPageClient orderId='26042009000001' />)
 
@@ -887,29 +1005,11 @@ describe('OrderDetailsPageClient', () => {
       expect(screen.getByRole('heading', { name: '#26042009000001' })).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Delete order' }))
-    fireEvent.change(screen.getByLabelText('Admin password'), {
-      target: { value: 'correct-password' }
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Delete permanently' }))
-
-    await waitFor(() => {
-      expect(mockFetch).toHaveBeenLastCalledWith('/api/orders/26042009000001', expect.objectContaining({
-        method: 'DELETE',
-        credentials: 'include',
-        signal: expect.any(AbortSignal)
-      }))
-    })
-
-    const requestBody = JSON.parse(String(mockFetch.mock.calls[1]?.[1]?.body)) as {
-      password?: string
-      permanent?: boolean
-    }
-
-    expect(requestBody).toEqual({
-      password: 'correct-password',
-      permanent: true
-    })
-    expect(mockRouterPush).toHaveBeenCalledWith('/admin/orders')
+    expect(screen.getByRole('link', { name: 'Open privacy retention centre' })).toHaveAttribute(
+      'href',
+      '/admin/privacy-retention'
+    )
+    expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument()
+    expect(mockFetch).toHaveBeenCalledTimes(1)
   })
 })

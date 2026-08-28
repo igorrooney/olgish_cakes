@@ -10,6 +10,16 @@ const reminderDateFormatter = new Intl.DateTimeFormat('en-GB', {
   day: '2-digit'
 })
 
+class InstagramTokenReminderConfigurationError extends Error {
+  readonly code: string
+
+  constructor(code: string, message: string) {
+    super(message)
+    this.name = 'InstagramTokenReminderConfigurationError'
+    this.code = code
+  }
+}
+
 export interface InstagramTokenReminderStatus {
   alertWindowDays: number
   daysRemaining: number
@@ -42,13 +52,19 @@ export function getInstagramTokenExpiresAt(env: NodeJS.ProcessEnv): string {
   const rawValue = env.INSTAGRAM_TOKEN_EXPIRES_AT?.trim()
 
   if (!rawValue) {
-    throw new Error('Missing INSTAGRAM_TOKEN_EXPIRES_AT')
+    throw new InstagramTokenReminderConfigurationError(
+      'INSTAGRAM_TOKEN_EXPIRY_MISSING',
+      'Missing INSTAGRAM_TOKEN_EXPIRES_AT'
+    )
   }
 
   const expiresAt = new Date(rawValue)
 
   if (Number.isNaN(expiresAt.getTime())) {
-    throw new Error('INSTAGRAM_TOKEN_EXPIRES_AT must be a valid ISO-8601 date')
+    throw new InstagramTokenReminderConfigurationError(
+      'INSTAGRAM_TOKEN_EXPIRY_INVALID',
+      'INSTAGRAM_TOKEN_EXPIRES_AT must be a valid ISO-8601 date'
+    )
   }
 
   return expiresAt.toISOString()
@@ -66,7 +82,10 @@ export function getInstagramTokenReminderStatus({
   const expiresAtDate = new Date(expiresAt)
 
   if (Number.isNaN(expiresAtDate.getTime())) {
-    throw new Error('expiresAt must be a valid ISO-8601 date')
+    throw new InstagramTokenReminderConfigurationError(
+      'INSTAGRAM_TOKEN_EXPIRY_INVALID',
+      'expiresAt must be a valid ISO-8601 date'
+    )
   }
 
   const millisecondsRemaining = expiresAtDate.getTime() - now.getTime()

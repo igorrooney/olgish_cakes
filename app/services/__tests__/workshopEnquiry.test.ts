@@ -41,7 +41,7 @@ describe('workshopEnquiry service', () => {
       json: async () => ({})
     }) as jest.Mock
 
-    await expect(fetchCsrfToken()).rejects.toThrow('Missing CSRF token')
+    await expect(fetchCsrfToken(new AbortController().signal)).rejects.toThrow('Missing CSRF token')
   })
 
   it('builds form data and omits empty optional values', () => {
@@ -107,7 +107,7 @@ describe('workshopEnquiry service', () => {
     }) as jest.Mock
 
     await expect(
-      submitWorkshopEnquiry(new FormData())
+      submitWorkshopEnquiry(new FormData(), new AbortController().signal)
     ).rejects.toMatchObject({
       message: 'Validation failed. Please check the form fields.',
       fieldErrors: {
@@ -124,7 +124,7 @@ describe('workshopEnquiry service', () => {
       })
     }) as jest.Mock
 
-    await expect(submitWorkshopEnquiry(new FormData())).rejects.toThrow(
+    await expect(submitWorkshopEnquiry(new FormData(), new AbortController().signal)).rejects.toThrow(
       'Too many requests. Please try again later.'
     )
   })
@@ -137,7 +137,7 @@ describe('workshopEnquiry service', () => {
       })
     }) as jest.Mock
 
-    await expect(submitWorkshopEnquiry(new FormData())).rejects.toThrow(fallbackErrorMessage)
+    await expect(submitWorkshopEnquiry(new FormData(), new AbortController().signal)).rejects.toThrow(fallbackErrorMessage)
   })
 
   it('resolves saved enquiries that include a customer confirmation warning', async () => {
@@ -149,7 +149,7 @@ describe('workshopEnquiry service', () => {
       })
     }) as jest.Mock
 
-    await expect(submitWorkshopEnquiry(new FormData())).resolves.toEqual({
+    await expect(submitWorkshopEnquiry(new FormData(), new AbortController().signal)).resolves.toEqual({
       message: 'Workshop enquiry submitted successfully',
       warning: customerConfirmationFailureMessage
     })
@@ -161,7 +161,7 @@ describe('workshopEnquiry service', () => {
       json: async () => ({})
     }) as jest.Mock
 
-    await expect(submitWorkshopEnquiry(new FormData())).rejects.toThrow(fallbackErrorMessage)
+    await expect(submitWorkshopEnquiry(new FormData(), new AbortController().signal)).rejects.toThrow(fallbackErrorMessage)
   })
 
   it('exposes the submission error type guard', async () => {
@@ -179,7 +179,7 @@ describe('workshopEnquiry service', () => {
     }) as jest.Mock
 
     try {
-      await submitWorkshopEnquiry(new FormData())
+      await submitWorkshopEnquiry(new FormData(), new AbortController().signal)
       throw new Error('Expected a submission error')
     } catch (error) {
       expect(isSubmissionError(error)).toBe(true)

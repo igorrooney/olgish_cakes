@@ -18,6 +18,9 @@ export const LEGAL_BUSINESS_DETAILS = {
 export const CURRENT_LEGAL_DATE = '28 July 2026'
 export const CURRENT_LEGAL_DATE_ISO = '2026-07-28'
 export const CURRENT_TERMS_VERSION = CURRENT_LEGAL_DATE_ISO
+export const CURRENT_PRIVACY_DATE = '25 August 2026'
+export const CURRENT_PRIVACY_DATE_ISO = '2026-08-25'
+export const CURRENT_PRIVACY_VERSION = CURRENT_PRIVACY_DATE_ISO
 export const CURRENT_TERMS_PDF_PATH = `/legal/olgish-cakes-terms-${CURRENT_TERMS_VERSION}.pdf`
 export const CURRENT_TERMS_PDF_FILENAME = `olgish-cakes-terms-${CURRENT_TERMS_VERSION}.pdf`
 

@@ -5,7 +5,11 @@ import {
   LegalPolicyLinks
 } from '@/app/components/legal/LegalPageComponents'
 import { legalPageStyles } from '@/app/components/legal/legal-page-styles'
-import { createLegalPageMetadata } from '@/lib/legal/legal-config'
+import {
+  createLegalPageMetadata,
+  CURRENT_PRIVACY_DATE,
+  CURRENT_PRIVACY_DATE_ISO
+} from '@/lib/legal/legal-config'
 
 const metaTitle = 'Privacy Policy for Leeds and West Yorkshire'
 const metaDescription = 'Read how Olgish Cakes in Leeds handles personal data, marketing consent, and analytics like Google Analytics and Microsoft Clarity, plus your UK privacy rights.'
@@ -25,7 +29,11 @@ const informationItems = [
   },
   {
     title: 'Order details',
-    description: 'Cake choices, sizes, dietary requirements, and gift messages.'
+    description: 'Cake choices, sizes, ordinary dietary preferences, and gift messages.'
+  },
+  {
+    title: 'Protected dietary health information',
+    description: 'Allergy, intolerance or health-related dietary details entered in the separate optional field, together with the explicit-consent version and time.'
   },
   {
     title: 'Messages and enquiries',
@@ -60,7 +68,7 @@ const lawfulBasisItems = [
   },
   {
     title: 'Consent',
-    description: 'For optional analytics or advertising measurement and for health-related allergy or dietary information that you choose to provide.'
+    description: 'Article 6(1)(a) consent for optional analytics or advertising measurement and Article 6(1)(a) consent together with Article 9(2)(a) explicit consent for health-related allergy or dietary information that you choose to provide.'
   },
   {
     title: 'Legal obligation',
@@ -76,7 +84,7 @@ const shareItems = [
   'Vercel, for website hosting, performance and security services.',
   'Supabase, for storing enquiries, orders, messages and uploaded reference files.',
   'Resend, for sending enquiry and order emails.',
-  'Telegram, for restricted notifications to the business owner about new enquiries or orders.',
+  'Telegram, for restricted notifications to the business owner about new enquiries or orders; protected dietary health information is not included in those notifications.',
   'Sanity, for website content and product images; customer order records are not intentionally stored there.',
   'Google Analytics, Google Ads and Microsoft Clarity, only for the optional purposes you accept.',
   'Delivery, payment or invoicing providers, but only where needed for your order.',
@@ -85,6 +93,7 @@ const shareItems = [
 
 const retentionItems = [
   'Enquiries that do not become orders: normally 24 months after our last contact.',
+  'Protected dietary health information: when an enquiry record is closed or an order is verified as completed, delivered or cancelled, we schedule the health content for permanent erasure 30 days later. A specific legal hold pauses scheduled erasure while it remains necessary. After scheduled erasure, we retain only the original consent version and time, the retention deadline and the server-recorded erasure time as non-health accountability evidence. If you withdraw consent first, we erase the health content immediately and retain only the original consent version and time plus the withdrawal time.',
   'Orders, contracts, invoices, payment records and associated correspondence: normally six years after the end of the relevant financial year, to meet tax, accounting and legal-claim requirements.',
   'Reference images and other uploaded files: normally deleted within 24 months after the enquiry closes or the order is completed, unless they form necessary evidence for an ongoing complaint or legal claim.',
   'Optional analytics information: according to our configured provider setting, normally no longer than 14 months, after which it is deleted or aggregated.',
@@ -158,7 +167,10 @@ export default function PrivacyPolicyPage() {
                   We are a small Ukrainian bakery based in Leeds, and we treat your personal data with care.
                   This page explains what we collect, why we collect it, and the choices you have under UK law.
                 </p>
-                <LegalLastUpdated />
+                <LegalLastUpdated
+                  date={CURRENT_PRIVACY_DATE}
+                  dateTime={CURRENT_PRIVACY_DATE_ISO}
+                />
               </div>
 
               <div className={cardClassName}>
@@ -263,9 +275,27 @@ export default function PrivacyPolicyPage() {
                 </ul>
                 <p className={sectionTextClassName}>
                   Allergy, intolerance or other health-related dietary information may be special-category data.
-                  Where you choose to give us that information, we rely on your explicit consent to use it to assess
-                  whether we can supply safely and to fulfil the request. You may withdraw that consent before
-                  fulfilment, but we may then be unable to supply the affected product or service safely.
+                  We collect it only through the separate optional field and record the consent wording version and
+                  server time with the information. Where you choose to give it to us, we rely on consent under
+                  Article 6(1)(a) UK GDPR and explicit consent under Article 9(2)(a) UK GDPR to assess whether we can
+                  supply safely and to fulfil the request. You may withdraw that consent by emailing
+                  hello@olgishcakes.co.uk. We will then permanently erase the health content and retain only the
+                  consent version and time and the withdrawal time as non-health accountability evidence. We may
+                  then be unable to supply the affected product or service safely.
+                </p>
+                <p className={sectionTextClassName}>
+                  Separately from withdrawal, we minimise this information after its operational purpose ends. A
+                  genuine enquiry closure or verified order completion, delivery or cancellation starts a
+                  server-controlled 30-day period. At the end of that period we permanently erase the health content
+                  and retain only the consent version and time, the retention deadline and the erasure time. A
+                  specific legal hold pauses that scheduled erasure only while the narrower legal-claims rule below
+                  applies.
+                </p>
+                <p className={sectionTextClassName}>
+                  We rely on Article 6(1)(f) and Article 9(2)(f) only where processing is strictly necessary and
+                  proportionate to establish, exercise or defend an actual or reasonably anticipated legal claim.
+                  We do not use those provisions as a general reason to keep health information after consent is
+                  withdrawn.
                 </p>
               </section>
 
@@ -296,7 +326,10 @@ export default function PrivacyPolicyPage() {
                 <p className={sectionTextClassName}>
                   Each provider may only use the information for the service it supplies to us or as otherwise
                   required by law. We review access and share only the information reasonably needed for that
-                  purpose.
+                  purpose. Protected dietary health information is stored in our restricted Supabase enquiry or
+                  order record. It is not included in Telegram previews or customer confirmation emails; operational
+                  emails tell authorised staff only that protected information was supplied and direct them to the
+                  authenticated admin record.
                 </p>
               </section>
 
@@ -314,8 +347,10 @@ export default function PrivacyPolicyPage() {
                   ))}
                 </ul>
                 <p className={sectionTextClassName}>
-                  We may keep a record longer where the law requires it, a complaint or legal claim is active, or a
-                  court or regulator requires preservation. When the reason ends, we delete or anonymise the data.
+                  We may keep non-health records longer where the law requires it, a complaint or legal claim is
+                  active, or a court or regulator requires preservation. Health information is handled under the
+                  narrower legal-claims rule described in section 4. When the reason ends, we delete or anonymise
+                  the data.
                 </p>
               </section>
 

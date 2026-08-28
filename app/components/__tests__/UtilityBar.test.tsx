@@ -53,7 +53,7 @@ const renderWithStats = (stats = { count: 13, averageRating: 5 }) => {
 jest.mock('@/lib/daisy-ui', () => ({
   Box: ({ children, component, role, sx, ...props }: MockProps) => {
     const Component = component || 'div'
-    return <Component data-testid="box" role={role} {...props}>{children}</Component>
+    return <Component data-testid="box" data-sx={JSON.stringify(sx)} role={role} {...props}>{children}</Component>
   },
   Typography: ({ children, variant, sx, ...props }: MockProps) => (
     <div data-testid="typography" data-variant={variant} {...props}>{children}</div>
@@ -156,10 +156,11 @@ describe('UtilityBar', () => {
   })
 
   describe('Hours and Rating', () => {
-    it('should display "Order online 24/7" text', () => {
+    it('should invite online enquiries without claiming 24-hour opening', () => {
       renderWithStats()
 
-      expect(screen.getByText('Order online 24/7')).toBeInTheDocument()
+      expect(screen.getByText('Enquiries welcome online')).toBeInTheDocument()
+      expect(screen.queryByText(/24\/7/i)).not.toBeInTheDocument()
     })
 
     it('should render star icon', () => {
@@ -172,6 +173,22 @@ describe('UtilityBar', () => {
       renderWithStats({ count: 13, averageRating: 5 })
 
       expect(screen.getByText('5★ (13)')).toBeInTheDocument()
+    })
+
+    it('shows the rating only from the 1024px tablet breakpoint', () => {
+      renderWithStats({ count: 13, averageRating: 5 })
+
+      expect(screen.getByTestId('star-icon').closest('[data-testid="box"]')).toHaveAttribute(
+        'data-sx',
+        expect.stringContaining('"tablet":"inline-flex"')
+      )
+    })
+
+    it('should omit rating claims when no reviews are available', () => {
+      renderWithStats({ count: 0, averageRating: 0 })
+
+      expect(screen.queryByTestId('star-icon')).not.toBeInTheDocument()
+      expect(screen.queryByText(/rated/i)).not.toBeInTheDocument()
     })
   })
 

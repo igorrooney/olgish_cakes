@@ -5,6 +5,7 @@ import localFont from 'next/font/local'
 import { RootChrome } from './components/RootChrome'
 import { SiteFooter } from './components/SiteFooter'
 import { SiteHeader } from './components/homepage/SiteHeader'
+import { serializeJsonLd } from '@/lib/structured-data/serialize-json-ld'
 import './globals.css'
 
 const alice = localFont({
@@ -85,8 +86,6 @@ const baseSiteTitle = 'Olgish Cakes | Handmade Ukrainian cakes from Leeds'
 const baseSiteDescription =
   'Handmade Ukrainian cakes from Leeds, with postal bakes across the UK and custom celebration cakes for local orders.'
 const siteLogoUrl = 'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png'
-const toJsonLdScript = (value: unknown) => JSON.stringify(value).replace(/</g, '\\u003c')
-
 const baseMetadata: Metadata = {
   title: {
     default: baseSiteTitle,
@@ -226,13 +225,13 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: toJsonLdScript(organizationStructuredData),
+            __html: serializeJsonLd(organizationStructuredData),
           }}
         />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: toJsonLdScript(websiteStructuredData),
+            __html: serializeJsonLd(websiteStructuredData),
           }}
         />
       </head>

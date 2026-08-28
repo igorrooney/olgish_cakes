@@ -5,7 +5,6 @@ import { Box, Typography, Button, Alert } from '@/lib/daisy-ui';
 
 interface ErrorBoundaryState {
   hasError: boolean;
-  error?: Error;
 }
 
 interface ErrorBoundaryProps {
@@ -19,12 +18,15 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+  componentDidCatch() {
+    console.error('Error boundary caught a render failure', {
+      operation: 'react.render',
+      code: 'RENDER_FAILURE'
+    });
   }
 
   render() {
@@ -40,7 +42,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               Something went wrong
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              {this.state.error?.message || 'An unexpected error occurred'}
+              An unexpected error occurred
             </Typography>
             <Button 
               variant="contained" 

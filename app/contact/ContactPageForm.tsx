@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { SensitiveDataConsentNotice } from '@/app/components/legal/SensitiveDataConsentNotice'
+import { SensitiveDataConsentFields } from '@/app/components/legal/SensitiveDataConsentFields'
 import { ValidatorInput } from '../components/homepage/ValidatorInput'
 import {
   buildContactPageEnquiryFormData,
@@ -72,7 +72,7 @@ export function ContactPageForm() {
   }
 
   const updateField = (
-    field: keyof ContactPageFormValues,
+    field: Exclude<keyof ContactPageFormValues, 'dietaryHealthConsent'>,
     value: string,
     shouldClearError = false
   ) => {
@@ -245,6 +245,22 @@ export function ContactPageForm() {
         onValueChange={(value) => updateField('message', value, true)}
       />
 
+      <SensitiveDataConsentFields
+        information={formData.dietaryHealthInformation}
+        consent={formData.dietaryHealthConsent}
+        informationError={errors.dietaryHealthInformation}
+        consentError={errors.dietaryHealthConsent}
+        disabled={isSubmitting}
+        onInformationChange={(value) => {
+          updateField('dietaryHealthInformation', value, true)
+        }}
+        onConsentChange={(value) => {
+          setFormData((current) => ({ ...current, dietaryHealthConsent: value }))
+          resetSuccessState()
+          clearFieldError('dietaryHealthConsent')
+        }}
+      />
+
       {errors.submit ? (
         <div
           id='contact-page-form-submit-error'
@@ -295,7 +311,6 @@ export function ContactPageForm() {
               </Link>
               .
             </p>
-            <SensitiveDataConsentNotice className='mb-3' includePrivacyLink={false} />
             <button
               type='submit'
               className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'

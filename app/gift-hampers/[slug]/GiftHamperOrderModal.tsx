@@ -2,6 +2,10 @@
 
 import Link from "next/link";
 import { csrfTokenLoadErrorMessage, fetchCsrfToken } from "@/app/services/csrfToken";
+import { Providers } from '@/app/providers'
+import { useAbortableRequest } from '@/app/hooks/useAbortableRequest'
+import { useMutation } from '@tanstack/react-query'
+import { toSafeOperationalError } from "@/lib/security/safe-operational-error";
 import { GiftHamper } from "@/types/giftHamper";
 import {
   Box,
@@ -16,7 +20,7 @@ import {
   Chip,
   CircularProgress,
 } from "@/lib/daisy-ui";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ContactForm, type ContactFormData } from "@/app/components/ContactForm";
 import { AdapterDayjs } from "@/lib/daisy-ui";
@@ -36,52 +40,65 @@ interface GiftHamperOrderModalProps {
   hamper: GiftHamper;
 }
 
+interface GiftHamperOrderRequestInput {
+  payload: FormData
+  signal: AbortSignal
+}
+
+async function submitGiftHamperOrderRequest({ payload, signal }: GiftHamperOrderRequestInput) {
+  const csrfToken = await fetchCsrfToken(signal)
+
+  if (!csrfToken) {
+    throw new Error(csrfTokenLoadErrorMessage)
+  }
+
+  payload.append('csrfToken', csrfToken)
+  const response = await fetch('/api/contact', {
+    method: 'POST',
+    body: payload,
+    credentials: 'same-origin',
+    signal
+  })
+
+  if (!response.ok) {
+    throw new Error('Failed to send message')
+  }
+}
+
 export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  return (
+    <Providers>
+      <GiftHamperOrderModalInner open={open} onClose={onClose} hamper={hamper} />
+    </Providers>
+  )
+}
+
+function GiftHamperOrderModalInner({ open, onClose, hamper }: GiftHamperOrderModalProps) {
   const [_submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("There was an error sending your order. Please try again or contact us directly at hello@olgishcakes.co.uk");
-  const submitAbortControllerRef = useRef<AbortController | null>(null);
+  const {
+    abort: abortSubmit,
+    start: startSubmit
+  } = useAbortableRequest()
+  const submitMutation = useMutation({
+    mutationFn: submitGiftHamperOrderRequest
+  })
+  const isSubmitting = submitMutation.isPending
 
   useEffect(() => {
     if (open) {
       return;
     }
 
-    if (submitAbortControllerRef.current) {
-      submitAbortControllerRef.current.abort();
-      submitAbortControllerRef.current = null;
-    }
-  }, [open]);
-
-  useEffect(() => {
-    return () => {
-      if (submitAbortControllerRef.current) {
-        submitAbortControllerRef.current.abort();
-      }
-    };
-  }, []);
+    abortSubmit()
+  }, [abortSubmit, open]);
 
   async function handleSubmit(formData: ContactFormData) {
-    setIsSubmitting(true);
     setErrorMessage("There was an error sending your order. Please try again or contact us directly at hello@olgishcakes.co.uk");
-    let controller: AbortController | null = null;
     try {
-      if (submitAbortControllerRef.current) {
-        submitAbortControllerRef.current.abort();
-      }
-
-      controller = new AbortController();
-      submitAbortControllerRef.current = controller;
-      const csrfToken = await fetchCsrfToken(controller.signal);
-
-      if (!csrfToken) {
-        throw new Error(csrfTokenLoadErrorMessage);
-      }
-
       const data = new FormData();
-      data.append("csrfToken", csrfToken);
       data.append("name", formData.name);
       if (formData.address) {
         data.append("address", formData.address);
@@ -108,6 +125,11 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
       }
       if (formData.note) {
         data.append("note", formData.note);
+      }
+      const dietaryHealthInformation = formData.dietaryHealthInformation.trim();
+      if (dietaryHealthInformation.length > 0) {
+        data.append("dietaryHealthInformation", dietaryHealthInformation);
+        data.append("dietaryHealthConsent", String(formData.dietaryHealthConsent));
       }
       // Explicitly mark as order form so API uses order subject
       data.append("isOrderForm", "true");
@@ -136,13 +158,10 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
 
       // Debug logging
 
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        body: data,
-        credentials: "same-origin",
-        signal: controller.signal
-      });
-      if (!response.ok) throw new Error("Failed to send message");
+      await submitMutation.mutateAsync({
+        payload: data,
+        signal: startSubmit()
+      })
 
       setSubmitStatus("success");
       onClose();
@@ -152,7 +171,10 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
         return;
       }
 
-      console.error("Form submission error:", error);
+      console.error("Form submission failed", {
+        operation: "gift-hamper-order.submit",
+        ...toSafeOperationalError(error),
+      });
       setErrorMessage(
         error instanceof Error && (
           error.message === csrfTokenLoadErrorMessage ||
@@ -164,11 +186,6 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
       );
       setSubmitStatus("error");
       setShowErrorModal(true);
-    } finally {
-      setIsSubmitting(false);
-      if (controller && submitAbortControllerRef.current === controller) {
-        submitAbortControllerRef.current = null;
-      }
     }
   }
 
@@ -307,13 +324,13 @@ export function GiftHamperOrderModal({ open, onClose, hamper }: GiftHamperOrderM
                   variant="subtitle2"
                   sx={{ fontWeight: 600, color: "success.dark", mb: 1 }}
                 >
-                  Professional Service Guarantee
+                  Service information
                 </Typography>
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-                  <Chip label="24h Response" color="success" variant="outlined" />
-                  <Chip label="Free Consultation" color="success" variant="outlined" />
+                  <Chip label="Personal reply" color="success" variant="outlined" />
+                  <Chip label="Personal consultation" color="success" variant="outlined" />
                   <Chip label="UK Delivery" color="success" variant="outlined" />
-                  <Chip label="Quality Guaranteed" color="success" variant="outlined" />
+                  <Chip label="Carefully handmade" color="success" variant="outlined" />
                 </Box>
               </Paper>
             </MotionBox>

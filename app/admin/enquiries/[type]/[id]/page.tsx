@@ -6,11 +6,17 @@ import { isAdminAuthenticated } from '@/lib/admin/auth.server'
 import {
   getAdminEnquiryDetail,
   isAdminEnquiryType,
+  isValidAdminEnquiryRecordReference,
   type AdminEnquiryDetail,
   type AdminEnquiryType
 } from '@/lib/enquiries/supabase-enquiries'
 import { AttachmentPreview } from './AttachmentPreview'
 import { CopyEnquirySummaryButton } from './CopyEnquirySummaryButton'
+import { EnquiryRetentionLifecycleForm } from './EnquiryRetentionLifecycleForm'
+import { WithdrawHealthConsentForm } from './WithdrawHealthConsentForm'
+import { PrivacyRetentionLegalHoldForm } from '@/app/admin/privacy-retention/PrivacyRetentionLegalHoldForm'
+import { buildEnquiryCandidateId } from '@/lib/privacy-retention/candidate-id'
+import { LegacyHealthRetentionScheduleForm } from '@/app/admin/LegacyHealthRetentionScheduleForm'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,6 +40,14 @@ const getTypeBadgeClass = (type: AdminEnquiryType) => {
 
   return 'badge-secondary'
 }
+
+const formatEvidenceDateTime = (value: string) => new Intl.DateTimeFormat('en-GB', {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit'
+}).format(new Date(value))
 
 function DetailField({
   label,
@@ -130,6 +144,94 @@ function EnquiryDetails({ enquiry }: { enquiry: AdminEnquiryDetail }) {
               Open orders
             </Link>
           </section>
+
+          <section className='rounded-box border border-base-300 bg-base-100 p-5 shadow-sm' aria-labelledby='retention-lifecycle-heading'>
+            <h2 id='retention-lifecycle-heading' className='text-lg font-semibold text-base-content'>
+              Retention lifecycle
+            </h2>
+            <div className='mt-4'>
+              <EnquiryRetentionLifecycleForm
+                type={enquiry.type}
+                recordReference={enquiry.id}
+                lifecycle={enquiry.retentionLifecycle}
+              />
+              <PrivacyRetentionLegalHoldForm
+                candidateId={buildEnquiryCandidateId(enquiry.type, enquiry.id)}
+                recordReference={`${enquiry.type}-${enquiry.id}`}
+                held={enquiry.retentionLifecycle.legalHold}
+                holdReason={enquiry.retentionLifecycle.legalHoldReason}
+                holdReviewAt={enquiry.retentionLifecycle.legalHoldReviewAt}
+              />
+            </div>
+          </section>
+
+          {enquiry.dietaryHealthEvidence.hasInformation ||
+          enquiry.dietaryHealthEvidence.withdrawnAt ||
+          enquiry.dietaryHealthEvidence.retentionDueAt ||
+          enquiry.dietaryHealthEvidence.erasedAt ? (
+            <section className='rounded-box border border-base-300 bg-base-100 p-5 shadow-sm' aria-labelledby='health-consent-heading'>
+              <h2 id='health-consent-heading' className='text-lg font-semibold text-base-content'>
+                Health-data consent and retention
+              </h2>
+              {enquiry.dietaryHealthEvidence.withdrawnAt ? (
+                <div className='alert alert-success mt-4 items-start text-sm'>
+                  <div>
+                    <p className='font-semibold'>Consent withdrawal recorded</p>
+                    <p className='mt-1 leading-6'>
+                      The health information was erased because consent was withdrawn on{' '}
+                      {formatEvidenceDateTime(enquiry.dietaryHealthEvidence.withdrawnAt)}.
+                    </p>
+                  </div>
+                </div>
+              ) : enquiry.dietaryHealthEvidence.erasedAt ? (
+                <div className='alert alert-info mt-4 items-start text-sm'>
+                  <div>
+                    <p className='font-semibold'>Scheduled retention erasure recorded</p>
+                    <p className='mt-1 leading-6'>
+                      The health information was erased under the retention schedule on{' '}
+                      {formatEvidenceDateTime(enquiry.dietaryHealthEvidence.erasedAt)}. This is not a consent-withdrawal record.
+                    </p>
+                  </div>
+                </div>
+              ) : enquiry.dietaryHealthEvidence.hasInformation ? (
+                <div className='mt-4'>
+                  <WithdrawHealthConsentForm
+                    type={enquiry.type}
+                    recordReference={enquiry.id}
+                  />
+                  {!enquiry.dietaryHealthEvidence.retentionDueAt &&
+                  (enquiry.retentionLifecycle.status === 'closed' ||
+                    enquiry.retentionLifecycle.status === 'converted') ? (
+                    <LegacyHealthRetentionScheduleForm
+                      recordKind='enquiry'
+                      enquiryType={enquiry.type}
+                      recordReference={enquiry.id}
+                    />
+                  ) : null}
+                </div>
+              ) : null}
+              {enquiry.dietaryHealthEvidence.retentionDueAt || enquiry.dietaryHealthEvidence.erasedAt ? (
+                <dl className='mt-4 grid gap-3 text-sm'>
+                  {enquiry.dietaryHealthEvidence.retentionDueAt ? (
+                    <div>
+                      <dt className='text-base-content/60'>Health-information retention deadline</dt>
+                      <dd className='mt-1 font-semibold text-base-content'>
+                        {formatEvidenceDateTime(enquiry.dietaryHealthEvidence.retentionDueAt)}
+                      </dd>
+                    </div>
+                  ) : null}
+                  {enquiry.dietaryHealthEvidence.erasedAt ? (
+                    <div>
+                      <dt className='text-base-content/60'>Retention erasure completed at</dt>
+                      <dd className='mt-1 font-semibold text-base-content'>
+                        {formatEvidenceDateTime(enquiry.dietaryHealthEvidence.erasedAt)}
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
+              ) : null}
+            </section>
+          ) : null}
         </aside>
 
         <div className='order-2 grid gap-4 xl:order-1'>
@@ -174,7 +276,7 @@ export default async function AdminEnquiryDetailsPage({
 
   const { type, id } = await params
 
-  if (!isAdminEnquiryType(type)) {
+  if (!isAdminEnquiryType(type) || !isValidAdminEnquiryRecordReference(type, id)) {
     notFound()
   }
 

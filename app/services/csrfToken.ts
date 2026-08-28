@@ -10,7 +10,7 @@ export const isCsrfTokenLoadError = (error: unknown) => (
   )
 )
 
-export const fetchCsrfToken = async (signal?: AbortSignal) => {
+export const fetchCsrfToken = async (signal: AbortSignal) => {
   const response = await fetch('/api/csrf-token', {
     credentials: 'same-origin',
     cache: 'no-store',

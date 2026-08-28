@@ -1,4 +1,6 @@
 import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
+import { SITEMAP_PRODUCTS_CAKES_QUERY } from '@/lib/queries/cakes'
+import { SITEMAP_PRODUCTS_GIFT_HAMPERS_QUERY } from '@/lib/queries/giftHampers'
 import type { MetadataRoute } from 'next'
 import { getStaticSitemapLastModified } from './sitemap-static-pages'
 
@@ -39,32 +41,8 @@ function hasIndexableGiftHamperSlug(hamper: SitemapGiftHamper): hamper is Sitema
 async function getProducts() {
   const config = getCacheConfig('sitemaps')
   const [cakes, giftHampers] = await Promise.all([
-    cachedSanityFetch<SitemapCake[]>(`*[
-      _type == "cake" &&
-      defined(slug.current) &&
-      slug.current != "test" &&
-      !(slug.current match "test-*")
-    ] {
-      _id,
-      name,
-      slug,
-      _updatedAt,
-      pricing,
-      mainImage,
-      designs,
-      category,
-      shortDescription,
-      description
-    }`, {}, config),
-    cachedSanityFetch<SitemapGiftHamper[]>(`*[
-      _type == "giftHamper" &&
-      defined(slug.current) &&
-      slug.current != "test" &&
-      !(slug.current match "test-*")
-    ] {
-      slug,
-      _updatedAt
-    }`, {}, config)
+    cachedSanityFetch<SitemapCake[]>(SITEMAP_PRODUCTS_CAKES_QUERY, {}, config),
+    cachedSanityFetch<SitemapGiftHamper[]>(SITEMAP_PRODUCTS_GIFT_HAMPERS_QUERY, {}, config)
   ])
 
   return { cakes, giftHampers }
@@ -106,8 +84,8 @@ export default async function sitemapProducts(): Promise<MetadataRoute.Sitemap> 
       priority: 0.9
     },
     {
-      url: `${baseUrl}/get-custom-quote`,
-      lastModified: getStaticSitemapLastModified('/get-custom-quote'),
+      url: `${baseUrl}/custom-cakes`,
+      lastModified: getStaticSitemapLastModified('/custom-cakes'),
       changeFrequency: 'weekly' as const,
       priority: 0.95
     }

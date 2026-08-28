@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { SensitiveDataConsentNotice } from '@/app/components/legal/SensitiveDataConsentNotice'
+import { SensitiveDataConsentFields } from '@/app/components/legal/SensitiveDataConsentFields'
 import { ValidatorInput } from '@/app/components/homepage/ValidatorInput'
 import { getTodayDateInputValue } from '@/app/components/homepage/mobileForm.utils'
 import { useWorkshopEnquiry } from '@/app/hooks/useWorkshopEnquiry'
@@ -69,7 +69,7 @@ export function WorkshopEnquiryForm() {
   }
 
   const updateField = (
-    field: keyof WorkshopEnquiryFormValues,
+    field: Exclude<keyof WorkshopEnquiryFormValues, 'dietaryHealthConsent'>,
     value: string,
     shouldClearError = false
   ) => {
@@ -280,6 +280,22 @@ export function WorkshopEnquiryForm() {
         onValueChange={value => updateField('brief', value, true)}
       />
 
+      <SensitiveDataConsentFields
+        information={formData.dietaryHealthInformation ?? ''}
+        consent={formData.dietaryHealthConsent === true}
+        informationError={errors.dietaryHealthInformation}
+        consentError={errors.dietaryHealthConsent}
+        disabled={isSubmitting}
+        onInformationChange={value => {
+          updateField('dietaryHealthInformation', value, true)
+        }}
+        onConsentChange={value => {
+          setFormData(current => ({ ...current, dietaryHealthConsent: value }))
+          resetSuccessState()
+          clearFieldError('dietaryHealthConsent')
+        }}
+      />
+
       {errors.submit ? (
         <div id='workshop-form-submit-error' className='alert alert-error text-sm' role='alert'>
           <span>{errors.submit}</span>
@@ -317,7 +333,6 @@ export function WorkshopEnquiryForm() {
 
       {hasSubmittedSuccessfully ? null : (
         <div>
-          <SensitiveDataConsentNotice className='mb-3' />
           <button
             type='submit'
             className='btn btn-primary btn-block h-12 border-none px-6 text-sm font-semibold normal-case tablet:h-14 tablet:text-base'

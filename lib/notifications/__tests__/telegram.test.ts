@@ -3,7 +3,8 @@
  */
 import {
   buildTelegramManagerMessage,
-  sendTelegramManagerNotification
+  sendTelegramManagerNotification,
+  type TelegramManagerNotificationInput
 } from '@/lib/notifications/telegram'
 
 describe('Telegram manager notifications', () => {
@@ -44,7 +45,7 @@ describe('Telegram manager notifications', () => {
 
     const result = await sendTelegramManagerNotification({
       type: 'new-order',
-      customerName: 'Jane Doe'
+      recordReference: 'OC-1001'
     })
 
     expect(result).toEqual({ sent: false, skipped: true })
@@ -56,13 +57,9 @@ describe('Telegram manager notifications', () => {
 
     const result = await sendTelegramManagerNotification({
       type: 'new-order',
-      customerName: 'Jane Doe',
-      customerEmail: 'jane@example.com',
-      customerPhone: '07123456789',
+      recordReference: 'OC-1001',
       dateNeeded: '2026-05-01',
-      productName: 'Honey Cake',
       total: 58,
-      messagePreview: 'Please make it less sweet and add flowers.',
       imageCount: 1,
       adminPath: '/admin/orders'
     })
@@ -91,10 +88,13 @@ describe('Telegram manager notifications', () => {
         is_disabled: true
       }
     })
-    expect(body?.text).toContain('New order\n\nCustomer\nName: Jane Doe')
+    expect(body?.text).toContain('New order\n\nReference: OC-1001')
     expect(body?.text).toContain('Total: £58.00')
     expect(body?.text).toContain('Images: 1 attached')
     expect(body?.text).toContain('Admin\nhttps://olgishcakes.co.uk/admin/orders')
+    expect(body?.text).not.toContain('Jane Doe')
+    expect(body?.text).not.toContain('Please make it less sweet')
+    expect(body?.text).not.toContain('Honey Cake')
     expect(body?.text).not.toContain('New order Customer')
   })
 
@@ -106,32 +106,77 @@ describe('Telegram manager notifications', () => {
 
     const result = await sendTelegramManagerNotification({
       type: 'contact-enquiry',
-      customerName: 'Jane Doe'
+      recordReference: '42'
     })
 
     expect(result).toEqual({
       sent: false,
       skipped: false,
-      error: 'Bad Request: chat not found'
+      error: 'TELEGRAM_HTTP_400'
     })
 
-    const loggedText = consoleErrorSpy.mock.calls
-      .map((call) => call.map((entry) => String(entry)).join(' '))
-      .join(' ')
+    const loggedText = JSON.stringify(consoleErrorSpy.mock.calls)
 
     expect(loggedText).not.toContain('secret-token')
+    expect(loggedText).not.toContain('chat not found')
+    expect(loggedText).not.toContain('Telegram manager notification failed')
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/^\[ERROR\] /),
+      {
+        operation: 'telegram.notification.contact-enquiry',
+        code: 'TELEGRAM_HTTP_400',
+        status: 400
+      }
+    )
+  })
+
+  it('ignores legacy customer-authored product text even if a caller supplies it', () => {
+    const input = {
+      type: 'new-order',
+      recordReference: 'OC-1002',
+      productName: 'SENTINEL-CUSTOMER-FREE-TEXT',
+      adminPath: '/admin/orders/OC-1002'
+    } as TelegramManagerNotificationInput & { productName: string }
+
+    const message = buildTelegramManagerMessage(input)
+
+    expect(message).not.toContain('SENTINEL-CUSTOMER-FREE-TEXT')
+    expect(message).toContain('Reference: OC-1002')
+  })
+
+  it('ignores protected-health presence and content even if legacy extra properties are supplied', () => {
+    const input = {
+      type: 'contact-enquiry',
+      recordReference: 'CONTACT-HEALTH-1',
+      hasDietaryHealthInformation: true,
+      dietaryHealthInformation: 'SENTINEL-PROTECTED-HEALTH-CONTENT',
+      adminPath: '/admin/enquiries/contact/CONTACT-HEALTH-1'
+    } as TelegramManagerNotificationInput & {
+      hasDietaryHealthInformation: boolean
+      dietaryHealthInformation: string
+    }
+
+    const message = buildTelegramManagerMessage(input)
+
+    expect(message).toContain('Reference: CONTACT-HEALTH-1')
+    expect(message).not.toContain('SENTINEL-PROTECTED-HEALTH-CONTENT')
+    expect(message).not.toContain('Protected health information')
+    expect(message).not.toContain('health information')
   })
 
   it('builds concise plain-text messages', () => {
     const message = buildTelegramManagerMessage({
       type: 'custom-cake-enquiry',
-      customerName: 'Jane Doe',
-      messagePreview: 'A'.repeat(300),
-      adminPath: '/admin'
+      recordReference: '42',
+      imageCount: 2,
+      adminPath: '/admin/enquiries/custom-cake/42'
     })
 
     expect(message).toContain('New custom cake enquiry')
-    expect(message).toContain('\n\nMessage\n')
+    expect(message).toContain('Reference: 42')
+    expect(message).toContain('Images: 2 attached')
+    expect(message).not.toContain('Customer')
+    expect(message).not.toContain('Message')
     expect(message.length).toBeLessThanOrEqual(4096)
   })
 })

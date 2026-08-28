@@ -1,29 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { serverClient } from '@/sanity/lib/client'
+import {
+  isProductionEnvironment,
+  productionRouteNotFound
+} from '@/lib/security/internal-route'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
+import { SANITY_DIAGNOSTIC_ORDERS_QUERY } from '@/lib/queries/orders'
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
+  if (isProductionEnvironment()) {
+    return productionRouteNotFound()
+  }
+
   try {
-    // Security: Always require authentication in production
-    const adminSecret = process.env.ADMIN_SECRET_TOKEN
-    const authHeader = request.headers.get('authorization')
-    const isDevelopment = process.env.NODE_ENV === 'development'
-    
-    // In production, always require authentication
-    if (!isDevelopment) {
-      if (!adminSecret) {
-        return NextResponse.json({
-          error: 'Server configuration error',
-          message: 'ADMIN_SECRET_TOKEN not configured'
-        }, { status: 500 })
-      }
-      if (!authHeader || authHeader !== `Bearer ${adminSecret}`) {
-        return NextResponse.json({
-          error: 'Unauthorized',
-          message: 'This endpoint requires authentication in production'
-        }, { status: 401 })
-      }
-    }
-    
     // Check if token is set
     const hasToken = !!process.env.SANITY_API_TOKEN
     
@@ -37,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     // Try to fetch existing orders (read operation)
     try {
-      const orders = await serverClient.fetch(`*[_type == "order"] | order(_createdAt desc) [0...1]`)
+      const orders = await serverClient.fetch(SANITY_DIAGNOSTIC_ORDERS_QUERY)
       
       return NextResponse.json({
         success: true,
@@ -48,19 +37,32 @@ export async function GET(request: NextRequest) {
         note: 'To test write permissions, submit an order through the website.'
       })
     } catch (readError) {
+      const safeError = toSafeOperationalError(readError)
+
+      console.error('Sanity diagnostic read failed', {
+        operation: 'sanity-diagnostic-read',
+        ...safeError
+      })
+
       return NextResponse.json({
         error: 'Failed to read from Sanity',
         hasToken: true,
         canRead: false,
-        details: readError instanceof Error ? readError.message : 'Unknown error',
-        message: 'Token might not have read permissions or project/dataset is wrong'
+        code: safeError.code
       }, { status: 500 })
     }
 
   } catch (error) {
+    const safeError = toSafeOperationalError(error)
+
+    console.error('Sanity diagnostic failed', {
+      operation: 'sanity-diagnostic',
+      ...safeError
+    })
+
     return NextResponse.json({
       error: 'Sanity diagnostic failed',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      code: safeError.code
     }, { status: 500 })
   }
 }

@@ -4,6 +4,8 @@ import {
   InvalidTestimonialsCursorError,
   maxTestimonialsCursorLength
 } from '@/app/utils/fetchTestimonials'
+import { logger } from '@/lib/logger'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 export async function GET(request: NextRequest) {
   const cursorParam = request.nextUrl.searchParams.get('cursor')
@@ -32,7 +34,10 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    console.error('Failed to retrieve testimonials:', error)
+    logger.error('Failed to retrieve testimonials', {
+      operation: 'testimonials.retrieve',
+      ...toSafeOperationalError(error)
+    })
 
     return NextResponse.json(
       { error: 'Unable to retrieve testimonials' },

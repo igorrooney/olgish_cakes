@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import type { Brand, Graph, Product } from 'schema-dts'
 import { getGiftHamperBySlug, getAllGiftHampers } from '@/app/utils/fetchGiftHampers'
-import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from '@/app/utils/seo'
+import { getMerchantReturnPolicy, getOfferShippingDetails } from '@/app/utils/seo'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import { normalizeCmsTitle } from '@/lib/metadata'
 import { getSanityCdnImageUrl } from '@/lib/utils/image-url'
@@ -16,6 +16,7 @@ import type { CatalogProductDetailImage } from '../../cakes/components/CatalogPr
 import { GiftHamperPageClient, type GiftHamperPageClientData } from '../../gift-hampers/[slug]/GiftHamperPageClient'
 import { getGiftHamperVisibleDescriptionText } from '../../gift-hampers/[slug]/description-content'
 import { resolveGiftHamperDeliveryContent, type ResolvedGiftHamperDeliveryContent } from '../../gift-hampers/[slug]/delivery-content'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 export async function generateStaticParams() {
   try {
@@ -27,7 +28,10 @@ export async function generateStaticParams() {
         slug: hamper.slug.current
       }))
   } catch (error) {
-    console.error('Error generating static params for gift hampers:', error)
+    console.error('Gift hamper static parameter generation failed', {
+      operation: 'gift-hampers.static-params.generate',
+      ...toSafeOperationalError(error)
+    })
     return []
   }
 }
@@ -209,14 +213,6 @@ export default async function CakesByPostProductPage({ params, searchParams }: P
         resolvedDeliveryContent.shippingDetailsVisibleClaims
       )
     : undefined
-  const shouldLogShippingDetailsOmission = process.env.NODE_ENV !== 'production'
-
-  if (!shouldEmitShippingDetails && shouldLogShippingDetailsOmission) {
-    console.warn(
-      `[seo][${hamper.slug.current}] Omitted Offer.shippingDetails due to delivery policy mismatch: ${resolvedDeliveryContent.shippingDetailsOmissionReason || 'unknown reason'}`
-    )
-  }
-
   return (
     <main className='min-h-screen'>
       {(() => {
@@ -224,12 +220,20 @@ export default async function CakesByPostProductPage({ params, searchParams }: P
           .filter((img) => Boolean(img.asset?._ref))
           .slice(0, 5)
           .map((img) => buildImageUrl(img).width(1200).height(1200).url())
-        const imagesForJsonLd = imageUrls.length > 0
-          ? imageUrls
-          : ['https://olgishcakes.co.uk/images/placeholder-cake.jpg']
-
         const isCakeByPost = hamper.slug?.current === 'cake-by-post'
         const visibleDescriptionText = getGiftHamperVisibleDescriptionText(hamper)
+
+        if (
+          imageUrls.length === 0 ||
+          typeof hamper.price !== 'number' ||
+          !Number.isFinite(hamper.price) ||
+          hamper.price <= 0 ||
+          !visibleDescriptionText.trim()
+        ) {
+          return null
+        }
+
+        const imagesForJsonLd = imageUrls
         const productJsonLd: Graph = {
           '@context': 'https://schema.org',
           '@graph': [
@@ -259,17 +263,11 @@ export default async function CakesByPostProductPage({ params, searchParams }: P
               },
               category: isCakeByPost ? 'Food & Beverage > Baked Goods > Cakes' : (hamper.category || 'Gift Hamper'),
               image: imagesForJsonLd,
-              sku: `OC-HAMPER-${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase().replace(/[^A-Z0-9]/g, '-').substring(0, 20)}`,
-              mpn: `${(hamper.slug?.current || hamper._id || 'hamper').toUpperCase()}-${hamper.price || 'QUOTE'}`,
-              keywords: isCakeByPost ? 'honey cake by post, cake by post UK, letterbox delivery, traditional Ukrainian cake, cake by post service, letterbox friendly cake' : undefined,
               offers: {
                 '@type': 'Offer',
                 '@id': `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || slug}#offer`,
                 price: formatStructuredDataPrice(hamper.price, 0),
                 priceCurrency: 'GBP',
-                availability: 'https://schema.org/InStock',
-                condition: 'https://schema.org/NewCondition',
-                priceValidUntil: getPriceValidUntil(30),
                 url: `https://olgishcakes.co.uk/cakes-by-post/${hamper.slug?.current || slug}`,
                 image: imagesForJsonLd[0],
                 seller: {

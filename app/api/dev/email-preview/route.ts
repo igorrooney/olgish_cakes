@@ -6,6 +6,11 @@ import {
 } from '@/lib/email/renderers'
 import { buildEffectiveTemplateInput } from '@/lib/email/dev-input'
 import { verifyAdminAuthToken } from '@/lib/admin/auth-token'
+import {
+  isProductionEnvironment,
+  productionRouteNotFound
+} from '@/lib/security/internal-route'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 const previewRequestSchema = z.object({
   templateId: z.string(),
@@ -18,6 +23,10 @@ function getAdminAuthToken(request: NextRequest): string {
 }
 
 export async function POST(request: NextRequest) {
+  if (isProductionEnvironment()) {
+    return productionRouteNotFound()
+  }
+
   try {
     const token = getAdminAuthToken(request)
     const isAuthorized = await verifyAdminAuthToken(token)
@@ -84,7 +93,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: 'Failed to render preview',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        code: toSafeOperationalError(error).code
       },
       { status: 500 }
     )

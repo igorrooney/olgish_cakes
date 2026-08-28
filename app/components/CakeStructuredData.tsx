@@ -5,8 +5,7 @@ import {
   generateCakeMerchantCenterSchema,
   type MerchantCakeInput,
 } from "@/lib/google-merchant-center-schema";
-import { useReviewStats } from "./ReviewStatsProvider";
-import { buildAggregateRating } from "@/app/utils/review-stats";
+import { serializeJsonLd } from '@/lib/structured-data/serialize-json-ld'
 
 interface CakeStructuredDataProps {
   cake: MerchantCakeInput & {
@@ -27,8 +26,6 @@ interface CakeStructuredDataProps {
 }
 
 export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
-  const reviewStats = useReviewStats();
-
   useEffect(() => {
     if (!cake.structuredData?.enableProductSchema) return;
 
@@ -36,12 +33,6 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
     const structuredData: ReturnType<typeof generateCakeMerchantCenterSchema> & {
       keywords?: string;
     } = generateCakeMerchantCenterSchema(cake);
-    const aggregateRating = buildAggregateRating(reviewStats);
-
-    if (aggregateRating) {
-      structuredData.aggregateRating = aggregateRating;
-    }
-
     // Add keywords if available
     if (cake.seo?.keywords && cake.seo.keywords.length > 0) {
       structuredData.keywords = cake.seo.keywords.join(", ");
@@ -50,7 +41,7 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
     // Create script element
     const script = document.createElement("script");
     script.type = "application/ld+json";
-    script.text = JSON.stringify(structuredData);
+    script.text = serializeJsonLd(structuredData);
     script.id = "cake-structured-data";
 
     // Remove existing script if present
@@ -69,7 +60,7 @@ export function CakeStructuredData({ cake }: CakeStructuredDataProps) {
         scriptToRemove.remove();
       }
     };
-  }, [cake, reviewStats]);
+  }, [cake]);
 
   return null;
 }

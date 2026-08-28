@@ -116,7 +116,7 @@ describe('DeliveryPage', () => {
     )
     expect(screen.getByRole('link', { name: 'Ask about delivery' })).toHaveAttribute(
       'href',
-      '/get-custom-quote'
+      '/custom-cakes'
     )
     expect(screen.getByRole('link', { name: 'Message on WhatsApp' })).toHaveAttribute(
       'href',

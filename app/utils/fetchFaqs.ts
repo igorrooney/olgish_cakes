@@ -1,5 +1,6 @@
 import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
 import { faqsQuery } from '@/lib/queries/faqs'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 export interface FAQ {
   _id: string
@@ -33,7 +34,10 @@ function sanitizeFaqs(faqs: RawFaq[]) {
 
   return faqs.flatMap((faq) => {
     if (!isValidFaqRecord(faq)) {
-      console.error('Skipping malformed FAQ record:', faq)
+      console.error('Malformed FAQ record skipped', {
+        operation: 'sanity.faq.normalize',
+        code: 'INVALID_RECORD'
+      })
       return []
     }
 
@@ -79,13 +83,19 @@ export async function getFaqs({ signal }: GetFaqsOptions = {}): Promise<FAQ[]> {
     )
 
     if (!Array.isArray(result)) {
-      console.error('Unexpected result format:', result)
+      console.error('Unexpected FAQ result format', {
+        operation: 'sanity.faq.fetch',
+        code: 'INVALID_RESPONSE_SHAPE'
+      })
       return []
     }
 
     return sanitizeFaqs(result)
   } catch (error) {
-    console.error('Error fetching FAQs:', error)
+    console.error('Sanity read failed', {
+      operation: 'sanity.faq.fetch',
+      ...toSafeOperationalError(error)
+    })
     throw error
   }
 }

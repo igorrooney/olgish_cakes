@@ -1,8 +1,12 @@
 'use client'
 
 import { useCallback, useEffect, useRef } from 'react'
+import type { QueryClient } from '@tanstack/react-query'
+import { getQueryClient } from '@/app/providers'
 import {
-  fetchOccasionOptions
+  fetchOccasionOptions,
+  occasionOptionsQueryKey,
+  occasionOptionsStaleTimeMs
 } from '@/app/services/occasionOptions'
 
 interface UseOrderFormPrefetchOptions {
@@ -13,11 +17,16 @@ export function useOrderFormPrefetch({
   prefetchOccasionOptions
 }: UseOrderFormPrefetchOptions) {
   const hasPrefetchedRef = useRef(false)
-  const abortControllerRef = useRef<AbortController | null>(null)
+  const queryClientRef = useRef<QueryClient | null>(null)
 
   useEffect(() => {
     return () => {
-      abortControllerRef.current?.abort()
+      if (queryClientRef.current) {
+        void queryClientRef.current.cancelQueries({
+          queryKey: occasionOptionsQueryKey,
+          exact: true
+        })
+      }
     }
   }, [])
 
@@ -34,10 +43,14 @@ export function useOrderFormPrefetch({
       return
     }
 
-    const abortController = new AbortController()
-    abortControllerRef.current = abortController
+    const queryClient = getQueryClient()
+    queryClientRef.current = queryClient
 
-    void fetchOccasionOptions(abortController.signal).catch(() => {
+    void queryClient.prefetchQuery({
+      queryKey: occasionOptionsQueryKey,
+      queryFn: ({ signal }) => fetchOccasionOptions(signal),
+      staleTime: occasionOptionsStaleTimeMs
+    }).catch(() => {
       // The real form owns validation and retry; this is only an intent warm-up.
     })
   }, [prefetchOccasionOptions])

@@ -15,6 +15,8 @@ export type WorkshopEnquirySubmission = {
   preferredDate: string
   decorationTheme?: string
   brief: string
+  dietaryHealthInformation?: string
+  dietaryHealthConsent: boolean
   csrfToken: string
 }
 
@@ -71,6 +73,8 @@ export const buildWorkshopEnquiryFormData = (values: WorkshopEnquirySubmission) 
   Object.entries(values).forEach(([key, value]) => {
     if (typeof value === 'string' && value.length > 0) {
       submissionData.append(key, value)
+    } else if (typeof value === 'boolean') {
+      submissionData.append(key, value ? 'true' : 'false')
     }
   })
 
@@ -79,7 +83,7 @@ export const buildWorkshopEnquiryFormData = (values: WorkshopEnquirySubmission) 
 
 export const submitWorkshopEnquiry = async (
   submissionData: FormData,
-  signal?: AbortSignal
+  signal: AbortSignal
 ) => {
   const response = await fetch('/api/workshop-enquiry', {
     method: 'POST',

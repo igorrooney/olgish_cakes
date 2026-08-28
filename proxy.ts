@@ -85,9 +85,9 @@ export async function proxy(request: NextRequest) {
     response.headers.set('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
   }
   response.headers.set('X-XSS-Protection', '1; mode=block')
-  response.headers.set('X-Frame-Options', 'SAMEORIGIN')
+  response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('Referrer-Policy', 'origin-when-cross-origin')
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   // Add caching headers with better cache control
   if (
     request.nextUrl.pathname.startsWith('/_next') ||
@@ -99,9 +99,16 @@ export async function proxy(request: NextRequest) {
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
     response.headers.set('Pragma', 'no-cache')
     response.headers.set('Expires', '0')
-  } else if (request.nextUrl.pathname.startsWith('/admin')) {
-    // Admin pages should not be cached
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+  } else if (
+    request.nextUrl.pathname.startsWith('/admin') ||
+    request.nextUrl.pathname.startsWith('/studio')
+  ) {
+    // Internal interfaces should not be cached or indexed.
     response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
   } else {
     // Regular pages may be cached by Next.js data tags, but browsers should re-check HTML on refresh.
     response.headers.set('Cache-Control', 'no-cache, must-revalidate')

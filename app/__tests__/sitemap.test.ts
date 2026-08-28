@@ -142,7 +142,7 @@ describe('sitemap', () => {
       mockFetch.mockResolvedValue([])
 
       const result = await sitemap()
-      const quoteUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/get-custom-quote')
+      const quoteUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/custom-cakes')
       const contactUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/contact')
       const faqsUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/faqs')
       const deliveryUrl = result.find((entry) => entry.url === 'https://olgishcakes.co.uk/delivery')
@@ -212,16 +212,21 @@ describe('sitemap', () => {
       expect(contactUrl?.lastModified).not.toEqual(runtimeDate)
     })
 
-    it('should keep all legal-page dates aligned with the published policy version', async () => {
+    it('should keep each legal-page date aligned with its published policy version', async () => {
       mockFetch.mockResolvedValue([])
 
       const result = await sitemap()
+      const expectedDates = [
+        ['/privacy', '2026-08-25'],
+        ['/terms', '2026-07-28'],
+        ['/cookies', '2026-07-28']
+      ] as const
 
-      for (const path of ['/terms', '/privacy', '/cookies'] as const) {
+      for (const [path, expectedDate] of expectedDates) {
         const entry = result.find((item) => item.url === `https://olgishcakes.co.uk${path}`)
 
-        expect(entry?.lastModified).toEqual(new Date('2026-07-28'))
-        expect(getStaticSitemapLastModified(path)).toEqual(new Date('2026-07-28'))
+        expect(entry?.lastModified).toEqual(new Date(expectedDate))
+        expect(getStaticSitemapLastModified(path)).toEqual(new Date(expectedDate))
       }
     })
 

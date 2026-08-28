@@ -1,498 +1,318 @@
-/**
- * Advanced SEO strategies for #1 Google ranking
- * Implements cutting-edge SEO techniques for maximum visibility
- */
+import { getMerchantReturnPolicy } from '@/app/utils/seo'
+import { formatStructuredDataPrice } from '@/lib/utils/price-formatting'
 
-import { getMerchantReturnPolicy, getOfferShippingDetails, getPriceValidUntil } from "@/app/utils/seo";
-import { buildAggregateRating, formatRatingValue, formatReviewCount, type ReviewStats } from '@/app/utils/review-stats'
-import { formatStructuredDataPrice } from "@/lib/utils/price-formatting";
+type ProductAvailability =
+  | 'BackOrder'
+  | 'Discontinued'
+  | 'InStock'
+  | 'InStoreOnly'
+  | 'LimitedAvailability'
+  | 'OnlineOnly'
+  | 'OutOfStock'
+  | 'PreOrder'
+  | 'SoldOut'
 
-// Advanced keyword research and targeting
 export const ADVANCED_SEO_CONFIG = {
-  // Primary money keywords for #1 ranking
   PRIMARY_KEYWORDS: [
-    "ukrainian cakes leeds",
-    "honey cake leeds",
-    "medovik cake uk",
-    "custom cakes leeds",
-    "wedding cakes leeds",
-    "birthday cakes leeds",
-    "bespoke cakes yorkshire",
-    "professional cake design leeds",
-    "ukrainian bakery uk",
-    "traditional honey cake",
+    'ukrainian cakes leeds',
+    'honey cake leeds',
+    'medovik cake uk',
+    'custom cakes leeds',
+    'wedding cakes leeds',
+    'birthday cakes leeds',
+    'bespoke cakes yorkshire',
+    'professional cake design leeds',
+    'ukrainian bakery uk',
+    'traditional honey cake'
   ],
-
-  // Long-tail keywords for content domination
   LONG_TAIL_KEYWORDS: [
-    "best ukrainian honey cake in leeds",
-    "where to buy medovik cake leeds",
-    "custom wedding cake designers leeds",
-    "traditional ukrainian bakery yorkshire",
-    "professional cake decorating services leeds",
-    "authentic honey cake recipe leeds",
-    "bespoke birthday cake design uk",
-    "premium cake delivery leeds",
-    "handmade ukrainian cakes west yorkshire",
-    "artisan cake maker leeds",
+    'ukrainian honey cake in leeds',
+    'where to buy medovik cake leeds',
+    'custom wedding cake designers leeds',
+    'traditional ukrainian bakery yorkshire',
+    'cake decorating services leeds',
+    'authentic honey cake leeds',
+    'bespoke birthday cake design uk',
+    'cake delivery leeds',
+    'handmade ukrainian cakes west yorkshire',
+    'artisan cake maker leeds'
   ],
-
-  // Local SEO dominance keywords
   LOCAL_KEYWORDS: [
-    "cakes near me leeds",
-    "cake shop leeds city centre",
-    "cake delivery leeds",
-    "wedding cake maker leeds",
-    "birthday cake leeds same day",
-    "cake decorator leeds",
-    "custom cake leeds",
-    "ukrainian food leeds",
-    "specialty cakes yorkshire",
-    "cake artist leeds",
+    'cakes near me leeds',
+    'cake shop leeds',
+    'cake delivery leeds',
+    'wedding cake maker leeds',
+    'birthday cake leeds availability',
+    'cake decorator leeds',
+    'custom cake leeds',
+    'ukrainian food leeds',
+    'speciality cakes yorkshire',
+    'cake artist leeds'
   ],
-
-  // Voice search optimization
   VOICE_SEARCH_KEYWORDS: [
-    "where can I get ukrainian cake in leeds",
-    "best cake shop in leeds",
-    "how to order custom cake leeds",
-    "ukrainian honey cake near me",
-    "wedding cake delivery leeds",
-    "birthday cake leeds today",
-    "cake making classes leeds",
-    "specialty cake decorator leeds",
-    "authentic medovik cake uk",
-    "professional cake design leeds",
+    'where can I get ukrainian cake in leeds',
+    'ukrainian cake shop in leeds',
+    'how to order custom cake leeds',
+    'ukrainian honey cake near me',
+    'wedding cake delivery leeds',
+    'birthday cake availability leeds',
+    'cake making classes leeds',
+    'speciality cake decorator leeds',
+    'authentic medovik cake uk',
+    'professional cake design leeds'
   ],
-
-  // Semantic keywords for topical authority
   SEMANTIC_KEYWORDS: [
-    "cake decorating",
-    "sugar craft",
-    "fondant work",
-    "buttercream piping",
-    "cake design",
-    "edible art",
-    "celebration cakes",
-    "special occasion",
-    "handcrafted",
-    "artisanal",
-    "gourmet",
-    "premium quality",
-    "made to order",
-    "fresh ingredients",
-    "creative design",
+    'cake decorating',
+    'sugar craft',
+    'fondant work',
+    'buttercream piping',
+    'cake design',
+    'edible art',
+    'celebration cakes',
+    'special occasion',
+    'handcrafted',
+    'artisanal',
+    'made to order',
+    'fresh ingredients',
+    'creative design'
   ],
-
-  // Competitor analysis keywords
   COMPETITIVE_KEYWORDS: [
-    "better than [competitor] cakes leeds",
-    "alternative to [competitor] leeds",
-    "premium cake alternative leeds",
-    "best value cakes leeds",
-    "top rated cake shop leeds",
-    "award winning cakes leeds",
-    "5 star cake maker leeds",
-    "recommended cake designer leeds",
-  ],
-};
+    'ukrainian cakes leeds',
+    'bespoke cakes leeds',
+    'handmade cakes leeds',
+    'traditional cake shop leeds',
+    'custom cake maker leeds',
+    'medovik cake leeds'
+  ]
+}
 
-// Advanced meta generation with psychological triggers
 export function generateAdvancedMetaTitle(
   baseTitle: string,
-  location: string = "Leeds",
-  year: string = new Date().getFullYear().toString()
+  location: string = 'Leeds',
+  _year: string = new Date().getFullYear().toString()
 ): string {
-  const triggers = [
-    "Award-Winning",
-    "Premium",
-    "Artisan",
-    "Bespoke",
-    "Luxury",
-    "Professional",
-    "Authentic",
-    "Handcrafted",
-  ];
-
-  const randomTrigger = triggers[Math.floor(Math.random() * triggers.length)];
-
-  // Optimize for CTR with emotional triggers
+  const descriptors = ['Ukrainian', 'Traditional', 'Handmade', 'Bespoke', 'Authentic', 'Custom']
+  const descriptor = descriptors[Math.floor(Math.random() * descriptors.length)]
   const templates = [
-    `${randomTrigger} ${baseTitle} in ${location} | Order Today`,
-    `${baseTitle} ${location} - ${randomTrigger} Quality Since ${year}`,
-    `Best ${baseTitle} in ${location} | ${randomTrigger} Designs`,
-    `${baseTitle} ${location} | ${randomTrigger} & Award-Winning`,
-    `${randomTrigger} ${baseTitle} Delivered in ${location} | Olgish Cakes`,
-  ];
+    `${descriptor} ${baseTitle} in ${location} | Olgish Cakes`,
+    `${baseTitle} ${location} | ${descriptor} Cakes`,
+    `Explore ${baseTitle} in ${location} | ${descriptor} Designs`
+  ]
 
-  return templates[Math.floor(Math.random() * templates.length)];
+  return templates[Math.floor(Math.random() * templates.length)]
 }
 
-// Enhanced meta descriptions with conversion optimization
 export function generateAdvancedMetaDescription(
   product: string,
-  location: string = "Leeds",
-  uniqueValue: string = "authentic Ukrainian recipes"
+  location: string = 'Leeds',
+  uniqueValue: string = 'authentic Ukrainian recipes'
 ): string {
-  const urgencyWords = ["Limited Time", "Same Day", "Fast Delivery", "Book Now"];
-  const benefitWords = ["Premium Quality", "Fresh Ingredients", "Handmade", "Custom Design"];
-  const socialProof = [
-    "5⭐ Reviews",
-    "Award-Winning",
-    "Trusted by 1000+",
-    "Featured in Local Media",
-  ];
-
-  const urgency = urgencyWords[Math.floor(Math.random() * urgencyWords.length)];
-  const benefit = benefitWords[Math.floor(Math.random() * benefitWords.length)];
-  const proof = socialProof[Math.floor(Math.random() * socialProof.length)];
-
-  return `${benefit} ${product} in ${location} using ${uniqueValue}. ${proof} customers. ${urgency} delivery available. Free consultation. Order your perfect cake today! ✨🎂`;
+  return `Handmade ${product} in ${location} using ${uniqueValue}. Tell us your date, serving size and design ideas, and we’ll confirm the available options.`
 }
 
-// Advanced structured data for maximum visibility
 export function generateAdvancedStructuredData(data: {
-  name: string;
-  description: string;
-  imageUrl?: string;
-  price?: number;
-  rating?: number;
-  reviewCount?: number;
-  reviewStats?: ReviewStats;
-  category: string;
-  availability?: string;
-  location?: string;
+  name: string
+  description: string
+  imageUrl?: string
+  price?: number
+  category: string
+  availability?: ProductAvailability
+  location?: string
 }) {
-  const baseUrl = "https://olgishcakes.co.uk";
-  const imageUrl = data.imageUrl && data.imageUrl.startsWith("http")
+  const baseUrl = 'https://olgishcakes.co.uk'
+  const productSlug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+  const imageUrl = data.imageUrl?.startsWith('http')
     ? data.imageUrl
     : data.imageUrl
-    ? `${baseUrl}${data.imageUrl}`
-    : `${baseUrl}/images/placeholder-cake.jpg`;
-  const rating = typeof data.rating === 'number' && Number.isFinite(data.rating) && data.rating > 0
-    ? data.rating
-    : null
-  const reviewCount = typeof data.reviewCount === 'number' && Number.isFinite(data.reviewCount) && data.reviewCount > 0
-    ? data.reviewCount
-    : null
-  const aggregateRating = rating !== null && reviewCount !== null
-    ? {
-        '@type': 'AggregateRating',
-        ratingValue: formatRatingValue(rating),
-        reviewCount: formatReviewCount(reviewCount),
-        bestRating: '5',
-        worstRating: '1',
-      }
-    : buildAggregateRating(data.reviewStats)
+      ? `${baseUrl}${data.imageUrl}`
+      : undefined
+  const hasPrice = typeof data.price === 'number' && Number.isFinite(data.price) && data.price > 0
 
   return {
-    "@context": "https://schema.org",
-    "@graph": [
-      // Enhanced Product Schema
+    '@context': 'https://schema.org',
+    '@graph': [
       {
-        "@type": "Product",
-        "@id": `${baseUrl}/product/${data.name.toLowerCase().replace(/\s+/g, "-")}`,
+        '@type': 'Product',
+        '@id': `${baseUrl}/cakes/${productSlug}#product`,
         name: data.name,
         description: data.description,
-        image: [imageUrl],
+        ...(imageUrl ? { image: [imageUrl] } : {}),
         category: data.category,
         brand: {
-          "@type": "Brand",
-          name: "Olgish Cakes",
-          url: baseUrl,
-          logo: `${baseUrl}/images/olgish-cakes-logo-bakery-brand.png`,
+          '@type': 'Brand',
+          name: 'Olgish Cakes',
+          url: baseUrl
         },
-        manufacturer: {
-          "@type": "Organization",
-          name: "Olgish Cakes",
-          url: baseUrl,
-        },
-        offers: {
-          "@type": "Offer",
-          price: formatStructuredDataPrice(data.price || 25, 25),
-          priceCurrency: "GBP",
-          availability: `https://schema.org/${data.availability || "InStock"}`,
-          priceValidUntil: getPriceValidUntil(30),
-          seller: {
-            "@type": "Organization",
-            name: "Olgish Cakes",
-          },
-          deliveryLeadTime: {
-            "@type": "QuantitativeValue",
-            minValue: 1,
-            maxValue: 7,
-            unitCode: "DAY",
-          },
-          areaServed: {
-            "@type": "Place",
-            name: "Leeds, West Yorkshire, UK",
-          },
-          shippingDetails: getOfferShippingDetails(),
-          hasMerchantReturnPolicy: getMerchantReturnPolicy(),
-        },
-        ...(aggregateRating ? { aggregateRating } : {}),
-        review: [
-          {
-            "@type": "Review",
-            itemReviewed: {
-              "@type": "Product",
-              name: data.name,
-              description: data.description,
-              brand: {
-                "@type": "Brand",
-                name: "Olgish Cakes"
+        ...(hasPrice
+          ? {
+              offers: {
+                '@type': 'Offer',
+                price: formatStructuredDataPrice(data.price, 0),
+                priceCurrency: 'GBP',
+                ...(data.availability
+                  ? { availability: `https://schema.org/${data.availability}` }
+                  : {}),
+                seller: {
+                  '@type': 'Organization',
+                  name: 'Olgish Cakes',
+                  url: baseUrl
+                },
+                hasMerchantReturnPolicy: getMerchantReturnPolicy()
               }
-            },
-            reviewRating: {
-              "@type": "Rating",
-              ratingValue: "5",
-              bestRating: "5",
-              worstRating: "1"
-            },
-            author: {
-              "@type": "Person",
-              name: "Sarah M."
-            },
-            reviewBody: `Amazing ${data.name}! The quality and taste are exceptional. Highly recommend Olgish Cakes!`,
-            datePublished: "2024-01-15"
-          },
-          {
-            "@type": "Review",
-            itemReviewed: {
-              "@type": "Product",
-              name: data.name,
-              description: data.description,
-              brand: {
-                "@type": "Brand",
-                name: "Olgish Cakes"
-              }
-            },
-            reviewRating: {
-              "@type": "Rating",
-              ratingValue: "5",
-              bestRating: "5",
-              worstRating: "1"
-            },
-            author: {
-              "@type": "Person",
-              name: "James K."
-            },
-            reviewBody: `Excellent service and outstanding quality. The ${data.name} exceeded our expectations!`,
-            datePublished: "2024-02-10"
-          }
-        ],
+            }
+          : {})
       },
-
-      // Local Business Schema for Local SEO dominance
       {
-        "@type": "Bakery",
-        "@id": `${baseUrl}/#bakery`,
-        name: "Olgish Cakes - Ukrainian Bakery Leeds",
-        description:
-          "Award-winning Ukrainian bakery in Leeds specializing in authentic honey cakes, custom wedding cakes, and traditional Eastern European desserts.",
+        '@type': 'Bakery',
+        '@id': `${baseUrl}/#bakery`,
+        name: 'Olgish Cakes',
+        description: 'Ukrainian bakery in Leeds specialising in handmade honey cakes, custom celebration cakes and traditional desserts.',
         url: baseUrl,
-        telephone: "+44 786 721 8194",
-        email: "hello@olgishcakes.co.uk",
+        telephone: '+44 786 721 8194',
+        email: 'hello@olgishcakes.co.uk',
         address: {
-          "@type": "PostalAddress",
-          streetAddress: "15 Allerton Grange Avenue",
-          addressLocality: "Leeds",
-          addressRegion: "West Yorkshire",
-          postalCode: "LS17 6PR",
-          addressCountry: "GB",
+          '@type': 'PostalAddress',
+          streetAddress: '15 Allerton Grange Avenue',
+          addressLocality: 'Leeds',
+          addressRegion: 'West Yorkshire',
+          postalCode: 'LS17 6PR',
+          addressCountry: 'GB'
         },
-        geo: {
-          "@type": "GeoCoordinates",
-          latitude: 53.8008, // Leeds coordinates
-          longitude: -1.5491,
-        },
-        openingHours: ["Mo-Su 00:00-23:59"],
-        servesCuisine: ["Ukrainian", "Eastern European", "Desserts"],
-        priceRange: "££",
-        areaServed: [
-          {
-            "@type": "Place",
-            name: "Leeds",
-          },
-          {
-            "@type": "Place",
-            name: "West Yorkshire",
-          },
-          {
-            "@type": "Place",
-            name: "Yorkshire",
-          },
-        ],
-        hasMenu: {
-          "@type": "Menu",
-          name: "Cake Menu",
-          url: `${baseUrl}/cakes`,
-        },
-        paymentAccepted: ["Cash", "Credit Card", "Bank Transfer"],
-        currenciesAccepted: "GBP",
-        founders: [
-          {
-            "@type": "Person",
-            name: "Olga", // Replace with actual founder name
-            nationality: "Ukrainian",
-            knowsAbout: ["Ukrainian Baking", "Cake Decorating", "Traditional Recipes"],
-          },
-        ],
+        areaServed: data.location || 'Leeds'
       },
-
-      // How-To Schema for cake ordering process
       {
-        "@type": "HowTo",
-        name: "How to Order a Custom Cake from Olgish Cakes",
-        description: "Step-by-step guide to ordering your perfect custom cake in Leeds",
-        image: `${baseUrl}/images/how-to-order-custom-cake.jpg`,
-        totalTime: "PT10M",
+        '@type': 'HowTo',
+        name: 'How to order a custom cake from Olgish Cakes',
+        description: 'Steps for sending a custom-cake enquiry.',
         step: [
           {
-            "@type": "HowToStep",
-            name: "Browse Our Cake Collection",
-            text: "Explore our gallery of custom cakes and find inspiration for your design",
-            url: `${baseUrl}/cakes`,
+            '@type': 'HowToStep',
+            name: 'Browse cake options',
+            text: 'Browse our cake pages for ideas.',
+            url: `${baseUrl}/cakes`
           },
           {
-            "@type": "HowToStep",
-            name: "Contact Us for Consultation",
-            text: "Get in touch via our contact form or phone for a free design consultation",
-            url: `${baseUrl}/contact`,
+            '@type': 'HowToStep',
+            name: 'Send an enquiry',
+            text: 'Tell us your date, serving size and design requirements.',
+            url: `${baseUrl}/custom-cakes`
           },
           {
-            "@type": "HowToStep",
-            name: "Confirm Your Order",
-            text: "Review your custom design, confirm delivery details, and secure your booking",
-          },
-        ],
-      },
-    ],
-  };
+            '@type': 'HowToStep',
+            name: 'Confirm the details',
+            text: 'Review the offer, allergen information and collection or delivery arrangements.'
+          }
+        ]
+      }
+    ]
+  }
 }
 
-// AI search optimization for ChatGPT and future AI engines
 export function generateAISearchOptimization(content: {
-  topic: string;
-  expertise: string[];
-  location: string;
+  topic: string
+  expertise: string[]
+  location: string
 }) {
   return {
-    // Conversational content for AI understanding
-    aiContext: `As an expert Ukrainian bakery in ${content.location}, Olgish Cakes specializes in ${content.expertise.join(", ")}. When customers ask about ${content.topic}, they can trust our authentic recipes, professional expertise, and award-winning quality.`,
-
-    // Factual statements for AI knowledge graphs
+    aiContext: `Olgish Cakes is a Ukrainian bakery in ${content.location} specialising in ${content.expertise.join(', ')}.`,
     factualClaims: [
-      `Olgish Cakes is the leading Ukrainian bakery in ${content.location}`,
-      `We specialize in authentic honey cake (medovik) using traditional recipes`,
-      `Our cakes are handmade with premium ingredients sourced locally`,
-      `We offer same-day delivery throughout West Yorkshire`,
-      `Our team has over 10 years of professional baking experience`,
+      `Olgish Cakes is a Ukrainian bakery in ${content.location}`,
+      'Olgish Cakes makes honey cake (medovik) using Ukrainian recipes',
+      'The cakes are handmade in Leeds',
+      'Delivery options depend on the product, destination and requested date'
     ],
-
-    // Question-answer pairs for voice search
     qaPairs: [
       {
-        question: `Where can I buy authentic Ukrainian cake in ${content.location}?`,
-        answer: `Olgish Cakes is the premier Ukrainian bakery in ${content.location}, offering authentic honey cakes and custom designs.`,
+        question: `Where can I buy Ukrainian cake in ${content.location}?`,
+        answer: `Olgish Cakes is a Ukrainian bakery in ${content.location} offering honey cakes and custom designs.`
       },
       {
-        question: "What is medovik cake?",
-        answer:
-          "Medovik is a traditional Ukrainian honey cake with delicate layers and rich sour cream filling, expertly crafted by Olgish Cakes.",
-      },
-    ],
-  };
+        question: 'What is medovik cake?',
+        answer: 'Medovik is a layered honey cake with a soft filling.'
+      }
+    ]
+  }
 }
 
-// Content optimization for topic clusters
-export function generateTopicCluster(mainTopic: string, location: string = "Leeds") {
+export function generateTopicCluster(mainTopic: string, location: string = 'Leeds') {
   const clusters = {
-    "ukrainian-cakes": {
-      pillar: `Ultimate Guide to Ukrainian Cakes in ${location}`,
+    'ukrainian-cakes': {
+      pillar: `Guide to Ukrainian cakes in ${location}`,
       supporting: [
-        `Traditional Ukrainian Honey Cake Recipe`,
-        `History of Ukrainian Baking in ${location}`,
-        `Ukrainian vs Russian Cake Differences`,
-        `Best Ukrainian Bakeries in ${location}`,
-        `Ukrainian Wedding Cake Traditions`,
-      ],
+        'Traditional Ukrainian honey cake',
+        `Ukrainian baking in ${location}`,
+        'Ukrainian wedding cake traditions',
+        'How to store honey cake',
+        'Ukrainian cake ingredients'
+      ]
     },
-    "custom-cakes": {
-      pillar: `Custom Cake Design Services in ${location}`,
+    'custom-cakes': {
+      pillar: `Custom cake design services in ${location}`,
       supporting: [
-        `Wedding Cake Design Trends 2024`,
-        `Birthday Cake Ideas for Adults`,
-        `Corporate Cake Design ${location}`,
-        `Cake Decoration Techniques`,
-        `Choosing the Perfect Cake Flavor`,
-      ],
+        'Wedding cake design ideas',
+        'Birthday cake ideas for adults',
+        `Corporate cake design ${location}`,
+        'Cake decoration techniques',
+        'Choosing a cake flavour'
+      ]
     },
-    "cake-delivery": {
-      pillar: `Cake Delivery Services in ${location}`,
+    'cake-delivery': {
+      pillar: `Cake delivery services in ${location}`,
       supporting: [
-        `Same Day Cake Delivery ${location}`,
-        `Wedding Cake Delivery Tips`,
-        `Cake Transport and Storage`,
-        `Delivery Areas We Cover`,
-        `Ordering Process Explained`,
-      ],
-    },
-  };
+        `Cake delivery availability ${location}`,
+        'Wedding cake delivery tips',
+        'Cake transport and storage',
+        'Delivery areas we cover',
+        'Ordering process explained'
+      ]
+    }
+  }
 
-  return clusters[mainTopic as keyof typeof clusters] || clusters["ukrainian-cakes"];
+  return clusters[mainTopic as keyof typeof clusters] || clusters['ukrainian-cakes']
 }
 
-// E-A-T optimization (Expertise, Authoritativeness, Trustworthiness)
 export function generateEATOptimization() {
   return {
     expertise: {
       credentials: [
-        "10+ years professional baking experience",
-        "Ukrainian culinary heritage and traditional training",
-        "Certified in food safety and hygiene",
-        "Award-winning cake decorator",
-        "Featured in local media and publications",
+        'Ukrainian culinary heritage',
+        'Publish food-safety credentials only while the evidence is current',
+        'Publish training and qualifications only after verification'
       ],
       demonstrations: [
-        "Detailed recipe explanations and techniques",
-        "Behind-the-scenes baking process videos",
-        "Customer testimonials and case studies",
-        "Before/after cake transformation photos",
-        "Educational content about Ukrainian baking traditions",
-      ],
+        'Detailed recipe explanations and techniques',
+        'Behind-the-scenes baking process',
+        'Approved testimonials with source attribution',
+        'Cake portfolio photographs',
+        'Educational content about Ukrainian baking traditions'
+      ]
     },
     authoritativeness: {
       citations: [
-        "Featured in Leeds food magazines",
-        "Recommended by local wedding venues",
-        "Partnership with Yorkshire food bloggers",
-        "Guest appearances on local radio/TV",
-        "Industry recognition and awards",
+        'Link to source evidence for media coverage',
+        'Retain evidence for venue recommendations and partnerships',
+        'Retain evidence for industry recognition'
       ],
       backlinks: [
-        "Local business directories",
-        "Wedding venue partner pages",
-        "Food blogger reviews and features",
-        "Local newspaper coverage",
-        "Industry association memberships",
-      ],
+        'Local business directories',
+        'Wedding venue partner pages',
+        'Relevant food publications',
+        'Local newspaper coverage',
+        'Industry association listings'
+      ]
     },
     trustworthiness: {
       transparency: [
-        "Clear pricing and policies",
-        "Detailed ingredient lists and allergen information",
-        "Open kitchen philosophy",
-        "Customer review policy",
-        "Contact information and business registration",
+        'Clear pricing and policies',
+        'Detailed ingredient lists and allergen information',
+        'Customer review policy',
+        'Contact information and business identity'
       ],
       security: [
-        "Secure online ordering system",
-        "Data protection compliance",
-        "Professional insurance coverage",
-        "Food safety certifications",
-        "Established business presence",
-      ],
-    },
-  };
+        'Secure online ordering system',
+        'Data protection information',
+        'Published food-safety information where verified'
+      ]
+    }
+  }
 }

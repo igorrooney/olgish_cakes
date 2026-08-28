@@ -30,9 +30,32 @@ function buildRequest(body: Record<string, unknown>, token?: string) {
 }
 
 describe('/api/dev/email-preview', () => {
+  const originalNodeEnv = process.env.NODE_ENV
+
   beforeEach(() => {
     jest.clearAllMocks()
+    process.env.NODE_ENV = 'test'
     mockVerifyAdminAuthToken.mockResolvedValue(true)
+  })
+
+  afterAll(() => {
+    process.env.NODE_ENV = originalNodeEnv
+  })
+
+  it('is unavailable in production before authentication or parsing', async () => {
+    process.env.NODE_ENV = 'production'
+
+    const request = new NextRequest('http://localhost/api/dev/email-preview', {
+      method: 'POST',
+      body: 'not-json'
+    })
+    const response = await POST(request)
+
+    expect(response.status).toBe(404)
+    expect(await response.text()).toBe('')
+    expect(response.headers.get('cache-control')).toContain('no-store')
+    expect(response.headers.get('x-robots-tag')).toBe('noindex, nofollow')
+    expect(mockVerifyAdminAuthToken).not.toHaveBeenCalled()
   })
 
   it('rejects missing admin auth cookie', async () => {
@@ -108,7 +131,7 @@ describe('/api/dev/email-preview', () => {
     expect(json.input.customerName).toBe('Merged Name')
     expect(json.input.message).toContain('cake order')
     expect(json.rendered.subject).toContain('Merged Name')
-    expect(json.rendered.text).toContain('Can you help with a cake order?')
+    expect(json.rendered.text).not.toContain('Can you help with a cake order?')
   })
 
   it('derives status scenario from input status for orders status updates', async () => {

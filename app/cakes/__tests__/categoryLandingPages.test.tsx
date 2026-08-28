@@ -249,8 +249,8 @@ describe('category landing pages', () => {
     categoryLandingSlugs.forEach((slug) => {
       const config = getCategoryLandingConfig(slug)
 
-      expect(config.heroPrimaryAction.href).toBe('/get-custom-quote')
-      expect(config.ctaBand.primaryAction.href).toBe('/get-custom-quote')
+      expect(config.heroPrimaryAction.href).toBe('/custom-cakes')
+      expect(config.ctaBand.primaryAction.href).toBe('/custom-cakes')
     })
   })
 

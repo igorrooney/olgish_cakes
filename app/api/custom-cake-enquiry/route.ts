@@ -19,14 +19,23 @@ import {
   getSupabaseAdminClient,
   type SupabaseAdminClient
 } from '@/lib/supabase-admin-client'
+import {
+  addSensitiveDataConsentIssue,
+  createSensitiveDataConsentEvidence,
+  dietaryHealthConsentSchema,
+  dietaryHealthInformationSchema,
+  parseDietaryHealthConsent
+} from '@/lib/legal/sensitive-data-consent'
+import { logger } from '@/lib/logger'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
+import { getCustomCakeStorageBucket } from '@/lib/storage-buckets'
 
 const recipientEmail = process.env.CONTACT_EMAIL_TO || 'hello@olgishcakes.co.uk'
 const ukPostcodePattern = /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i
 const notificationFailureErrorMessage =
   'Enquiry saved but all operator notifications failed. Please contact Olgish Cakes directly.'
 
-const getReferenceImageBucket = () =>
-  process.env.SUPABASE_ENQUIRY_BUCKET || 'custom-cake-enquiries'
+const getReferenceImageBucket = getCustomCakeStorageBucket
 
 const defaultEmailFromAddress = 'Olgish Cakes <hello@olgishcakes.co.uk>'
 
@@ -119,75 +128,38 @@ const dateNeededSchema = z
     message: datePastErrorMessage
   })
 
-const buildSupabaseInsertHints = (errorDetails: string) => {
-  const normalizedDetails = errorDetails.toLowerCase()
-  const hints = new Set<string>([
-    'Verify the custom_cake_enquiries table exists in Supabase.',
-    'Verify the table contains every column expected by the route insert payload.',
-    'Verify the service-role key has insert permission for custom_cake_enquiries.'
-  ])
-
-  if (normalizedDetails.includes('does not exist')) {
-    hints.add('The table or one of the referenced columns may not exist yet.')
-  }
-
-  if (normalizedDetails.includes('column')) {
-    hints.add('A missing or renamed column is a likely cause of this insert failure.')
-  }
-
-  if (normalizedDetails.includes('permission') || normalizedDetails.includes('policy')) {
-    hints.add('Check database permissions or row-level security policies for this table.')
-  }
-
-  if (normalizedDetails.includes('invalid input syntax') || normalizedDetails.includes('type')) {
-    hints.add('Check that the column data types match the values inserted by the route.')
-  }
-
-  if (normalizedDetails.includes('violates') || normalizedDetails.includes('constraint')) {
-    hints.add('Check not-null, unique, or check constraints on custom_cake_enquiries.')
-  }
-
-  return [...hints]
-}
-
 const logSupabaseInsertFailure = (error: unknown) => {
-  const errorRecord = typeof error === 'object' && error !== null
-    ? error as Record<string, unknown>
-    : null
-  const details = JSON.stringify(errorRecord ?? error)
-
-  console.error('Supabase insert failed', {
+  logger.error('Supabase insert failed', {
     operation: 'custom_cake_enquiries.insert',
-    table: 'custom_cake_enquiries',
-    errorName: errorRecord?.name ?? null,
-    errorCode: errorRecord?.code ?? null,
-    errorMessage: errorRecord?.message ?? null,
-    errorDetails: errorRecord?.details ?? null,
-    errorHint: errorRecord?.hint ?? null,
-    rawError: errorRecord ?? error,
-    expectedColumns: [
-      'full_name',
-      'email',
-      'phone',
-      'address',
-      'city',
-      'postcode',
-      'occasion',
-      'date_needed',
-      'requirements',
-      'reference_image_bucket',
-      'reference_image_path',
-      'reference_image_name',
-      'reference_image_type',
-      'reference_image_size'
-    ],
-    troubleshootingHints: buildSupabaseInsertHints(details)
+    ...toSafeOperationalError(error)
   })
 }
 
 type NotificationError = {
   step: 'admin-email' | 'customer-email' | 'telegram-manager'
   message: string
+}
+
+const notificationOperationByStep: Record<NotificationError['step'], string> = {
+  'admin-email': 'custom-cake-enquiry.notification.admin-email',
+  'customer-email': 'custom-cake-enquiry.notification.customer-email',
+  'telegram-manager': 'custom-cake-enquiry.notification.telegram-manager'
+}
+
+const getNotificationFailureAlertCode = (notificationErrors: NotificationError[]) => {
+  const failedSteps = new Set(notificationErrors.map((entry) => entry.step))
+  const adminFailed = failedSteps.has('admin-email')
+  const customerFailed = failedSteps.has('customer-email')
+  const telegramFailed = failedSteps.has('telegram-manager')
+
+  if (adminFailed && customerFailed && telegramFailed) return 'ALL_NOTIFICATIONS_FAILED'
+  if (adminFailed && customerFailed) return 'ADMIN_AND_CUSTOMER_EMAIL_FAILED'
+  if (adminFailed && telegramFailed) return 'ADMIN_EMAIL_AND_TELEGRAM_FAILED'
+  if (customerFailed && telegramFailed) return 'CUSTOMER_EMAIL_AND_TELEGRAM_FAILED'
+  if (adminFailed) return 'ADMIN_EMAIL_FAILED'
+  if (customerFailed) return 'CUSTOMER_EMAIL_FAILED'
+  if (telegramFailed) return 'TELEGRAM_NOTIFICATION_FAILED'
+  return 'NOTIFICATION_FAILED'
 }
 
 type InsertedEnquiryRow = {
@@ -210,86 +182,51 @@ const buildAdminUrl = (path: string) => `${BUSINESS_CONSTANTS.BASE_URL}${path}`
 
 const logNotificationFailure = (
   step: NotificationError['step'],
-  errorMessage: string,
-  context: {
-    customerName: string
-    customerEmail?: string
-    dateNeeded: string
-  }
+  errorCode: string,
+  recordReference?: string
 ) => {
-  console.error('Custom cake enquiry notification failed', {
-    step,
-    errorMessage,
-    customerName: context.customerName,
-    customerEmail: context.customerEmail ?? null,
-    dateNeeded: context.dateNeeded
+  logger.error('Custom cake enquiry notification failed', {
+    operation: notificationOperationByStep[step],
+    code: errorCode,
+    ...(recordReference ? { recordReference } : {})
   })
 }
 
 const logFailureAlertFailure = (
-  errorMessage: string,
-  context: {
-    customerName: string
-    customerEmail?: string
-    dateNeeded: string
-    notificationErrors: NotificationError[]
-  }
+  errorCode: string,
+  recordReference?: string
 ) => {
-  console.error('Custom cake enquiry failure alert failed', {
-    errorMessage,
-    customerName: context.customerName,
-    customerEmail: context.customerEmail ?? null,
-    dateNeeded: context.dateNeeded,
-    failedSteps: context.notificationErrors.map((entry) => entry.step)
+  logger.error('Custom cake enquiry failure alert failed', {
+    operation: 'custom-cake-enquiry.failure-alert',
+    code: errorCode,
+    ...(recordReference ? { recordReference } : {})
   })
 }
 
-const buildFailureAlertMessage = (
-  notificationErrors: NotificationError[]
-) => notificationErrors
-  .map((entry) => `${entry.step}: ${entry.message}`)
-  .join('\n')
-
-const telegramFailureAlertEmail = 'igorrooney@gmail.com'
+const getTelegramFailureAlertEmail = () =>
+  process.env.TELEGRAM_FAILURE_ALERT_EMAIL?.trim() ||
+  process.env.CONTACT_EMAIL_TO?.trim() ||
+  'hello@olgishcakes.co.uk'
 
 const sendFailureAlertEmail = async (params: {
-  customerName: string
-  customerEmail?: string
-  customerPhone?: string
-  address?: string
-  city?: string
-  postcode?: string
-  dateNeeded: string
-  occasion: string
-  requirements: string
-  attachmentNames: string[]
-  notificationErrors: NotificationError[]
+  recordReference?: string
+  failureCode: string
   emailMode: ReturnType<typeof getEmailTransportMode>
   adminUrl: string
 }) => {
   const failureAlertResponse = await sendEmail({
     templateId: 'custom-cake-enquiry-failure-alert',
     input: {
-      customerName: params.customerName,
-      customerEmail: params.customerEmail,
-      customerPhone: params.customerPhone,
-      address: params.address,
-      city: params.city,
-      postcode: params.postcode,
-      dateNeeded: params.dateNeeded,
-      occasion: params.occasion,
-      customerMessage: params.requirements,
-      attachmentNames: params.attachmentNames,
-      message: `Failed notifications:\n${buildFailureAlertMessage(params.notificationErrors)}`,
-      note: 'The enquiry was saved in the database successfully. Review notification logs and resend manually if needed.',
+      operation: 'custom-cake-enquiry.notification',
+      operationalCode: params.failureCode,
+      recordReference: params.recordReference,
       adminUrl: params.adminUrl
     },
     modeOverride: params.emailMode,
     message: {
       from: getEmailFromAddress(),
       to: recipientEmail,
-      bcc: process.env.ADMIN_BCC_EMAIL || undefined,
-      replyTo: params.customerEmail || undefined
+      bcc: process.env.ADMIN_BCC_EMAIL || undefined
     }
   })
 
@@ -297,57 +234,41 @@ const sendFailureAlertEmail = async (params: {
     ? { sent: true as const }
     : {
         sent: false as const,
-        errorMessage: failureAlertResponse.error?.message || 'Transport did not accept failure alert email'
+        errorMessage: failureAlertResponse.error
+          ? toSafeOperationalError(failureAlertResponse.error).code
+          : 'EMAIL_NOT_ACCEPTED'
       }
 }
 
 const sendTelegramFailureAlertEmail = async (params: {
-  customerName: string
-  customerEmail?: string
-  customerPhone?: string
-  address?: string
-  city?: string
-  postcode?: string
-  dateNeeded: string
-  occasion: string
-  requirements: string
-  attachmentNames: string[]
-  telegramError: string
+  recordReference?: string
+  failureCode: string
   emailMode: ReturnType<typeof getEmailTransportMode>
   adminUrl: string
 }) => {
   const response = await sendEmail({
     templateId: 'custom-cake-enquiry-failure-alert',
     input: {
-      customerName: params.customerName,
-      customerEmail: params.customerEmail,
-      customerPhone: params.customerPhone,
-      address: params.address,
-      city: params.city,
-      postcode: params.postcode,
-      dateNeeded: params.dateNeeded,
-      occasion: params.occasion,
-      customerMessage: params.requirements,
-      attachmentNames: params.attachmentNames,
-      message: `Telegram manager notification failed:\n${params.telegramError}`,
-      note: 'The enquiry was saved successfully, but the Telegram manager notification did not send. Check TELEGRAM_BOT_TOKEN, TELEGRAM_MANAGER_CHAT_ID, hosting network egress, and Telegram API availability.',
+      operation: 'custom-cake-enquiry.notification.telegram-manager',
+      operationalCode: params.failureCode,
+      recordReference: params.recordReference,
       adminUrl: params.adminUrl
     },
     modeOverride: params.emailMode,
     subjectPrefix: '[Telegram alert]',
     message: {
       from: getEmailFromAddress(),
-      to: telegramFailureAlertEmail,
-      replyTo: params.customerEmail || undefined
+      to: getTelegramFailureAlertEmail()
     }
   })
 
   if (!response.accepted || response.error) {
-    console.error('Telegram failure alert email failed', {
-      customerName: params.customerName,
-      customerEmail: params.customerEmail ?? null,
-      dateNeeded: params.dateNeeded,
-      errorMessage: response.error?.message || 'Transport did not accept Telegram failure alert email'
+    logger.error('Telegram failure alert email failed', {
+      operation: 'custom-cake-enquiry.telegram-failure-alert',
+      code: response.error
+        ? toSafeOperationalError(response.error).code
+        : 'EMAIL_NOT_ACCEPTED',
+      ...(params.recordReference ? { recordReference: params.recordReference } : {})
     })
   }
 }
@@ -369,7 +290,10 @@ const uploadReferenceImage = async (supabase: SupabaseAdminClient, file: File) =
     })
 
   if (error || !data) {
-    console.error('Supabase storage upload failed:', error)
+    logger.error('Supabase storage upload failed', {
+      operation: 'custom-cake-enquiry.reference-upload',
+      ...toSafeOperationalError(error)
+    })
     throw new Error('Failed to upload reference image')
   }
 
@@ -389,7 +313,10 @@ const removeReferenceImage = async (
     .remove([path])
 
   if (error) {
-    console.error('Supabase storage cleanup failed:', error)
+    logger.error('Supabase storage cleanup failed', {
+      operation: 'custom-cake-enquiry.reference-cleanup',
+      ...toSafeOperationalError(error)
+    })
   }
 }
 
@@ -403,8 +330,12 @@ const formSchema = z.object({
   occasion: optionalTrimmedStringSchema,
   date: dateNeededSchema,
   requirements: optionalTrimmedStringSchema,
+  dietaryHealthInformation: dietaryHealthInformationSchema,
+  dietaryHealthConsent: dietaryHealthConsentSchema,
   csrfToken: z.string().min(1, 'CSRF token is required')
 }).superRefine((values, ctx) => {
+  addSensitiveDataConsentIssue(values, ctx)
+
   if (values.email.length > 0 || values.phone.length > 0) {
     return
   }
@@ -464,17 +395,6 @@ export async function POST(request: NextRequest) {
       return formDataResult.response
     }
 
-    const emailMode = getEmailTransportMode()
-    const canSendLiveEmail =
-      !requiresLiveEmailConfiguration(emailMode) || Boolean(process.env.RESEND_API_KEY)
-
-    if (!canSendLiveEmail) {
-      return NextResponse.json(
-        { error: 'Email service not configured' },
-        { status: 500 }
-      )
-    }
-
     const { formData: body } = formDataResult
     const getString = (value: FormDataEntryValue | null) =>
       typeof value === 'string' ? value : ''
@@ -488,6 +408,8 @@ export async function POST(request: NextRequest) {
     const date = getString(body.get('date'))
     const occasionValue = getString(body.get('occasion')).trim()
     const requirementsValue = getString(body.get('requirements')).trim()
+    const dietaryHealthInformationValue = getString(body.get('dietaryHealthInformation')).trim()
+    const dietaryHealthConsent = parseDietaryHealthConsent(body.get('dietaryHealthConsent'))
     const csrfToken = getString(body.get('csrfToken'))
     const referenceImageEntry = body.get('referenceImage')
     const referenceImage =
@@ -512,6 +434,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const emailMode = getEmailTransportMode()
+    const canSendLiveEmail =
+      !requiresLiveEmailConfiguration(emailMode) || Boolean(process.env.RESEND_API_KEY)
+
+    if (!canSendLiveEmail) {
+      return NextResponse.json(
+        { error: 'Email service not configured' },
+        { status: 500 }
+      )
+    }
+
     const validated = formSchema.parse({
       fullName,
       email,
@@ -522,10 +455,16 @@ export async function POST(request: NextRequest) {
       occasion: occasionValue || undefined,
       date,
       requirements: requirementsValue || undefined,
+      dietaryHealthInformation: dietaryHealthInformationValue || undefined,
+      dietaryHealthConsent,
       csrfToken
     })
 
     const { csrfToken: _, ...formData } = validated
+    const sensitiveDataEvidence = createSensitiveDataConsentEvidence(
+      formData.dietaryHealthInformation,
+      formData.dietaryHealthConsent === true
+    )
 
     const referenceImageError = referenceImage ? getReferenceImageError(referenceImage) : null
     if (referenceImageError) {
@@ -556,6 +495,10 @@ export async function POST(request: NextRequest) {
         occasion: occasionValue || null,
         date_needed: formData.date,
         requirements: requirementsValue || null,
+        dietary_health_information: sensitiveDataEvidence.dietaryHealthInformation,
+        dietary_health_consent: sensitiveDataEvidence.dietaryHealthConsent,
+        dietary_health_consent_version: sensitiveDataEvidence.dietaryHealthConsentVersion,
+        dietary_health_consented_at: sensitiveDataEvidence.dietaryHealthConsentedAt,
         reference_image_bucket: referenceImageBucket,
         reference_image_path: referenceImagePath,
         reference_image_name: referenceImage?.name || null,
@@ -584,13 +527,6 @@ export async function POST(request: NextRequest) {
       : '/admin/enquiries'
     const adminUrl = buildAdminUrl(adminPath)
 
-    const formattedDate = new Date(formData.date).toLocaleDateString('en-GB', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    })
-
     const rawOccasion = formData.occasion?.trim() || ''
     const normalizedOccasion = rawOccasion.toLowerCase()
     const resolvedOccasion =
@@ -598,42 +534,28 @@ export async function POST(request: NextRequest) {
       occasionLabels[normalizedOccasion.replace(/\s+/g, '_')] ||
       rawOccasion ||
       'Not specified'
-    const resolvedRequirements = formData.requirements?.trim() || 'Not specified'
+    const hasDietaryHealthInformation =
+      sensitiveDataEvidence.dietaryHealthInformation !== null
     const notificationErrors: NotificationError[] = []
 
     const telegramNotificationResult = await sendTelegramManagerNotification({
       type: 'custom-cake-enquiry',
-      customerName: formData.fullName,
-      customerEmail: formData.email || undefined,
-      customerPhone: formData.phone || undefined,
+      recordReference: enquiryId || undefined,
       dateNeeded: formData.date,
-      productName: resolvedOccasion,
-      messagePreview: requirementsValue,
       imageCount: referenceImage ? 1 : 0,
       adminPath
     })
 
     if (!telegramNotificationResult.sent && !telegramNotificationResult.skipped) {
       await sendTelegramFailureAlertEmail({
-        customerName: formData.fullName,
-        customerEmail: formData.email || undefined,
-        customerPhone: formData.phone || undefined,
-        address: formData.address,
-        city: formData.city,
-        postcode: formData.postcode,
-        dateNeeded: formData.date,
-        occasion: resolvedOccasion,
-        requirements: resolvedRequirements,
-        attachmentNames: referenceImage ? [referenceImage.name] : [],
-        telegramError: telegramNotificationResult.error || 'Telegram notification request failed',
+        recordReference: enquiryId || undefined,
+        failureCode: telegramNotificationResult.error
+          ? toSafeOperationalError({ code: telegramNotificationResult.error }).code
+          : 'TELEGRAM_NOTIFICATION_FAILED',
         emailMode,
         adminUrl
       })
     }
-
-    const attachmentBuffer = referenceImage
-      ? Buffer.from(await referenceImage.arrayBuffer())
-      : null
 
     const adminEmailResponse = await sendEmail({
       templateId: 'custom-cake-enquiry-admin',
@@ -646,8 +568,7 @@ export async function POST(request: NextRequest) {
         postcode: formData.postcode,
         dateNeeded: formData.date,
         occasion: resolvedOccasion,
-        customerMessage: resolvedRequirements,
-        attachmentNames: referenceImage ? [referenceImage.name] : [],
+        hasDietaryHealthInformation,
         adminUrl
       },
       modeOverride: emailMode,
@@ -655,16 +576,7 @@ export async function POST(request: NextRequest) {
         from: getEmailFromAddress(),
         to: recipientEmail,
         bcc: process.env.ADMIN_BCC_EMAIL || undefined,
-        replyTo: formData.email || undefined,
-        attachments: referenceImage && attachmentBuffer
-          ? [
-              {
-                filename: referenceImage.name,
-                content: attachmentBuffer,
-                contentType: referenceImage.type || undefined
-              }
-            ]
-          : []
+        replyTo: formData.email || undefined
       }
     })
 
@@ -673,7 +585,9 @@ export async function POST(request: NextRequest) {
     if (!adminEmailSent) {
       notificationErrors.push({
         step: 'admin-email',
-        message: adminEmailResponse.error?.message || 'Transport did not accept admin email'
+        message: adminEmailResponse.error
+          ? toSafeOperationalError(adminEmailResponse.error).code
+          : 'EMAIL_NOT_ACCEPTED'
       })
     }
 
@@ -692,9 +606,6 @@ export async function POST(request: NextRequest) {
           orderType: 'custom-cake-enquiry',
           dateNeeded: formData.date,
           occasion: resolvedOccasion,
-          customerMessage: resolvedRequirements,
-          attachmentNames: referenceImage ? [referenceImage.name] : [],
-          message: 'Date needed: ' + formattedDate,
           nextSteps: [
             'We\'ll check the date, your notes and the delivery details.',
             'We\'ll reply with availability, any questions, and a quote if we can make it for that date.',
@@ -716,7 +627,9 @@ export async function POST(request: NextRequest) {
       if (!customerEmailSent) {
         notificationErrors.push({
           step: 'customer-email',
-          message: customerEmailResponse.error?.message || 'Transport did not accept customer email'
+          message: customerEmailResponse.error
+            ? toSafeOperationalError(customerEmailResponse.error).code
+            : 'EMAIL_NOT_ACCEPTED'
         })
       }
     }
@@ -725,25 +638,12 @@ export async function POST(request: NextRequest) {
 
     if (notificationErrors.length > 0) {
       notificationErrors.forEach((entry) => {
-        logNotificationFailure(entry.step, entry.message, {
-          customerName: formData.fullName,
-          customerEmail: formData.email || undefined,
-          dateNeeded: formData.date
-        })
+        logNotificationFailure(entry.step, entry.message, enquiryId || undefined)
       })
 
       const failureAlertResult = await sendFailureAlertEmail({
-        customerName: formData.fullName,
-        customerEmail: formData.email || undefined,
-        customerPhone: formData.phone || undefined,
-        address: formData.address,
-        city: formData.city,
-        postcode: formData.postcode,
-        dateNeeded: formData.date,
-        occasion: resolvedOccasion,
-        requirements: resolvedRequirements,
-        attachmentNames: referenceImage ? [referenceImage.name] : [],
-        notificationErrors,
+        recordReference: enquiryId || undefined,
+        failureCode: getNotificationFailureAlertCode(notificationErrors),
         emailMode,
         adminUrl
       })
@@ -751,12 +651,7 @@ export async function POST(request: NextRequest) {
       failureAlertSent = failureAlertResult.sent
 
       if (!failureAlertResult.sent) {
-        logFailureAlertFailure(failureAlertResult.errorMessage, {
-          customerName: formData.fullName,
-          customerEmail: formData.email || undefined,
-          dateNeeded: formData.date,
-          notificationErrors
-        })
+        logFailureAlertFailure(failureAlertResult.errorMessage, enquiryId || undefined)
       }
     }
 
@@ -784,7 +679,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.error('Error processing enquiry:', error)
+    logger.error('Custom cake enquiry processing failed', {
+      operation: 'custom-cake-enquiry.process',
+      ...toSafeOperationalError(error)
+    })
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

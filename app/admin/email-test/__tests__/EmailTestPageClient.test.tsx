@@ -64,6 +64,26 @@ describe('EmailTestPageClient', () => {
   })
 
   it('offers cakes-by-post scenarios for customer, admin, and status emails', async () => {
+    global.fetch = jest.fn().mockImplementation(async (_url: string, init?: RequestInit) => {
+      const body = JSON.parse(String(init?.body || '{}'))
+      const isStatusPreview = body.templateId === 'orders-status-update'
+
+      return {
+        ok: true,
+        json: async () => buildPreviewResponse(isStatusPreview
+          ? {
+              templateId: 'orders-status-update',
+              subject: 'Cakes by post status preview loaded',
+              input: {
+                status: 'confirmed',
+                customerFacingOfferDescription: 'Default test offer description.',
+                allergenStatement: 'Contains WHEAT (gluten), EGG and MILK.'
+              }
+            }
+          : undefined)
+      } as Response
+    }) as jest.Mock
+
     renderWithQueryClient()
 
     await waitFor(() => {
@@ -92,6 +112,10 @@ describe('EmailTestPageClient', () => {
     expect(within(screen.getByLabelText('Order status')).getByRole('option', { name: 'Dispatched' })).toBeInTheDocument()
     expect(screen.getByLabelText('Courier')).toHaveValue('evri')
     expect(within(screen.getByLabelText('Courier')).getByRole('option', { name: 'Evri' })).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByText('Cakes by post status preview loaded')).toBeInTheDocument()
+    })
   })
 
   it('loads default sample input and populates editable fields', async () => {
@@ -240,6 +264,99 @@ describe('EmailTestPageClient', () => {
       }
     })
     expect(previewBody.input.trackingNumber).toBeUndefined()
+  })
+
+  it('edits the approved final-offer wording and includes it in a confirmed real-send request', async () => {
+    global.fetch = jest.fn().mockImplementation(async (url: string, init?: RequestInit) => {
+      if (url === '/api/dev/email-test-send') {
+        return {
+          ok: true,
+          json: async () => ({
+            accepted: true,
+            mode: 'live',
+            transportId: 'final-offer-test-id'
+          })
+        } as Response
+      }
+
+      const body = JSON.parse(String(init?.body || '{}'))
+      const isStatusPreview = body.templateId === 'orders-status-update'
+      return {
+        ok: true,
+        json: async () => buildPreviewResponse(isStatusPreview
+          ? {
+              templateId: 'orders-status-update',
+              input: {
+                status: 'confirmed',
+                customerFacingOfferDescription: 'Default test offer description.',
+                allergenStatement: 'Contains WHEAT (gluten), EGG and MILK.'
+              },
+              subject: 'Final Order Offer #TEST'
+            }
+          : undefined)
+      } as Response
+    }) as jest.Mock
+
+    renderWithQueryClient()
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Request')).toBeInTheDocument()
+    })
+
+    fireEvent.change(screen.getByLabelText('Request'), {
+      target: { value: 'cake-product-order' }
+    })
+    fireEvent.change(screen.getByLabelText('Scenario'), {
+      target: { value: 'orders-status-update:cake-product-status' }
+    })
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Scenario')).toHaveValue('orders-status-update:cake-product-status')
+    })
+    await waitFor(() => {
+      expect(screen.getByText('Final offer checks')).toBeInTheDocument()
+    })
+    expect(screen.getByPlaceholderText('One handmade honey cake for collection.')).toBeInTheDocument()
+
+    const allergenField = screen.getByLabelText('Product-specific allergen information')
+    expect(allergenField).toBeInTheDocument()
+    expect(screen.getByText(/current terms PDF is attached automatically/i)).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Customer-facing offer description'), {
+      target: { value: 'One test honey cake for collection.' }
+    })
+    fireEvent.change(screen.getByLabelText('Product-specific allergen information'), {
+      target: { value: 'Contains WHEAT (gluten), EGG, MILK and HAZELNUT.' }
+    })
+    fireEvent.change(screen.getByPlaceholderText('allowlisted@example.com'), {
+      target: { value: 'allowlisted@example.com' }
+    })
+
+    fireEvent.change(allergenField, { target: { value: '' } })
+    expect(screen.getByRole('button', { name: 'Send real test email' })).toBeDisabled()
+    fireEvent.change(allergenField, {
+      target: { value: 'Contains WHEAT (gluten), EGG, MILK and HAZELNUT.' }
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Send real test email' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm and send' }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/Accepted \(live\)/)).toBeInTheDocument()
+    })
+
+    const sendCall = (global.fetch as jest.Mock).mock.calls.find(([url]) => url === '/api/dev/email-test-send')
+    const sendBody = JSON.parse(String(sendCall?.[1]?.body))
+
+    expect(sendBody).toMatchObject({
+      templateId: 'orders-status-update',
+      scenarioId: 'confirmed',
+      input: {
+        status: 'confirmed',
+        customerFacingOfferDescription: 'One test honey cake for collection.',
+        allergenStatement: 'Contains WHEAT (gluten), EGG, MILK and HAZELNUT.'
+      }
+    })
   })
 
   it('reloads defaults when scenario changes and passes scenarioId', async () => {

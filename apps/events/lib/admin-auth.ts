@@ -66,6 +66,7 @@ export async function getAdminLoginThrottle(key: string, now = Date.now()): Prom
     .from(ADMIN_LOGIN_ATTEMPTS_TABLE)
     .select('failed_at')
     .eq('key_hash', keyHash)
+    .is('cleared_at', null)
     .gte('failed_at', cutoffIso)
     .order('failed_at', { ascending: false })
     .limit(ADMIN_LOGIN_MAX_FAILURES)
@@ -103,17 +104,6 @@ export async function getAdminLoginThrottle(key: string, now = Date.now()): Prom
 export async function recordAdminLoginFailure(key: string, now = Date.now()): Promise<void> {
   const supabase = getSupabaseAdmin()
   const keyHash = getAdminLoginKeyHash(key)
-  const cutoffIso = new Date(now - Math.max(ADMIN_LOGIN_WINDOW_MS, ADMIN_LOGIN_LOCK_MS)).toISOString()
-  const { error: deleteError } = await supabase
-    .from(ADMIN_LOGIN_ATTEMPTS_TABLE)
-    .delete()
-    .eq('key_hash', keyHash)
-    .lt('failed_at', cutoffIso)
-
-  if (deleteError) {
-    throw new Error(`Could not clear stale admin login attempts: ${deleteError.message}`)
-  }
-
   const { error: insertError } = await supabase
     .from(ADMIN_LOGIN_ATTEMPTS_TABLE)
     .insert({
@@ -130,8 +120,9 @@ export async function clearAdminLoginFailures(key: string): Promise<void> {
   const supabase = getSupabaseAdmin()
   const { error } = await supabase
     .from(ADMIN_LOGIN_ATTEMPTS_TABLE)
-    .delete()
+    .update({ cleared_at: new Date().toISOString() })
     .eq('key_hash', getAdminLoginKeyHash(key))
+    .is('cleared_at', null)
 
   if (error) {
     throw new Error(`Could not clear admin login attempts: ${error.message}`)

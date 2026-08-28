@@ -16,9 +16,15 @@ import {
   updateSupabaseOrderMetadata
 } from '@/lib/orders/supabase-orders'
 import { getSupabaseAdminClient } from '@/lib/supabase-admin-client'
+import { getCustomCakeStorageBucket } from '@/lib/storage-buckets'
 import { contactFormSchema, formatValidationErrors, validateRequest } from '@/lib/validation'
 import type { OrderMessageAttachment } from '@/types/order'
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  createSensitiveDataConsentEvidence,
+  parseDietaryHealthConsent
+} from '@/lib/legal/sensitive-data-consent'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 const recipientEmail = process.env.CONTACT_EMAIL_TO || 'hello@olgishcakes.co.uk'
 const contactEnquiriesTable = 'contact_enquiries'
@@ -44,6 +50,10 @@ type ContactEnquiryInsertParams = {
   giftNote: string
   referrer: string
   attachmentNames: string[]
+  dietaryHealthInformation: string | null
+  dietaryHealthConsent: boolean
+  dietaryHealthConsentVersion: string | null
+  dietaryHealthConsentedAt: string | null
 }
 
 function toNonEmptyString(value: FormDataEntryValue | null): string {
@@ -210,10 +220,10 @@ function resolveInlineCustomerMessage(...values: string[]): string {
   return ''
 }
 
-const cakeRequestIntro = 'Thank you. We\'ve received your cake request and will review the details within 24 hours.'
+const cakeRequestIntro = 'Thank you. We\'ve received your cake request. We\'ll reply as soon as we can.'
 const cakeRequestPriceLabel = 'Estimated price'
 const cakeRequestNextSteps = [
-  'We\'ll review your requested date, cake details, and any design notes within 24 hours.',
+  'We\'ll review your requested date and the structured order details. We\'ll reply as soon as we can.',
   'If we can accept your request, we\'ll personally confirm availability, final details and price in writing.',
   'Nothing is booked or payable until you accept our final written offer or make the requested payment.'
 ]
@@ -295,7 +305,7 @@ function getDesignImageError(file: File): string | null {
 
 async function uploadOrderReferenceImage(orderNumber: string, file: File, imageBuffer: ArrayBuffer): Promise<OrderMessageAttachment> {
   const supabase = getSupabaseAdminClient()
-  const bucket = process.env.SUPABASE_ENQUIRY_BUCKET || 'custom-cake-enquiries'
+  const bucket = getCustomCakeStorageBucket()
   const extension = file.name.includes('.') ? file.name.split('.').pop() : 'jpg'
   const safeName = file.name
     .replace(/\.[^.]+$/, '')
@@ -312,7 +322,9 @@ async function uploadOrderReferenceImage(orderNumber: string, file: File, imageB
     })
 
   if (error) {
-    throw new Error(`Failed to upload order reference image to Supabase Storage: ${error.message}`)
+    throw Object.assign(new Error('Failed to upload order reference image'), {
+      code: 'STORAGE_UPLOAD_FAILED'
+    })
   }
 
   const { data } = await supabase.storage
@@ -332,68 +344,10 @@ async function uploadOrderReferenceImage(orderNumber: string, file: File, imageB
   }
 }
 
-function buildContactEnquiryInsertHints(errorDetails: string) {
-  const normalizedDetails = errorDetails.toLowerCase()
-  const hints = new Set<string>([
-    'Verify the contact_enquiries table exists in Supabase.',
-    'Verify the table contains every column expected by the route insert payload.',
-    'Verify the service-role key has insert permission for contact_enquiries.'
-  ])
-
-  if (normalizedDetails.includes('does not exist')) {
-    hints.add('The table or one of the referenced columns may not exist yet.')
-  }
-
-  if (normalizedDetails.includes('column')) {
-    hints.add('A missing or renamed column is a likely cause of this insert failure.')
-  }
-
-  if (normalizedDetails.includes('permission') || normalizedDetails.includes('policy')) {
-    hints.add('Check database permissions or row-level security policies for this table.')
-  }
-
-  if (normalizedDetails.includes('invalid input syntax') || normalizedDetails.includes('type')) {
-    hints.add('Check that the column data types match the values inserted by the route.')
-  }
-
-  if (normalizedDetails.includes('violates') || normalizedDetails.includes('constraint')) {
-    hints.add('Check not-null, unique, or check constraints on contact_enquiries.')
-  }
-
-  return [...hints]
-}
-
 function logContactEnquiryInsertFailure(error: unknown) {
-  const errorRecord = typeof error === 'object' && error !== null
-    ? error as Record<string, unknown>
-    : null
-  const details = JSON.stringify(errorRecord ?? error)
-
   logger.error('Contact enquiry insert failed', {
     operation: 'contact_enquiries.insert',
-    table: contactEnquiriesTable,
-    errorName: errorRecord?.name ?? null,
-    errorCode: errorRecord?.code ?? null,
-    errorMessage: errorRecord?.message ?? null,
-    errorDetails: errorRecord?.details ?? null,
-    errorHint: errorRecord?.hint ?? null,
-    rawError: errorRecord ?? error,
-    expectedColumns: [
-      'full_name',
-      'email',
-      'phone',
-      'address',
-      'city',
-      'postcode',
-      'cake_interest',
-      'date_needed',
-      'message',
-      'note',
-      'gift_note',
-      'referrer',
-      'attachment_names'
-    ],
-    troubleshootingHints: buildContactEnquiryInsertHints(details)
+    ...toSafeOperationalError(error)
   })
 }
 
@@ -404,17 +358,17 @@ function isSupabaseAdminClientConfigured() {
   return Boolean(supabaseUrl && supabaseServiceRoleKey)
 }
 
-async function saveContactEnquiry(params: ContactEnquiryInsertParams) {
+async function saveContactEnquiry(params: ContactEnquiryInsertParams): Promise<string | null> {
   if (!isSupabaseAdminClientConfigured()) {
     logger.warn('Skipping contact enquiry persistence because Supabase admin client is not configured', {
       operation: 'contact_enquiries.insert',
-      table: contactEnquiriesTable
+      code: 'CLIENT_NOT_CONFIGURED'
     })
-    return false
+    return null
   }
 
   const supabase = getSupabaseAdminClient()
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from(contactEnquiriesTable)
     .insert({
       full_name: params.name,
@@ -431,25 +385,25 @@ async function saveContactEnquiry(params: ContactEnquiryInsertParams) {
       referrer: params.referrer || null,
       attachment_names: params.attachmentNames.length > 0
         ? params.attachmentNames
-        : null
+        : null,
+      dietary_health_information: params.dietaryHealthInformation,
+      dietary_health_consent: params.dietaryHealthConsent,
+      dietary_health_consent_version: params.dietaryHealthConsentVersion,
+      dietary_health_consented_at: params.dietaryHealthConsentedAt,
+      dietary_health_withdrawn_at: null
     })
+    .select('id')
+    .single()
 
   if (error) {
     logContactEnquiryInsertFailure(error)
     throw new Error('Failed to save contact enquiry')
   }
 
-  return true
+  return String(data.id)
 }
 
 async function handlePOST(request: NextRequest) {
-  if (requiresLiveEmailConfiguration(getEmailTransportMode()) && !process.env.RESEND_API_KEY) {
-    return NextResponse.json(
-      { error: 'Email service not configured' },
-      { status: 500 }
-    )
-  }
-
   try {
     const formDataResult = await readRequiredFormData(request)
     if (!formDataResult.ok) {
@@ -474,6 +428,14 @@ async function handlePOST(request: NextRequest) {
       )
     }
 
+    const emailMode = getEmailTransportMode()
+    if (requiresLiveEmailConfiguration(emailMode) && !process.env.RESEND_API_KEY) {
+      return NextResponse.json(
+        { error: 'Email service not configured' },
+        { status: 500 }
+      )
+    }
+
     const name = toNonEmptyString(formData.get('name'))
     const email = toNonEmptyString(formData.get('email'))
     const phone = toNonEmptyString(formData.get('phone'))
@@ -488,6 +450,8 @@ async function handlePOST(request: NextRequest) {
     const note = toNonEmptyString(formData.get('note'))
     const giftNote = toNonEmptyString(formData.get('giftNote'))
     const referrer = toNonEmptyString(formData.get('referrer'))
+    const dietaryHealthInformation = toNonEmptyString(formData.get('dietaryHealthInformation'))
+    const dietaryHealthConsent = parseDietaryHealthConsent(formData.get('dietaryHealthConsent'))
     const isOrderInquiry = toNonEmptyString(formData.get('isOrderForm')) === 'true'
     const designImageEntry = formData.get('designImage')
     const designImage = designImageEntry instanceof File && designImageEntry.size > 0
@@ -530,15 +494,29 @@ async function handlePOST(request: NextRequest) {
       note: note || undefined,
       giftNote: giftNote || undefined,
       referrer: referrer || undefined,
+      dietaryHealthInformation: dietaryHealthInformation || undefined,
+      dietaryHealthConsent,
       isOrderForm: isOrderInquiry
     })
 
     if (!validationResult.success) {
+      const fieldErrors = validationResult.errors.flatten().fieldErrors
       return NextResponse.json(
-        { error: 'Validation failed', details: formatValidationErrors(validationResult.errors) },
+        {
+          error: 'Validation failed',
+          details: formatValidationErrors(validationResult.errors),
+          fieldErrors
+        },
         { status: 400 }
       )
     }
+
+    const sensitiveDataEvidence = createSensitiveDataConsentEvidence(
+      validationResult.data.dietaryHealthInformation,
+      validationResult.data.dietaryHealthConsent === true
+    )
+    const hasDietaryHealthInformation =
+      sensitiveDataEvidence.dietaryHealthInformation !== null
 
     if (isOrderInquiry && hasCompactOrderPayload) {
       const compactOrderValidationErrors: string[] = []
@@ -570,24 +548,18 @@ async function handlePOST(request: NextRequest) {
       }
     }
 
-    const emailMode = getEmailTransportMode()
     const imageBuffer = designImage ? await designImage.arrayBuffer() : null
     const isLegacyOrderInquiry = isOrderInquiry && !hasCompactOrderPayload
 
     if (isLegacyOrderInquiry) {
       logger.warn('Legacy order inquiry payload received without compact inline order fields', {
-        isOrderInquiry,
-        missingCompactFields: {
-          productType: normalizedProductType === null,
-          productId: !hasProductId,
-          productName: productName.length === 0,
-          totalPrice: totalPrice === null
-        }
+        operation: 'contact.legacy-order-payload',
+        code: 'COMPACT_FIELDS_MISSING'
       })
     }
 
     if (!isOrderInquiry) {
-      let enquiryPersisted = false
+      let enquiryReference: string | null = null
       let adminEmailAccepted = false
       let customerEmailAccepted = false
       const contactEmailInput = {
@@ -600,20 +572,15 @@ async function handlePOST(request: NextRequest) {
         postcode: postcode || undefined,
         dateNeeded: dateNeeded || undefined,
         cakeInterest: cakeInterest || undefined,
-        customerMessage: message || undefined,
-        message: message || undefined,
-        note: note || undefined,
-        giftNote: giftNote || undefined,
         referrer: referrer || undefined,
-        attachmentNames: designImage ? [designImage.name] : [],
         nextSteps: [
-          'We\'ll read your message and check the details you sent.',
+          'We\'ll review the information stored securely with your enquiry.',
           'We\'ll reply with the next practical step as soon as we can.'
         ]
       }
 
       try {
-        enquiryPersisted = await saveContactEnquiry({
+        enquiryReference = await saveContactEnquiry({
           name,
           email,
           phone: normalizedPhone,
@@ -626,29 +593,43 @@ async function handlePOST(request: NextRequest) {
           note,
           giftNote,
           referrer,
-          attachmentNames: designImage ? [designImage.name] : []
+          attachmentNames: designImage ? [designImage.name] : [],
+          ...sensitiveDataEvidence
         })
       } catch (persistenceError) {
-        logger.error('Continuing contact enquiry flow after persistence failure', {
-          persistenceError,
-          customerEmail: email,
-          referrer: referrer || null
+        logger.error('Contact enquiry persistence failed', {
+          operation: 'contact_enquiries.insert',
+          ...toSafeOperationalError(persistenceError)
         })
+
+        return NextResponse.json(
+          {
+            error: hasDietaryHealthInformation
+              ? 'We could not securely save the health-related information. Please try again.'
+              : 'Failed to send email'
+          },
+          { status: 500 }
+        )
       }
 
-      if (enquiryPersisted) {
-        await sendTelegramManagerNotification({
-          type: 'contact-enquiry',
-          customerName: name,
-          customerEmail: email,
-          customerPhone: normalizedPhone,
-          dateNeeded: dateNeeded || undefined,
-          productName: cakeInterest || undefined,
-          messagePreview: message || note || giftNote,
-          imageCount: designImage ? 1 : 0,
-          adminPath: '/admin'
-        })
+      if (!enquiryReference) {
+        return NextResponse.json(
+          {
+            error: hasDietaryHealthInformation
+              ? 'We could not securely save the health-related information. Please try again.'
+              : 'Failed to send email'
+          },
+          { status: 500 }
+        )
       }
+
+      await sendTelegramManagerNotification({
+        type: 'contact-enquiry',
+        recordReference: enquiryReference,
+        dateNeeded: dateNeeded || undefined,
+        imageCount: designImage ? 1 : 0,
+        adminPath: `/admin/enquiries/contact/${enquiryReference}`
+      })
 
       try {
         const adminEmailResult = await sendEmail({
@@ -656,6 +637,8 @@ async function handlePOST(request: NextRequest) {
           input: {
             ...contactEmailInput,
             orderType: undefined,
+            hasDietaryHealthInformation,
+            adminUrl: `${BUSINESS_CONSTANTS.BASE_URL}/admin/enquiries/contact/${enquiryReference}`,
             titleOverride: `New Contact: ${name}`
           },
           modeOverride: emailMode,
@@ -664,27 +647,26 @@ async function handlePOST(request: NextRequest) {
             to: recipientEmail,
             bcc: process.env.ADMIN_BCC_EMAIL || undefined,
             replyTo: email,
-            attachments: designImage && imageBuffer
-              ? [
-                  {
-                    filename: designImage.name,
-                    content: Buffer.from(imageBuffer)
-                  }
-                ]
-              : []
+            attachments: []
           }
         })
 
         if (!adminEmailResult.accepted || adminEmailResult.error) {
-          throw new Error(adminEmailResult.error?.message || 'Transport did not accept admin email')
+          logger.error('Contact enquiry admin email failed after persistence', {
+            operation: 'contact_enquiry.admin_email',
+            recordReference: enquiryReference,
+            ...(adminEmailResult.error
+              ? toSafeOperationalError(adminEmailResult.error)
+              : { code: 'EMAIL_NOT_ACCEPTED' })
+          })
+        } else {
+          adminEmailAccepted = true
         }
-
-        adminEmailAccepted = true
       } catch (emailError) {
         logger.error('Contact enquiry admin email failed after persistence', {
-          emailError,
-          customerEmail: email,
-          referrer: referrer || null
+          operation: 'contact_enquiry.admin_email',
+          recordReference: enquiryReference,
+          ...toSafeOperationalError(emailError)
         })
       }
 
@@ -703,31 +685,31 @@ async function handlePOST(request: NextRequest) {
         })
 
         if (!customerEmailResult.accepted || customerEmailResult.error) {
-          throw new Error(customerEmailResult.error?.message || 'Transport did not accept customer email')
+          logger.error('Contact enquiry customer email failed after persistence', {
+            operation: 'contact_enquiry.customer_email',
+            recordReference: enquiryReference,
+            ...(customerEmailResult.error
+              ? toSafeOperationalError(customerEmailResult.error)
+              : { code: 'EMAIL_NOT_ACCEPTED' })
+          })
+        } else {
+          customerEmailAccepted = true
         }
-
-        customerEmailAccepted = true
       } catch (emailError) {
         logger.error('Contact enquiry customer email failed after persistence', {
-          emailError,
-          customerEmail: email,
-          referrer: referrer || null
+          operation: 'contact_enquiry.customer_email',
+          recordReference: enquiryReference,
+          ...toSafeOperationalError(emailError)
         })
-      }
-
-      if (!enquiryPersisted && !adminEmailAccepted) {
-        logger.error('Contact enquiry was not persisted or admin-emailed', {
-          customerEmail: email,
-          referrer: referrer || null
-        })
-        return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
       }
 
       if (!adminEmailAccepted) {
         logger.error('Contact enquiry admin email delivery incomplete', {
-          customerEmailAccepted,
-          customerEmail: email,
-          referrer: referrer || null
+          operation: 'contact_enquiry.admin_email',
+          recordReference: enquiryReference,
+          code: customerEmailAccepted
+            ? 'ADMIN_EMAIL_NOT_ACCEPTED_CUSTOMER_ACCEPTED'
+            : 'ADMIN_EMAIL_NOT_ACCEPTED'
         })
       }
 
@@ -735,6 +717,59 @@ async function handlePOST(request: NextRequest) {
     }
 
     if (isLegacyOrderInquiry) {
+      let legacyEnquiryReference: string | null = null
+
+      try {
+        legacyEnquiryReference = await saveContactEnquiry({
+          name,
+          email,
+          phone: normalizedPhone,
+          address,
+          city,
+          postcode,
+          cakeInterest,
+          dateNeeded,
+          message,
+          note,
+          giftNote,
+          referrer,
+          attachmentNames: designImage ? [designImage.name] : [],
+          ...sensitiveDataEvidence
+        })
+      } catch (persistenceError) {
+        logger.error('Legacy order enquiry persistence failed', {
+          operation: 'legacy_order.persistence',
+          ...toSafeOperationalError(persistenceError)
+        })
+        return NextResponse.json(
+          {
+            error: hasDietaryHealthInformation
+              ? 'We could not securely save the health-related information. Please try again.'
+              : 'Failed to send email'
+          },
+          { status: 500 }
+        )
+      }
+
+      if (!legacyEnquiryReference) {
+        return NextResponse.json(
+          {
+            error: hasDietaryHealthInformation
+              ? 'We could not securely save the health-related information. Please try again.'
+              : 'Failed to send email'
+          },
+          { status: 500 }
+        )
+      }
+
+      await sendTelegramManagerNotification({
+        type: 'contact-enquiry',
+        recordReference: legacyEnquiryReference,
+        dateNeeded: dateNeeded || undefined,
+        imageCount: designImage ? 1 : 0,
+        adminPath: `/admin/enquiries/contact/${legacyEnquiryReference}`
+      })
+
       const adminEmailResult = await sendEmail({
         templateId: 'contact-admin-inquiry',
         input: {
@@ -746,11 +781,9 @@ async function handlePOST(request: NextRequest) {
           postcode: postcode || undefined,
           dateNeeded: dateNeeded || undefined,
           cakeInterest: cakeInterest || undefined,
-          message: message || undefined,
-          note: note || undefined,
-          giftNote: giftNote || undefined,
           referrer: referrer || undefined,
-          attachmentNames: designImage ? [designImage.name] : [],
+          hasDietaryHealthInformation,
+          adminUrl: `${BUSINESS_CONSTANTS.BASE_URL}/admin/enquiries/contact/${legacyEnquiryReference}`,
           titleOverride: `New Order Inquiry: ${name}`
         },
         modeOverride: emailMode,
@@ -759,19 +792,18 @@ async function handlePOST(request: NextRequest) {
           to: recipientEmail,
           bcc: process.env.ADMIN_BCC_EMAIL || undefined,
           replyTo: email,
-          attachments: designImage && imageBuffer
-            ? [
-                {
-                  filename: designImage.name,
-                  content: Buffer.from(imageBuffer)
-                }
-              ]
-            : []
+          attachments: []
         }
       })
 
       if (!adminEmailResult.accepted || adminEmailResult.error) {
-        throw new Error(adminEmailResult.error?.message || 'Transport did not accept admin email')
+        logger.error('Legacy order admin email failed', {
+          operation: 'legacy_order.admin_email',
+          ...(adminEmailResult.error
+            ? toSafeOperationalError(adminEmailResult.error)
+            : { code: 'EMAIL_NOT_ACCEPTED' })
+        })
+        return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
       }
 
       return NextResponse.json({ success: true })
@@ -814,7 +846,9 @@ async function handlePOST(request: NextRequest) {
           ]
         } catch (uploadError) {
           logger.error('Failed to upload design image to Supabase', {
-            error: uploadError
+            operation: 'inline_order.reference_upload',
+            recordReference: orderNumber,
+            ...toSafeOperationalError(uploadError)
           })
         }
       }
@@ -871,10 +905,14 @@ async function handlePOST(request: NextRequest) {
           }
         ],
         notes: [],
-        metadata: {
+          metadata: {
           source: 'website-inline-v2',
           orderSourceVersion: 'v2-inline',
           termsPresentedVersion: CURRENT_TERMS_VERSION,
+          dietaryHealthInformation: sensitiveDataEvidence.dietaryHealthInformation,
+          dietaryHealthConsent: sensitiveDataEvidence.dietaryHealthConsent,
+          dietaryHealthConsentVersion: sensitiveDataEvidence.dietaryHealthConsentVersion,
+          dietaryHealthConsentedAt: sensitiveDataEvidence.dietaryHealthConsentedAt,
           referrer,
           userAgent: request.headers.get('user-agent') || '',
           ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
@@ -898,13 +936,9 @@ async function handlePOST(request: NextRequest) {
 
       await sendTelegramManagerNotification({
         type: 'inline-order',
-        customerName: name,
-        customerEmail: email,
-        customerPhone: normalizedPhone,
+        recordReference: createdOrder.orderNumber,
         dateNeeded: dateNeeded || undefined,
-        productName,
         total: totalPrice || 0,
-        messagePreview: resolvedCustomerMessage || note || giftNote,
         imageCount: designImage ? 1 : 0,
         adminPath: `/admin/orders/${createdOrder.orderNumber}`
       })
@@ -938,8 +972,6 @@ async function handlePOST(request: NextRequest) {
           designType: designTypeLabel,
           filling: filling || undefined,
           servings: servings || undefined,
-          customerMessage: resolvedCustomerMessage || undefined,
-          giftNote: giftNote || undefined,
           deliveryRecipientName: isCakesByPostOrder ? recipientName : undefined,
           deliveryMethod: inferredDeliveryMethod,
           deliveryAddress: inferredDeliveryAddress,
@@ -947,7 +979,7 @@ async function handlePOST(request: NextRequest) {
           approximateSubmittedFrom,
           referrer: referrer || undefined,
           intro: isCakesByPostOrder
-            ? 'Thank you. We\'ve received your cakes by post request and will review your request and delivery details within 24 hours.'
+            ? 'Thank you. We\'ve received your cakes by post request. We\'ll reply as soon as we can.'
             : cakeRequestIntro,
           nextSteps: isCakesByPostOrder ? undefined : cakeRequestNextSteps,
           titleOverride: `Order request received #${orderNumber} - Olgish Cakes`
@@ -962,7 +994,7 @@ async function handlePOST(request: NextRequest) {
       })
 
       if (!customerEmailResult.accepted || customerEmailResult.error) {
-        customerEmailError = customerEmailResult.error?.message || 'Transport did not accept customer email'
+        customerEmailError = toSafeOperationalError(customerEmailResult.error).code
       } else {
         customerEmailSent = true
       }
@@ -989,17 +1021,13 @@ async function handlePOST(request: NextRequest) {
           designType: designTypeLabel,
           filling: filling || undefined,
           servings: servings || undefined,
-          customerMessage: resolvedCustomerMessage || undefined,
           deliveryRecipientName: isCakesByPostOrder ? recipientName : undefined,
           deliveryMethod: inferredDeliveryMethod,
           deliveryAddress: inferredDeliveryAddress,
           paymentMethod: inferredPaymentMethod,
           approximateSubmittedFrom,
           referrer: referrer || undefined,
-          message: message || undefined,
-          note: note || undefined,
-          giftNote: giftNote || undefined,
-          attachmentNames: designImage ? [designImage.name] : [],
+          hasDietaryHealthInformation,
           adminUrl,
           titleOverride: `New inline order #${orderNumber} from ${name}`
         },
@@ -1009,19 +1037,12 @@ async function handlePOST(request: NextRequest) {
           to: recipientEmail,
           bcc: process.env.ADMIN_BCC_EMAIL || undefined,
           replyTo: email,
-          attachments: designImage && imageBuffer
-            ? [
-                {
-                  filename: designImage.name,
-                  content: Buffer.from(imageBuffer)
-                }
-              ]
-            : []
+          attachments: []
         }
       })
 
       if (!adminEmailResult.accepted || adminEmailResult.error) {
-        adminEmailError = adminEmailResult.error?.message || 'Transport did not accept admin email'
+        adminEmailError = toSafeOperationalError(adminEmailResult.error).code
       } else {
         adminEmailSent = true
       }
@@ -1041,10 +1062,20 @@ async function handlePOST(request: NextRequest) {
       await updateSupabaseOrderMetadata(createdOrder._id, createdOrder.metadata, metadataPatch)
     } catch (creationError) {
       orderError = creationError
-      logger.error('Exception while creating inline order', creationError)
+      logger.error('Exception while creating inline order', {
+        operation: 'inline_order.create',
+        ...toSafeOperationalError(creationError)
+      })
     }
 
     if (!orderCreated && orderError) {
+      if (hasDietaryHealthInformation) {
+        return NextResponse.json(
+          { error: 'We could not securely save the health-related information. Please try again.' },
+          { status: 500 }
+        )
+      }
+
       const fallbackProductType: InlineOrderProductType = isInlineOrderProductType(productTypeValue) || isLegacyOrderProductType(productTypeValue)
         ? (productTypeValue === 'gift-hamper' ? 'gift-hamper' : 'cake')
         : 'cake'
@@ -1085,18 +1116,13 @@ async function handlePOST(request: NextRequest) {
           designType: fallbackDesignTypeLabel,
           filling: filling || undefined,
           servings: servings || undefined,
-          customerMessage: customerMessage || undefined,
           deliveryRecipientName: isFallbackCakesByPostOrder ? recipientName : undefined,
           deliveryMethod: fallbackDeliveryMethod,
           deliveryAddress: fallbackDeliveryAddress,
           paymentMethod: fallbackPaymentMethod,
           approximateSubmittedFrom,
           referrer: referrer || undefined,
-          message: message || undefined,
-          note: note || undefined,
-          giftNote: giftNote || undefined,
-          attachmentNames: designImage ? [designImage.name] : [],
-          titleOverride: `New Order Inquiry from ${name}`
+          titleOverride: 'New order inquiry'
         },
         modeOverride: emailMode,
         message: {
@@ -1104,21 +1130,15 @@ async function handlePOST(request: NextRequest) {
           to: recipientEmail,
           bcc: process.env.ADMIN_BCC_EMAIL || undefined,
           replyTo: email,
-          attachments: designImage && imageBuffer
-            ? [
-                {
-                  filename: designImage.name,
-                  content: Buffer.from(imageBuffer)
-                }
-              ]
-            : []
+          attachments: []
         }
       })
 
       if (!adminFallbackResponse.accepted || adminFallbackResponse.error) {
-        const adminFallbackError = adminFallbackResponse.error?.message || 'Transport did not accept admin fallback email'
-
-        logger.error('Fallback admin email failed', adminFallbackError)
+        logger.error('Fallback admin email failed', {
+          operation: 'inline_order.fallback_admin_email',
+          ...toSafeOperationalError(adminFallbackResponse.error)
+        })
         return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
       }
 
@@ -1144,15 +1164,13 @@ async function handlePOST(request: NextRequest) {
           designType: fallbackDesignTypeLabel,
           filling: filling || undefined,
           servings: servings || undefined,
-          customerMessage: customerMessage || undefined,
           deliveryRecipientName: isFallbackCakesByPostOrder ? recipientName : undefined,
           deliveryMethod: fallbackDeliveryMethod,
           deliveryAddress: fallbackDeliveryAddress,
           paymentMethod: fallbackPaymentMethod,
           approximateSubmittedFrom,
-          giftNote: giftNote || undefined,
           intro: isFallbackCakesByPostOrder
-            ? 'Thank you. We\'ve received your cakes by post request and will review your request and delivery details within 24 hours.'
+            ? 'Thank you. We\'ve received your cakes by post request. We\'ll reply as soon as we can.'
             : cakeRequestIntro,
           nextSteps: isFallbackCakesByPostOrder ? undefined : cakeRequestNextSteps,
           titleOverride: 'Order request received - Olgish Cakes'
@@ -1166,16 +1184,19 @@ async function handlePOST(request: NextRequest) {
       })
 
       if (!customerFallbackResponse.accepted || customerFallbackResponse.error) {
-        logger.error(
-          'Fallback customer email failed',
-          customerFallbackResponse.error?.message || 'Transport did not accept customer fallback email'
-        )
+        logger.error('Fallback customer email failed', {
+          operation: 'inline_order.fallback_customer_email',
+          ...toSafeOperationalError(customerFallbackResponse.error)
+        })
       }
     }
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    logger.error('Contact API Error', error)
+    logger.error('Contact API Error', {
+      operation: 'contact_api.handle',
+      ...toSafeOperationalError(error)
+    })
     return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
   }
 }

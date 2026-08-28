@@ -3,6 +3,8 @@
  * This prevents FOUT (Flash of Unstyled Text) and ensures fonts always work
  */
 
+import { toSafeOperationalError } from './security/safe-operational-error'
+
 export function ensureFontLoaded(fontFamily: string): Promise<boolean> {
   if (typeof window === 'undefined') {
     return Promise.resolve(true)
@@ -32,7 +34,10 @@ export function ensureFontLoaded(fontFamily: string): Promise<boolean> {
       }, 3000)
     } catch (error) {
       // If font loading fails, resolve anyway to prevent blocking
-      console.warn('Font loading check failed:', error)
+      console.warn('Font loading check failed', {
+        operation: 'font.load',
+        ...toSafeOperationalError(error)
+      })
       resolve(false)
     }
   })

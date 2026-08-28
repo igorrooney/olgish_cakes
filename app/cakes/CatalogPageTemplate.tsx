@@ -148,7 +148,6 @@ function buildDefaultLocalBusinessData({
       latitude: '53.8008',
       longitude: '-1.5491'
     },
-    openingHours: 'Mo-Su 00:00-23:59',
     priceRange: '\u00A3\u00A3',
     servesCuisine: 'Ukrainian',
     hasMenu: `${baseUrl}${canonicalPath}`,

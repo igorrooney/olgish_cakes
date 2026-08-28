@@ -13,7 +13,7 @@ import {
 type UseWorkshopEnquiryOptions = UseMutationOptions<
   Record<string, unknown>,
   SubmissionError,
-  { submissionData: FormData, signal?: AbortSignal }
+  { submissionData: FormData, signal: AbortSignal }
 >
 
 export const useWorkshopEnquiry = (options?: UseWorkshopEnquiryOptions) => {
@@ -29,7 +29,7 @@ export const useWorkshopEnquiry = (options?: UseWorkshopEnquiryOptions) => {
   const submitMutation = useMutation<
     Record<string, unknown>,
     SubmissionError,
-    { submissionData: FormData, signal?: AbortSignal }
+    { submissionData: FormData, signal: AbortSignal }
   >({
     mutationFn: ({ submissionData, signal }) =>
       submitWorkshopEnquiry(submissionData, signal),

@@ -26,5 +26,14 @@ export function getSupabaseAdmin(): SupabaseClient<Database> {
 }
 
 export function getEventPhotoBucket(): string {
-  return getOptionalEnv('EVENT_PHOTO_TEMP_BUCKET', DEFAULT_BUCKET)
+  const configuredBucket = getOptionalEnv(
+    'EVENT_PHOTO_TEMP_BUCKET',
+    DEFAULT_BUCKET
+  )
+
+  if (configuredBucket !== DEFAULT_BUCKET) {
+    throw new Error('EVENT_PHOTO_TEMP_BUCKET must use the canonical bucket')
+  }
+
+  return DEFAULT_BUCKET
 }

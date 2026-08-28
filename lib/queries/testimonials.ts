@@ -1,22 +1,40 @@
+const displayableTestimonialFilter = `
+  defined(_id) &&
+  _id != "" &&
+  defined(date) &&
+  date != "" &&
+  defined(text) &&
+  text != "" &&
+  defined(rating) &&
+  rating >= 1 &&
+  rating <= 5
+`
+
 const testimonialFields = `
   _id,
+  _type,
+  _createdAt,
+  _updatedAt,
   customerName,
   cakeType,
   rating,
   date,
   title,
   text,
-  source
+  source,
+  sourceUrl,
+  incentivised,
+  incentiveDisclosure
 `
 
 export const ALL_TESTIMONIALS_QUERY = `
-  *[_type == "testimonial"] | order(date desc) {
+  *[_type == "testimonial" && ${displayableTestimonialFilter}] | order(date desc) {
     ${testimonialFields}
   }
 `
 
 export const FEATURED_TESTIMONIALS_QUERY = `
-  *[_type == "testimonial"] | order(date desc) {
+  *[_type == "testimonial" && ${displayableTestimonialFilter}] | order(date desc) {
     ${testimonialFields},
     cakeImage {
       asset->,
@@ -26,7 +44,7 @@ export const FEATURED_TESTIMONIALS_QUERY = `
 `
 
 export const TESTIMONIAL_STATS_QUERY = `
-  *[_type == "testimonial"] {
+  *[_type == "testimonial" && ${displayableTestimonialFilter}] {
     rating
   }
 `
@@ -34,15 +52,7 @@ export const TESTIMONIAL_STATS_QUERY = `
 export const PAGINATED_TESTIMONIALS_QUERY = `
   *[
     _type == "testimonial" &&
-    defined(_id) &&
-    _id != "" &&
-    defined(date) &&
-    date != "" &&
-    defined(text) &&
-    text != "" &&
-    defined(rating) &&
-    rating >= 1 &&
-    rating <= 5 &&
+    ${displayableTestimonialFilter} &&
     (
       !$hasCursor ||
       date < $cursorDate ||
@@ -54,6 +64,10 @@ export const PAGINATED_TESTIMONIALS_QUERY = `
     rating,
     date,
     title,
-    text
+    text,
+    source,
+    sourceUrl,
+    incentivised,
+    incentiveDisclosure
   }
 `

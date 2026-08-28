@@ -1,13 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { DesignSystemDatePicker } from '@/app/components/forms/DesignSystemDatePicker'
+import { useAbortableRequest } from '@/app/hooks/useAbortableRequest'
 import { ORDER_STATUS_LABELS } from '@/lib/order-constants'
 import { isCakesByPostOrderLike } from '@/lib/order-types'
 import type { Order, OrderItem, OrderMessageAttachment, OrderNoteImage } from '@/types/order'
+import { OrderRetentionLifecycleForm } from './OrderRetentionLifecycleForm'
+import { WithdrawOrderHealthConsentForm } from './WithdrawOrderHealthConsentForm'
+import { PrivacyRetentionLegalHoldForm } from '@/app/admin/privacy-retention/PrivacyRetentionLegalHoldForm'
+import { buildOrderCandidateId } from '@/lib/privacy-retention/candidate-id'
+import { LegacyHealthRetentionScheduleForm } from '@/app/admin/LegacyHealthRetentionScheduleForm'
 
 interface OrderDetailsPageClientProps {
   orderId: string
@@ -16,12 +21,6 @@ interface OrderDetailsPageClientProps {
 interface OrderUpdateResponse {
   success?: boolean
   order?: Order
-  error?: string
-  details?: string
-}
-
-interface OrderDeleteResponse {
-  success?: boolean
   error?: string
   details?: string
 }
@@ -36,6 +35,7 @@ interface OrderDetailsFormState {
   deliveryAddress: string
   dateNeeded: string
   trackingNumber: string
+  customerFacingOfferDescription: string
   allergenStatement: string
   allergenLabelIncluded: boolean
   customerAcceptedOffer: boolean
@@ -86,6 +86,7 @@ interface OrderPatchPayload {
   items?: OrderItem[]
   subtotal?: number
   total?: number
+  customerFacingOfferDescription?: string
   allergenStatement?: string
   allergenLabelIncluded?: boolean
   customerAcceptedOffer?: boolean
@@ -100,11 +101,6 @@ interface OrderImagePreview {
 interface NoticeState {
   message: string
   tone: 'success' | 'error'
-}
-
-interface DeleteOrderInput {
-  orderId: string
-  password: string
 }
 
 interface StoredIpLocation {
@@ -209,11 +205,37 @@ const readStringField = (record: Record<string, unknown>, field: string) => {
 const getOrderAllergenStatement = (order: Order) =>
   isRecord(order.metadata) ? readStringField(order.metadata, 'allergenStatement') || '' : ''
 
+const getCustomerFacingOfferDescription = (order: Order) =>
+  isRecord(order.metadata) ? readStringField(order.metadata, 'customerFacingOfferDescription') || '' : ''
+
 const hasWrittenAllergenLabel = (order: Order) =>
   isRecord(order.metadata) && order.metadata.allergenLabelIncluded === true
 
 const hasCustomerAcceptedOffer = (order: Order) =>
   isRecord(order.metadata) && order.metadata.customerAcceptedOffer === true
+
+const getDietaryHealthConsentEvidence = (order: Order) => {
+  const metadata = isRecord(order.metadata) ? order.metadata : {}
+
+  const information = readStringField(metadata, 'dietaryHealthInformation')
+  const withdrawnAt = readStringField(metadata, 'dietaryHealthWithdrawnAt')
+  const retentionDueAt = order.retentionLifecycle?.dietaryHealthRetentionDueAt
+  const erasedAt = order.retentionLifecycle?.dietaryHealthErasedAt
+
+  if (!information && !withdrawnAt && !retentionDueAt && !erasedAt) {
+    return null
+  }
+
+  return {
+    information,
+    consent: metadata.dietaryHealthConsent === true,
+    version: readStringField(metadata, 'dietaryHealthConsentVersion'),
+    consentedAt: readStringField(metadata, 'dietaryHealthConsentedAt'),
+    withdrawnAt,
+    retentionDueAt,
+    erasedAt
+  }
+}
 
 const getOrderDeliveryCourier = (order: Order) => {
   if (!isRecord(order.metadata)) {
@@ -470,6 +492,7 @@ const createFormState = (order: Order): OrderDetailsFormState => ({
   deliveryAddress: getDeliveryAddressFormValue(order),
   dateNeeded: getDateInputValue(order.delivery?.dateNeeded),
   trackingNumber: order.delivery?.trackingNumber || '',
+  customerFacingOfferDescription: getCustomerFacingOfferDescription(order),
   allergenStatement: getOrderAllergenStatement(order),
   allergenLabelIncluded: hasWrittenAllergenLabel(order),
   customerAcceptedOffer: hasCustomerAcceptedOffer(order),
@@ -578,6 +601,7 @@ const hasFormChanges = (current: OrderDetailsFormState | null, saved: OrderDetai
     current.deliveryAddress !== saved.deliveryAddress ||
     current.dateNeeded !== saved.dateNeeded ||
     current.trackingNumber !== saved.trackingNumber ||
+    current.customerFacingOfferDescription !== saved.customerFacingOfferDescription ||
     current.allergenStatement !== saved.allergenStatement ||
     current.allergenLabelIncluded !== saved.allergenLabelIncluded ||
     current.customerAcceptedOffer !== saved.customerAcceptedOffer ||
@@ -618,16 +642,14 @@ async function fetchOrder(orderId: string, signal: AbortSignal): Promise<Order> 
   return data as Order
 }
 
-async function patchOrder(orderId: string, payload: OrderPatchPayload): Promise<Order> {
-  const controller = new AbortController()
-
+async function patchOrder(orderId: string, payload: OrderPatchPayload, signal: AbortSignal): Promise<Order> {
   const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json'
     },
     credentials: 'include',
-    signal: controller.signal,
+    signal,
     body: JSON.stringify(payload)
   })
 
@@ -638,29 +660,6 @@ async function patchOrder(orderId: string, payload: OrderPatchPayload): Promise<
   }
 
   return data.order
-}
-
-async function deleteOrder({ orderId, password }: DeleteOrderInput): Promise<void> {
-  const controller = new AbortController()
-
-  const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    credentials: 'include',
-    signal: controller.signal,
-    body: JSON.stringify({
-      password,
-      permanent: true
-    })
-  })
-
-  const data = await response.json().catch((): OrderDeleteResponse => ({}))
-
-  if (!response.ok || !data.success) {
-    throw new Error(data.error || data.details || 'Order could not be deleted')
-  }
 }
 
 function buildOrderPatchPayload(
@@ -706,6 +705,10 @@ function buildOrderPatchPayload(
     payload.trackingNumber = formState.trackingNumber
   }
 
+  if (formState.customerFacingOfferDescription !== savedFormState.customerFacingOfferDescription) {
+    payload.customerFacingOfferDescription = formState.customerFacingOfferDescription.trim()
+  }
+
   if (formState.allergenStatement !== savedFormState.allergenStatement) {
     payload.allergenStatement = formState.allergenStatement.trim()
   }
@@ -729,26 +732,38 @@ function buildOrderPatchPayload(
 async function updateOrder(
   orderId: string,
   formState: OrderDetailsFormState,
-  savedFormState: OrderDetailsFormState
+  savedFormState: OrderDetailsFormState,
+  signal: AbortSignal
 ): Promise<Order> {
-  return patchOrder(orderId, buildOrderPatchPayload(formState, savedFormState))
+  return patchOrder(orderId, buildOrderPatchPayload(formState, savedFormState), signal)
 }
 
 interface UpdateOrderMutationInput {
   formState: OrderDetailsFormState
   savedFormState: OrderDetailsFormState
+  signal: AbortSignal
+}
+
+interface CustomerMutationInput {
+  form: CustomerFormState
+  signal: AbortSignal
+}
+
+interface ItemsMutationInput {
+  form: ItemFormState[]
+  signal: AbortSignal
 }
 
 export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps) {
-  const router = useRouter()
   const queryClient = useQueryClient()
+  const updateRequest = useAbortableRequest()
+  const customerRequest = useAbortableRequest()
+  const itemsRequest = useAbortableRequest()
   const [formState, setFormState] = useState<OrderDetailsFormState | null>(null)
   const [customerForm, setCustomerForm] = useState<CustomerFormState | null>(null)
   const [itemsForm, setItemsForm] = useState<ItemFormState[]>([])
   const [editingCustomer, setEditingCustomer] = useState(false)
   const [editingItems, setEditingItems] = useState(false)
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
-  const [deletePassword, setDeletePassword] = useState('')
   const [notice, setNotice] = useState<NoticeState | null>(null)
   const lastSyncedOrderIdRef = useRef<string | null>(null)
   const lastSyncedFormStateRef = useRef<OrderDetailsFormState | null>(null)
@@ -826,10 +841,23 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
   const orderImages = useMemo(() => order ? getOrderImagePreviews(order) : [], [order])
   const paymentMethods = useMemo(() => getPaymentMethodOptions(formState?.paymentMethod || ''), [formState?.paymentMethod])
   const formHasChanges = hasFormChanges(formState, savedFormState)
+  const legalHoldActive = order?.retentionLifecycle?.legalHold === true
+  const healthRetentionTerminal = Boolean(order && (
+    order.status === 'completed' ||
+    order.status === 'delivered' ||
+    order.status === 'cancelled'
+  ))
+
+  useEffect(() => {
+    if (legalHoldActive) {
+      setEditingCustomer(false)
+      setEditingItems(false)
+    }
+  }, [legalHoldActive])
 
   const updateMutation = useMutation({
     mutationFn: (input: UpdateOrderMutationInput) =>
-      updateOrder(orderId, input.formState, input.savedFormState),
+      updateOrder(orderId, input.formState, input.savedFormState, input.signal),
     onSuccess: (updatedOrder) => {
       const nextFormState = createFormState(updatedOrder)
 
@@ -849,14 +877,14 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
   })
 
   const customerMutation = useMutation({
-    mutationFn: (nextCustomerForm: CustomerFormState) => patchOrder(orderId, {
-      customerName: nextCustomerForm.name.trim(),
-      customerEmail: nextCustomerForm.email.trim(),
-      customerPhone: nextCustomerForm.phone.trim(),
-      customerAddress: nextCustomerForm.address.trim(),
-      customerCity: nextCustomerForm.city.trim(),
-      customerPostcode: nextCustomerForm.postcode.trim()
-    }),
+    mutationFn: (input: CustomerMutationInput) => patchOrder(orderId, {
+      customerName: input.form.name.trim(),
+      customerEmail: input.form.email.trim(),
+      customerPhone: input.form.phone.trim(),
+      customerAddress: input.form.address.trim(),
+      customerCity: input.form.city.trim(),
+      customerPostcode: input.form.postcode.trim()
+    }, input.signal),
     onSuccess: (updatedOrder) => {
       const nextCustomerForm = createCustomerFormState(updatedOrder)
 
@@ -876,8 +904,8 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
   })
 
   const itemsMutation = useMutation({
-    mutationFn: (nextItemsForm: ItemFormState[]) => {
-      const items = nextItemsForm
+    mutationFn: (input: ItemsMutationInput) => {
+      const items = input.form
         .filter((item) => item.productName.trim().length > 0)
         .map((item) => {
           const currentItem = item.sourceItemIndex >= 0 ? order?.items[item.sourceItemIndex] : undefined
@@ -907,7 +935,7 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
         items,
         subtotal,
         total: subtotal + deliveryFee - discount
-      })
+      }, input.signal)
     },
     onSuccess: (updatedOrder) => {
       const nextItemsForm = createItemsFormState(updatedOrder)
@@ -922,20 +950,6 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
     onError: (error) => {
       setNotice({
         message: error instanceof Error ? error.message : 'Items could not be updated.',
-        tone: 'error'
-      })
-    }
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteOrder,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
-      router.push('/admin/orders')
-    },
-    onError: (error) => {
-      setNotice({
-        message: error instanceof Error ? error.message : 'Order could not be deleted.',
         tone: 'error'
       })
     }
@@ -981,11 +995,12 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    if (formState && lastSyncedFormStateRef.current) {
+    if (!legalHoldActive && formState && lastSyncedFormStateRef.current) {
       setNotice(null)
       updateMutation.mutate({
         formState,
-        savedFormState: lastSyncedFormStateRef.current
+        savedFormState: lastSyncedFormStateRef.current,
+        signal: updateRequest.start()
       })
     }
   }
@@ -993,33 +1008,27 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
   const handleCustomerSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    if (customerForm) {
+    if (!legalHoldActive && customerForm) {
       setNotice(null)
-      customerMutation.mutate(customerForm)
+      customerMutation.mutate({
+        form: customerForm,
+        signal: customerRequest.start()
+      })
     }
   }
 
   const handleItemsSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    setNotice(null)
-    itemsMutation.mutate(itemsForm)
-  }
-
-  const handleDeleteSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    const password = deletePassword.trim()
-    if (!password) {
-      setNotice({
-        message: 'Admin password is required to delete this order.',
-        tone: 'error'
-      })
+    if (legalHoldActive) {
       return
     }
 
     setNotice(null)
-    deleteMutation.mutate({ orderId, password })
+    itemsMutation.mutate({
+      form: itemsForm,
+      signal: itemsRequest.start()
+    })
   }
 
   if (orderQuery.isLoading) {
@@ -1057,6 +1066,7 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
   const deliveryAddress = getOrderDeliveryAddress(order)
   const showBuyerAddress = !cakesByPostOrder
   const buyerPhone = (order.customer.phone || '').trim()
+  const dietaryHealthConsentEvidence = getDietaryHealthConsentEvidence(order)
 
   return (
     <div className='flex flex-col gap-6'>
@@ -1128,8 +1138,16 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
       <div className='grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.85fr)]'>
         <aside id='manage-order' className='rounded-box border border-base-300 bg-base-100 p-5 shadow-sm xl:sticky xl:top-24 xl:order-2 xl:self-start'>
           <h2 className='text-lg font-semibold text-base-content'>Manage order</h2>
+          {legalHoldActive ? (
+            <div className='alert alert-warning mt-4 items-start text-sm' role='status'>
+              <div>
+                <p className='font-semibold'>Ordinary changes are locked</p>
+                <p className='mt-1 leading-6'>This order is under a legal hold. Release the hold below before changing workflow, buyer or item evidence.</p>
+              </div>
+            </div>
+          ) : null}
           <form className='mt-4 grid gap-4' onSubmit={handleSubmit}>
-            <fieldset className='grid gap-4 rounded-box border border-base-300 p-4'>
+            <fieldset className='grid gap-4 rounded-box border border-base-300 p-4' disabled={legalHoldActive}>
               <legend className='px-1 text-sm font-semibold text-base-content'>Order workflow</legend>
             <label className='form-control w-full'>
               <span className='label-text mb-2'>Status</span>
@@ -1174,8 +1192,85 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
             </label>
             </fieldset>
 
-            <fieldset className='grid gap-4 rounded-box border border-base-300 p-4'>
+            <fieldset className='grid gap-4 rounded-box border border-base-300 p-4' disabled={legalHoldActive}>
               <legend className='px-1 text-sm font-semibold text-base-content'>Contract and allergen checks</legend>
+
+              {dietaryHealthConsentEvidence ? (
+                <div className='rounded-box border border-warning/40 bg-warning/10 p-4'>
+                  <p className='text-sm font-semibold text-base-content'>
+                    Protected dietary health information
+                  </p>
+                  {dietaryHealthConsentEvidence.information ? (
+                    <p className='mt-2 whitespace-pre-wrap text-sm text-base-content'>
+                      {dietaryHealthConsentEvidence.information}
+                    </p>
+                  ) : dietaryHealthConsentEvidence.withdrawnAt ? (
+                    <p className='mt-2 text-sm leading-6 text-base-content'>
+                      The information was erased after consent was withdrawn.
+                    </p>
+                  ) : dietaryHealthConsentEvidence.erasedAt ? (
+                    <p className='mt-2 text-sm leading-6 text-base-content'>
+                      The information was erased under the scheduled retention policy. This is not a consent-withdrawal record.
+                    </p>
+                  ) : null}
+                  <dl className='mt-3 grid gap-1 text-xs text-base-content/70'>
+                    <div>
+                      <dt className='inline font-semibold'>Explicit consent: </dt>
+                      <dd className='inline'>{dietaryHealthConsentEvidence.consent ? 'Yes' : 'No'}</dd>
+                    </div>
+                    <div>
+                      <dt className='inline font-semibold'>Consent version: </dt>
+                      <dd className='inline'>{dietaryHealthConsentEvidence.version || 'Not recorded'}</dd>
+                    </div>
+                    <div>
+                      <dt className='inline font-semibold'>Consented at: </dt>
+                      <dd className='inline'>
+                        {dietaryHealthConsentEvidence.consentedAt
+                          ? formatDateTime(dietaryHealthConsentEvidence.consentedAt)
+                          : 'Not recorded'}
+                      </dd>
+                    </div>
+                    {dietaryHealthConsentEvidence.withdrawnAt ? (
+                      <div>
+                        <dt className='inline font-semibold'>Withdrawn at: </dt>
+                        <dd className='inline'>
+                          {formatDateTime(dietaryHealthConsentEvidence.withdrawnAt)}
+                        </dd>
+                      </div>
+                    ) : null}
+                    {dietaryHealthConsentEvidence.retentionDueAt ? (
+                      <div>
+                        <dt className='inline font-semibold'>Health-information retention deadline: </dt>
+                        <dd className='inline'>
+                          {formatDateTime(dietaryHealthConsentEvidence.retentionDueAt)}
+                        </dd>
+                      </div>
+                    ) : null}
+                    {dietaryHealthConsentEvidence.erasedAt ? (
+                      <div>
+                        <dt className='inline font-semibold'>Retention erasure completed at: </dt>
+                        <dd className='inline'>
+                          {formatDateTime(dietaryHealthConsentEvidence.erasedAt)}
+                        </dd>
+                      </div>
+                    ) : null}
+                  </dl>
+                </div>
+              ) : null}
+
+              <label className='form-control w-full'>
+                <span className='label-text mb-2'>Customer-facing final-offer description</span>
+                <textarea
+                  className='textarea textarea-bordered min-h-32 w-full rounded-box px-4 py-3 leading-relaxed'
+                  maxLength={2000}
+                  value={formState.customerFacingOfferDescription}
+                  onChange={(event) => updateField('customerFacingOfferDescription', event.target.value)}
+                  placeholder='Describe the agreed product, design and main characteristics for the customer.'
+                />
+                <span className='label-text-alt mt-2 text-base-content/65'>
+                  Staff-authored wording only. Do not copy health information or unreviewed customer messages. Required for the final offer.
+                </span>
+              </label>
 
               <label className='form-control w-full'>
                 <span className='label-text mb-2'>Product-specific allergen information</span>
@@ -1226,7 +1321,7 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
               </label>
             </fieldset>
 
-            <fieldset className='grid gap-4 rounded-box border border-base-300 p-4'>
+            <fieldset className='grid gap-4 rounded-box border border-base-300 p-4' disabled={legalHoldActive}>
               <legend className='px-1 text-sm font-semibold text-base-content'>Delivery fulfilment</legend>
             <label className='form-control w-full'>
               <span className='label-text mb-2'>Delivery method</span>
@@ -1306,6 +1401,7 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
               <textarea
                 className='textarea textarea-bordered min-h-28 w-full rounded-box px-4 py-3 leading-relaxed'
                 value={formState.note}
+                disabled={legalHoldActive}
                 onChange={(event) => updateField('note', event.target.value)}
                 placeholder='Add a note for the order record'
               />
@@ -1315,59 +1411,46 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
               <p className='text-sm text-base-content/65'>Unsaved changes</p>
             ) : null}
 
-            <button type='submit' className='btn btn-primary' disabled={!formHasChanges || updateMutation.isPending}>
+            <button type='submit' className='btn btn-primary' disabled={legalHoldActive || !formHasChanges || updateMutation.isPending}>
               {updateMutation.isPending ? 'Saving...' : 'Save changes'}
             </button>
           </form>
 
-          <section className='mt-6 border-t border-base-300 pt-5' aria-labelledby='delete-order-heading'>
-            <h3 id='delete-order-heading' className='text-base font-semibold text-error'>Delete order</h3>
-            <p className='mt-2 text-sm text-base-content/65'>
-              Permanently remove this order from Supabase.
+          {dietaryHealthConsentEvidence?.information ? (
+            <div>
+              <WithdrawOrderHealthConsentForm orderId={orderId} />
+              {!dietaryHealthConsentEvidence.retentionDueAt && healthRetentionTerminal ? (
+                <LegacyHealthRetentionScheduleForm
+                  recordKind='order'
+                  recordReference={orderId}
+                />
+              ) : null}
+            </div>
+          ) : null}
+
+          <section className='mt-6 border-t border-base-300 pt-5' aria-labelledby='retention-order-heading'>
+            <h3 id='retention-order-heading' className='text-base font-semibold text-base-content'>Privacy retention</h3>
+            <p className='mt-2 text-sm leading-6 text-base-content/65'>
+              Permanent deletion is available only after the documented retention deadline. Review the exact data effect and select due records in the retention centre.
             </p>
-            {deleteConfirmOpen ? (
-              <form className='mt-4 grid gap-3' onSubmit={handleDeleteSubmit}>
-                <label className='form-control w-full'>
-                  <span className='label-text mb-2'>Admin password</span>
-                  <input
-                    type='password'
-                    className='input input-bordered w-full'
-                    value={deletePassword}
-                    onChange={(event) => setDeletePassword(event.target.value)}
-                    autoComplete='current-password'
-                    autoFocus
-                  />
-                </label>
-                <div className='flex flex-wrap gap-2'>
-                  <button
-                    type='submit'
-                    className='btn btn-error btn-sm'
-                    disabled={deletePassword.trim().length === 0 || deleteMutation.isPending}
-                  >
-                    {deleteMutation.isPending ? 'Deleting...' : 'Delete permanently'}
-                  </button>
-                  <button
-                    type='button'
-                    className='btn btn-ghost btn-sm'
-                    disabled={deleteMutation.isPending}
-                    onClick={() => {
-                      setDeletePassword('')
-                      setDeleteConfirmOpen(false)
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <button
-                type='button'
-                className='btn btn-outline btn-error btn-sm mt-4'
-                onClick={() => setDeleteConfirmOpen(true)}
-              >
-                Delete order
-              </button>
-            )}
+            <OrderRetentionLifecycleForm
+              orderId={orderId}
+              orderNumber={order.orderNumber}
+              createdAt={order._createdAt}
+              status={order.status}
+              lifecycle={order.retentionLifecycle}
+            />
+            <PrivacyRetentionLegalHoldForm
+              candidateId={buildOrderCandidateId(orderId)}
+              recordReference={order.orderNumber}
+              held={order.retentionLifecycle?.legalHold === true}
+              holdReason={order.retentionLifecycle?.legalHoldReason}
+              holdReviewAt={order.retentionLifecycle?.legalHoldReviewAt}
+              refreshQueryKey={['admin-order', orderId]}
+            />
+            <Link href='/admin/privacy-retention' className='btn btn-outline btn-sm mt-4'>
+              Open privacy retention centre
+            </Link>
           </section>
         </aside>
 
@@ -1422,6 +1505,7 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
               <button
                 type='button'
                 className='btn btn-outline btn-sm'
+                disabled={legalHoldActive}
                 onClick={() => {
                   setEditingCustomer((current) => !current)
                   setCustomerForm(createCustomerFormState(order))
@@ -1555,6 +1639,7 @@ export function OrderDetailsPageClient({ orderId }: OrderDetailsPageClientProps)
               <button
                 type='button'
                 className='btn btn-outline btn-sm'
+                disabled={legalHoldActive}
                 onClick={() => {
                   setEditingItems((current) => !current)
                   setItemsForm(createItemsFormState(order))

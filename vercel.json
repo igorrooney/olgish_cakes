@@ -10,6 +10,10 @@
     {
       "path": "/api/cron/instagram-token-reminder",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/privacy-retention",
+      "schedule": "0 8 1 3,6,9,12 *"
     }
   ],
   "headers": [

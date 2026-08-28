@@ -1,11 +1,15 @@
-import { getClient } from "@/sanity/lib/client";
-import { groq } from "next-sanity";
-import { Cake } from "@/types/cake";
-import { CakesFeaturedOffer } from "@/types/cakeFeaturedOffer";
-import { cachedSanityFetch, getCacheConfig } from "@/lib/sanity-cache";
-import { CAKE_BY_SLUG_QUERY, CAKES_FEATURED_OFFER_QUERY } from "@/lib/queries/cakes";
-import { PRODUCTS_DISPLAY_ORDER_QUERY } from "@/lib/queries/productsDisplayOrder";
-import { getSanityCdnImageUrl } from "@/lib/utils/image-url";
+import { getClient } from '@/sanity/lib/client'
+import { Cake } from '@/types/cake'
+import { CakesFeaturedOffer } from '@/types/cakeFeaturedOffer'
+import { cachedSanityFetch, getCacheConfig } from '@/lib/sanity-cache'
+import {
+  ALL_CAKES_QUERY,
+  CAKE_BY_SLUG_QUERY,
+  CAKES_FEATURED_OFFER_QUERY,
+  FEATURED_CAKES_QUERY
+} from '@/lib/queries/cakes'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
+import { getSanityCdnImageUrl } from '@/lib/utils/image-url'
 
 interface FeaturedOfferImageQueryResult {
   alt?: string
@@ -196,48 +200,7 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
 
-  const query = `{
-    "cakes": *[_type == "cake"] | order(order asc, _createdAt desc) {
-      _id,
-      _createdAt,
-      name,
-      slug,
-      description,
-      shortDescription,
-      bestsellerCustomerStory,
-      bestsellerStoryDetails,
-      bestsellerShortDescription,
-      size,
-      pricing,
-      newDesignPricingByServings,
-      order,
-      isBestseller,
-      mainImage {
-        _type,
-        asset
-      },
-      images {
-        _type,
-        asset
-      },
-      designs {
-        standard[] {
-          _type,
-          asset,
-          isMain
-        }
-      },
-      "category": coalesce(category, collections[0]->name, "Traditional"),
-      collections[]->{
-        _id,
-        name,
-        isFeatured
-      },
-      ingredients,
-      allergens
-    },
-    "displayOrder": ${PRODUCTS_DISPLAY_ORDER_QUERY}
-  }`;
+  const query = ALL_CAKES_QUERY
 
   try {
     if (preview) {
@@ -261,8 +224,11 @@ export async function getAllCakes(preview = false): Promise<Cake[]> {
 
     return sortCakesByDisplayOrder(cakes, references)
   } catch (error) {
-    console.error("Error fetching all cakes:", error);
-    return [];
+    console.error('Sanity read failed', {
+      operation: 'sanity.fetch-all-cakes',
+      ...toSafeOperationalError(error)
+    })
+    return []
   }
 }
 
@@ -270,33 +236,7 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
 
-  const query = groq`*[_type == "cake" && isFeatured == true] | order(order asc, _createdAt desc) {
-    _id,
-    name,
-    description,
-    shortDescription,
-    pricing,
-    "category": coalesce(category, collections[0]->name, "Traditional"),
-    collections[]->{
-      _id,
-      name,
-      isFeatured
-    },
-    slug,
-    order,
-    mainImage {
-      _type,
-      asset
-    },
-    designs {
-      standard[] {
-        asset {
-          _ref
-        },
-        isMain
-      }
-    },
-  }`;
+  const query = FEATURED_CAKES_QUERY
 
   try {
     if (preview) {
@@ -309,8 +249,11 @@ export async function getFeaturedCakes(preview = false): Promise<Cake[]> {
     const data = await cachedSanityFetch<Cake[]>(query, {}, config)
     return data
   } catch (error) {
-    console.error("Error fetching featured cakes:", error);
-    return [];
+    console.error('Sanity read failed', {
+      operation: 'sanity.fetch-featured-cakes',
+      ...toSafeOperationalError(error)
+    })
+    return []
   }
 }
 
@@ -333,7 +276,10 @@ export async function getCakesFeaturedOffer(preview = false): Promise<CakesFeatu
 
     return mapCakesFeaturedOffer(data)
   } catch (error) {
-    console.error("Error fetching cakes featured offer:", error);
+    console.error('Sanity read failed', {
+      operation: 'sanity.fetch-cakes-featured-offer',
+      ...toSafeOperationalError(error)
+    })
     return null
   }
 }
@@ -341,7 +287,7 @@ export async function getCakesFeaturedOffer(preview = false): Promise<CakesFeatu
 export async function getCakeBySlug(slug: string, preview = false): Promise<Cake | null> {
   // Validate Sanity environment variables at runtime
   validateSanityConfig();
-  const query = CAKE_BY_SLUG_QUERY;
+  const query = CAKE_BY_SLUG_QUERY
 
   try {
     if (preview) {
@@ -354,8 +300,12 @@ export async function getCakeBySlug(slug: string, preview = false): Promise<Cake
     const data = await cachedSanityFetch<Cake | null>(query, { slug }, config)
     return data
   } catch (error) {
-    console.error("Error fetching cake by slug:", error);
-    return null;
+    console.error('Sanity read failed', {
+      operation: 'sanity.fetch-cake-by-slug',
+      recordReference: slug,
+      ...toSafeOperationalError(error)
+    })
+    return null
   }
 }
 

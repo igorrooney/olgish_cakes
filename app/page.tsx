@@ -2,8 +2,8 @@ import type { Metadata, ResolvingMetadata } from 'next'
 import Image from 'next/image'
 import { preload } from 'react-dom'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
-import { DEFAULT_AGGREGATE_RATING, DEFAULT_REVIEWS } from '@/lib/structured-data-defaults'
-import type { HomepageReview, PaginatedReviewsResponse } from './types/testimonial'
+import type { PaginatedReviewsResponse } from './types/testimonial'
+import { serializeJsonLd } from '@/lib/structured-data/serialize-json-ld'
 import { OlgishCakesFounder } from './components/homepage/OlgishCakesFounder'
 import { HomeFaq } from './components/homepage/HomeFaq'
 import { HomeHero } from './components/homepage/HomeHero'
@@ -15,24 +15,18 @@ import {
   DeferredOccasions,
   DeferredReviews
 } from './components/homepage/deferredSections'
-import {
-  getAllTestimonialsStats,
-  getTestimonialsPage
-} from './utils/fetchTestimonials'
+import { getTestimonialsPage } from './utils/fetchTestimonials'
 import { getHomepageCollections } from './utils/fetchCollections'
 import { buildOccasionOptionsFromCollections } from './components/homepage/formOptions'
 import { getMarketSchedule } from './utils/fetchMarketSchedule'
 import { generateEventSEOMetadata } from './utils/generateEventStructuredData'
-import { getMerchantReturnPolicy, getPriceValidUntil } from './utils/seo'
-import { buildAggregateRating } from './utils/review-stats'
 
 const organizationId = 'https://olgishcakes.co.uk/#organization'
 const bakeryId = 'https://olgishcakes.co.uk/#bakery'
-const productId = 'https://olgishcakes.co.uk/#product'
 export const revalidate = 3600
 const pageTitle = 'Ukrainian cakes in Leeds | Medovik & custom cakes by post'
-const pageDescription = 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade, small-batch, 5-star rated, UK delivery.'
-const eventDescriptionBase = 'Order Ukrainian cakes in Leeds: Medovik, Napoleon, and custom birthday or wedding cakes. Handmade, 5-star rated, UK delivery.'
+const pageDescription = 'Order Ukrainian cakes in Leeds: Medovik honey cake, Napoleon cake, and custom birthday or wedding cakes. Handmade in small batches with UK delivery.'
+const eventDescriptionBase = 'Order Ukrainian cakes in Leeds: Medovik, Napoleon, and custom birthday or wedding cakes. Handmade in small batches with UK delivery.'
 const openGraphImage = {
   url: 'https://olgishcakes.co.uk/images/honey-cake-medovik.jpg',
   width: 1200,
@@ -57,7 +51,6 @@ const baseKeywords = [
   'birthday cakes',
   'wedding cakes',
   'gluten free cake',
-  'family owned bakery',
   'dessert near me',
   'dessert takeaway'
 ]
@@ -78,60 +71,6 @@ type HomePageProps = {
 }
 
 type OtherMetadata = Record<string, string | number | (string | number)[]>
-
-type ReviewSchema = {
-  '@type': 'Review'
-  itemReviewed: { '@id': string }
-  author: {
-    '@type': 'Person'
-    name: string
-  }
-  reviewRating: {
-    '@type': 'Rating'
-    ratingValue: string
-    bestRating: string
-    worstRating: string
-  }
-  reviewBody: string
-  datePublished?: string
-}
-
-const buildReviewSchema = (data: {
-  authorName: string
-  reviewBody: string
-  ratingValue: number | string
-  datePublished?: string
-  itemReviewedId?: string
-}): ReviewSchema => ({
-  '@type': 'Review',
-  itemReviewed: { '@id': data.itemReviewedId ?? organizationId },
-  author: {
-    '@type': 'Person',
-    name: data.authorName
-  },
-  reviewRating: {
-    '@type': 'Rating',
-    ratingValue: data.ratingValue.toString(),
-    bestRating: '5',
-    worstRating: '1'
-  },
-  reviewBody: data.reviewBody,
-  ...(data.datePublished ? { datePublished: data.datePublished } : {})
-})
-
-const normalizeReviewDate = (dateValue?: string | null) => {
-  if (!dateValue) {
-    return null
-  }
-
-  const parsedDate = new Date(dateValue)
-
-  if (Number.isNaN(parsedDate.getTime())) {
-    return null
-  }
-
-  return parsedDate.toISOString()
-}
 
 const buildMetaDescription = (eventSEO: EventSEOMetadata) => {
   if (eventSEO.nextEventLocation && eventSEO.nextEventDate) {
@@ -175,35 +114,6 @@ const buildEventMetadata = (eventSEO: EventSEOMetadata): OtherMetadata => {
   }
 
   return metadata
-}
-
-const mapTestimonialReview = (testimonial: HomepageReview): ReviewSchema => {
-  const authorName = testimonial.customerName?.trim() ? testimonial.customerName : 'Anonymous'
-  const ratingValue = testimonial.rating
-  const reviewBody = testimonial.text?.trim() ?? ''
-  const datePublished = normalizeReviewDate(testimonial.date) ?? undefined
-
-  return buildReviewSchema({
-    authorName,
-    reviewBody,
-    ratingValue,
-    datePublished
-  })
-}
-
-const mapProductReview = (testimonial: HomepageReview): ReviewSchema => {
-  const authorName = testimonial.customerName?.trim() ? testimonial.customerName : 'Anonymous'
-  const ratingValue = testimonial.rating
-  const reviewBody = testimonial.text?.trim() ?? ''
-  const datePublished = normalizeReviewDate(testimonial.date) ?? undefined
-
-  return buildReviewSchema({
-    authorName,
-    reviewBody,
-    ratingValue,
-    datePublished,
-    itemReviewedId: productId
-  })
 }
 
 export async function generateMetadata(
@@ -254,26 +164,14 @@ export default async function Home() {
     type: 'image/avif'
   })
 
-  const [initialReviewsPage, reviewStats, collections] = await Promise.all([
+  const [initialReviewsPage, collections] = await Promise.all([
     getTestimonialsPage().catch((): PaginatedReviewsResponse => ({
       reviews: [],
       nextCursor: null
     })),
-    getAllTestimonialsStats(),
     getHomepageCollections()
   ])
-  const eligibleTestimonials = initialReviewsPage.reviews
   const occasionOptions = buildOccasionOptionsFromCollections(collections)
-  const reviewSchemas = eligibleTestimonials.map(mapTestimonialReview)
-  const productReviewSchemas = eligibleTestimonials.map(mapProductReview)
-  const aggregateRating = buildAggregateRating(reviewStats) ?? DEFAULT_AGGREGATE_RATING
-
-  const reviewsStructuredData = reviewSchemas.length > 0
-    ? {
-        '@context': 'https://schema.org',
-        '@graph': reviewSchemas
-      }
-    : null
   const webPageStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -289,94 +187,12 @@ export default async function Home() {
       '@id': organizationId
     }
   }
-  const productStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    '@id': productId,
-    name: 'Ukrainian Honey Cake',
-    description: 'Traditional Ukrainian honey cake (Medovik) handmade with authentic recipes in Leeds, Yorkshire. Perfect for birthdays, celebrations, and special occasions.',
-    brand: {
-      '@type': 'Brand',
-      name: 'Olgish Cakes',
-      url: 'https://olgishcakes.co.uk',
-      logo: 'https://olgishcakes.co.uk/images/olgish-cakes-logo-bakery-brand.png'
-    },
-    manufacturer: {
-      '@type': 'Organization',
-      '@id': organizationId,
-      name: 'Olgish Cakes',
-      url: 'https://olgishcakes.co.uk',
-      address: {
-        '@type': 'PostalAddress',
-        addressLocality: 'Leeds',
-        addressRegion: 'West Yorkshire',
-        addressCountry: 'GB'
-      }
-    },
-    category: 'Food & Drink > Bakery > Cakes',
-    image: ['https://olgishcakes.co.uk/images/honey-cake-medovik.jpg'],
-    offers: {
-      '@type': 'Offer',
-      '@id': 'https://olgishcakes.co.uk/#offer',
-      price: 25,
-      priceCurrency: 'GBP',
-      availability: 'https://schema.org/InStock',
-      priceValidUntil: getPriceValidUntil(30),
-      url: 'https://olgishcakes.co.uk/cakes',
-      seller: {
-        '@type': 'Organization',
-        '@id': organizationId,
-        name: 'Olgish Cakes',
-        url: 'https://olgishcakes.co.uk'
-      },
-      areaServed: {
-        '@type': 'City',
-        name: 'Leeds'
-      },
-      deliveryLeadTime: {
-        '@type': 'QuantitativeValue',
-        value: 1,
-        unitCode: 'DAY'
-      },
-      shippingDetails: {
-        '@type': 'OfferShippingDetails',
-        shippingRate: {
-          '@type': 'MonetaryAmount',
-          value: 15,
-          currency: 'GBP'
-        },
-        shippingDestination: {
-          '@type': 'DefinedRegion',
-          addressCountry: 'GB',
-          addressRegion: ['West Yorkshire', 'North Yorkshire', 'South Yorkshire']
-        },
-        deliveryTime: {
-          '@type': 'ShippingDeliveryTime',
-          handlingTime: {
-            '@type': 'QuantitativeValue',
-            minValue: 1,
-            maxValue: 2,
-            unitCode: 'DAY'
-          },
-          transitTime: {
-            '@type': 'QuantitativeValue',
-            minValue: 0,
-            maxValue: 1,
-            unitCode: 'DAY'
-          }
-        }
-      },
-      hasMerchantReturnPolicy: getMerchantReturnPolicy()
-    },
-    aggregateRating,
-    review: productReviewSchemas.length > 0 ? productReviewSchemas : DEFAULT_REVIEWS
-  }
   const bakeryStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Bakery',
     '@id': bakeryId,
     name: 'Olgish Cakes',
-    description: 'Authentic Ukrainian honey cake and Kyiv cake in Leeds. Handmade bakes with 5-star reviews, same-day local delivery, and custom designs across West Yorkshire.',
+    description: 'Handmade Ukrainian honey cakes, Kyiv cakes and custom celebration cakes from a Leeds bakery, with local collection and selected UK delivery options.',
     url: 'https://olgishcakes.co.uk',
     telephone: BUSINESS_CONSTANTS.PHONE,
     email: 'hello@olgishcakes.co.uk',
@@ -441,7 +257,7 @@ export default async function Home() {
                 aria-hidden="true"
                 width={430}
                 height={100}
-                sizes="(min-width: 768px) 430px, 100vw"
+                sizes="(min-width: 1024px) 430px, 100vw"
                 loading="eager"
                 fetchPriority="high"
                 quality={45}
@@ -468,7 +284,7 @@ export default async function Home() {
               aria-hidden="true"
               width={430}
               height={100}
-              sizes="(min-width: 768px) 430px, 100vw"
+              sizes="(min-width: 1024px) 430px, 100vw"
               loading="lazy"
               fetchPriority="low"
               quality={45}
@@ -486,7 +302,7 @@ export default async function Home() {
                 aria-hidden="true"
                 width={430}
                 height={100}
-                sizes="(min-width: 768px) 430px, 100vw"
+                sizes="(min-width: 1024px) 430px, 100vw"
                 loading="lazy"
                 fetchPriority="low"
                 quality={45}
@@ -505,7 +321,7 @@ export default async function Home() {
                 aria-hidden="true"
                 width={430}
                 height={100}
-                sizes="(min-width: 768px) 430px, 100vw"
+                sizes="(min-width: 1024px) 430px, 100vw"
                 loading="lazy"
                 fetchPriority="low"
                 quality={45}
@@ -519,23 +335,13 @@ export default async function Home() {
           <div className={belowFoldSectionClassName}>
             <HomeFaq />
           </div>
-          {reviewsStructuredData ? (
-            <script
-              type="application/ld+json"
-              dangerouslySetInnerHTML={{ __html: JSON.stringify(reviewsStructuredData) }}
-            />
-          ) : null}
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(productStructuredData) }}
+            dangerouslySetInnerHTML={{ __html: serializeJsonLd(bakeryStructuredData) }}
           />
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(bakeryStructuredData) }}
-          />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }}
+            dangerouslySetInnerHTML={{ __html: serializeJsonLd(webPageStructuredData) }}
           />
         </div>
       </div>

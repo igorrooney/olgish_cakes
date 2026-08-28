@@ -1,7 +1,10 @@
 "use client";
 
 import { logger } from "@/lib/logger";
+import { toSafeOperationalError } from "@/lib/security/safe-operational-error";
 import { DesignSystemDatePicker } from "@/app/components/forms/DesignSystemDatePicker";
+import { useAbortableRequest } from '@/app/hooks/useAbortableRequest'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Add as AddIcon, Remove as RemoveIcon } from "@/lib/daisy-ui";
 import {
   Alert,
@@ -21,7 +24,7 @@ import {
   TextField,
   Typography,
 } from "@/lib/daisy-ui";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface AddOrderModalProps {
   open: boolean;
@@ -61,14 +64,66 @@ interface OrderItem {
 
 type OrderItemValue = OrderItem[keyof OrderItem];
 
+interface CreateOrderInput {
+  payload: Record<string, unknown>
+  signal: AbortSignal
+}
+
+function getResponseRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+}
+
+export async function fetchAdminOrderProducts(signal: AbortSignal): Promise<Product[]> {
+  const response = await fetch('/api/products', { signal })
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch products')
+  }
+
+  const data = getResponseRecord(await response.json())
+  return Array.isArray(data.products) ? data.products as Product[] : []
+}
+
+export async function createAdminOrder({ payload, signal }: CreateOrderInput): Promise<string> {
+  const response = await fetch('/api/orders', {
+    method: 'POST',
+    signal,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  const data = getResponseRecord(await response.json().catch(() => ({})))
+
+  if (!response.ok) {
+    throw new Error(typeof data.error === 'string' ? data.error : 'Failed to create order')
+  }
+
+  return typeof data.orderNumber === 'string' ? data.orderNumber : ''
+}
+
 export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalProps) {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [productsLoading, setProductsLoading] = useState(false);
-  const productsAbortControllerRef = useRef<AbortController | null>(null);
-  const orderAbortControllerRef = useRef<AbortController | null>(null);
+  const {
+    abort: abortOrderRequest,
+    start: startOrderRequest
+  } = useAbortableRequest()
+  const productsQuery = useQuery({
+    queryKey: ['admin-order-products'],
+    queryFn: ({ signal }) => fetchAdminOrderProducts(signal),
+    enabled: open,
+    retry: false,
+    staleTime: 0
+  })
+  const createOrderMutation = useMutation({
+    mutationFn: createAdminOrder
+  })
+  const products = productsQuery.data ?? []
+  const productsLoading = productsQuery.isPending && open
+  const loading = createOrderMutation.isPending
 
   // Form state
   const [formData, setFormData] = useState({
@@ -111,23 +166,22 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
     },
   ]);
 
-  // Fetch products when modal opens
   useEffect(() => {
-    if (open) {
-      fetchProducts();
+    if (!open) {
+      abortOrderRequest()
+    }
+  }, [abortOrderRequest, open]);
+
+  useEffect(() => {
+    if (!productsQuery.isError) {
+      return
     }
 
-    return () => {
-      productsAbortControllerRef.current?.abort();
-    };
-  }, [open]);
-
-  useEffect(() => {
-    return () => {
-      productsAbortControllerRef.current?.abort();
-      orderAbortControllerRef.current?.abort();
-    };
-  }, []);
+    logger.error('Failed to fetch products', {
+      operation: 'admin.orders.fetch-products',
+      ...toSafeOperationalError(productsQuery.error)
+    })
+  }, [productsQuery.error, productsQuery.isError])
 
   // Set default delivery and payment methods based on order type
   useEffect(() => {
@@ -139,31 +193,6 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
       }));
     }
   }, [formData.orderType]);
-
-  const fetchProducts = async () => {
-    productsAbortControllerRef.current?.abort();
-    const controller = new AbortController();
-    productsAbortControllerRef.current = controller;
-
-    try {
-      setProductsLoading(true);
-      const response = await fetch('/api/products', { signal: controller.signal });
-      if (response.ok) {
-        const data = await response.json();
-        setProducts(data.products);
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        return;
-      }
-      logger.error('Failed to fetch products', error);
-    } finally {
-      if (productsAbortControllerRef.current === controller) {
-        productsAbortControllerRef.current = null;
-        setProductsLoading(false);
-      }
-    }
-  };
 
   const handleInputChange = (field: keyof typeof formData, value: string | number) => {
     setFormData(prev => ({
@@ -263,11 +292,6 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
   };
 
   const handleSubmit = async () => {
-    orderAbortControllerRef.current?.abort();
-    const controller = new AbortController();
-    orderAbortControllerRef.current = controller;
-
-    setLoading(true);
     setError("");
     setSuccess("");
 
@@ -305,21 +329,15 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
         })),
       };
 
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
+      const orderNumber = await createOrderMutation.mutateAsync({
+        payload: orderData,
+        signal: startOrderRequest()
+      })
 
-      if (response.ok) {
-        const result = await response.json();
-        setSuccess(`Order created successfully! Order #${result.orderNumber}`);
+      setSuccess(`Order created successfully! Order #${orderNumber}`);
 
-        // Reset form
-        setFormData({
+      // Reset form
+      setFormData({
           name: "",
           email: "",
           phone: "",
@@ -337,9 +355,9 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
           deliveryFee: 0,
           discount: 0,
           total: 0,
-        });
+      });
 
-        setItems([{
+      setItems([{
           productId: "",
           productName: "",
           quantity: 1,
@@ -350,29 +368,20 @@ export function AddOrderModal({ open, onClose, onOrderCreated }: AddOrderModalPr
           flavor: "",
           specialInstructions: "",
           isFromCatalog: false,
-        }]);
+      }]);
 
-        onOrderCreated();
+      onOrderCreated();
 
-        // Auto-close after 2 seconds
-        setTimeout(() => {
-          onClose();
-          setSuccess("");
-        }, 2000);
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create order");
-      }
+      // Auto-close after 2 seconds
+      setTimeout(() => {
+        onClose();
+        setSuccess("");
+      }, 2000);
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') {
         return;
       }
       setError(err instanceof Error ? err.message : "Failed to create order");
-    } finally {
-      if (orderAbortControllerRef.current === controller) {
-        orderAbortControllerRef.current = null;
-        setLoading(false);
-      }
     }
   };
 

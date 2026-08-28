@@ -1,5 +1,6 @@
 import { isAdminAuthenticated } from '@/lib/admin-auth'
 import { logger } from '@/lib/logger'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 import {
   listSupabaseOrderEarningsSummaries,
   type OrderEarningsSummary
@@ -145,7 +146,10 @@ export async function GET(request: NextRequest) {
       historicalMonthlyData
     })
   } catch (error) {
-    logger.error('Failed to fetch earnings', error)
+    logger.error('Failed to fetch earnings', {
+      operation: 'admin.earnings.fetch',
+      ...toSafeOperationalError(error)
+    })
     return NextResponse.json(
       { error: 'Failed to fetch earnings data' },
       { status: 500 }

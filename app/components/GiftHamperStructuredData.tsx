@@ -5,8 +5,7 @@ import {
   generateHamperMerchantCenterSchema,
   type MerchantHamperInput,
 } from "@/lib/google-merchant-center-schema";
-import { useReviewStats } from "./ReviewStatsProvider";
-import { buildAggregateRating } from "@/app/utils/review-stats";
+import { serializeJsonLd } from '@/lib/structured-data/serialize-json-ld'
 
 interface GiftHamperStructuredDataProps {
   hamper: MerchantHamperInput & {
@@ -26,8 +25,6 @@ interface GiftHamperStructuredDataProps {
 }
 
 export function GiftHamperStructuredData({ hamper }: GiftHamperStructuredDataProps) {
-  const reviewStats = useReviewStats();
-
   useEffect(() => {
     if (!hamper.structuredData?.enableProductSchema) return;
 
@@ -35,12 +32,6 @@ export function GiftHamperStructuredData({ hamper }: GiftHamperStructuredDataPro
     const structuredData: ReturnType<typeof generateHamperMerchantCenterSchema> & {
       keywords?: string;
     } = generateHamperMerchantCenterSchema(hamper);
-    const aggregateRating = buildAggregateRating(reviewStats);
-
-    if (aggregateRating) {
-      structuredData.aggregateRating = aggregateRating;
-    }
-
     // Add keywords if available
     if (hamper.seo?.keywords && hamper.seo.keywords.length > 0) {
       structuredData.keywords = hamper.seo.keywords.join(", ");
@@ -49,7 +40,7 @@ export function GiftHamperStructuredData({ hamper }: GiftHamperStructuredDataPro
     // Create script element
     const script = document.createElement("script");
     script.type = "application/ld+json";
-    script.text = JSON.stringify(structuredData);
+    script.text = serializeJsonLd(structuredData);
     script.id = "hamper-structured-data";
 
     // Remove existing script if present
@@ -68,7 +59,7 @@ export function GiftHamperStructuredData({ hamper }: GiftHamperStructuredDataPro
         scriptToRemove.remove();
       }
     };
-  }, [hamper, reviewStats]);
+  }, [hamper]);
 
   return null;
 }

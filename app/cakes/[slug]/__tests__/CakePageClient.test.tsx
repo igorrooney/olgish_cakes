@@ -552,7 +552,10 @@ describe('CakePageClient', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Trigger add to cart' }))
 
     expect(screen.getByTestId('layout-gallery-below-content')).toBeInTheDocument()
-    expect(screen.getByAltText('Cherry filling slice')).toBeInTheDocument()
+    const fillingPreview = screen.getByAltText('Cherry filling slice')
+    expect(fillingPreview).toBeInTheDocument()
+    expect(fillingPreview.getAttribute('src')).toMatch(/^https:\/\/cdn\.sanity\.io\//)
+    expect(fillingPreview.getAttribute('src')).not.toContain('/_next/image')
 
     const layoutImages = getLatestLayoutImages()
     expect(layoutImages.some((image) => image.alt === 'Cherry filling slice')).toBe(false)
@@ -1049,7 +1052,8 @@ describe('CakePageClient', () => {
 
     expect(screen.getByText('Freshly baked to order')).toBeInTheDocument()
     expect(screen.getByText('Personalised design consultation available')).toBeInTheDocument()
-    expect(screen.getByText('Free UK delivery')).toBeInTheDocument()
+    expect(screen.getByText('Delivery details confirmed before dispatch')).toBeInTheDocument()
+    expect(screen.queryByText('Free UK delivery')).not.toBeInTheDocument()
   })
 
   it('uses paid-delivery fallback key point when shipping fee is above zero', () => {

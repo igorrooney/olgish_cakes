@@ -10,7 +10,6 @@ import { sendTelegramManagerNotification } from '@/lib/notifications/telegram'
 import { resolveCanonicalOrderType } from '@/lib/order-types'
 import { CURRENT_TERMS_VERSION } from '@/lib/legal/legal-config'
 import { getTermsEmailAttachment } from '@/lib/legal/terms-document'
-import { urlFor } from '@/sanity/lib/image'
 import {
   createSupabaseOrder,
   listSupabaseOrders,
@@ -18,6 +17,7 @@ import {
 } from '@/lib/orders/supabase-orders'
 import type { Attachment, OrderItem } from '@/types/order'
 import { NextRequest, NextResponse } from 'next/server'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 interface RawOrderRequest {
   name?: string
@@ -93,7 +93,6 @@ function normalizeEmailOrderItems(items: OrderItem[]) {
     unitPrice: typeof item.unitPrice === 'number' && Number.isFinite(item.unitPrice) ? item.unitPrice : 0,
     totalPrice: typeof item.totalPrice === 'number' && Number.isFinite(item.totalPrice) ? item.totalPrice : 0,
     designType: item.designType,
-    specialInstructions: item.specialInstructions,
     filling: item.flavor,
     servings: item.size,
     productType: item.productType,
@@ -151,25 +150,15 @@ function resolveCustomerMessage(...values: Array<string | undefined>): string | 
   return undefined
 }
 
-function getAttachmentLabel(attachment: Attachment) {
-  return attachment.alt || attachment.caption || 'Attachment'
-}
-
-function getReferenceImageUrls(attachments: Attachment[]) {
-  return attachments.flatMap((attachment) => {
-    if (!attachment.asset) {
-      return []
-    }
-
-    try {
-      return [urlFor(attachment.asset).width(400).height(300).url()]
-    } catch {
-      return attachment.asset.url ? [attachment.asset.url] : []
-    }
-  })
-}
-
 async function handlePOST(request: NextRequest) {
+  const isAuthenticated = await isAdminAuthenticated(request)
+  if (!isAuthenticated) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    )
+  }
+
   try {
     const orderData = await request.json() as RawOrderRequest
 
@@ -203,7 +192,10 @@ async function handlePOST(request: NextRequest) {
     })
 
     if (!validationResult.success) {
-      logger.error('Orders API: Validation failed', formatValidationErrors(validationResult.errors))
+      logger.error('Orders API: Validation failed', {
+        operation: 'orders.validate',
+        code: 'VALIDATION_FAILED'
+      })
       return NextResponse.json(
         { error: 'Validation failed', details: formatValidationErrors(validationResult.errors) },
         { status: 400 }
@@ -241,8 +233,6 @@ async function handlePOST(request: NextRequest) {
     })
 
     const attachments = Array.isArray(orderData.attachments) ? orderData.attachments : []
-    const attachmentNames = attachments.map(getAttachmentLabel)
-    const referenceImageUrls = getReferenceImageUrls(attachments)
 
     const requestIpLocation = getRequestIpLocation(request.headers)
     const orderDoc = {
@@ -321,27 +311,33 @@ async function handlePOST(request: NextRequest) {
 
     await sendTelegramManagerNotification({
       type: 'new-order',
-      customerName: validatedOrderData.name,
-      customerEmail: validatedOrderData.email,
-      customerPhone: validatedOrderData.phone,
+      recordReference: createdOrder.orderNumber,
       dateNeeded: validatedOrderData.dateNeeded,
-      productName: firstItem?.productName || validatedOrderData.productName,
       total: orderData.total || validatedOrderData.totalPrice,
-      messagePreview: validatedOrderData.message || firstItem?.specialInstructions,
       imageCount: attachments.length,
       adminPath: `/admin/orders/${createdOrder.orderNumber}`
     })
 
     try {
       if (requiresLiveEmailConfiguration(emailMode) && !process.env.RESEND_API_KEY) {
-        logger.error('RESEND_API_KEY not configured - skipping confirmation email')
+        logger.error('RESEND_API_KEY not configured - skipping confirmation email', {
+          operation: 'orders.customer_email',
+          recordReference: createdOrder.orderNumber,
+          code: 'EMAIL_NOT_CONFIGURED'
+        })
         throw new Error('Email service not configured')
       }
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(validatedOrderData.email)) {
-        logger.error('Orders API: Invalid email address format', validatedOrderData.email)
-        throw new Error(`Invalid email address format: ${validatedOrderData.email}`)
+        logger.error('Orders API: Invalid email address format', {
+          operation: 'orders.customer_email',
+          recordReference: createdOrder.orderNumber,
+          code: 'INVALID_EMAIL'
+        })
+        throw Object.assign(new Error('Invalid email address format'), {
+          code: 'INVALID_EMAIL'
+        })
       }
 
       const termsAttachment = await getTermsEmailAttachment()
@@ -367,13 +363,9 @@ async function handlePOST(request: NextRequest) {
           designType: firstItem?.designType,
           filling: firstItem?.flavor,
           servings: firstItem?.size,
-          customerMessage: resolveCustomerMessage(firstItem?.specialInstructions, resolvedCustomerMessage),
           deliveryMethod: toDeliveryMethodLabel(validatedOrderData.deliveryMethod || 'collection'),
           deliveryAddress: validatedOrderData.deliveryAddress,
-          paymentMethod: toPaymentMethodLabel(validatedOrderData.paymentMethod || 'cash-collection'),
-          giftNote: validatedOrderData.giftNote,
-          note: validatedOrderData.note,
-          attachmentNames
+          paymentMethod: toPaymentMethodLabel(validatedOrderData.paymentMethod || 'cash-collection')
         },
         modeOverride: emailMode,
         message: {
@@ -385,8 +377,9 @@ async function handlePOST(request: NextRequest) {
       })
 
       if (!customerEmailResult.accepted || customerEmailResult.error) {
-        const customerEmailFailureReason = customerEmailResult.error?.message || 'Transport did not accept the customer email'
-        throw new Error(`Failed to send customer email: ${customerEmailFailureReason}`)
+        throw Object.assign(new Error('Failed to send customer email'), {
+          code: toSafeOperationalError(customerEmailResult.error).code
+        })
       }
 
       await updateSupabaseOrderMetadata(createdOrder._id, createdOrder.metadata, {
@@ -395,24 +388,33 @@ async function handlePOST(request: NextRequest) {
       })
     } catch (emailError) {
       logger.error('Orders API: Failed to send confirmation email', {
-        error: emailError,
-        orderId: createdOrder._id
+        operation: 'orders.customer_email',
+        recordReference: createdOrder.orderNumber,
+        ...toSafeOperationalError(emailError)
       })
 
       try {
         await updateSupabaseOrderMetadata(createdOrder._id, createdOrder.metadata, {
           emailSent: false,
-          emailError: emailError instanceof Error ? emailError.message : 'Unknown error',
+          emailError: toSafeOperationalError(emailError).code,
           emailAttemptedAt: new Date().toISOString()
         })
       } catch (metadataError) {
-        logger.error('Orders API: Failed to update order metadata', metadataError)
+        logger.error('Orders API: Failed to update order metadata', {
+          operation: 'orders.email_metadata',
+          recordReference: createdOrder.orderNumber,
+          ...toSafeOperationalError(metadataError)
+        })
       }
     }
 
     try {
       if (requiresLiveEmailConfiguration(emailMode) && !process.env.RESEND_API_KEY) {
-        logger.error('Orders API: RESEND_API_KEY not configured - skipping admin notification')
+        logger.error('Orders API: RESEND_API_KEY not configured - skipping admin notification', {
+          operation: 'orders.admin_email',
+          recordReference: createdOrder.orderNumber,
+          code: 'EMAIL_NOT_CONFIGURED'
+        })
         throw new Error('Email service not configured')
       }
 
@@ -438,16 +440,10 @@ async function handlePOST(request: NextRequest) {
           designType: firstItem?.designType,
           filling: firstItem?.flavor,
           servings: firstItem?.size,
-          customerMessage: resolveCustomerMessage(firstItem?.specialInstructions, resolvedCustomerMessage),
           deliveryMethod: toDeliveryMethodLabel(validatedOrderData.deliveryMethod || 'collection'),
           deliveryAddress: validatedOrderData.deliveryAddress,
           paymentMethod: toPaymentMethodLabel(validatedOrderData.paymentMethod || 'cash-collection'),
-          referrer: validatedOrderData.referrer,
-          message: validatedOrderData.message,
-          note: validatedOrderData.note,
-          giftNote: validatedOrderData.giftNote,
-          attachmentNames,
-          referenceImageUrls
+          referrer: validatedOrderData.referrer
         },
         modeOverride: emailMode,
         message: {
@@ -460,12 +456,17 @@ async function handlePOST(request: NextRequest) {
 
       if (adminEmailResult.error) {
         logger.error('Orders API: Admin email error', {
-          error: adminEmailResult.error,
-          orderNumber
+          operation: 'orders.admin_email',
+          recordReference: createdOrder.orderNumber,
+          ...toSafeOperationalError(adminEmailResult.error)
         })
       }
     } catch (emailError) {
-      logger.error('Orders API: Failed to send admin notification', emailError)
+      logger.error('Orders API: Failed to send admin notification', {
+        operation: 'orders.admin_email',
+        recordReference: createdOrder.orderNumber,
+        ...toSafeOperationalError(emailError)
+      })
     }
 
     return NextResponse.json({
@@ -476,20 +477,13 @@ async function handlePOST(request: NextRequest) {
     })
   } catch (error) {
     logger.error('Orders API: Order creation error', {
-      error,
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined
+      operation: 'orders.create',
+      ...toSafeOperationalError(error)
     })
-
-    const errorMessage = process.env.NODE_ENV === 'production'
-      ? 'Failed to create order'
-      : (error instanceof Error ? error.message : 'Unknown error')
 
     return NextResponse.json(
       {
         error: 'Failed to create order',
-        details: errorMessage,
         timestamp: new Date().toISOString()
       },
       { status: 500 }
@@ -555,7 +549,10 @@ export async function GET(request: NextRequest) {
       }
     })
   } catch (error) {
-    logger.error('Failed to fetch orders', error)
+    logger.error('Failed to fetch orders', {
+      operation: 'orders.list',
+      ...toSafeOperationalError(error)
+    })
     return NextResponse.json(
       { error: 'Failed to fetch orders' },
       { status: 500 }

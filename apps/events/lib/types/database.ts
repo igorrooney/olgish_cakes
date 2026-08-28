@@ -45,6 +45,7 @@ export interface EventPhotoRequestRow extends Record<string, unknown> {
   telegram_message_ids: number[]
   telegram_error: string | null
   files_deleted_at: string | null
+  legal_hold?: boolean
   source: string
   created_at: string
   updated_at: string
@@ -83,17 +84,20 @@ export interface AdminLoginAttemptRow extends Record<string, unknown> {
   id: number
   key_hash: string
   failed_at: string
+  cleared_at: string | null
 }
 
 export interface AdminLoginAttemptInsert extends Record<string, unknown> {
   id?: number
   key_hash: string
   failed_at?: string
+  cleared_at?: string | null
 }
 
 export interface AdminLoginAttemptUpdate extends Record<string, unknown> {
   key_hash?: string
   failed_at?: string
+  cleared_at?: string | null
 }
 
 export type EventPhotoRateLimitAction =
@@ -150,7 +154,79 @@ export interface Database {
       }
     }
     Views: Record<string, never>
-    Functions: Record<string, never>
+    Functions: {
+      claim_event_photo_temp_cleanup: {
+        Args: {
+          p_request_id: string
+          p_cutoff: string
+        }
+        Returns: Array<{
+          status: 'claimed' | 'busy' | 'skipped'
+          claim_token: string | null
+          temp_image_bucket: string | null
+          temp_image_paths: string[]
+        }>
+      }
+      begin_privacy_retention_external_deletion: {
+        Args: {
+          p_candidate_id: string
+          p_claim_token: string
+          p_bucket: string
+          p_paths: string[]
+        }
+        Returns: boolean
+      }
+      release_privacy_retention_deletion_claim: {
+        Args: {
+          p_candidate_id: string
+          p_claim_token: string
+          p_error_code: string
+        }
+        Returns: boolean
+      }
+      finalize_event_photo_temp_cleanup: {
+        Args: {
+          p_request_id: string
+          p_claim_token: string
+        }
+        Returns: Array<{
+          status: 'deleted' | 'skipped'
+          affected_count: number
+          finalized_at: string
+        }>
+      }
+      list_event_photo_cleanup_candidates: {
+        Args: {
+          p_cutoff: string
+          p_limit: number
+        }
+        Returns: Array<{ id: string }>
+      }
+      claim_event_photo_orphan_cleanup_cursor: {
+        Args: Record<string, never>
+        Returns: Array<{
+          status: 'claimed' | 'busy'
+          cursor_token: string | null
+          object_cursor: string | null
+          lease_expires_at: string
+        }>
+      }
+      finalize_event_photo_orphan_cleanup_cursor: {
+        Args: {
+          p_cursor_token: string
+          p_object_cursor: string | null
+        }
+        Returns: boolean
+      }
+      release_event_photo_orphan_cleanup_cursor: {
+        Args: { p_cursor_token: string }
+        Returns: boolean
+      }
+      filter_referenced_event_photo_temp_paths: {
+        Args: { p_paths: string[] }
+        Returns: Array<{ temp_image_path: string }>
+      }
+    }
     Enums: Record<string, never>
     CompositeTypes: Record<string, never>
   }

@@ -214,6 +214,37 @@ describe('proxy SEO headers for cakes filters', () => {
     expect(response.headers.get('Cache-Control')).toBe('no-cache, must-revalidate')
   })
 
+  it('applies the strict security header values configured for public responses', async () => {
+    const request = new NextRequest('https://olgishcakes.co.uk/cakes')
+
+    const response = await proxy(request)
+
+    expect(response.headers.get('X-Frame-Options')).toBe('DENY')
+    expect(response.headers.get('Referrer-Policy')).toBe('strict-origin-when-cross-origin')
+  })
+
+  it('keeps Studio private, uncached and excluded from indexing', async () => {
+    const request = new NextRequest('https://olgishcakes.co.uk/studio')
+
+    const response = await proxy(request)
+
+    expect(response.headers.get('Cache-Control')).toBe('no-cache, no-store, must-revalidate')
+    expect(response.headers.get('Pragma')).toBe('no-cache')
+    expect(response.headers.get('Expires')).toBe('0')
+    expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
+  })
+
+  it('keeps every API response uncached and excluded from indexing', async () => {
+    const request = new NextRequest('https://olgishcakes.co.uk/api/dev/email-preview')
+
+    const response = await proxy(request)
+
+    expect(response.headers.get('Cache-Control')).toBe('no-cache, no-store, must-revalidate')
+    expect(response.headers.get('Pragma')).toBe('no-cache')
+    expect(response.headers.get('Expires')).toBe('0')
+    expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
+  })
+
   it('returns 410 for retired corporate cakes landing page', async () => {
     const request = new NextRequest('https://olgishcakes.co.uk/corporate-cakes-leeds')
 

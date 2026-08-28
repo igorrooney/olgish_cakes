@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { SiteHeader } from '../SiteHeader'
 
 type MockLinkProps = {
@@ -57,15 +57,36 @@ describe('SiteHeader', () => {
     fireEvent.click(menuButton)
 
     expect(menuDetails).toHaveAttribute('open')
-    expect(screen.getByRole('menu')).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /custom cakes/i })).toHaveAttribute('href', '/cakes')
-    expect(screen.getByRole('menuitem', { name: /get a quote/i })).toHaveAttribute(
+    const mobileNavigation = screen.getByRole('navigation', { name: /mobile navigation/i })
+
+    expect(mobileNavigation).toBeInTheDocument()
+    expect(within(mobileNavigation).getByRole('link', { name: /custom cakes/i })).toHaveAttribute('href', '/custom-cakes')
+    expect(within(mobileNavigation).getByRole('link', { name: /get a quote/i })).toHaveAttribute(
       'href',
-      '/get-custom-quote#quote-form'
+      '/custom-cakes#quote-form'
     )
-    expect(screen.getByRole('menuitem', { name: /cakes by post/i })).toHaveAttribute('href', '/cakes-by-post')
-    expect(screen.getByRole('menuitem', { name: /^articles$/i })).toHaveAttribute('href', '/blog')
-    expect(screen.queryByRole('menuitem', { name: /all cakes/i })).not.toBeInTheDocument()
+    expect(within(mobileNavigation).getByRole('link', { name: /cakes by post/i })).toHaveAttribute('href', '/cakes-by-post')
+    expect(within(mobileNavigation).getByRole('link', { name: /^articles$/i })).toHaveAttribute('href', '/blog')
+    expect(within(mobileNavigation).queryByRole('link', { name: /all cakes/i })).not.toBeInTheDocument()
+    expect(menuButton).not.toHaveAttribute('aria-haspopup')
+  })
+
+  it('closes mobile navigation with Escape and restores focus to the trigger', () => {
+    render(<SiteHeader />)
+
+    const menuButton = screen.getByRole('button', { name: /^menu$/i })
+    const menuDetails = menuButton.closest('details')
+
+    fireEvent.click(menuButton)
+
+    const mobileNavigation = screen.getByRole('navigation', { name: /mobile navigation/i })
+    const contactLink = within(mobileNavigation).getByRole('link', { name: /^contact$/i })
+    contactLink.focus()
+    fireEvent.keyDown(document, { key: 'Escape' })
+
+    expect(menuDetails).not.toHaveAttribute('open')
+    expect(menuButton).toHaveFocus()
+    expect(menuButton).toHaveAttribute('aria-expanded', 'false')
   })
 
   it('toggles desktop custom cakes dropdown and keeps category links canonical', () => {
@@ -79,15 +100,17 @@ describe('SiteHeader', () => {
     fireEvent.click(customCakesButton)
 
     expect(customCakesDetails).toHaveAttribute('open')
-    expect(screen.getByRole('link', { name: /all cakes/i })).toHaveAttribute('href', '/cakes')
-    expect(screen.getByRole('link', { name: /get a quote/i })).toHaveAttribute(
+    const customCakesDropdown = within(customCakesDetails as HTMLElement)
+
+    expect(customCakesDropdown.getByRole('link', { name: /all cakes/i })).toHaveAttribute('href', '/cakes')
+    expect(customCakesDropdown.getByRole('link', { name: /get a quote/i })).toHaveAttribute(
       'href',
-      '/get-custom-quote#quote-form'
+      '/custom-cakes#quote-form'
     )
-    expect(screen.getByRole('link', { name: /wedding cakes/i })).toHaveAttribute('href', '/wedding-cakes')
-    expect(screen.getByRole('link', { name: /birthday cakes/i })).toHaveAttribute('href', '/birthday-cakes')
-    expect(screen.getByRole('link', { name: /anniversary cakes/i })).toHaveAttribute('href', '/anniversary-cakes-leeds')
-    expect(screen.getByRole('link', { name: /baby shower cakes/i })).toHaveAttribute('href', '/baby-shower-cakes')
+    expect(customCakesDropdown.getByRole('link', { name: /wedding cakes/i })).toHaveAttribute('href', '/wedding-cakes')
+    expect(customCakesDropdown.getByRole('link', { name: /birthday cakes/i })).toHaveAttribute('href', '/birthday-cakes')
+    expect(customCakesDropdown.getByRole('link', { name: /anniversary cakes/i })).toHaveAttribute('href', '/anniversary-cakes-leeds')
+    expect(customCakesDropdown.getByRole('link', { name: /baby shower cakes/i })).toHaveAttribute('href', '/baby-shower-cakes')
   })
 
   it('closes desktop dropdown when clicking outside', () => {
@@ -105,7 +128,7 @@ describe('SiteHeader', () => {
     expect(customCakesDetails).not.toHaveAttribute('open')
   })
 
-  it('closes desktop dropdown with Escape', () => {
+  it('closes desktop dropdown with Escape and restores focus to its trigger', () => {
     render(<SiteHeader />)
 
     const learnButton = screen.getByRole('button', { name: /^learn$/i })
@@ -115,19 +138,28 @@ describe('SiteHeader', () => {
 
     expect(learnDetails).toHaveAttribute('open')
 
+    const workshopsLink = within(learnDetails as HTMLElement).getByRole('link', { name: /^workshops$/i })
+    workshopsLink.focus()
+
     fireEvent.keyDown(document, { key: 'Escape' })
 
     expect(learnDetails).not.toHaveAttribute('open')
+    expect(learnButton).toHaveFocus()
   })
 
   it('keeps learn navigation canonical and removes old placeholders', () => {
     render(<SiteHeader />)
 
-    fireEvent.click(screen.getByRole('button', { name: /^learn$/i }))
+    const learnButton = screen.getByRole('button', { name: /^learn$/i })
+    const learnDetails = learnButton.closest('details')
 
-    expect(screen.getByRole('link', { name: /^articles$/i })).toHaveAttribute('href', '/blog')
-    expect(screen.getByRole('link', { name: /^workshops$/i })).toHaveAttribute('href', '/learn/workshops')
-    expect(screen.queryByRole('link', { name: /^guides$/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('link', { name: /customer stories/i })).not.toBeInTheDocument()
+    fireEvent.click(learnButton)
+
+    const learnDropdown = within(learnDetails as HTMLElement)
+
+    expect(learnDropdown.getByRole('link', { name: /^articles$/i })).toHaveAttribute('href', '/blog')
+    expect(learnDropdown.getByRole('link', { name: /^workshops$/i })).toHaveAttribute('href', '/learn/workshops')
+    expect(learnDropdown.queryByRole('link', { name: /^guides$/i })).not.toBeInTheDocument()
+    expect(learnDropdown.queryByRole('link', { name: /customer stories/i })).not.toBeInTheDocument()
   })
 })

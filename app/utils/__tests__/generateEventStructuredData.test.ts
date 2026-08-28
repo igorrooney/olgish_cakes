@@ -36,8 +36,6 @@ describe('generateEventStructuredData', () => {
   })
 
   describe('generateEventStructuredData', () => {
-    const reviewStats = { count: 13, averageRating: 5 }
-
     it('should generate valid Event schema', () => {
       const result = generateEventStructuredData(mockEvent)
 
@@ -68,11 +66,10 @@ describe('generateEventStructuredData', () => {
       expect(result.organizer.name).toBe('Olgish Cakes')
     })
 
-    it('should include performer', () => {
+    it('should not invent a performer', () => {
       const result = generateEventStructuredData(mockEvent)
 
-      expect(result.performer['@type']).toBe('Organization')
-      expect(result.performer.name).toBe('Olgish Cakes')
+      expect(result.performer).toBeUndefined()
     })
 
     it('should set eventStatus to EventScheduled', () => {
@@ -93,11 +90,10 @@ describe('generateEventStructuredData', () => {
       expect(result.isAccessibleForFree).toBe(true)
     })
 
-    it('should include aggregateRating', () => {
-      const result = generateEventStructuredData(mockEvent, reviewStats)
+    it('should not apply bakery ratings to an event', () => {
+      const result = generateEventStructuredData(mockEvent)
 
-      expect(result.aggregateRating['@type']).toBe('AggregateRating')
-      expect(result.aggregateRating.ratingValue).toBe('5.0')
+      expect(result.aggregateRating).toBeUndefined()
     })
 
     it('should use custom description', () => {
@@ -157,19 +153,18 @@ describe('generateEventStructuredData', () => {
       expect(result.image).toBe('https://olgishcakes.co.uk/images/test.jpg')
     })
 
-    it('should use fallback image when no image', () => {
+    it('should omit image when no real event image exists', () => {
       const eventWithoutImage = { ...mockEvent, image: undefined }
 
       const result = generateEventStructuredData(eventWithoutImage)
 
-      expect(result.image).toContain('market-event-placeholder.jpg')
+      expect(result.image).toBeUndefined()
     })
 
-    it('should include offers', () => {
+    it('should not invent a ticket offer', () => {
       const result = generateEventStructuredData(mockEvent)
 
-      expect(result.offers['@type']).toBe('Offer')
-      expect(result.offers.availability).toBe('https://schema.org/InStock')
+      expect(result.offers).toBeUndefined()
     })
 
     it('should use custom contact info', () => {
@@ -191,7 +186,7 @@ describe('generateEventStructuredData', () => {
     it('should generate unique event ID', () => {
       const result = generateEventStructuredData(mockEvent)
 
-      expect(result['@id']).toContain('olgishcakes.co.uk/events/')
+      expect(result['@id']).toContain('olgishcakes.co.uk/#event-')
       expect(result['@id']).toContain('leeds-market')
     })
   })
@@ -249,7 +244,7 @@ describe('generateEventStructuredData', () => {
       const result = generateEventsListStructuredData([mockEvent, invalidEvent])
 
       expect(result!.numberOfItems).toBe(1)
-      expect(consoleSpy).toHaveBeenCalledWith('Skipping event with missing required fields:', '2')
+      expect(consoleSpy).toHaveBeenCalledWith('Skipping market event with missing required fields')
 
       consoleSpy.mockRestore()
     })

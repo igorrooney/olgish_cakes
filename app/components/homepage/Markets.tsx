@@ -2,6 +2,7 @@ import { getMarketSchedule } from '@/app/utils/fetchMarketSchedule'
 import type { MarketSchedule } from '@/app/types/marketSchedule'
 import { getLondonDateKey, getMarketDateKey } from '@/app/utils/londonDate'
 import { DeferredMarketsClient } from './DeferredMarketsClient'
+import { serializeJsonLd } from '@/lib/structured-data/serialize-json-ld'
 
 type MarketEventSchema = {
   '@type': 'Event'
@@ -118,7 +119,7 @@ export async function Markets() {
         <script
           type='application/ld+json'
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(marketStructuredData).replace(/</g, '\\u003c')
+            __html: serializeJsonLd(marketStructuredData)
           }}
         />
       ) : null}

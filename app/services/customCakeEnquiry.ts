@@ -15,6 +15,8 @@ export type CustomCakeEnquirySubmission = {
   occasion?: string
   date: string
   requirements?: string
+  dietaryHealthInformation?: string
+  dietaryHealthConsent: boolean
   csrfToken: string
 }
 
@@ -33,7 +35,7 @@ type ErrorResponse = {
 }
 
 export const customCakeEnquiryContactFallback =
-  'Please try again, or contact me directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
+  'Please try again, or contact us directly at hello@olgishcakes.co.uk or +44 786 721 8194.'
 export const customCakeEnquiryFallbackErrorMessage =
   `Something went wrong while sending your enquiry. ${customCakeEnquiryContactFallback}`
 const maskedServerErrorMessages = new Set([
@@ -87,6 +89,8 @@ export const buildCustomCakeEnquiryFormData = (
   Object.entries(values).forEach(([key, value]) => {
     if (typeof value === 'string' && value.length > 0) {
       submissionData.append(key, value)
+    } else if (typeof value === 'boolean') {
+      submissionData.append(key, value ? 'true' : 'false')
     }
   })
   if (referenceImage) {
@@ -97,7 +101,7 @@ export const buildCustomCakeEnquiryFormData = (
 
 export const submitCustomCakeEnquiry = async (
   submissionData: FormData,
-  signal?: AbortSignal
+  signal: AbortSignal
 ) => {
   const response = await fetch('/api/custom-cake-enquiry', {
     method: 'POST',

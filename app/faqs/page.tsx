@@ -4,6 +4,7 @@ import { QueryClient } from '@tanstack/react-query'
 import { BUSINESS_CONSTANTS } from '@/lib/constants'
 import type { FAQ } from '../utils/fetchFaqs'
 import { faqQueryOptions } from './query-options'
+import { toSafeOperationalError } from '@/lib/security/safe-operational-error'
 
 type StructuredData = Record<string, unknown>
 
@@ -34,7 +35,7 @@ const helpLinks: HelpLink[] = [
     label: 'cakes by post'
   },
   {
-    href: '/get-custom-quote',
+    href: '/custom-cakes',
     label: 'custom quote form'
   },
   {
@@ -188,7 +189,7 @@ function AssistanceLinks() {
         Send a question
       </Link>
       <Link
-        href='/get-custom-quote'
+        href='/custom-cakes'
         prefetch={false}
         className={secondaryLinkClassName}
       >
@@ -234,7 +235,10 @@ async function loadFaqs(): Promise<FaqLoadResult> {
       ? { status: 'ready', faqs }
       : { status: 'empty', faqs: [] }
   } catch (error) {
-    console.error('Unable to render FAQ content:', error)
+    console.error('FAQ content load failed', {
+      operation: 'faq.content.load',
+      ...toSafeOperationalError(error)
+    })
     return { status: 'error', faqs: [] }
   }
 }
@@ -262,7 +266,7 @@ export default async function FaqPage() {
                 </h1>
                 <div className='mt-6 flex flex-wrap items-center gap-3'>
                   <Link
-                    href='/get-custom-quote'
+                    href='/custom-cakes'
                     prefetch={false}
                     className={primaryButtonClassName}
                   >

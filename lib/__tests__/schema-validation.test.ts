@@ -283,22 +283,21 @@ describe('schema-validation', () => {
         expect(result.errors).toContain('Missing or invalid priceCurrency (must be GBP)')
       })
 
-      it('should detect missing availability', () => {
-        const invalid = {
+      it('allows availability to be omitted rather than invented', () => {
+        const withoutAvailability = {
           ...validSchema,
           offers: {
             '@type': 'Offer',
             price: '35',
-            priceCurrency: 'GBP',
-            priceValidUntil: '2026-01-01'
+            priceCurrency: 'GBP'
           }
         }
-        const result = validateProductSchema(asProductSchema(invalid))
-        expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Missing offer availability')
+        const result = validateProductSchema(asProductSchema(withoutAvailability))
+        expect(result.isValid).toBe(true)
+        expect(result.errors).not.toContain('Missing offer availability')
       })
 
-      it('should detect missing priceValidUntil', () => {
+      it('should allow priceValidUntil to be omitted', () => {
         const invalid = {
           ...validSchema,
           offers: {
@@ -309,8 +308,8 @@ describe('schema-validation', () => {
           }
         }
         const result = validateProductSchema(asProductSchema(invalid))
-        expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Missing priceValidUntil date')
+        expect(result.isValid).toBe(true)
+        expect(result.errors).not.toContain('Missing priceValidUntil date')
       })
 
       it('should detect invalid priceValidUntil format', () => {
@@ -330,96 +329,32 @@ describe('schema-validation', () => {
       })
     })
 
-    describe('SKU Validation', () => {
-      it('should detect missing SKU', () => {
-        const invalid = { ...validSchema, sku: undefined }
+    describe('Optional product identifiers', () => {
+      it('allows SKU and MPN to be omitted rather than invented', () => {
+        const schemaWithoutIdentifiers = { ...validSchema, sku: undefined, mpn: undefined }
+        const result = validateProductSchema(asProductSchema(schemaWithoutIdentifiers))
+        expect(result.isValid).toBe(true)
+      })
+
+      it.each([
+        ['sku', 123],
+        ['sku', ''],
+        ['mpn', 123],
+        ['mpn', '   ']
+      ])('rejects an invalid supplied %s', (field, value) => {
+        const invalid = { ...validSchema, [field]: value }
         const result = validateProductSchema(asProductSchema(invalid))
         expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Missing or invalid SKU')
+        expect(result.errors).toContain(field === 'sku' ? 'Invalid SKU' : 'Invalid MPN')
       })
 
-      it('should detect non-string SKU', () => {
-        const invalid = { ...validSchema, sku: 123 }
-        const result = validateProductSchema(asProductSchema(invalid))
-        expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Missing or invalid SKU')
-      })
-
-      it('should detect invalid SKU prefix', () => {
-        const invalid = { ...validSchema, sku: 'WRONG-PREFIX-001' }
-        const result = validateProductSchema(invalid)
-        expect(result.isValid).toBe(false)
-        expect(result.errors.some(e => e.includes('OC-'))).toBe(true)
-      })
-
-      it('should detect SKU with too few parts', () => {
-        const invalid = { ...validSchema, sku: 'OC-001' }
-        const result = validateProductSchema(invalid)
-        expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('SKU format invalid (expected: OC-PRODUCTNAME-001)')
-      })
-
-      it('should detect SKU without numeric ending', () => {
-        const invalid = { ...validSchema, sku: 'OC-TEST-ABC' }
-        const result = validateProductSchema(invalid)
-        expect(result.isValid).toBe(false)
-        expect(result.errors.some(e => e.includes('3 digits'))).toBe(true)
-      })
-
-      it('should detect SKU with wrong number length', () => {
-        const invalid = { ...validSchema, sku: 'OC-TEST-1' }
-        const result = validateProductSchema(invalid)
-        expect(result.isValid).toBe(false)
-        expect(result.errors.some(e => e.includes('3 digits'))).toBe(true)
-      })
-
-      it('should detect SKU too long', () => {
-        const invalid = { ...validSchema, sku: 'OC-' + 'A'.repeat(50) }
-        const result = validateProductSchema(invalid)
-        expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('SKU too long (maximum 50 characters)')
-      })
-    })
-
-    describe('MPN Validation', () => {
-      it('should detect missing MPN', () => {
-        const invalid = { ...validSchema, mpn: undefined }
-        const result = validateProductSchema(asProductSchema(invalid))
-        expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Missing or invalid MPN')
-      })
-
-      it('should detect non-string MPN', () => {
-        const invalid = { ...validSchema, mpn: 123 }
-        const result = validateProductSchema(asProductSchema(invalid))
-        expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('Missing or invalid MPN')
-      })
-
-      it('should detect MPN too short', () => {
-        const invalid = { ...validSchema, mpn: 'AB' }
-        const result = validateProductSchema(invalid)
-        expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('MPN too short (minimum 3 characters)')
-      })
-
-      it('should accept MPN with exactly 3 characters', () => {
-        const valid = { ...validSchema, mpn: 'ABC' }
-        const result = validateProductSchema(valid)
-        expect(result.errors.some(e => e.includes('MPN too short'))).toBe(false)
-      })
-
-      it('should detect MPN too long', () => {
-        const invalid = { ...validSchema, mpn: 'A'.repeat(71) }
-        const result = validateProductSchema(invalid)
-        expect(result.isValid).toBe(false)
-        expect(result.errors).toContain('MPN too long (maximum 70 characters for Google Merchant Center)')
-      })
-
-      it('should accept MPN with exactly 70 characters', () => {
-        const valid = { ...validSchema, mpn: 'A'.repeat(70) }
-        const result = validateProductSchema(valid)
-        expect(result.errors.some(e => e.includes('MPN too long'))).toBe(false)
+      it('accepts real business-supplied identifiers without imposing an invented format', () => {
+        const result = validateProductSchema({
+          ...validSchema,
+          sku: 'REAL-SKU',
+          mpn: 'manufacturer-part-one'
+        })
+        expect(result.isValid).toBe(true)
       })
     })
 
@@ -643,7 +578,10 @@ describe('schema-validation', () => {
         }
         const result = validateProductSchema(asProductSchema(invalid))
 
-        expect(result.errors.length).toBeGreaterThanOrEqual(4)
+        expect(result.errors).toEqual([
+          'Product name too short (minimum 3 characters)',
+          'Description too short (minimum 10 characters)'
+        ])
       })
     })
   })
@@ -963,7 +901,11 @@ describe('schema-validation', () => {
     })
 
     it('should include schema name in error log', () => {
-      const invalidSchema = { ...validSchema, name: 'Test Invalid', sku: 'BAD' }
+      const invalidSchema = {
+        ...validSchema,
+        name: 'Test Invalid',
+        description: 'Short'
+      }
       batchValidateProductSchemas([invalidSchema], true)
 
       expect(console.error).toHaveBeenCalled()

@@ -32,7 +32,9 @@ export const getWorkshopEnquiryInitialValues: WorkshopEnquiryFormValues = {
   location: '',
   preferredDate: '',
   decorationTheme: '',
-  brief: ''
+  brief: '',
+  dietaryHealthInformation: '',
+  dietaryHealthConsent: false
 }
 
 export const workshopEnquiryFieldOrder = [
@@ -44,7 +46,9 @@ export const workshopEnquiryFieldOrder = [
   'location',
   'preferredDate',
   'decorationTheme',
-  'brief'
+  'brief',
+  'dietaryHealthInformation',
+  'dietaryHealthConsent'
 ] as const
 
 export const buildWorkshopEnquirySubmission = (
@@ -60,5 +64,7 @@ export const buildWorkshopEnquirySubmission = (
   preferredDate: values.preferredDate,
   decorationTheme: values.decorationTheme.trim() || undefined,
   brief: values.brief.trim(),
+  dietaryHealthInformation: values.dietaryHealthInformation?.trim() || undefined,
+  dietaryHealthConsent: values.dietaryHealthConsent === true,
   csrfToken
 })

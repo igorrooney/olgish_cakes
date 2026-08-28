@@ -261,7 +261,7 @@ export default function DeliveryPage() {
             cost.
           </p>
           <div className='flex flex-col gap-3 pt-2 tablet:flex-row tablet:flex-wrap'>
-            <Link href='/get-custom-quote' prefetch={false} className={primaryButtonClassName}>
+            <Link href='/custom-cakes' prefetch={false} className={primaryButtonClassName}>
               Ask about delivery
             </Link>
             <a

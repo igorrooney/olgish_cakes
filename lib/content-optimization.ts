@@ -94,7 +94,7 @@ export const CONTENT_TEMPLATES = {
   productPage: {
     title: "{Product Name} in {Location} | Authentic {Type} | Olgish Cakes",
     description:
-      "Order premium {Product Name} in {Location}. Handcrafted using traditional Ukrainian recipes. Same-day delivery available. 5⭐ rated bakery.",
+      "Order handmade {Product Name} in {Location}, prepared using Ukrainian recipes. Ask us to confirm availability for your date and destination.",
     structure: [
       {
         section: "Hero",
@@ -132,7 +132,7 @@ export const CONTENT_TEMPLATES = {
   categoryPage: {
     title: "{Category} Cakes in {Location} | Custom {Type} Designs | Olgish Cakes",
     description:
-      "Browse our {Category} cake collection in {Location}. Custom designs, traditional recipes, professional quality. Free consultation available.",
+      "Browse our {Category} cake collection in {Location}. Explore custom designs and traditional recipes, then send us your requirements.",
     structure: [
       {
         section: "Category Overview",
@@ -160,7 +160,7 @@ export const CONTENT_TEMPLATES = {
   localLandingPage: {
     title: "Cake Delivery in {City} | Ukrainian Bakery | Olgish Cakes Leeds",
     description:
-      "Premium cake delivery to {City}. Authentic Ukrainian cakes, custom designs, same-day service. Serving {Areas} with 5⭐ quality.",
+      "Cake delivery to {City}. Explore Ukrainian cakes and custom designs, with availability confirmed for each order in {Areas}.",
     structure: [
       {
         section: "Local Hero",

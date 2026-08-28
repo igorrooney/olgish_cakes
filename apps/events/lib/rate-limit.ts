@@ -60,17 +60,6 @@ async function recordPublicRateLimitAttempt(
   const keyHash = hashPublicRateLimitKey(rule.action, rule.key)
   const cutoffIso = new Date(now - rule.windowMs).toISOString()
 
-  const { error: deleteError } = await supabase
-    .from(PUBLIC_RATE_LIMIT_ATTEMPTS_TABLE)
-    .delete()
-    .eq('action', rule.action)
-    .eq('key_hash', keyHash)
-    .lt('attempted_at', cutoffIso)
-
-  if (deleteError) {
-    throw new Error(`Could not clear stale public rate limit attempts: ${deleteError.message}`)
-  }
-
   const { data, error: selectError } = await supabase
     .from(PUBLIC_RATE_LIMIT_ATTEMPTS_TABLE)
     .select('attempted_at')

@@ -35,7 +35,8 @@ const state = vi.hoisted(() => ({
   updates: [] as unknown[],
   selects: [] as Array<string | undefined>,
   orders: [] as Array<{ column: string; options?: unknown }>,
-  filters: [] as Array<{ method: string; args: unknown[] }>
+  filters: [] as Array<{ method: string; args: unknown[] }>,
+  rpcCalls: [] as Array<{ name: string; args: unknown }>
 }))
 
 function nextResult(): SupabaseResult {
@@ -44,6 +45,10 @@ function nextResult(): SupabaseResult {
 
 vi.mock('@/lib/supabase/admin', () => ({
   getSupabaseAdmin: () => ({
+    rpc: (name: string, args: unknown) => {
+      state.rpcCalls.push({ name, args })
+      return Promise.resolve(nextResult())
+    },
     from: (table: string) => {
       state.fromTables.push(table)
       let mode: 'select' | 'insert' | 'update' = 'select'
@@ -132,6 +137,7 @@ describe('event photo request data access', () => {
     state.selects = []
     state.orders = []
     state.filters = []
+    state.rpcCalls = []
   })
 
   it('maps public request input to the database insert shape', async () => {
@@ -216,15 +222,43 @@ describe('event photo request data access', () => {
   it('loads stale rows that still have temp paths for cleanup', async () => {
     state.results.push({ data: [requestRow], error: null })
 
-    await expect(listRequestsForCleanup('2026-05-20T00:00:00.000Z')).resolves.toEqual([requestRow])
+    await expect(listRequestsForCleanup('2026-05-20T00:00:00.000Z')).resolves.toEqual([
+      { id: requestRow.id }
+    ])
 
-    expect(state.filters).toContainEqual({
-      method: 'in',
-      args: ['telegram_status', ['pending', 'failed', 'sent']]
-    })
-    expect(state.filters).toContainEqual({
-      method: 'not',
-      args: ['temp_image_paths', 'eq', '{}']
+    expect(state.rpcCalls).toEqual([{
+      name: 'list_event_photo_cleanup_candidates',
+      args: {
+        p_cutoff: '2026-05-20T00:00:00.000Z',
+        p_limit: 12
+      }
+    }])
+    expect(state.selects).not.toContain('*')
+  })
+
+  it('rejects unbounded cleanup batch sizes before querying Supabase', async () => {
+    await expect(listRequestsForCleanup(
+      '2026-05-20T00:00:00.000Z',
+      51
+    )).rejects.toThrow('EVENT_PHOTO_CLEANUP_REQUEST_LIST_FAILED')
+
+    expect(state.rpcCalls).toEqual([])
+  })
+
+  it('fails closed for malformed cleanup candidate rows', async () => {
+    state.results.push({ data: [{ full_name: 'private name' }], error: null })
+
+    await expect(listRequestsForCleanup(
+      '2026-05-20T00:00:00.000Z'
+    )).rejects.toThrow('EVENT_PHOTO_CLEANUP_REQUEST_LIST_FAILED')
+
+    expect(state.rpcCalls).toHaveLength(1)
+    expect(state.rpcCalls[0]).toEqual({
+      name: 'list_event_photo_cleanup_candidates',
+      args: {
+        p_cutoff: '2026-05-20T00:00:00.000Z',
+        p_limit: 12
+      }
     })
   })
 
@@ -266,7 +300,22 @@ describe('event photo request data access', () => {
       'Could not update Telegram status: update offline'
     )
     await expect(listRequestsForCleanup('2026-05-20T00:00:00.000Z')).rejects.toThrow(
-      'Could not load cleanup requests: cleanup offline'
+      'EVENT_PHOTO_CLEANUP_REQUEST_LIST_FAILED'
     )
+  })
+
+  it('never includes provider or request data in a cleanup read failure', async () => {
+    const sentinel = 'SENTINEL-CUSTOMER-HEALTH-AND-PROVIDER-DETAIL'
+    state.results.push({ data: null, error: { message: sentinel } })
+
+    const failure = await listRequestsForCleanup('2026-05-20T00:00:00.000Z')
+      .then((): Error | null => null)
+      .catch((error: unknown): Error => (
+        error instanceof Error ? error : new Error('unexpected error shape')
+      ))
+
+    expect(failure).toBeInstanceOf(Error)
+    expect(failure?.message).toBe('EVENT_PHOTO_CLEANUP_REQUEST_LIST_FAILED')
+    expect(JSON.stringify(failure)).not.toContain(sentinel)
   })
 })

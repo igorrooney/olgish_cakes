@@ -31,7 +31,9 @@ jest.mock('@/app/components/ContactForm', () => ({
         phone: '07123456789',
         dateNeeded: null,
         message: 'Please include a gift note',
-        giftNote: 'Happy birthday!'
+        giftNote: 'Happy birthday!',
+        dietaryHealthInformation: '',
+        dietaryHealthConsent: false
       })}
     >
       Submit mocked hamper form
@@ -82,6 +84,24 @@ describe('GiftHamperOrderModal', () => {
     mockedFetchCsrfToken.mockResolvedValue('csrf-token-123')
     global.fetch = jest.fn().mockResolvedValue({ ok: true }) as jest.Mock
     jest.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  it('promises a personal reply without an unsupported response deadline', () => {
+    render(
+      <GiftHamperOrderModal
+        open
+        onClose={jest.fn()}
+        hamper={hamper as never}
+      />
+    )
+
+    expect(screen.getByText('Personal reply')).toBeInTheDocument()
+    expect(screen.getByText('Personal consultation')).toBeInTheDocument()
+    expect(screen.getByText('Service information')).toBeInTheDocument()
+    expect(screen.getByText('Carefully handmade')).toBeInTheDocument()
+    expect(screen.queryByText(/guarantee/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/24h response/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/free consultation/i)).not.toBeInTheDocument()
   })
 
   it('appends csrfToken and posts with same-origin credentials', async () => {

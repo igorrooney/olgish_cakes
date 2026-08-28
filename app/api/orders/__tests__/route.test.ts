@@ -7,13 +7,14 @@ const mockCreateSupabaseOrder = jest.fn()
 const mockUpdateSupabaseOrderMetadata = jest.fn()
 const mockSendEmail = jest.fn()
 const mockSendTelegramManagerNotification = jest.fn()
+const mockIsAdminAuthenticated = jest.fn()
 
 jest.mock('@/lib/rate-limit', () => ({
   withRateLimit: <T extends (...args: unknown[]) => unknown>(handler: T) => handler
 }))
 
 jest.mock('@/lib/admin-auth', () => ({
-  isAdminAuthenticated: jest.fn()
+  isAdminAuthenticated: (...args: unknown[]) => mockIsAdminAuthenticated(...args)
 }))
 
 jest.mock('@/lib/order-utils', () => ({
@@ -41,10 +42,29 @@ import { POST } from '../route'
 describe('/api/orders POST', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockIsAdminAuthenticated.mockResolvedValue(true)
     mockCreateSupabaseOrder.mockResolvedValue({ _id: 'order-1', orderNumber: 'OC-TEST-1001', metadata: {} })
     mockUpdateSupabaseOrderMetadata.mockResolvedValue({ _id: 'order-1', metadata: {} })
     mockSendTelegramManagerNotification.mockResolvedValue({ sent: true, skipped: false })
     process.env.CONTACT_EMAIL_TO = 'admin@example.com'
+  })
+
+  it('rejects unauthenticated requests before parsing their body', async () => {
+    mockIsAdminAuthenticated.mockResolvedValueOnce(false)
+    const request = new NextRequest('http://localhost/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: '{not valid json'
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(401)
+    await expect(response.json()).resolves.toEqual({ error: 'Unauthorized' })
+    expect(mockCreateSupabaseOrder).not.toHaveBeenCalled()
+    expect(mockSendEmail).not.toHaveBeenCalled()
   })
 
   it('marks customer email as failed when transport does not accept message', async () => {
@@ -107,7 +127,7 @@ describe('/api/orders POST', () => {
       })
     }))
     expect(mockSendEmail).toHaveBeenCalledTimes(2)
-    expect(mockSendEmail.mock.calls[0]?.[0].input.customerMessage).toBe('Please make it less sweet')
+    expect(mockSendEmail.mock.calls[0]?.[0].input.customerMessage).toBeUndefined()
     expect(mockSendEmail.mock.calls[0]?.[0].message.attachments).toEqual([
       expect.objectContaining({
         filename: 'olgish-cakes-terms-2026-07-28.pdf',
@@ -117,11 +137,11 @@ describe('/api/orders POST', () => {
     ])
     expect(mockUpdateSupabaseOrderMetadata).toHaveBeenCalledWith('order-1', {}, expect.objectContaining({
       emailSent: false,
-      emailError: expect.stringContaining('Transport did not accept the customer email')
+      emailError: 'OPERATION_FAILED'
     }))
   })
 
-  it('extracts customer message from generated order message for customer emails', async () => {
+  it('stores customer instructions without echoing them in emails', async () => {
     mockSendEmail
       .mockResolvedValueOnce({
         mode: 'disabled',
@@ -178,8 +198,8 @@ describe('/api/orders POST', () => {
         })
       ]
     }))
-    expect(mockSendEmail.mock.calls[0]?.[0].input.customerMessage).toBe('Please add candles')
-    expect(mockSendEmail.mock.calls[1]?.[0].input.customerMessage).toBe('Please add candles')
+    expect(mockSendEmail.mock.calls[0]?.[0].input.customerMessage).toBeUndefined()
+    expect(mockSendEmail.mock.calls[1]?.[0].input.customerMessage).toBeUndefined()
   })
 
   it('normalizes legacy cakes by post order types before saving', async () => {
@@ -398,9 +418,10 @@ describe('/api/orders POST', () => {
       totalPrice: 40,
       designType: 'Floral piping',
       filling: 'Vanilla',
-      servings: 'Serves 8',
-      specialInstructions: 'No nuts'
+      servings: 'Serves 8'
     })
+    expect(customerCall.input.orderItems[0].specialInstructions).toBeUndefined()
+    expect(adminCall.input.orderItems[0].specialInstructions).toBeUndefined()
 
     expect(customerCall.input.orderItems[1]).toMatchObject({
       productName: 'Napoleon Slice',
@@ -489,12 +510,10 @@ describe('/api/orders POST', () => {
     const customerCall = mockSendEmail.mock.calls[0]?.[0]
     const adminCall = mockSendEmail.mock.calls[1]?.[0]
 
-    expect(customerCall.input.attachmentNames).toEqual(['Design reference'])
+    expect(customerCall.input.attachmentNames).toBeUndefined()
     expect(customerCall.input.referenceImageUrls).toBeUndefined()
-    expect(adminCall.input.attachmentNames).toEqual(['Design reference'])
-    expect(adminCall.input.referenceImageUrls).toEqual([
-      'https://cdn.sanity.io/images/demo/reference-1.jpg'
-    ])
+    expect(adminCall.input.attachmentNames).toBeUndefined()
+    expect(adminCall.input.referenceImageUrls).toBeUndefined()
   })
 
   it('sends a Telegram manager notification after order creation', async () => {
@@ -549,14 +568,17 @@ describe('/api/orders POST', () => {
     expect(response.status).toBe(200)
     expect(mockSendTelegramManagerNotification).toHaveBeenCalledWith(expect.objectContaining({
       type: 'new-order',
-      customerName: 'John Doe',
-      customerEmail: 'john@example.com',
-      customerPhone: '07123456789',
-      productName: 'Honey Cake',
+      recordReference: 'OC-TEST-1001',
       total: 30,
-      messagePreview: 'Please make it less sweet',
+      imageCount: 0,
       adminPath: '/admin/orders/OC-TEST-1001'
     }))
+    const notification = mockSendTelegramManagerNotification.mock.calls[0]?.[0]
+    expect(notification).not.toHaveProperty('productName')
+    expect(notification).not.toHaveProperty('customerName')
+    expect(notification).not.toHaveProperty('customerEmail')
+    expect(notification).not.toHaveProperty('customerPhone')
+    expect(notification).not.toHaveProperty('messagePreview')
   })
 
   it('still returns success when Telegram manager notification fails', async () => {

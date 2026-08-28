@@ -13,7 +13,7 @@ import {
 type UseContactPageEnquiryOptions = UseMutationOptions<
   Record<string, unknown>,
   SubmissionError,
-  { submissionData: FormData, signal?: AbortSignal }
+  { submissionData: FormData, signal: AbortSignal }
 >
 
 export const useContactPageEnquiry = (options?: UseContactPageEnquiryOptions) => {
@@ -29,7 +29,7 @@ export const useContactPageEnquiry = (options?: UseContactPageEnquiryOptions) =>
   const submitMutation = useMutation<
     Record<string, unknown>,
     SubmissionError,
-    { submissionData: FormData, signal?: AbortSignal }
+    { submissionData: FormData, signal: AbortSignal }
   >({
     mutationFn: ({ submissionData, signal }) =>
       submitContactPageEnquiry(submissionData, signal),

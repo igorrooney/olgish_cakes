@@ -49,6 +49,7 @@ function ChevronIcon() {
 
 export function DesktopDropdown({ dropdown }: { dropdown: DropdownConfig }) {
   const detailsRef = useRef<HTMLDetailsElement>(null)
+  const triggerRef = useRef<HTMLElement>(null)
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
@@ -75,9 +76,13 @@ export function DesktopDropdown({ dropdown }: { dropdown: DropdownConfig }) {
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeDropdown()
+      if (event.key !== 'Escape' || !detailsRef.current?.open) {
+        return
       }
+
+      event.preventDefault()
+      closeDropdown()
+      triggerRef.current?.focus()
     }
 
     document.addEventListener('pointerdown', handlePointerDown)
@@ -97,11 +102,11 @@ export function DesktopDropdown({ dropdown }: { dropdown: DropdownConfig }) {
         onToggle={(event) => setIsOpen(event.currentTarget.open)}
       >
         <summary
+          ref={triggerRef}
           role='button'
           className={topNavButtonClassName}
           aria-controls={getDesktopDropdownPanelId(dropdown.id)}
           aria-expanded={isOpen}
-          aria-haspopup='true'
         >
           <span className='group-open/dropdown:text-navigation group-open/dropdown:underline group-open/dropdown:decoration-dotted group-open/dropdown:decoration-2 group-open/dropdown:underline-offset-8'>
             {dropdown.label}

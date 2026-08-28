@@ -35,8 +35,18 @@ jest.mock('@/lib/product-display-order-sync', () => ({
   }))
 }))
 
+jest.mock('@/lib/logger', () => ({
+  logger: {
+    error: jest.fn()
+  }
+}))
+
 const mockedCreateSanityWriteClient = createSanityWriteClient as jest.MockedFunction<typeof createSanityWriteClient>
 const mockedEnsureProductDisplayOrderEntry = ensureProductDisplayOrderEntry as jest.MockedFunction<typeof ensureProductDisplayOrderEntry>
+const { logger: mockLogger } = jest.requireMock('@/lib/logger') as {
+  logger: { error: jest.Mock }
+}
+const mockLoggerError = mockLogger.error
 
 describe('/api/revalidate', () => {
   beforeEach(() => {
@@ -154,7 +164,7 @@ describe('/api/revalidate', () => {
     expect(response.status).toBe(200)
     expect(revalidatePath).toHaveBeenCalledWith('/')
     expect(revalidatePath).toHaveBeenCalledWith('/cakes-by-post')
-    expect(revalidatePath).toHaveBeenCalledWith('/get-custom-quote')
+    expect(revalidatePath).toHaveBeenCalledWith('/custom-cakes')
     expect(revalidateTag).toHaveBeenCalledWith('testimonials', { expire: 0 })
   })
 
@@ -229,8 +239,10 @@ describe('/api/revalidate', () => {
   })
 
   it('still revalidates cake paths when products display order sync fails', async () => {
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
-    mockedEnsureProductDisplayOrderEntry.mockRejectedValue(new Error('Sanity token missing'))
+    const sentinel = 'SENTINEL Sanity token and customer content'
+    mockedEnsureProductDisplayOrderEntry.mockRejectedValue(
+      Object.assign(new Error(sentinel), { code: 'SANITY_SYNC_FAILED' })
+    )
     const request = new NextRequest('http://localhost/api/revalidate', {
       method: 'POST',
       headers: {
@@ -263,8 +275,44 @@ describe('/api/revalidate', () => {
     expect(revalidateTag).toHaveBeenCalledWith('cakes', { expire: 0 })
     expect(revalidateTag).toHaveBeenCalledWith('pages', { expire: 0 })
     expect(revalidateTag).toHaveBeenCalledWith('sitemaps', { expire: 0 })
+    expect(JSON.stringify(mockLoggerError.mock.calls)).not.toContain(sentinel)
+    expect(mockLoggerError).toHaveBeenCalledWith('Product display order sync failed', {
+      operation: 'revalidate.product-display-order-sync',
+      code: 'SANITY_SYNC_FAILED'
+    })
+  })
 
-    consoleErrorSpy.mockRestore()
+  it('returns and logs only a safe code when revalidation fails', async () => {
+    const sentinel = 'SENTINEL cache failure with private webhook data'
+    jest.mocked(revalidatePath).mockImplementationOnce(() => {
+      throw Object.assign(new Error(sentinel), { code: 'CACHE_REVALIDATE_FAILED' })
+    })
+    const request = new NextRequest('http://localhost/api/revalidate', {
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer test-secret',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        _type: 'testimonial'
+      })
+    })
+
+    const response = await POST(request)
+    const payload = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(payload).toEqual({
+      success: false,
+      error: 'Revalidation failed',
+      code: 'CACHE_REVALIDATE_FAILED'
+    })
+    expect(JSON.stringify(payload)).not.toContain(sentinel)
+    expect(JSON.stringify(mockLoggerError.mock.calls)).not.toContain(sentinel)
+    expect(mockLoggerError).toHaveBeenCalledWith('Revalidation failed', {
+      operation: 'revalidate.webhook',
+      code: 'CACHE_REVALIDATE_FAILED'
+    })
   })
 
   it('syncs gift hamper detail updates into product display order', async () => {

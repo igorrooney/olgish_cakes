@@ -4,11 +4,13 @@
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { TrustpilotReviews } from '../TrustpilotReviews'
+import { getQueryClient } from '@/app/providers'
 
 // Mock trustpilot lib
 const mockFetchTrustpilotReviews = jest.fn()
 jest.mock('@/app/lib/trustpilot', () => ({
-  fetchTrustpilotReviews: (productName: string) => mockFetchTrustpilotReviews(productName)
+  fetchTrustpilotReviews: (productName: string, signal: AbortSignal) =>
+    mockFetchTrustpilotReviews(productName, signal)
 }))
 
 // Mock framer-motion
@@ -91,6 +93,7 @@ describe('TrustpilotReviews', () => {
   ]
 
   beforeEach(() => {
+    getQueryClient().clear()
     jest.clearAllMocks()
   })
 
@@ -135,7 +138,10 @@ describe('TrustpilotReviews', () => {
       render(<TrustpilotReviews productName="Honey Cake" />)
 
       await waitFor(() => {
-        expect(mockFetchTrustpilotReviews).toHaveBeenCalledWith('Honey Cake')
+        expect(mockFetchTrustpilotReviews).toHaveBeenCalledWith(
+          'Honey Cake',
+          expect.any(AbortSignal)
+        )
       })
     })
 
@@ -227,11 +233,11 @@ describe('TrustpilotReviews', () => {
       })
     })
 
-    it('should display verification notice', async () => {
+    it('should display neutral source attribution', async () => {
       render(<TrustpilotReviews productName="Honey Cake" />)
 
       await waitFor(() => {
-        expect(screen.getByText('These reviews are from verified purchases on Trustpilot')).toBeInTheDocument()
+        expect(screen.getByText('Reviews published on Trustpilot')).toBeInTheDocument()
       })
     })
   })
@@ -243,7 +249,10 @@ describe('TrustpilotReviews', () => {
       const { rerender } = render(<TrustpilotReviews productName="Honey Cake" />)
 
       await waitFor(() => {
-        expect(mockFetchTrustpilotReviews).toHaveBeenCalledWith('Honey Cake')
+        expect(mockFetchTrustpilotReviews).toHaveBeenCalledWith(
+          'Honey Cake',
+          expect.any(AbortSignal)
+        )
       })
 
       mockFetchTrustpilotReviews.mockClear()
@@ -251,7 +260,10 @@ describe('TrustpilotReviews', () => {
       rerender(<TrustpilotReviews productName="Chocolate Cake" />)
 
       await waitFor(() => {
-        expect(mockFetchTrustpilotReviews).toHaveBeenCalledWith('Chocolate Cake')
+        expect(mockFetchTrustpilotReviews).toHaveBeenCalledWith(
+          'Chocolate Cake',
+          expect.any(AbortSignal)
+        )
       })
     })
   })

@@ -2,6 +2,7 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { serverClient } from '@/sanity/lib/client'
 import { RECENTLY_PUBLISHED_ARTICLE_SLUGS_QUERY } from '@/lib/queries/articles'
+import { isBearerTokenAuthorized } from '@/lib/security/internal-route'
 
 const DEFAULT_LOOKBACK_MINUTES = 45
 const MIN_LOOKBACK_MINUTES = 5
@@ -12,10 +13,7 @@ function getCronAuthorizationToken() {
 }
 
 function isAuthorized(request: NextRequest) {
-  const expectedToken = getCronAuthorizationToken()
-  const authHeader = request.headers.get('authorization')
-
-  return Boolean(expectedToken) && authHeader === `Bearer ${expectedToken}`
+  return isBearerTokenAuthorized(request, getCronAuthorizationToken())
 }
 
 function getLookbackMinutes(request: NextRequest) {

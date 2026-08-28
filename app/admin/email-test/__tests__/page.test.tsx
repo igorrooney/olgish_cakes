@@ -12,6 +12,9 @@ jest.mock('next/navigation', () => ({
   }),
   redirect: jest.fn(() => {
     throw new Error('NEXT_REDIRECT')
+  }),
+  notFound: jest.fn(() => {
+    throw new Error('NEXT_NOT_FOUND')
   })
 }))
 
@@ -25,22 +28,44 @@ jest.mock('@/app/providers', () => ({
   )
 }))
 
+jest.mock('@/components/AdminAuthGuard', () => ({
+  AdminAuthGuard: ({ children }: { children: ReactNode }) => (
+    <div data-testid='admin-auth-guard'>{children}</div>
+  )
+}))
+
 jest.mock('../EmailTestPageClient', () => ({
   EmailTestPageClient: () => <div data-testid='email-test-page-client'>Email test page</div>
 }))
 
 const { redirect: mockRedirect } = jest.requireMock('next/navigation')
+const { notFound: mockNotFound } = jest.requireMock('next/navigation')
 const { isAdminAuthenticated: mockIsAdminAuthenticated } = jest.requireMock('@/lib/admin/auth.server')
+const originalNodeEnv = process.env.NODE_ENV
 
 global.fetch = jest.fn()
 
 describe('admin email test page auth gate', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    process.env.NODE_ENV = originalNodeEnv
     ;(fetch as jest.Mock).mockResolvedValue({
       ok: true,
       json: async () => ({ authenticated: true })
     })
+  })
+
+  afterAll(() => {
+    process.env.NODE_ENV = originalNodeEnv
+  })
+
+  it('is unavailable in production before checking authentication', async () => {
+    process.env.NODE_ENV = 'production'
+
+    await expect(EmailTestPage()).rejects.toThrow('NEXT_NOT_FOUND')
+
+    expect(mockNotFound).toHaveBeenCalledTimes(1)
+    expect(mockIsAdminAuthenticated).not.toHaveBeenCalled()
   })
 
   it('redirects unauthenticated users to admin auth page', async () => {
@@ -57,6 +82,7 @@ describe('admin email test page auth gate', () => {
     render(page)
 
     await waitFor(() => {
+      expect(screen.getByTestId('admin-auth-guard')).toBeInTheDocument()
       expect(screen.getByTestId('query-providers')).toBeInTheDocument()
       expect(screen.getByTestId('email-test-page-client')).toBeInTheDocument()
     })

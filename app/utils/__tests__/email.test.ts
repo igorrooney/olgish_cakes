@@ -2,6 +2,17 @@ import { sendEmail } from '../email'
 
 // Mock Resend
 const mockSend = jest.fn()
+
+jest.mock('@/lib/logger', () => {
+  const loggerError = jest.fn()
+  return {
+    logger: {
+      error: loggerError
+    },
+    __mockLoggerError: loggerError
+  }
+})
+
 jest.mock('resend', () => {
   const mockSend = jest.fn()
   return {
@@ -16,6 +27,7 @@ jest.mock('resend', () => {
 
 const { __mockSend } = jest.requireMock('resend')
 const actualMockSend = __mockSend || mockSend
+const { __mockLoggerError } = jest.requireMock('@/lib/logger')
 
 describe('email', () => {
   beforeEach(() => {
@@ -26,7 +38,7 @@ describe('email', () => {
 
   describe('sendEmail', () => {
     it('should send email with basic params', async () => {
-      process.env.ADMIN_BCC_EMAIL = 'igorrooney@gmail.com'
+      process.env.ADMIN_BCC_EMAIL = 'owner@example.com'
       actualMockSend.mockResolvedValue({ data: { id: 'email-123' }, error: null })
 
       await sendEmail({
@@ -38,7 +50,7 @@ describe('email', () => {
       expect(actualMockSend).toHaveBeenCalledWith({
         from: 'Test <test@example.com>',
         to: 'customer@example.com',
-        bcc: 'igorrooney@gmail.com',
+        bcc: 'owner@example.com',
         subject: 'Test Subject',
         text: 'Test message',
         attachments: []
@@ -149,28 +161,32 @@ describe('email', () => {
       )
     })
 
-    it('should throw error when Resend returns error', async () => {
+    it('should not expose a Resend provider error', async () => {
       actualMockSend.mockResolvedValue({ error: { message: 'Invalid API key' } })
 
       await expect(sendEmail({
         to: 'customer@example.com',
         subject: 'Test',
         text: 'Message'
-      })).rejects.toThrow('Invalid API key')
+      })).rejects.toThrow('Email delivery failed')
+
+      expect(JSON.stringify(__mockLoggerError.mock.calls)).not.toContain('Invalid API key')
     })
 
-    it('should log error on failure', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
+    it('should log only safe operational metadata on failure', async () => {
       actualMockSend.mockRejectedValue(new Error('Network error'))
 
       await expect(sendEmail({
         to: 'customer@example.com',
         subject: 'Test',
         text: 'Message'
-      })).rejects.toThrow('Network error')
+      })).rejects.toThrow('Email delivery failed')
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error sending email:', expect.any(Error))
-      consoleSpy.mockRestore()
+      expect(__mockLoggerError).toHaveBeenCalledWith('Email delivery failed', {
+        operation: 'email.send',
+        code: 'OPERATION_FAILED'
+      })
+      expect(JSON.stringify(__mockLoggerError.mock.calls)).not.toContain('Network error')
     })
 
     it('should return response on success', async () => {
